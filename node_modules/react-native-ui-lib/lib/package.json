@@ -1,0 +1,18 @@
+{
+  "name": "uilib-native",
+  "version": "4.0.0",
+  "homepage": "https://github.com/wix/react-native-ui-lib",
+  "description": "uilib native components (separated from js components)",
+  "main": "components/index.js",
+  "scripts": {},
+  "author": "Ethan Sharabi <ethan.shar@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "^4.0.0",
+    "prop-types": "^15.5.10"
+  },
+  "peerDependencies": {
+    "react": "^16.0.0",
+    "react-native": "^0.51.0"
+  }
+}

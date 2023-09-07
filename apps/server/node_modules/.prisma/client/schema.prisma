@@ -1,0 +1,90 @@
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Star {
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  name          String   @db.VarChar(255)
+  constellation String   @db.VarChar(255)
+}
+
+enum Role {
+  PATRON
+  ORGANIZER
+}
+
+model User {
+  id        Int      @id
+  createdAt DateTime @default(now())
+  email     String   @unique
+  name      String
+  role      Role     @default(PATRON)
+}
+
+model Event {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Event Details
+  imageUrl    String
+  name        String
+  description String
+  organizer   String
+
+  // Date and Time Details
+  startDate DateTime
+  startTime DateTime
+  endDate   DateTime
+  endTime   DateTime
+
+  // Location Details
+  address String
+
+  // Ticket Details
+  tickets Ticket[]
+}
+
+enum TicketFeeStructure {
+  // Fees to be included in the ticket price you set. 
+  // Fees will be deducted from your sales at the time of your payout.
+  ABSORB_TICKET_FEES
+  // Attendees to pay the fees on top of the ticket price you set. 
+  // Fees will be collected off the top of your ticket sales at the time of your payout.
+  PASS_TICKET_FEES
+}
+
+model Ticket {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Ticket Details
+  name               String
+  description        String
+  maxPurchasePerUser Int
+  quantity           Int
+
+  // Sale Date Details
+  saleStartDate DateTime
+  saleStartTime DateTime
+  saleEndDate   DateTime
+  saleEndTime   DateTime
+
+  // Price Details
+  price         Float
+  ticketingFees TicketFeeStructure @default(PASS_TICKET_FEES)
+
+  event   Event  @relation(fields: [eventId], references: [id])
+  eventId String
+
+  @@index([eventId])
+}

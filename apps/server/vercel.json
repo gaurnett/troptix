@@ -1,0 +1,24 @@
+{
+    "routes": [
+        {
+            "src": "/",
+            "dest": "/api/product.js"
+        },
+        {
+            "src": "/api/product",
+            "dest": "/api/product.js"
+        },
+        {
+            "src": "/api/add-star",
+            "dest": "/api/add-star.js"
+        },
+        {
+            "src": "/api/add-event",
+            "dest": "/api/add-event.js"
+        },
+        {
+            "src": "/api/get-events",
+            "dest": "/api/get-events.js"
+        }
+    ]
+}
