@@ -2,7 +2,8 @@ import * as React from 'react';
 import { Keyboard, SafeAreaView, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { Button, Colors, Image, Text, TextField, View } from 'react-native-ui-lib';
 import { auth } from '../../config/firebase';
-import { greeting } from 'cool-package';
+import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
+import * as authentication from "firebase/auth";
 
 export default function SignInScreen({ navigation }) {
   function navigateToMainScreen() {
@@ -10,6 +11,25 @@ export default function SignInScreen({ navigation }) {
       index: 0,
       routes: [{ name: 'MainAppScreen' }],
     });
+  }
+
+  function handleGoogleSignIn() {
+    const provider = new GoogleAuthProvider();
+    signInWithEmailAndPassword(auth, "flowersgaurnett@gmail.com", "Password15")
+      .then((result) => {
+        console.log(result.user)
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        // const credential = GoogleAuthProvider.credentialFromResult(result);
+        // const token = credential.accessToken;
+        // const user = result.user;
+      }).catch((error) => {
+        console.log(error)
+        // Handle Errors here.
+        // const errorCode = error.code;
+        // const errorMessage = error.message;
+        // const email = error.customData.email;
+        // const credential = GoogleAuthProvider.credentialFromError(error);
+      })
   }
 
   return (
@@ -23,7 +43,7 @@ export default function SignInScreen({ navigation }) {
           width={150}
           source={require('../../assets/logo/logo_v1.png')} />
         <Text marginT-16 marginB-16 text50 $textDefault>
-          Welcome to TropTix {greeting}
+          Welcome to TropTix
         </Text>
         <View marginT-16 paddingT-6 paddingL-8 style={{ height: 50, width: '100%', borderWidth: 0.5, borderColor: '#D3D3D3' }}>
           <TextField
@@ -82,6 +102,7 @@ export default function SignInScreen({ navigation }) {
         </Button>
 
         <Button
+          onPress={() => handleGoogleSignIn()}
           marginT-16 outline borderRadius={25} outlineColor={Colors.grey30} style={{ height: 50, width: '100%' }}>
           <Image source={require('../../assets/logo/google.png')} width={24} height={24} />
           <Text style={{ fontSize: 16 }} marginL-10>Sign In with Google</Text>

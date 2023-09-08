@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 
-import * as React from 'react';
+import { useEffect, useState } from "react";
 import { Text, TouchableHighlight, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,6 +12,8 @@ import EventDetailsScreen from './pages/navigation/EventDetailsScreen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import SignInScreen from './pages/navigation/SignInScreen';
 import TicketCheckoutScreen from './pages/navigation/TicketCheckoutScreen';
+import { auth } from './config/firebase';
+import SplashScreen from './pages/navigation/SplashScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -90,47 +92,80 @@ function MainAppScreen() {
   );
 }
 
-export default function App({ navigation }) {
+export default function App() {
+  const [user, setUser] = useState();
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+
+  useEffect(() => {
+    const unsubscribeFromAuthStateChange = auth.onAuthStateChanged(user => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(undefined);
+      }
+      setIsLoadingUser(false);
+    });
+
+    return unsubscribeFromAuthStateChange;
+  }, []);
+
   return (
     <SafeAreaProvider>
       <NavigationContainer>
         <Stack.Navigator>
-          <Stack.Screen
-            name='SignInScreen'
-            component={SignInScreen}
-            options={{
-              title: '',
-              headerShadowVisible: false,
-            }}
-          />
-          <Stack.Screen
-            name="MainAppScreen"
-            component={MainAppScreen}
-            options={{
-              headerShown: false,
-              headerBackTitleVisible: false
-            }}
-          />
-          <Stack.Screen
-            name='EventDetailsScreen'
-            component={EventDetailsScreen}
-            options={{
-              title: '',
-              headerTransparent: true,
-              headerBackTitle: 'Back',
-            }}
-          />
-          <Stack.Screen
-            name='TicketCheckoutScreen'
-            component={TicketCheckoutScreen}
-            options={{
-              title: 'Ticket Checkout',
-              headerBackTitle: 'Back',
-              headerBackTitleVisible: false,
-              headerLeft: null,
-              gestureEnabled: false,
-            }}
-          />
+          {
+            isLoadingUser ?
+              <Stack.Screen
+                name='SplashScreen'
+                component={SplashScreen}
+                options={{
+                  title: '',
+                  headerShadowVisible: false,
+                }}
+              />
+              :
+              user === undefined ?
+                <Stack.Group>
+                  <Stack.Screen
+                    name='SignInScreen'
+                    component={SignInScreen}
+                    options={{
+                      title: '',
+                      headerShadowVisible: false,
+                    }}
+                  />
+                </Stack.Group>
+                : <Stack.Group>
+                  <Stack.Screen
+                    name="MainAppScreen"
+                    component={MainAppScreen}
+                    options={{
+                      headerShown: false,
+                      headerBackTitleVisible: false
+                    }}
+                  />
+                  <Stack.Screen
+                    name='EventDetailsScreen'
+                    component={EventDetailsScreen}
+                    options={{
+                      title: '',
+                      headerTransparent: true,
+                      headerBackTitle: 'Back',
+                    }}
+                  />
+                  <Stack.Screen
+                    name='TicketCheckoutScreen'
+                    component={TicketCheckoutScreen}
+                    options={{
+                      title: 'Ticket Checkout',
+                      headerBackTitle: 'Back',
+                      headerBackTitleVisible: false,
+                      headerLeft: null,
+                      gestureEnabled: false,
+                    }}
+                  />
+                </Stack.Group>
+          }
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
