@@ -23,5 +23,6 @@
     "prisma": "^5.2.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
-  }
+  },
+  "private": true
 }
