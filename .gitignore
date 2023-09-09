@@ -1,2 +1,12 @@
 **/node_modules
 node_modules
+
+# Ignoring Server
+apps/server/node_modules
+apps/server/.env
+
+# Ignoring Troptix App
+apps/troptix-app/node_modules
+
+# Ignoring Troptix Organizer
+apps/troptix-organizer/node_modules
