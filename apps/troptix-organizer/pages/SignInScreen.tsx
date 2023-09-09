@@ -17,13 +17,11 @@ export default function SignInScreen({ navigation }) {
     const provider = new GoogleAuthProvider();
     signInWithEmailAndPassword(auth, "flowersgaurnett@gmail.com", "Password15")
       .then((result) => {
-        console.log(result.user)
         // This gives you a Google Access Token. You can use it to access the Google API.
         // const credential = GoogleAuthProvider.credentialFromResult(result);
         // const token = credential.accessToken;
         // const user = result.user;
       }).catch((error) => {
-        console.log(error)
         // Handle Errors here.
         // const errorCode = error.code;
         // const errorMessage = error.message;

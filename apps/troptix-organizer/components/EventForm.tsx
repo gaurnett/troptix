@@ -297,9 +297,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
         })
       });
       const json = await response.text();
-      console.log("Response = ", json);
     } catch (error) {
-      console.log("Error = ", error);
     }
   }
 

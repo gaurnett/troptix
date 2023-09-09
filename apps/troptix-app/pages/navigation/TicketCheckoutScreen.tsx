@@ -3,10 +3,12 @@ import * as React from 'react';
 import { Pressable, ScrollView, TouchableOpacity } from 'react-native';
 import { Button, Colors, Icon, Image, Picker, Text, View } from 'react-native-ui-lib';
 import tickets from '../../data/tickets';
+import { Order } from 'troptix-models';
 
 export default function TicketCheckoutScreen({ route, navigation }) {
   const [total, setTotal] = React.useState(0);
   const { event } = route.params;
+  const [order, setOrder] = React.useState<Order>(new Order(event));
   const [ticketList, setTicketList] = React.useState(event.tickets);
 
   const options = [
@@ -44,31 +46,43 @@ export default function TicketCheckoutScreen({ route, navigation }) {
   }
 
   function reduceCost(ticket, index) {
-    const newArray = ticketList.map((item, i) => {
+    var currentTotal = order.totalPrice;
+    const updatedTickets = order.tickets.map((item, i) => {
       if (index === i && item.quantitySelected > 0) {
-        setTotal(total - (ticket.price + (ticket.price * .1)));
+        currentTotal -= ticket.price + (ticket.price * .1);
         return { ...item, quantitySelected: item.quantitySelected - 1 };
       } else {
         return item;
       }
     });
-    setTicketList(newArray);
+
+    setOrder(previousOrder => ({
+      ...previousOrder,
+      ["tickets"]: updatedTickets,
+      ["totalPrice"]: currentTotal
+    }))
   }
 
   function increaseCost(ticket, index) {
-    const newArray = ticketList.map((item, i) => {
-      if (index === i && item.quantitySelected < item.maxPurchase) {
-        setTotal(total + (ticket.price + (ticket.price * .1)));
+    var currentTotal = order.totalPrice;
+    const updatedTickets = order.tickets.map((item, i) => {
+      if (index === i && item.quantitySelected < item.maxPurchasePerUser) {
+        currentTotal += ticket.price + (ticket.price * .1);
         return { ...item, quantitySelected: item.quantitySelected + 1 };
       } else {
         return item;
       }
     });
-    setTicketList(newArray);
+
+    setOrder(previousOrder => ({
+      ...previousOrder,
+      ["tickets"]: updatedTickets,
+      ["totalPrice"]: currentTotal
+    }))
   }
 
   function renderTickets() {
-    return _.map(ticketList, (ticket, i) => {
+    return _.map(order.tickets, (ticket, i) => {
       return (
         <View key={i} marginB-16 style={{ width: '100%', borderWidth: 1, borderRadius: 10, borderColor: '#D3D3D3' }}>
           <View
@@ -135,7 +149,7 @@ export default function TicketCheckoutScreen({ route, navigation }) {
           margin-16
           marginR-20
           style={{ alignItems: 'flex-end' }}>
-          <Text style={{ fontSize: 18 }}>{getFormattedCurrency(total)}</Text>
+          <Text style={{ fontSize: 18 }}>{getFormattedCurrency(order.totalPrice)}</Text>
         </View>
         <View
           marginL-20

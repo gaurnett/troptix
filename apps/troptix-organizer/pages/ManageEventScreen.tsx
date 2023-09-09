@@ -21,8 +21,6 @@ function ManageEventScreen({ route, navigation }) {
   const [items, setItems] = useState(generateTabItems())
   const tabController = createRef<TabControllerImperativeMethods>();
 
-  console.log(event);
-
   useEffect(() => {
     navigation.setOptions({
       title: event.title,

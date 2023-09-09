@@ -69,7 +69,6 @@ export default function TicketFormScreen({ route, navigation }) {
   }
 
   function handlePriceChange(name, value) {
-    console.log(value, " ", formatPrice(value))
     setTicketPrice(formatPrice(value));
     setTicket(previousTicket => ({ ...previousTicket, [name]: Number(value) }))
   }
@@ -233,7 +232,6 @@ export default function TicketFormScreen({ route, navigation }) {
       addTicket(ticket);
     }
     navigation.goBack();
-    console.log("Ticket = ", ticket);
   }
 
   return (

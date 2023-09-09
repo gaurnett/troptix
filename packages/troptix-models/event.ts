@@ -1,4 +1,4 @@
-import { Ticket } from "./ticket";
+import { TicketType } from "./ticketType";
 import uuid from 'react-native-uuid';
 
 export class Event {
@@ -22,7 +22,7 @@ export class Event {
   address: String;
 
   // Ticket Details
-  tickets: Ticket[];
+  tickets: TicketType[];
 
   constructor() {
     this.id = String(uuid.v4());
