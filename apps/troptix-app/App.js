@@ -12,7 +12,7 @@ import EventDetailsScreen from './pages/navigation/EventDetailsScreen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import SignInScreen from './pages/navigation/SignInScreen';
 import TicketCheckoutScreen from './pages/navigation/TicketCheckoutScreen';
-import { auth } from './config/firebase';
+import { auth } from 'troptix-firebase';
 import SplashScreen from './pages/navigation/SplashScreen';
 
 const Stack = createStackNavigator();

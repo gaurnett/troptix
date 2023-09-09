@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Keyboard, SafeAreaView, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { Button, Colors, Image, Text, TextField, View } from 'react-native-ui-lib';
-import { auth } from '../../config/firebase';
+import { auth } from 'troptix-firebase';
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import * as authentication from "firebase/auth";
 

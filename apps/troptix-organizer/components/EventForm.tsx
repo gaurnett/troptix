@@ -23,9 +23,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import tickets from "../data/tickets";
-import { Event } from "../models/event";
+import { Event } from "troptix-models";
 import * as LightDate from 'light-date';
-import { Ticket } from "../models/ticket";
+import { Ticket } from "troptix-models";
 import { format } from 'date-fns';
 import uuid from 'react-native-uuid';
 

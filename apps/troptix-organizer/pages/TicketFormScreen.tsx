@@ -21,7 +21,7 @@ import { Keyboard, KeyboardAvoidingView, Pressable, ScrollView, TouchableOpacity
 import { SafeAreaView } from 'react-native-safe-area-context';
 import tickets from '../data/tickets';
 import { formatPrice } from '../shared/TroptixHelper';
-import { Ticket, TicketFeeStructure } from '../models/ticket';
+import { Ticket, TicketFeeStructure } from 'troptix-models';
 import { format } from 'date-fns'
 
 export default function TicketFormScreen({ route, navigation }) {

@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "*",
     "cool-package": "*",
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@react-native-community/datetimepicker": "7.2.0",
@@ -40,6 +41,8 @@
     "react-native-ui-lib": "^7.7.1",
     "react-native-uuid": "^2.0.1",
     "react-native-web": "~0.19.6",
+    "troptix-api": "*",
+    "troptix-models": "*",
     "typescript": "^5.1.3"
   },
   "devDependencies": {

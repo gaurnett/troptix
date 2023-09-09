@@ -6,15 +6,15 @@ import tickets from '../../data/tickets';
 
 export default function TicketCheckoutScreen({ route, navigation }) {
   const [total, setTotal] = React.useState(0);
-  const [ticketList, setTicketList] = React.useState(tickets);
   const { event } = route.params;
+  const [ticketList, setTicketList] = React.useState(event.tickets);
 
   const options = [
-    {label: 'JavaScript', value: 'js'},
-    {label: 'Java', value: 'java'},
-    {label: 'Python', value: 'python'},
-    {label: 'C++', value: 'c++', disabled: true},
-    {label: 'Perl', value: 'perl'}
+    { label: 'JavaScript', value: 'js' },
+    { label: 'Java', value: 'java' },
+    { label: 'Python', value: 'python' },
+    { label: 'C++', value: 'c++', disabled: true },
+    { label: 'Perl', value: 'perl' }
   ];
 
   React.useEffect(
@@ -70,17 +70,17 @@ export default function TicketCheckoutScreen({ route, navigation }) {
   function renderTickets() {
     return _.map(ticketList, (ticket, i) => {
       return (
-        <View key={i} marginB-16 style={{width: '100%', borderWidth: 1, borderRadius: 10, borderColor:'#D3D3D3'}}>
+        <View key={i} marginB-16 style={{ width: '100%', borderWidth: 1, borderRadius: 10, borderColor: '#D3D3D3' }}>
           <View
             row
             margin-12
-            style={{height: 50, alignItems: 'center'}}>
+            style={{ height: 50, alignItems: 'center' }}>
             <Text>{ticket.name}</Text>
-            <View style={{flex: 1, alignItems: 'flex-end' }}>
-              <View style={{flexDirection: 'row', alignItems: 'center', height: '100%'}}>
-                <TouchableOpacity 
+            <View style={{ flex: 1, alignItems: 'flex-end' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', height: '100%' }}>
+                <TouchableOpacity
                   onPress={() => reduceCost(ticket, i)}
-                  style={{borderRadius: 16, backgroundColor: '#2196F3'}} >
+                  style={{ borderRadius: 16, backgroundColor: '#2196F3' }} >
                   <Icon
                     source={require("../../assets/icons/remove.png")}
                     resizeMode="center"
@@ -89,23 +89,23 @@ export default function TicketCheckoutScreen({ route, navigation }) {
                   />
                 </TouchableOpacity>
                 <Text
-                  style={{fontSize: 20}}
+                  style={{ fontSize: 20 }}
                   marginL-12
                   marginR-12>{ticket.quantitySelected}</Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => increaseCost(ticket, i)}
-                  style={{borderRadius: 16, backgroundColor: '#2196F3'}}>
+                  style={{ borderRadius: 16, backgroundColor: '#2196F3' }}>
                   <Icon
-                      source={require("../../assets/icons/add.png")}
-                      resizeMode="center"
-                      tintColor={Colors.white}
-                      size={32}
-                    />
+                    source={require("../../assets/icons/add.png")}
+                    resizeMode="center"
+                    tintColor={Colors.white}
+                    size={32}
+                  />
                 </TouchableOpacity>
               </View>
             </View>
           </View>
-          <View style={{flex: 1, height: 1, backgroundColor: '#D3D3D3'}} />
+          <View style={{ flex: 1, height: 1, backgroundColor: '#D3D3D3' }} />
           <View margin-12>
             <Text>{getFormattedCurrency(ticket.price)}</Text>
             <Text>+ {getFormattedCurrency(ticket.price * .1)} fees</Text>
@@ -119,39 +119,39 @@ export default function TicketCheckoutScreen({ route, navigation }) {
   }
 
   return (
-    <View style={{flex: 1, backgroundColor: 'white' }}>
-      <View style={{flex: 1, backgroundColor: 'white' }}>
-        <ScrollView style={{height: '100%' }}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <ScrollView style={{ height: '100%' }}>
           <View margin-20>
             {renderTickets()}
           </View>
         </ScrollView>
       </View>
-      <View 
-        backgroundColor="transparent" 
+      <View
+        backgroundColor="transparent"
         marginB-24
         style={{ borderTopColor: '#D3D3D3', borderTopWidth: 1, height: 160 }}>
-        <View 
+        <View
           margin-16
           marginR-20
           style={{ alignItems: 'flex-end' }}>
-          <Text style={{fontSize: 18}}>{getFormattedCurrency(total)}</Text>
+          <Text style={{ fontSize: 18 }}>{getFormattedCurrency(total)}</Text>
         </View>
         <View
           marginL-20
           marginR-20>
-          <Button 
-            backgroundColor={Colors.orange30} 
-            borderRadius={30} 
-            style={{backgroundColor: '#000', height: 45, width: '100%'}}>
+          <Button
+            backgroundColor={Colors.orange30}
+            borderRadius={30}
+            style={{ backgroundColor: '#000', height: 45, width: '100%' }}>
             <Image source={require('../../assets/logo/apple-pay.png')} tintColor={Colors.white} width={48} height={48} />
           </Button>
 
-          <Button 
-            marginT-16 
-            borderRadius={30} 
-            style={{backgroundColor: '#2196F3', height: 45, width: '100%'}}>
-            <Text style={{fontSize: 16, color: '#fff'}} marginL-10>Pay another way</Text>
+          <Button
+            marginT-16
+            borderRadius={30}
+            style={{ backgroundColor: '#2196F3', height: 45, width: '100%' }}>
+            <Text style={{ fontSize: 16, color: '#fff' }} marginL-10>Pay another way</Text>
           </Button>
         </View>
       </View>

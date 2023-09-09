@@ -1,12 +1,33 @@
 import _ from 'lodash';
-import * as React from 'react';
-import {StyleSheet, ScrollView} from 'react-native';
-import { Text, View, Card, Colors, CardProps, Button} from 'react-native-ui-lib';
-import events from '../../data/events';
+import { useEffect, useState } from 'react';
+import { StyleSheet, ScrollView } from 'react-native';
+import { Text, View, Card, Colors, CardProps, Button, LoaderScreen } from 'react-native-ui-lib';
+import { Event, getEventsFromRequest } from 'troptix-models';
+import { TropTixResponse, getEvents } from 'troptix-api';
 
 const cardImage = require('../../assets/favicon.png');
 
 export default function EventsScreen({ navigation }) {
+
+  const [isFetchingEvents, setIsFetchingEvents] = useState(true);
+  const [events, setEvents] = useState<Event[]>([]);
+
+  const fetchEvents = async () => {
+    const response: TropTixResponse = await getEvents();
+    setIsFetchingEvents(false);
+
+    if (response.response !== undefined) {
+      setEvents(getEventsFromRequest(response.response));
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  function formatDate(date: Date) {
+    return date.toDateString();
+  }
 
   function onEventClick(event) {
     navigation.navigate('EventDetailsScreen', {
@@ -19,14 +40,16 @@ export default function EventsScreen({ navigation }) {
       return (
         <Card
           key={i}
-          style={{marginBottom: 15}}
+          style={{ marginBottom: 15 }}
           onPress={() => onEventClick(event)}
         >
           <Card.Section
-            contentStyle = {{
+            contentStyle={{
               flex: 1,
             }}
-            imageSource={event.coverImage}
+            imageSource={{
+              uri: event.imageUrl
+            }}
             imageStyle={{
               width: '100%',
               height: 200,
@@ -35,21 +58,21 @@ export default function EventsScreen({ navigation }) {
 
           <View padding-20>
             <Text text50 $textDefault>
-              {event.title}
+              {event.name}
             </Text>
             <View row>
-              <Text text70 $textDefault>{event.timestamp} | </Text>
+              <Text text70 $textDefault>{formatDate(new Date(event.startDate))} | </Text>
               <Text text70 color={Colors.$textMajor}>
-                {event.host}
+                {event.organizer}
               </Text>
             </View>
 
             <Text text70 $textDefault>
-              {event.location}
+              {event.address}
             </Text>
 
             <Text text70 color={Colors.$textSuccess}>
-              {event.price}
+              $200
             </Text>
           </View>
         </Card>
@@ -57,13 +80,19 @@ export default function EventsScreen({ navigation }) {
     });
   };
 
-	return (
-    <View style={{backgroundColor: 'white'}}>
-      <ScrollView>
-        <View flex padding-20>
-          {renderEvents()}
-        </View>
-      </ScrollView>
+  return (
+    <View style={{ backgroundColor: 'white', height: '100%', }}>
+      {
+        isFetchingEvents ?
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <LoaderScreen message={'Fetching events'} color={Colors.grey40} />
+          </View> :
+          <ScrollView>
+            <View flex padding-20>
+              {renderEvents()}
+            </View>
+          </ScrollView>
+      }
     </View>
-	);
+  );
 }

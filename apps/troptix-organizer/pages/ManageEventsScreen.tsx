@@ -2,27 +2,25 @@ import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 import { Text, View, Card, Colors, CardProps, Button, LoaderScreen } from 'react-native-ui-lib';
-import { Event, getEventsFromRequest } from '../models/event';
+import { Event, getEventsFromRequest } from 'troptix-models';
+import { TropTixResponse, getEvents } from 'troptix-api';
 
 export default function ManageEventsScreen({ navigation }) {
 
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [events, setEvents] = useState<Event[]>([]);
 
-  const getMovies = async () => {
-    try {
-      const response = await fetch('https://troptix-backend.vercel.app/api/get-events');
-      const json = await response.json();
-      setEvents(getEventsFromRequest(json));
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsFetchingEvents(false);
+  const fetchEvents = async () => {
+    const response: TropTixResponse = await getEvents();
+    setIsFetchingEvents(false);
+
+    if (response.response !== undefined) {
+      setEvents(getEventsFromRequest(response.response));
     }
   };
 
   useEffect(() => {
-    getMovies();
+    fetchEvents();
   }, []);
 
   function formatDate(date: Date) {
