@@ -1,16 +1,28 @@
-import * as React from 'react';
+import { useRef, useState } from 'react';
 import { Keyboard, SafeAreaView, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { Button, Colors, Image, Text, TextField, View } from 'react-native-ui-lib';
 import { auth } from 'troptix-firebase';
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import * as authentication from "firebase/auth";
+import CustomTextField from '../../components/CustomTextField';
+import { User } from 'troptix-models';
 
 export default function SignInScreen({ navigation }) {
-  function navigateToMainScreen() {
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'MainAppScreen' }],
+  const emailRef = useRef();
+  const [email, setEmail] = useState<User>(new User());
+
+  function handleChange(name, value) {
+    setEmail(value);
+  }
+
+  function signUpWithEmail() {
+    navigation.navigate("SignUpWithEmailScreen", {
+      userEmail: email,
     });
+  }
+
+  function signInWithEmail() {
+    navigation.navigate("SignInWithEmailScreen");
   }
 
   function handleGoogleSignIn() {
@@ -40,47 +52,25 @@ export default function SignInScreen({ navigation }) {
           height={150}
           width={150}
           source={require('../../assets/logo/logo_v1.png')} />
-        <Text marginT-16 marginB-16 text50 $textDefault>
-          Welcome to TropTix
-        </Text>
-        <View marginT-16 paddingT-6 paddingL-8 style={{ height: 50, width: '100%', borderWidth: 0.5, borderColor: '#D3D3D3' }}>
-          <TextField
-            label='Full name'
-            labelColor={Colors.black}
-            enableErrors
-            validate={['required', 'email', (value) => value.length > 6]}
-            validationMessage={['Field is required', 'Email is invalid', 'Password is too short']}
-          />
-        </View>
 
-        <View marginT-16 paddingT-6 paddingL-8 style={{ height: 50, width: '100%', borderWidth: 0.5, borderColor: '#D3D3D3' }}>
-          <TextField
-            label='Email address'
-            labelColor={Colors.black}
-            enableErrors
-            validate={['required', 'email', (value) => value.length > 6]}
-            validationMessage={['Field is required', 'Email is invalid', 'Password is too short']}
-          />
-        </View>
-
-        <View marginT-16 paddingT-6 paddingL-8 style={{ height: 50, width: '100%', borderWidth: 0.5, borderColor: '#D3D3D3' }}>
-          <TextField
-            label='Password'
-            labelColor={Colors.black}
-            secureTextEntry={true}
-            enableErrors
-            validate={['required', 'email', (value) => value.length > 6]}
-            validationMessage={['Field is required', 'Email is invalid', 'Password is too short']}
+        <View width={"100%"}>
+          <CustomTextField
+            name="email"
+            label="Email address"
+            placeholder="johndoe@troptix.com"
+            value={email}
+            reference={emailRef}
+            handleChange={handleChange}
           />
         </View>
 
         <Button
-          onPress={() => navigateToMainScreen()}
+          onPress={() => signUpWithEmail()}
           marginT-16
           borderRadius={25}
           color={Colors.white}
           style={{ backgroundColor: '#FF7043', height: 50, width: '100%' }}>
-          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>Sign Up</Text>
+          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>Sign up with email</Text>
         </Button>
 
         <View marginT-24 marginB-24 style={{ flexDirection: 'row', alignItems: 'center', width: 300 }}>
@@ -92,18 +82,19 @@ export default function SignInScreen({ navigation }) {
         </View>
 
         <Button
+          onPress={() => signInWithEmail()}
           backgroundColor={Colors.orange30}
           borderRadius={25}
           style={{ backgroundColor: '#2196F3', height: 50, width: '100%' }}>
           <Image source={require('../../assets/logo/email.png')} tintColor={Colors.white} width={24} height={24} />
-          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>Sign In with Email</Text>
+          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>Sign in with email</Text>
         </Button>
 
         <Button
           onPress={() => handleGoogleSignIn()}
           marginT-16 outline borderRadius={25} outlineColor={Colors.grey30} style={{ height: 50, width: '100%' }}>
           <Image source={require('../../assets/logo/google.png')} width={24} height={24} />
-          <Text style={{ fontSize: 16 }} marginL-10>Sign In with Google</Text>
+          <Text style={{ fontSize: 16 }} marginL-10>Sign in with Google</Text>
         </Button>
       </View>
     </TouchableWithoutFeedback>

@@ -18,6 +18,8 @@ import ManageEventScreen from './pages/ManageEventScreen';
 import TicketFormScreen from './pages/TicketFormScreen';
 import { auth } from 'troptix-firebase';
 import SplashScreen from './pages/SplashScreen';
+import SignInWithEmailScreen from './pages/auth/SignInWithEmailScreen';
+import SignUpWithEmailScreen from './pages/auth/SignUpWithEmailScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -67,12 +69,15 @@ function ScanEventsStack() {
   );
 }
 
-function SettingsStack() {
+function SettingsStack({ route }) {
+  const { user } = route.params;
+
   return (
     <Stack.Navigator>
       <Stack.Screen
         name='SettingsScreen'
         component={SettingsScreen}
+        initialParams={{ user: user }}
         options={{
           title: 'Settings',
           headerShadowVisible: false,
@@ -82,7 +87,9 @@ function SettingsStack() {
   );
 }
 
-function MainAppScreen() {
+function MainAppScreen({ route }) {
+  const { user } = route.params;
+
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -143,7 +150,9 @@ function MainAppScreen() {
         }}
       />
       <Tab.Screen
-        name="SettingsStack" component={SettingsStack}
+        name="SettingsStack"
+        component={SettingsStack}
+        initialParams={{ user: user }}
         options={{
           headerShown: false,
           tabBarLabel: "Settings",
@@ -207,12 +216,29 @@ export default function App() {
                       headerShadowVisible: false,
                     }}
                   />
+                  <Stack.Screen
+                    name="SignInWithEmailScreen"
+                    component={SignInWithEmailScreen}
+                    options={{
+                      title: '',
+                      headerShadowVisible: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="SignUpWithEmailScreen"
+                    component={SignUpWithEmailScreen}
+                    options={{
+                      title: '',
+                      headerShadowVisible: false,
+                    }}
+                  />
                 </Stack.Group>
                 :
                 <Stack.Group>
                   <Stack.Screen
                     name="MainAppScreen"
                     component={MainAppScreen}
+                    initialParams={{ user: user }}
                     options={{
                       headerShown: false,
                       headerBackTitleVisible: false,

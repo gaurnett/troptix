@@ -13,7 +13,11 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import SignInScreen from './pages/navigation/SignInScreen';
 import TicketCheckoutScreen from './pages/navigation/TicketCheckoutScreen';
 import { auth } from 'troptix-firebase';
+import { getUser, TropTixResponse } from 'troptix-api';
+import { User, setUserFromResponse } from 'troptix-models';
 import SplashScreen from './pages/navigation/SplashScreen';
+import SignInWithEmailScreen from './pages/auth/SignInWithEmailScreen';
+import SignUpWithEmailScreen from './pages/auth/SignUpWithEmailScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,28 +29,35 @@ function EventStack() {
         name='EventsScreen'
         component={EventsScreen}
         options={{
-          title: 'Events'
+          title: 'Events',
+          headerShadowVisible: false,
         }}
       />
     </Stack.Navigator>
   );
 }
 
-function SettingsStack() {
+function SettingsStack({ route }) {
+  const { user } = route.params;
+
   return (
     <Stack.Navigator>
       <Stack.Screen
         name='Settings'
         component={SettingsScreen}
+        initialParams={{ user: user }}
         options={{
-          title: 'Settings'
+          title: '',
+          headerShadowVisible: false,
         }}
       />
     </Stack.Navigator>
   );
 }
 
-function MainAppScreen() {
+function MainAppScreen({ route }) {
+  const { user } = route.params;
+
   return (
     <Tab.Navigator>
       <Tab.Screen
@@ -54,14 +65,13 @@ function MainAppScreen() {
         component={EventStack}
         options={{
           headerShown: false,
-          tabBarLabel: "Events",
+          tabBarLabel: "",
           tabBarIcon: ({ focused }) => {
             return (
               <View>
                 <Image
-                  source={require("./assets/icons/calendar.png")}
-                  resizeMode="contain"
-                  style={{ width: 24 }}
+                  source={require("./assets/icons/event.png")}
+                  style={{ width: 24, height: 24, marginTop: 16 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>
@@ -71,16 +81,16 @@ function MainAppScreen() {
       <Tab.Screen
         name="SettingsStack"
         component={SettingsStack}
+        initialParams={{ user: user }}
         options={{
           headerShown: false,
-          tabBarLabel: "Settings",
+          tabBarLabel: "",
           tabBarIcon: ({ focused }) => {
             return (
               <View>
                 <Image
                   source={require("./assets/icons/settings.png")}
-                  resizeMode="contain"
-                  style={{ width: 24 }}
+                  style={{ width: 24, height: 24, marginTop: 16 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>
@@ -97,9 +107,17 @@ export default function App() {
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   useEffect(() => {
+    async function fetchUser(id) {
+      const response = await getUser(id);
+      let user = setUserFromResponse(response.response);
+
+      console.log("New User: " + user.name);
+      setUser(prevUser => ({ ...prevUser, user }));
+    }
+
     const unsubscribeFromAuthStateChange = auth.onAuthStateChanged(user => {
       if (user) {
-        setUser(user);
+        fetchUser(user.uid);
       } else {
         setUser(undefined);
       }
@@ -134,11 +152,28 @@ export default function App() {
                       headerShadowVisible: false,
                     }}
                   />
+                  <Stack.Screen
+                    name="SignInWithEmailScreen"
+                    component={SignInWithEmailScreen}
+                    options={{
+                      title: '',
+                      headerShadowVisible: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="SignUpWithEmailScreen"
+                    component={SignUpWithEmailScreen}
+                    options={{
+                      title: '',
+                      headerShadowVisible: false,
+                    }}
+                  />
                 </Stack.Group>
                 : <Stack.Group>
                   <Stack.Screen
                     name="MainAppScreen"
                     component={MainAppScreen}
+                    initialParams={{ user: user }}
                     options={{
                       headerShown: false,
                       headerBackTitleVisible: false

@@ -1,6 +1,7 @@
 import { Event, getEventsFromRequest } from './event';
 import { TicketType, TicketFeeStructure } from './ticketType';
 import { Ticket, Order } from './order';
+import { User, setUserFromResponse } from './user';
 
 export {
   // Event Details
@@ -11,5 +12,8 @@ export {
   TicketFeeStructure,
   // Order Details
   Ticket,
-  Order
+  Order,
+  // User Details
+  User,
+  setUserFromResponse,
 };

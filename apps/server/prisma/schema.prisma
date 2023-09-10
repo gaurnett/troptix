@@ -8,28 +8,56 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Star {
-  id            Int      @id @default(autoincrement())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  name          String   @db.VarChar(255)
-  constellation String   @db.VarChar(255)
-}
-
 enum Role {
   PATRON
   ORGANIZER
 }
 
-model User {
-  id        Int      @id
-  createdAt DateTime @default(now())
-  email     String   @unique
+model Users {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  email     String    @unique
   name      String
-  role      Role     @default(PATRON)
+  role      Role      @default(PATRON)
+  tickets   Tickets[]
+  orders    Orders[]
 }
 
-model Event {
+model Tickets {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  event         Events      @relation(fields: [eventsId], references: [id])
+  eventsId      String
+  Orders        Orders?     @relation(fields: [ordersId], references: [id])
+  ordersId      String?
+  ticketType    TicketTypes @relation(fields: [ticketTypesId], references: [id])
+  ticketTypesId String
+  Users         Users?      @relation(fields: [usersId], references: [id])
+  usersId       String?
+
+  @@index([eventsId])
+  @@index([ordersId])
+  @@index([ticketTypesId])
+  @@index([usersId])
+}
+
+model Orders {
+  id         String    @id @default(uuid())
+  totalPrice Float
+  tickets    Tickets[]
+
+  Users    Users?  @relation(fields: [usersId], references: [id])
+  usersId  String?
+  event    Events  @relation(fields: [eventsId], references: [id])
+  eventsId String
+
+  @@index([usersId])
+  @@index([eventsId])
+}
+
+model Events {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -50,7 +78,9 @@ model Event {
   address String
 
   // Ticket Details
-  tickets Ticket[]
+  Tickets     Tickets[]
+  TicketTypes TicketTypes[]
+  Orders      Orders[]
 }
 
 enum TicketFeeStructure {
@@ -62,7 +92,7 @@ enum TicketFeeStructure {
   PASS_TICKET_FEES
 }
 
-model Ticket {
+model TicketTypes {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -83,8 +113,9 @@ model Ticket {
   price         Float
   ticketingFees TicketFeeStructure @default(PASS_TICKET_FEES)
 
-  event   Event  @relation(fields: [eventId], references: [id])
+  event   Events    @relation(fields: [eventId], references: [id])
   eventId String
+  Tickets Tickets[]
 
   @@index([eventId])
 }

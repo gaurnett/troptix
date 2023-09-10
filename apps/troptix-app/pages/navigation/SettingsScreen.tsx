@@ -1,69 +1,143 @@
 import * as React from 'react';
-import { StyleSheet, Alert, FlatList } from 'react-native';
-import {View, Text, Colors, ListItem, Image, BorderRadiuses } from 'react-native-ui-lib';
+import { StyleSheet, Alert, FlatList, ScrollView } from 'react-native';
+import { View, Text, Colors, ListItem, Image, BorderRadiuses } from 'react-native-ui-lib';
 import orders, { OrderType } from '../../data/orders';
+import { auth } from 'troptix-firebase';
 
 const cardImage = require('../../assets/favicon.png');
 const styles = StyleSheet.create({
   image: {
-    width: 54,
-    height: 54,
-    borderRadius: BorderRadiuses.br20,
-    marginHorizontal: 14
+    width: 24,
+    height: 24,
+    marginRight: 16
   },
   border: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderColor: Colors.grey70
   }
 });
+enum SettingsType {
+  TICKETS,
+  ORDERS,
+  MANAGE_ACCOUNT,
+  SIGN_OUT,
+  CONTACT_US,
+  SUGGEST_IMPROVEMENTS,
+  TERMS_OF_SERVICE,
+  PRIVACY
+}
 
-export default function SettingsScreen() {
-  function renderSelectableCards(row: OrderType, id: number) {
-    const statusColor = row.inventory.status === 'Paid' ? Colors.green30 : Colors.red30;
+export default function SettingsScreen({ route }) {
+  const { user } = route.params;
 
+  function signOut() {
+    auth.signOut();
+  }
+
+  function handleSettingsClick(type: SettingsType) {
+    switch (type) {
+      case SettingsType.TICKETS:
+      case SettingsType.ORDERS:
+      case SettingsType.MANAGE_ACCOUNT:
+      case SettingsType.SIGN_OUT:
+        signOut();
+        break;
+      case SettingsType.CONTACT_US:
+      case SettingsType.SUGGEST_IMPROVEMENTS:
+      case SettingsType.TERMS_OF_SERVICE:
+      case SettingsType.PRIVACY:
+      default:
+        () => Alert.alert(`pressed on order #`)
+    }
+  }
+
+  function renderSettingsRow(type: SettingsType, title: String, icon, color) {
     return (
-      <View style={{backgroundColor: 'white'}}>
-        <ListItem
-          activeBackgroundColor={Colors.white}
-          activeOpacity={0.3}
-          height={77.5}
-          onPress={() => Alert.alert(`pressed on order #${id + 1}`)}
-        >
-          <ListItem.Part left>
-            <Image source={{uri: row.mediaUrl}} style={styles.image}/>
+      <ListItem
+        activeBackgroundColor={Colors.white}
+        activeOpacity={0.3}
+        onPress={() => handleSettingsClick(type)}
+      >
+        <ListItem.Part left>
+          <Image
+            resizeMode='cover'
+            source={icon}
+            style={styles.image}
+            tintColor={color} />
+        </ListItem.Part>
+        <ListItem.Part containerStyle={[styles.border, { paddingRight: 17 }]}>
+          <ListItem.Part>
+            <Text grey10 text70 style={{ flex: 1, marginRight: 10 }} numberOfLines={1}>
+              {title}
+            </Text>
           </ListItem.Part>
-          <ListItem.Part middle column containerStyle={[styles.border, {paddingRight: 17}]}>
-            <ListItem.Part containerStyle={{marginBottom: 3}}>
-              <Text grey10 text70 style={{flex: 1, marginRight: 10}} numberOfLines={1}>
-                {row.name}
-              </Text>
-              <Text grey10 text70 style={{marginTop: 2}}>
-                {row.formattedPrice}
-              </Text>
-            </ListItem.Part>
-            <ListItem.Part>
-              <Text
-                style={{flex: 1, marginRight: 10}}
-                text90
-                grey40
-                numberOfLines={1}
-              >{`${row.inventory.quantity} item`}</Text>
-              <Text text90 color={statusColor} numberOfLines={1}>
-                {row.inventory.status}
-              </Text>
-            </ListItem.Part>
-          </ListItem.Part>
-        </ListItem>
-      </View>
+        </ListItem.Part>
+      </ListItem>
     );
   };
 
-	return (
-    <FlatList
-        data={orders}
-        renderItem={({item, index}) => renderSelectableCards(item, index)}
-        keyExtractor={this.keyExtractor}
-      />
+  return (
+    <View style={{ backgroundColor: 'white' }}>
+      <View>
+        <ScrollView style={{ height: '100%' }}>
+          <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+            <Text style={{ fontSize: 28, fontWeight: "500" }} marginL-10>{user.user.name}</Text>
+            <Text style={{ fontSize: 20, fontWeight: "200" }} marginL-10>{user.user.email}</Text>
+          </View>
+
+          <View marginL-16>
+            <View>
+              <Text marginT-16 marginB-8 text40 $textDefault>
+                Events
+              </Text>
+              <View>
+                {renderSettingsRow(SettingsType.TICKETS, "My Tickets", require('../../assets/icons/ticket.png'), Colors.green50)}
+              </View>
+              <View>
+                {renderSettingsRow(SettingsType.ORDERS, "Orders", require('../../assets/icons/order.png'), Colors.purple50)}
+              </View>
+            </View>
+
+            <View>
+              <Text marginT-16 marginB-8 text40 $textDefault>
+                Settings
+              </Text>
+              <View>
+                {renderSettingsRow(SettingsType.MANAGE_ACCOUNT, "Manage Account", require('../../assets/icons/person.png'), Colors.blue50)}
+              </View>
+              <View>
+                {renderSettingsRow(SettingsType.SIGN_OUT, "Sign Out", require('../../assets/icons/logout.png'), Colors.red50)}
+              </View>
+            </View>
+
+            <View>
+              <Text marginT-16 marginB-8 text40 $textDefault>
+                Support
+              </Text>
+              <View>
+                {renderSettingsRow(SettingsType.CONTACT_US, "Contact Us", require('../../assets/icons/contact.png'), Colors.orange50)}
+              </View>
+              <View>
+                {renderSettingsRow(SettingsType.SUGGEST_IMPROVEMENTS, "Suggest Improvements", require('../../assets/icons/edit.png'), Colors.violet50)}
+              </View>
+              <View>
+                {renderSettingsRow(SettingsType.TERMS_OF_SERVICE, "Terms of Service", require('../../assets/icons/verified.png'), Colors.grey50)}
+              </View>
+              <View>
+                {renderSettingsRow(SettingsType.PRIVACY, "Privacy", require('../../assets/icons/lock.png'), Colors.red50)}
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
+
+    </View>
+
+    // <FlatList
+    //     data={orders}
+    //     renderItem={({item, index}) => renderSelectableCards(item, index)}
+    //     keyExtractor={this.keyExtractor}
+    //   />
     // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white'}}>
     //   {/* <ScrollView> */}
     //     <View>
@@ -74,5 +148,5 @@ export default function SettingsScreen() {
     //     </View>
     //   {/* </ScrollView> */}
     // </View>
-	);
+  );
 }

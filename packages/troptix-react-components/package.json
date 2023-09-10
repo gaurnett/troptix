@@ -1,0 +1,12 @@
+{
+  "name": "troptix-react-components",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "react": "*",
+    "react-native": "*",
+    "react-native-ui-lib": "*"
+  }
+}

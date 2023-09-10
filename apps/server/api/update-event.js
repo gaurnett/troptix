@@ -9,7 +9,7 @@ export default async function handler(request, response) {
   }
 
   try {
-    const user = await prisma.event.update({
+    const user = await prisma.events.update({
       where: {
         id: body.event.id,
       },
@@ -33,13 +33,4 @@ export default async function handler(request, response) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error posting event' });
   }
-
-  // tickets: {
-  //   updateMany: {
-  //     where: {
-  //       id: 'viola@prisma.io',
-  //     },
-  //     data: event.tickets
-  //   }
-  // }
 }

@@ -8,7 +8,7 @@ export default async function handler(request, response) {
   }
 
   try {
-    const user = await prisma.event.create({
+    const user = await prisma.events.create({
       data: body.event,
     });
     return response.status(200).json({ error: null, message: "Successfully added event" });

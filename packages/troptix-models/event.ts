@@ -46,6 +46,11 @@ export class Event {
 
 export function getEventsFromRequest(e: Object[]): Event[] {
   var events: Event[] = new Array();
+
+  if (e === undefined || e.length === 0) {
+    return events;
+  }
+
   e.forEach((event) => {
     let eventObject = Object.assign(new Event(), event);
     events.push(eventObject);

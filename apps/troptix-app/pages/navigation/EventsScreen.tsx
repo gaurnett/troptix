@@ -13,12 +13,16 @@ export default function EventsScreen({ navigation }) {
   const [events, setEvents] = useState<Event[]>([]);
 
   const fetchEvents = async () => {
-    const response: TropTixResponse = await getEvents();
-    setIsFetchingEvents(false);
-
-    if (response.response !== undefined) {
-      setEvents(getEventsFromRequest(response.response));
+    try {
+      const response: TropTixResponse = await getEvents();
+      if (response.response !== undefined) {
+        setEvents(getEventsFromRequest(response.response));
+      }
+    } catch (error) {
+      console.log("Fetching Events Error: " + error)
     }
+
+    setIsFetchingEvents(false);
   };
 
   useEffect(() => {
@@ -36,6 +40,10 @@ export default function EventsScreen({ navigation }) {
   }
 
   function renderEvents() {
+    if (events.length === 0) {
+      return;
+    }
+
     return _.map(events, (event, i) => {
       return (
         <Card

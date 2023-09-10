@@ -11,12 +11,16 @@ export default function ManageEventsScreen({ navigation }) {
   const [events, setEvents] = useState<Event[]>([]);
 
   const fetchEvents = async () => {
-    const response: TropTixResponse = await getEvents();
-    setIsFetchingEvents(false);
-
-    if (response.response !== undefined) {
-      setEvents(getEventsFromRequest(response.response));
+    try {
+      const response: TropTixResponse = await getEvents();
+      if (response.response !== undefined && response.response.length !== 0) {
+        setEvents(getEventsFromRequest(response.response));
+      }
+    } catch (error) {
+      console.log("Fetching Events Error: " + error)
     }
+
+    setIsFetchingEvents(false);
   };
 
   useEffect(() => {

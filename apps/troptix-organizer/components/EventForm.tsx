@@ -51,13 +51,13 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
   }
 
   function onTicketClick(ticket, isEditTicket, index) {
-    navigation.navigate("TicketFormScreen", {
-      ticketObject: ticket,
-      isEditTicket: isEditTicket,
-      ticketIndex: index,
-      addTicket: addTicket,
-      editTicket: editTicket,
-    });
+    // navigation.navigate("TicketFormScreen", {
+    //   ticketObject: ticket,
+    //   isEditTicket: isEditTicket,
+    //   ticketIndex: index,
+    //   addTicket: addTicket,
+    //   editTicket: editTicket,
+    // });
   }
 
   function handleChange(name, value) {
@@ -487,7 +487,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
                 Ticket Details
               </Text>
               <Button
-                onPress={() => onTicketClick(new Ticket(event), false, 0)}
+                onPress={() => onTicketClick(new Ticket(), false, 0)}
                 marginT-16
                 outline
                 borderRadius={25}
