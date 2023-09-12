@@ -34,11 +34,12 @@ function getDetailItemList(event) {
 }
 
 export default function EventDetailsScreen({ route, navigation }) {
-  const { event } = route.params;
+  const { event, user } = route.params;
 
   function onGetTicketsClick() {
     navigation.navigate('TicketCheckoutScreen', {
-      event: event
+      event: event,
+      user: user
     })
   }
 

@@ -20,12 +20,15 @@ export class Event {
 
   // Location Details
   address: String;
+  country: String;
 
   // Ticket Details
-  tickets: TicketType[];
+  ticketTypes: TicketType[];
 
   constructor() {
     this.id = String(uuid.v4());
+    this.organizer = "Sunnation";
+    this.country = "Jamaica";
     this.imageUrl = "https://assets.fete.land/vibes/styles/full/s3/event/image/202303/fetelist-sunrise-breakfast-party-jamaica-carnival-2023.jpg";
 
     // Start date construction
@@ -40,7 +43,7 @@ export class Event {
     this.endTime.setMinutes(0);
 
     // Ticket construction
-    this.tickets = new Array();
+    this.ticketTypes = new Array();
   }
 }
 

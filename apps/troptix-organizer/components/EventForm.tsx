@@ -25,16 +25,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import tickets from "../data/tickets";
 import { Event } from "troptix-models";
 import * as LightDate from 'light-date';
-import { Ticket } from "troptix-models";
+import { TicketType } from "troptix-models";
 import { format } from 'date-fns';
 import uuid from 'react-native-uuid';
+import { TropTixResponse, getEvents, saveEvent, } from 'troptix-api';
 
 export default function EventForm({ eventObject, editEvent, navigation }) {
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
   const [event, setEvent] = useState<Event>(eventObject);
-  const [ticketList, setTicketList] = useState<Ticket[]>(eventObject.tickets);
   const eventNameRef = useRef();
   const eventDescriptionRef = useRef();
   const eventLocationRef = useRef();
@@ -51,13 +51,13 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
   }
 
   function onTicketClick(ticket, isEditTicket, index) {
-    // navigation.navigate("TicketFormScreen", {
-    //   ticketObject: ticket,
-    //   isEditTicket: isEditTicket,
-    //   ticketIndex: index,
-    //   addTicket: addTicket,
-    //   editTicket: editTicket,
-    // });
+    navigation.navigate("TicketFormScreen", {
+      ticketObject: ticket,
+      isEditTicket: isEditTicket,
+      ticketIndex: index,
+      addTicket: addTicket,
+      editTicket: editTicket,
+    });
   }
 
   function handleChange(name, value) {
@@ -69,16 +69,16 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
       format(value, mode === 'date' ? 'MMM dd, yyyy' : 'hh:mm a');
   };
 
-  function addTicket(ticket: Ticket) {
-    let tempTickets = event.tickets;
+  function addTicket(ticket: TicketType) {
+    let tempTickets = event.ticketTypes;
     tempTickets.push(ticket);
-    setEvent(previousEvent => ({ ...previousEvent, ["tickets"]: tempTickets }))
+    setEvent(previousEvent => ({ ...previousEvent, ["ticketTypes"]: tempTickets }))
   }
 
-  function editTicket(index, ticket: Ticket) {
-    let tempTickets = event.tickets;
+  function editTicket(index, ticket: TicketType) {
+    let tempTickets = event.ticketTypes;
     tempTickets[index] = ticket;
-    setEvent(previousEvent => ({ ...previousEvent, ["tickets"]: tempTickets }))
+    setEvent(previousEvent => ({ ...previousEvent, ["ticketTypes"]: tempTickets }))
   }
 
   function deleteTicket(index) {
@@ -90,7 +90,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
       },
       {
         text: 'Delete', onPress: () => {
-          let tempTickets = event.tickets;
+          let tempTickets = event.ticketTypes;
           tempTickets.splice(index, 1);
           setEvent(previousEvent => ({ ...previousEvent, ["tickets"]: tempTickets }));
         }
@@ -268,41 +268,32 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
     }
   }
 
-  async function addEvent() {
-    setEvent(previousEvent => ({ ...previousEvent, ["organizer"]: "Sunnation Jamaica" }))
-    setEvent(previousEvent => ({ ...previousEvent, ["imageUrl"]: "https://assets.fete.land/vibes/styles/full/s3/event/image/202303/fetelist-sunrise-breakfast-party-jamaica-carnival-2023.jpg" }))
+  async function updateEvent() {
+    // setEvent(previousEvent => ({
+    //   ...previousEvent,
+    //   ["organizer"]: "Sunnation Jamaica",
+    //   ["country"]: "Jamaica",
+    //   ["imageUrl"]: "https://assets.fete.land/vibes/styles/full/s3/event/image/202303/fetelist-sunrise-breakfast-party-jamaica-carnival-2023.jpg"
+    // }))
 
-    let tempTickets = event.tickets;
-    for (let i = 0; i < tempTickets.length; i++) {
-      delete tempTickets[i].eventId;
-    }
-    setEvent(previousEvent => ({ ...previousEvent, ["tickets"]: tempTickets }))
-
-    var url = ""
-    if (editEvent) {
-      url = 'https://troptix-backend.vercel.app/api/update-event';
-    } else {
-      url = 'https://troptix-backend.vercel.app/api/add-event';
-    }
+    // if (!editEvent && event.ticketTypes.length !== 0) {
+    //   let tempTickets = event.ticketTypes;
+    //   for (let i = 0; i < tempTickets.length; i++) {
+    //     delete tempTickets[i].eventId;
+    //   }
+    //   setEvent(previousEvent => ({ ...previousEvent, ["ticketTypes"]: tempTickets }))
+    // }
 
     try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          event: event,
-        })
-      });
-      const json = await response.text();
+      const response: TropTixResponse = await saveEvent(event, editEvent);
+      console.log("[updateEvent] ", response);
     } catch (error) {
+      console.log("[updateEvent] Events Error: " + error)
     }
   }
 
   function renderTickets() {
-    return _.map(ticketList, (ticket, i) => {
+    return _.map(event.ticketTypes, (ticket, i) => {
       return (
         <View key={i} row>
           <View flex>
@@ -487,7 +478,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
                 Ticket Details
               </Text>
               <Button
-                onPress={() => onTicketClick(new Ticket(), false, 0)}
+                onPress={() => onTicketClick(new TicketType(event), false, 0)}
                 marginT-16
                 outline
                 borderRadius={25}
@@ -522,7 +513,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
           }}
         >
           <Button
-            onPress={() => addEvent()}
+            onPress={() => updateEvent()}
             style={{ width: "70%", height: "70%" }}
             label={"Save Event"}
             labelStyle={{ fontSize: 18 }}
@@ -540,7 +531,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
           }}
         >
           <Button
-            onPress={() => addEvent()}
+            onPress={() => updateEvent()}
             style={{ width: "70%", height: "70%" }}
             label={"Add Event"}
             labelStyle={{ fontSize: 18 }}

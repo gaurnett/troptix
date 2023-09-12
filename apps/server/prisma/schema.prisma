@@ -19,42 +19,56 @@ model Users {
   updatedAt DateTime  @updatedAt
   email     String    @unique
   name      String
+  stripeId  String?
   role      Role      @default(PATRON)
   tickets   Tickets[]
   orders    Orders[]
 }
 
+enum TicketStatus {
+  AVAILABLE
+  NOT_AVAILABLE
+}
+
 model Tickets {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
+  id        String       @id @default(uuid())
+  createdAt DateTime     @default(now())
+  status    TicketStatus @default(NOT_AVAILABLE)
 
-  event         Events      @relation(fields: [eventsId], references: [id])
-  eventsId      String
-  Orders        Orders?     @relation(fields: [ordersId], references: [id])
-  ordersId      String?
-  ticketType    TicketTypes @relation(fields: [ticketTypesId], references: [id])
-  ticketTypesId String
-  Users         Users?      @relation(fields: [usersId], references: [id])
-  usersId       String?
+  event        Events      @relation(fields: [eventId], references: [id])
+  eventId      String
+  order        Orders      @relation(fields: [orderId], references: [id])
+  orderId      String
+  ticketType   TicketTypes @relation(fields: [ticketTypeId], references: [id])
+  ticketTypeId String
+  user         Users       @relation(fields: [userId], references: [id])
+  userId       String
 
-  @@index([eventsId])
-  @@index([ordersId])
-  @@index([ticketTypesId])
-  @@index([usersId])
+  @@index([eventId])
+  @@index([orderId])
+  @@index([ticketTypeId])
+  @@index([userId])
+}
+
+enum OrderStatus {
+  PENDING
+  CANCELLED
+  COMPLETED
 }
 
 model Orders {
-  id         String    @id @default(uuid())
-  totalPrice Float
-  tickets    Tickets[]
+  id      String      @id @default(uuid())
+  amount  Float
+  tickets Tickets[]
+  status  OrderStatus @default(PENDING)
 
-  Users    Users?  @relation(fields: [usersId], references: [id])
-  usersId  String?
-  event    Events  @relation(fields: [eventsId], references: [id])
-  eventsId String
+  user    Users  @relation(fields: [userId], references: [id])
+  userId  String
+  event   Events @relation(fields: [eventId], references: [id])
+  eventId String
 
-  @@index([usersId])
-  @@index([eventsId])
+  @@index([userId])
+  @@index([eventId])
 }
 
 model Events {
@@ -76,11 +90,12 @@ model Events {
 
   // Location Details
   address String
+  country String
 
   // Ticket Details
-  Tickets     Tickets[]
-  TicketTypes TicketTypes[]
-  Orders      Orders[]
+  tickets     Tickets[]
+  ticketTypes TicketTypes[]
+  orders      Orders[]
 }
 
 enum TicketFeeStructure {
@@ -115,7 +130,7 @@ model TicketTypes {
 
   event   Events    @relation(fields: [eventId], references: [id])
   eventId String
-  Tickets Tickets[]
+  tickets Tickets[]
 
   @@index([eventId])
 }

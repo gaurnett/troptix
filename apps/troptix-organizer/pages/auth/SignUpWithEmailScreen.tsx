@@ -44,12 +44,12 @@ export default function SignUpWithEmailScreen({ route, navigation }) {
         user.name = name;
         user.email = userResult.email;
         const response = await addUser(user);
-        console.log("Add User Response: ", response);
+        console.log("[createUserWithEmailAndPassword] Add User Response: ", response);
       }).catch((error) => {
         // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorCode, " ", errorMessage)
+        console.log("[createUserWithEmailAndPassword] ", errorCode, " ", errorMessage)
       })
   }
 

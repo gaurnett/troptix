@@ -17,7 +17,7 @@ export default function ManageEventsScreen({ navigation }) {
         setEvents(getEventsFromRequest(response.response));
       }
     } catch (error) {
-      console.log("Fetching Events Error: " + error)
+      console.log("ManageEventsScreen [fetchEvents] error: " + error)
     }
 
     setIsFetchingEvents(false);

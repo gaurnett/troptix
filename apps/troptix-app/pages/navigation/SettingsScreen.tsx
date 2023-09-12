@@ -27,7 +27,7 @@ enum SettingsType {
   PRIVACY
 }
 
-export default function SettingsScreen({ route }) {
+export default function SettingsScreen({ route, navigation }) {
   const { user } = route.params;
 
   function signOut() {
@@ -37,8 +37,13 @@ export default function SettingsScreen({ route }) {
   function handleSettingsClick(type: SettingsType) {
     switch (type) {
       case SettingsType.TICKETS:
+        navigation.navigate('TicketsScreen', {
+          user: user
+        })
       case SettingsType.ORDERS:
+        break;
       case SettingsType.MANAGE_ACCOUNT:
+        break;
       case SettingsType.SIGN_OUT:
         signOut();
         break;

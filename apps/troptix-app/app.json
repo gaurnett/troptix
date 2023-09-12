@@ -25,6 +25,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "com.troptix.merchantIdentifier",
+          "enableGooglePay": true
+        }
+      ]
+    ]
   }
 }

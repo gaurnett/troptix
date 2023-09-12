@@ -19,6 +19,18 @@
     {
       "src": "/api/get-user/:id",
       "dest": "./api/get-user.js"
+    },
+    {
+      "src": "/api/create-charge",
+      "dest": "./api/create-charge.js"
+    },
+    {
+      "src": "/api/create-order",
+      "dest": "./api/create-order.js"
+    },
+    {
+      "src": "/api/get-orders/:id",
+      "dest": "./api/get-orders.js"
     }
   ]
 }

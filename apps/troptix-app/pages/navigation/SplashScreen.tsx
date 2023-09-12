@@ -4,7 +4,7 @@ import { Image } from 'react-native-ui-lib';
 
 export default function SplashScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+    <View style={{ height: "100%", width: "100%", flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
       <Image
         resizeMode='cover'
         height={150}

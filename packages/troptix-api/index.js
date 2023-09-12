@@ -1,10 +1,15 @@
 import { TropTixResponse } from "./api";
-import { getEvents } from "./events";
+import { getEvents, saveEvent } from "./events";
 import { addUser, getUser } from "./users";
+import { createCharge, createOrder, getOrders } from "./charge";
 
 export {
   TropTixResponse,
   getEvents,
+  saveEvent,
   addUser,
-  getUser
+  getUser,
+  createCharge,
+  createOrder,
+  getOrders,
 };

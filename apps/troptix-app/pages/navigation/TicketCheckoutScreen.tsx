@@ -1,15 +1,26 @@
 import _ from 'lodash';
-import * as React from 'react';
-import { Pressable, ScrollView, TouchableOpacity } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, Pressable, ScrollView, TouchableOpacity } from 'react-native';
 import { Button, Colors, Icon, Image, Picker, Text, View } from 'react-native-ui-lib';
 import tickets from '../../data/tickets';
-import { Order } from 'troptix-models';
+import { Checkout, Order } from 'troptix-models';
+import { createCharge, createOrder } from 'troptix-api';
+import { PlatformPay, PlatformPayButton, StripeProvider, createPlatformPayPaymentMethod, initPaymentSheet, isPlatformPaySupported, presentPaymentSheet, useStripe } from "@stripe/stripe-react-native";
+import { auth } from 'troptix-firebase';
 
 export default function TicketCheckoutScreen({ route, navigation }) {
-  const [total, setTotal] = React.useState(0);
+  const [total, setTotal] = useState(0);
   const { event } = route.params;
-  const [order, setOrder] = React.useState<Order>(new Order(event));
-  const [ticketList, setTicketList] = React.useState(event.tickets);
+  const [checkout, setCheckout] = useState<Checkout>(new Checkout(event));
+  const [ticketList, setTicketList] = useState(event.ticketTypes);
+  const stripe = useStripe();
+  const [isApplePaySupported, setIsApplePaySupported] = useState(false);
+
+  useEffect(() => {
+    (async function () {
+      setIsApplePaySupported(await isPlatformPaySupported());
+    })();
+  }, [isPlatformPaySupported]);
 
   const options = [
     { label: 'JavaScript', value: 'js' },
@@ -19,7 +30,7 @@ export default function TicketCheckoutScreen({ route, navigation }) {
     { label: 'Perl', value: 'perl' }
   ];
 
-  React.useEffect(
+  useEffect(
     () =>
       navigation.setOptions({
         headerRight: () => (
@@ -36,6 +47,95 @@ export default function TicketCheckoutScreen({ route, navigation }) {
     [navigation]
   );
 
+  const fetchPaymentSheetParams = async () => {
+    const response = await createCharge(checkout.amount * 100, "XUC9owfawtYC39EhRIQKjzqMskj1");
+    const { paymentId, paymentIntent, ephemeralKey, customer } = await response.response;
+
+    return {
+      paymentId,
+      paymentIntent,
+      ephemeralKey,
+      customer,
+    };
+  };
+
+  const initializePaymentSheet = async () => {
+    const {
+      paymentId,
+      paymentIntent,
+      ephemeralKey,
+      customer,
+    } = await fetchPaymentSheetParams();
+
+    const { error } = await initPaymentSheet({
+      merchantDisplayName: "TropTix",
+      customerId: customer,
+      customerEphemeralKeySecret: ephemeralKey,
+      paymentIntentClientSecret: paymentIntent,
+      allowsDelayedPaymentMethods: true,
+      defaultBillingDetails: {
+        name: 'Jane Doe',
+      }
+    });
+
+    if (error) {
+      // setLoading(true);
+    }
+
+    return paymentId;
+  };
+
+  async function openStripePayment() {
+    const paymentId = await initializePaymentSheet();
+    const order = new Order(checkout, paymentId, "7ee984f6-5c48-4924-a5f2-9c024a7fc056", "XUC9owfawtYC39EhRIQKjzqMskj1");
+    try {
+      await createOrder(order);
+    } catch (error) {
+      console.log("[openStripePayment] create order error: " + error);
+      return;
+    }
+
+    const { error, paymentOption } = await presentPaymentSheet();
+
+    if (error) {
+      Alert.alert(`Error code: ${error.code}`, error.message);
+    } else {
+      console.log(paymentOption);
+      Alert.alert('Success', 'Your order is confirmed!');
+    }
+  }
+
+  const createPaymentMethod = async () => {
+    const { error, paymentMethod } = await createPlatformPayPaymentMethod({
+      applePay: {
+        cartItems: [
+          {
+            label: 'Example item name',
+            amount: '14.00',
+            paymentType: PlatformPay.PaymentType.Immediate,
+          },
+          {
+            label: 'Total',
+            amount: '12.75',
+            paymentType: PlatformPay.PaymentType.Immediate,
+          },
+        ],
+        merchantCountryCode: 'US',
+        currencyCode: 'USD',
+      },
+    });
+
+    if (error) {
+      Alert.alert(error.code, error.message);
+      return;
+    } else if (paymentMethod) {
+      Alert.alert(
+        'Success',
+        `The payment method was created successfully. paymentMethodId: ${paymentMethod.id}`
+      );
+    }
+  };
+
   function getFormattedCurrency(price) {
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -46,8 +146,8 @@ export default function TicketCheckoutScreen({ route, navigation }) {
   }
 
   function reduceCost(ticket, index) {
-    var currentTotal = order.totalPrice;
-    const updatedTickets = order.tickets.map((item, i) => {
+    var currentTotal = checkout.amount;
+    const updatedTickets = checkout.tickets.map((item, i) => {
       if (index === i && item.quantitySelected > 0) {
         currentTotal -= ticket.price + (ticket.price * .1);
         return { ...item, quantitySelected: item.quantitySelected - 1 };
@@ -56,16 +156,16 @@ export default function TicketCheckoutScreen({ route, navigation }) {
       }
     });
 
-    setOrder(previousOrder => ({
+    setCheckout(previousOrder => ({
       ...previousOrder,
       ["tickets"]: updatedTickets,
-      ["totalPrice"]: currentTotal
+      ["amount"]: currentTotal
     }))
   }
 
   function increaseCost(ticket, index) {
-    var currentTotal = order.totalPrice;
-    const updatedTickets = order.tickets.map((item, i) => {
+    var currentTotal = checkout.amount;
+    const updatedTickets = checkout.tickets.map((item, i) => {
       if (index === i && item.quantitySelected < item.maxPurchasePerUser) {
         currentTotal += ticket.price + (ticket.price * .1);
         return { ...item, quantitySelected: item.quantitySelected + 1 };
@@ -74,15 +174,15 @@ export default function TicketCheckoutScreen({ route, navigation }) {
       }
     });
 
-    setOrder(previousOrder => ({
+    setCheckout(previousOrder => ({
       ...previousOrder,
       ["tickets"]: updatedTickets,
-      ["totalPrice"]: currentTotal
+      ["amount"]: currentTotal
     }))
   }
 
   function renderTickets() {
-    return _.map(order.tickets, (ticket, i) => {
+    return _.map(checkout.tickets, (ticket, i) => {
       return (
         <View key={i} marginB-16 style={{ width: '100%', borderWidth: 1, borderRadius: 10, borderColor: '#D3D3D3' }}>
           <View
@@ -133,42 +233,62 @@ export default function TicketCheckoutScreen({ route, navigation }) {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
+    <StripeProvider
+      publishableKey='pk_test_51Noxs0FEd6UvxBWGgUgu6JQw6VnDqC8ei9YkxAthxkjGBsAY3OKEKbkuRlnCTcHoVnQp5vvCrM0YfuhSFQZv3wR300x6wKe6oJ'
+      merchantIdentifier="merchant.identifier" >
       <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <ScrollView style={{ height: '100%' }}>
-          <View margin-20>
-            {renderTickets()}
+        <View style={{ flex: 1, backgroundColor: 'white' }}>
+          <ScrollView style={{ height: '100%' }}>
+            <View margin-20>
+              {renderTickets()}
+            </View>
+          </ScrollView>
+        </View>
+        <View
+          backgroundColor="transparent"
+          marginB-24
+          style={{ borderTopColor: '#D3D3D3', borderTopWidth: 1, height: 160 }}>
+          <View
+            margin-16
+            marginR-20
+            style={{ alignItems: 'flex-end' }}>
+            <Text style={{ fontSize: 18 }}>{getFormattedCurrency(checkout.amount)}</Text>
           </View>
-        </ScrollView>
-      </View>
-      <View
-        backgroundColor="transparent"
-        marginB-24
-        style={{ borderTopColor: '#D3D3D3', borderTopWidth: 1, height: 160 }}>
-        <View
-          margin-16
-          marginR-20
-          style={{ alignItems: 'flex-end' }}>
-          <Text style={{ fontSize: 18 }}>{getFormattedCurrency(order.totalPrice)}</Text>
-        </View>
-        <View
-          marginL-20
-          marginR-20>
-          <Button
-            backgroundColor={Colors.orange30}
-            borderRadius={30}
-            style={{ backgroundColor: '#000', height: 45, width: '100%' }}>
-            <Image source={require('../../assets/logo/apple-pay.png')} tintColor={Colors.white} width={48} height={48} />
-          </Button>
+          <View
+            marginL-20
+            marginR-20>
+            <Button
+              backgroundColor={Colors.orange30}
+              borderRadius={30}
+              style={{ backgroundColor: '#000', height: 45, width: '100%' }}>
+              <Image source={require('../../assets/logo/apple-pay.png')} tintColor={Colors.white} width={48} height={48} />
+            </Button>
 
-          <Button
-            marginT-16
-            borderRadius={30}
-            style={{ backgroundColor: '#2196F3', height: 45, width: '100%' }}>
-            <Text style={{ fontSize: 16, color: '#fff' }} marginL-10>Pay another way</Text>
-          </Button>
+            <View >
+              {isApplePaySupported && (
+                <PlatformPayButton
+                  onPress={createPaymentMethod}
+                  type={PlatformPay.ButtonType.SetUp}
+                  appearance={PlatformPay.ButtonStyle.WhiteOutline}
+                  style={{
+                    width: '65%',
+                    height: 50,
+                  }}
+                />
+              )}
+            </View>
+
+            <Button
+              onPress={() => openStripePayment()}
+              marginT-16
+              borderRadius={30}
+              style={{ backgroundColor: '#2196F3', height: 45, width: '100%' }}>
+              <Text style={{ fontSize: 16, color: '#fff' }} marginL-10>Pay another way</Text>
+            </Button>
+          </View>
         </View>
       </View>
-    </View>
+    </StripeProvider>
+
   );
 }

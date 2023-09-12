@@ -4,7 +4,7 @@ export default async function handler(request, response) {
   try {
     const events = await prisma.events.findMany({
       include: {
-        tickets: true,
+        ticketTypes: true,
       },
     });
     return response.status(200).json(events);

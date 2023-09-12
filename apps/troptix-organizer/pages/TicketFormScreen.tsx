@@ -21,7 +21,7 @@ import { Keyboard, KeyboardAvoidingView, Pressable, ScrollView, TouchableOpacity
 import { SafeAreaView } from 'react-native-safe-area-context';
 import tickets from '../data/tickets';
 import { formatPrice } from '../shared/TroptixHelper';
-import { Ticket, TicketFeeStructure } from 'troptix-models';
+import { TicketType, TicketFeeStructure } from 'troptix-models';
 import { format } from 'date-fns'
 
 export default function TicketFormScreen({ route, navigation }) {
@@ -29,7 +29,7 @@ export default function TicketFormScreen({ route, navigation }) {
   const [date, setDate] = useState(new Date(1598051730000));
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
-  const [ticket, setTicket] = useState<Ticket>(ticketObject);
+  const [ticket, setTicket] = useState<TicketType>(ticketObject);
   const [ticketPrice, setTicketPrice] = useState(formatPrice(ticket.price ? ticket.price : 0));
   const title = ticketObject.name ? ticketObject.name : "Add Ticket";
   const ticketNameRef = useRef()

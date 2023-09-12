@@ -24,12 +24,12 @@ export default function SignInWithEmailScreen({ navigation }) {
   function signIn() {
     signInWithEmailAndPassword(auth, user.email, password)
       .then((result) => {
-        console.log("User signed in")
+        console.log("[signInWithEmailAndPassword] User signed in")
       }).catch((error) => {
         // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorCode, " ", errorMessage)
+        console.log("[signInWithEmailAndPassword] " + errorCode, " ", errorMessage)
       })
   }
 

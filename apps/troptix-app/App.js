@@ -18,6 +18,8 @@ import { User, setUserFromResponse } from 'troptix-models';
 import SplashScreen from './pages/navigation/SplashScreen';
 import SignInWithEmailScreen from './pages/auth/SignInWithEmailScreen';
 import SignUpWithEmailScreen from './pages/auth/SignUpWithEmailScreen';
+import TicketsScreen from './pages/orders/TicketsScreen';
+import TicketDetailsScreen from './pages/orders/TicketDetailsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -36,6 +38,25 @@ function EventStack() {
     </Stack.Navigator>
   );
 }
+
+function TicketsStack({ route }) {
+  const { user } = route.params;
+
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name='TicketsScreen'
+        component={TicketsScreen}
+        initialParams={{ user: user }}
+        options={{
+          title: 'Tickets',
+          headerShadowVisible: false,
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
 
 function SettingsStack({ route }) {
   const { user } = route.params;
@@ -63,6 +84,7 @@ function MainAppScreen({ route }) {
       <Tab.Screen
         name="EventsStack"
         component={EventStack}
+        initialParams={{ user: user.user }}
         options={{
           headerShown: false,
           tabBarLabel: "",
@@ -71,7 +93,26 @@ function MainAppScreen({ route }) {
               <View>
                 <Image
                   source={require("./assets/icons/event.png")}
-                  style={{ width: 24, height: 24, marginTop: 16 }}
+                  style={{ width: 26, height: 26, marginTop: 16 }}
+                  tintColor={focused ? Colors.blue30 : Colors.black}
+                />
+              </View>
+            );
+          },
+        }} />
+      <Tab.Screen
+        name="TicketsStack"
+        component={TicketsStack}
+        initialParams={{ user: user }}
+        options={{
+          headerShown: false,
+          tabBarLabel: "",
+          tabBarIcon: ({ focused }) => {
+            return (
+              <View>
+                <Image
+                  source={require("./assets/icons/ticket.png")}
+                  style={{ width: 26, height: 26, marginTop: 16 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>
@@ -90,7 +131,7 @@ function MainAppScreen({ route }) {
               <View>
                 <Image
                   source={require("./assets/icons/settings.png")}
-                  style={{ width: 24, height: 24, marginTop: 16 }}
+                  style={{ width: 26, height: 26, marginTop: 16 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>
@@ -111,8 +152,8 @@ export default function App() {
       const response = await getUser(id);
       let user = setUserFromResponse(response.response);
 
-      console.log("New User: " + user.name);
       setUser(prevUser => ({ ...prevUser, user }));
+      setIsLoadingUser(false);
     }
 
     const unsubscribeFromAuthStateChange = auth.onAuthStateChanged(user => {
@@ -120,8 +161,8 @@ export default function App() {
         fetchUser(user.uid);
       } else {
         setUser(undefined);
+        setIsLoadingUser(false);
       }
-      setIsLoadingUser(false);
     });
 
     return unsubscribeFromAuthStateChange;
@@ -197,6 +238,25 @@ export default function App() {
                       headerBackTitleVisible: false,
                       headerLeft: null,
                       gestureEnabled: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name='TicketsScreen'
+                    component={TicketsScreen}
+                    options={{
+                      title: 'Tickets',
+                      headerBackTitle: 'Back',
+                      headerBackTitleVisible: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name='TicketDetailsScreen'
+                    component={TicketDetailsScreen}
+                    options={{
+                      title: '',
+                      headerBackTitle: 'Back',
+                      headerBackTitleVisible: true,
+                      headerTransparent: true
                     }}
                   />
                 </Stack.Group>
