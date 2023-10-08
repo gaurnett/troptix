@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, TouchableOpacity } from 'react-native';
 import { Button, Colors, Icon, Image, Picker, Text, View } from 'react-native-ui-lib';
 import tickets from '../../data/tickets';
@@ -7,9 +7,11 @@ import { Checkout, Order } from 'troptix-models';
 import { createCharge, createOrder } from 'troptix-api';
 import { PlatformPay, PlatformPayButton, StripeProvider, createPlatformPayPaymentMethod, initPaymentSheet, isPlatformPaySupported, presentPaymentSheet, useStripe } from "@stripe/stripe-react-native";
 import { auth } from 'troptix-firebase';
+import { TropTixContext } from '../../App';
 
 export default function TicketCheckoutScreen({ route, navigation }) {
   const [total, setTotal] = useState(0);
+  const [user, setUser] = useContext(TropTixContext);
   const { event } = route.params;
   const [checkout, setCheckout] = useState<Checkout>(new Checkout(event));
   const [ticketList, setTicketList] = useState(event.ticketTypes);
@@ -21,14 +23,6 @@ export default function TicketCheckoutScreen({ route, navigation }) {
       setIsApplePaySupported(await isPlatformPaySupported());
     })();
   }, [isPlatformPaySupported]);
-
-  const options = [
-    { label: 'JavaScript', value: 'js' },
-    { label: 'Java', value: 'java' },
-    { label: 'Python', value: 'python' },
-    { label: 'C++', value: 'c++', disabled: true },
-    { label: 'Perl', value: 'perl' }
-  ];
 
   useEffect(
     () =>
@@ -48,7 +42,7 @@ export default function TicketCheckoutScreen({ route, navigation }) {
   );
 
   const fetchPaymentSheetParams = async () => {
-    const response = await createCharge(checkout.amount * 100, "XUC9owfawtYC39EhRIQKjzqMskj1");
+    const response = await createCharge(checkout.total * 100, user.id);
     const { paymentId, paymentIntent, ephemeralKey, customer } = await response.response;
 
     return {
@@ -87,7 +81,7 @@ export default function TicketCheckoutScreen({ route, navigation }) {
 
   async function openStripePayment() {
     const paymentId = await initializePaymentSheet();
-    const order = new Order(checkout, paymentId, "7ee984f6-5c48-4924-a5f2-9c024a7fc056", "XUC9owfawtYC39EhRIQKjzqMskj1");
+    const order = new Order(checkout, paymentId, event.id, user.id);
     try {
       await createOrder(order);
     } catch (error) {
@@ -106,34 +100,6 @@ export default function TicketCheckoutScreen({ route, navigation }) {
   }
 
   const createPaymentMethod = async () => {
-    const { error, paymentMethod } = await createPlatformPayPaymentMethod({
-      applePay: {
-        cartItems: [
-          {
-            label: 'Example item name',
-            amount: '14.00',
-            paymentType: PlatformPay.PaymentType.Immediate,
-          },
-          {
-            label: 'Total',
-            amount: '12.75',
-            paymentType: PlatformPay.PaymentType.Immediate,
-          },
-        ],
-        merchantCountryCode: 'US',
-        currencyCode: 'USD',
-      },
-    });
-
-    if (error) {
-      Alert.alert(error.code, error.message);
-      return;
-    } else if (paymentMethod) {
-      Alert.alert(
-        'Success',
-        `The payment method was created successfully. paymentMethodId: ${paymentMethod.id}`
-      );
-    }
   };
 
   function getFormattedCurrency(price) {
@@ -146,10 +112,14 @@ export default function TicketCheckoutScreen({ route, navigation }) {
   }
 
   function reduceCost(ticket, index) {
-    var currentTotal = checkout.amount;
+    var currentTotal = checkout.total;
+    var subtotal = checkout.subtotal;
+    var fees = checkout.fees;
     const updatedTickets = checkout.tickets.map((item, i) => {
       if (index === i && item.quantitySelected > 0) {
-        currentTotal -= ticket.price + (ticket.price * .1);
+        subtotal -= ticket.price;
+        fees -= ticket.price * .1
+        currentTotal = subtotal + fees;
         return { ...item, quantitySelected: item.quantitySelected - 1 };
       } else {
         return item;
@@ -159,15 +129,21 @@ export default function TicketCheckoutScreen({ route, navigation }) {
     setCheckout(previousOrder => ({
       ...previousOrder,
       ["tickets"]: updatedTickets,
-      ["amount"]: currentTotal
+      ["total"]: currentTotal,
+      ["fees"]: fees,
+      ["subtotal"]: subtotal
     }))
   }
 
   function increaseCost(ticket, index) {
-    var currentTotal = checkout.amount;
+    var currentTotal = checkout.total;
+    var subtotal = checkout.subtotal;
+    var fees = checkout.fees;
     const updatedTickets = checkout.tickets.map((item, i) => {
       if (index === i && item.quantitySelected < item.maxPurchasePerUser) {
-        currentTotal += ticket.price + (ticket.price * .1);
+        subtotal += ticket.price;
+        fees += ticket.price * .1
+        currentTotal = subtotal + fees;
         return { ...item, quantitySelected: item.quantitySelected + 1 };
       } else {
         return item;
@@ -177,7 +153,9 @@ export default function TicketCheckoutScreen({ route, navigation }) {
     setCheckout(previousOrder => ({
       ...previousOrder,
       ["tickets"]: updatedTickets,
-      ["amount"]: currentTotal
+      ["total"]: currentTotal,
+      ["fees"]: fees,
+      ["subtotal"]: subtotal
     }))
   }
 
@@ -252,7 +230,7 @@ export default function TicketCheckoutScreen({ route, navigation }) {
             margin-16
             marginR-20
             style={{ alignItems: 'flex-end' }}>
-            <Text style={{ fontSize: 18 }}>{getFormattedCurrency(checkout.amount)}</Text>
+            <Text style={{ fontSize: 18 }}>{getFormattedCurrency(checkout.total)}</Text>
           </View>
           <View
             marginL-20
@@ -264,7 +242,7 @@ export default function TicketCheckoutScreen({ route, navigation }) {
               <Image source={require('../../assets/logo/apple-pay.png')} tintColor={Colors.white} width={48} height={48} />
             </Button>
 
-            <View >
+            {/* <View >
               {isApplePaySupported && (
                 <PlatformPayButton
                   onPress={createPaymentMethod}
@@ -276,7 +254,7 @@ export default function TicketCheckoutScreen({ route, navigation }) {
                   }}
                 />
               )}
-            </View>
+            </View> */}
 
             <Button
               onPress={() => openStripePayment()}

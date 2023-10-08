@@ -1,10 +1,10 @@
-const stripe = require('stripe')('sk_test_51Noxs0FEd6UvxBWGLBQoJXXpp3tfA45oZcw1oLU4gB2lKN5d4QzssgGS5HL0eYervWi9J2To89PDOTxyZJq8T3f400IcrMYcEg');
+const stripe = require('stripe')(process.env.STRIPE_TEST_SECRET_KEY);
 import prisma from "../prisma/prisma";
 
 export default async function handler(request, response) {
   const { body } = request;
 
-  if (body === undefined || body.amount === undefined || body.userId === undefined) {
+  if (body === undefined || body.total === undefined || body.userId === undefined) {
     return response.status(500).json({ error: 'No body found in POST request' });
   }
 
@@ -38,7 +38,7 @@ export default async function handler(request, response) {
     );
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: body.amount,
+      amount: body.total,
       currency: 'usd',
       customer: customerId,
       // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.

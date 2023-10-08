@@ -1,7 +1,7 @@
 import { Order } from "../troptix-models";
 import { TropTixResponse, prodUrl } from "./api";
 
-export async function createCharge(amount, userId): Promise<TropTixResponse> {
+export async function createCharge(total, userId): Promise<TropTixResponse> {
   const tropTixResponse: TropTixResponse = new TropTixResponse();
 
   try {
@@ -12,7 +12,7 @@ export async function createCharge(amount, userId): Promise<TropTixResponse> {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        amount: amount,
+        total: total,
         userId: userId,
       })
     });
@@ -57,6 +57,20 @@ export async function getOrders(id: String): Promise<TropTixResponse> {
 
   try {
     const response = await fetch(prodUrl + '/api/get-orders?id=' + id);
+    const json = await response.json();
+    tropTixResponse.response = json;
+  } catch (error) {
+    tropTixResponse.error = error;
+  }
+
+  return tropTixResponse;
+}
+
+export async function getOrdersForEvent(id: String): Promise<TropTixResponse> {
+  const tropTixResponse: TropTixResponse = new TropTixResponse();
+
+  try {
+    const response = await fetch(prodUrl + '/api/get-orders-for-event?id=' + id);
     const json = await response.json();
     tropTixResponse.response = json;
   } catch (error) {

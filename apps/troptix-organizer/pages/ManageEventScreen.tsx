@@ -6,14 +6,16 @@ import {
   View,
   Text,
   TabControllerItemProps,
-  TabControllerImperativeMethods
+  TabControllerImperativeMethods,
+  FloatingButton,
+  FloatingButtonLayouts
 } from 'react-native-ui-lib';
 import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
 import { Keyboard, ScrollView, TouchableWithoutFeedback, StyleSheet } from 'react-native';
 import EventForm from '../components/EventForm';
 import EventDashboardScreen from './EventDashboardScreen';
 
-const TABS = ['Dashboard', 'Edit Event'];
+const TABS = ['Dashboard', 'Manage Users'];
 
 function ManageEventScreen({ route, navigation }) {
   const { event } = route.params;
@@ -21,9 +23,15 @@ function ManageEventScreen({ route, navigation }) {
   const [items, setItems] = useState(generateTabItems())
   const tabController = createRef<TabControllerImperativeMethods>();
 
+  function openAddEvents() {
+    navigation.navigate('AddEventScreen', {
+      eventObject: event
+    })
+  }
+
   useEffect(() => {
     navigation.setOptions({
-      title: event.title,
+      title: event.name,
     });
   }, [event.title, navigation]);
 
@@ -45,7 +53,7 @@ function ManageEventScreen({ route, navigation }) {
     return (
       <Container {...containerProps}>
         <TabController.TabPage index={0}>
-          <EventDashboardScreen />
+          <EventDashboardScreen eventObject={event} />
         </TabController.TabPage>
         <TabController.TabPage index={1}>
           <EventForm eventObject={event} editEvent={true} navigation={navigation} />
@@ -63,7 +71,6 @@ function ManageEventScreen({ route, navigation }) {
       >
         <TabController.TabBar
           key={key}
-          // indicatorStyle={{backgroundColor: 'green', height: 3}}
           spreadItems={true}
           labelStyle={styles.labelStyle}
           selectedLabelStyle={styles.selectedLabelStyle}
@@ -72,6 +79,17 @@ function ManageEventScreen({ route, navigation }) {
         />
         {renderTabPages()}
       </TabController>
+      <View marginB-16>
+        <FloatingButton
+          visible={true}
+          button={{
+            label: 'Edit Event',
+            onPress: openAddEvents
+          }}
+          buttonLayout={FloatingButtonLayouts.HORIZONTAL}
+          bottomMargin={16}
+        />
+      </View>
     </View>
   );
 }

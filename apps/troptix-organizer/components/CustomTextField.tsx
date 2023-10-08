@@ -9,7 +9,7 @@ import {
   Colors,
 } from "react-native-ui-lib";
 
-export default function CustomTextField({ name, label, placeholder, value, reference, handleChange, secureTextEntry = false }) {
+export default function CustomTextField({ name, label, placeholder, value, reference, handleChange, secureTextEntry = false, isTextArea = false, textAreaSize = 60 }) {
 
   function setTextFieldFocused(ref) {
     ref.current.focus();
@@ -24,7 +24,7 @@ export default function CustomTextField({ name, label, placeholder, value, refer
         paddingT-6
         paddingL-8
         style={{
-          height: 60,
+          height: isTextArea ? textAreaSize : 60,
           width: "100%",
           borderWidth: 0.5,
           borderColor: "#D3D3D3",
@@ -33,6 +33,8 @@ export default function CustomTextField({ name, label, placeholder, value, refer
         <TextField
           label={label}
           placeholder={placeholder}
+          multiline={isTextArea}
+          scrollEnabled={isTextArea}
           value={value}
           ref={reference}
           labelColor={Colors.black}

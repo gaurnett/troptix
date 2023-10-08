@@ -31,6 +31,26 @@
     {
       "src": "/api/get-orders/:id",
       "dest": "./api/get-orders.js"
+    },
+    {
+      "src": "/api/scan-ticket",
+      "dest": "./api/scan-ticket.js"
+    },
+    {
+      "src": "/api/stripe-charge-succeeded-webhook",
+      "dest": "./api/stripe-charge-succeeded-webhook.js"
+    },
+    {
+      "src": "/api/get-events-for-organizer/:id",
+      "dest": ".api/get-events-for-organizer.js"
+    },
+    {
+      "src": "/api/get-orders-for-event/:id",
+      "dest": ".api/get-orders-for-event.js"
+    },
+    {
+      "src": "/api/send-order-email",
+      "dest": ".api/send-order-email.js"
     }
   ]
 }

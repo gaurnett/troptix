@@ -31,6 +31,14 @@
         "projectId": "d33292e5-88f6-47dd-bd77-259e7306bbf3"
       }
     },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ],
     "owner": "gaurnett"
   }
 }

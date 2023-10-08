@@ -1,7 +1,8 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 
 export function getPrismaTicketTypeQuery(ticket) {
-  return {
+  let ticketInput: Prisma.TicketTypesUpdateInput;
+  ticketInput = {
     id: ticket.id,
     name: ticket.name,
     description: ticket.description,
@@ -13,23 +14,39 @@ export function getPrismaTicketTypeQuery(ticket) {
     saleEndTime: ticket.saleEndTime,
     price: ticket.price,
     ticketingFees: ticket.ticketingFees,
-    eventId: ticket.eventId,
-  };
+    event: {
+      connect: {
+        id: ticket.eventId
+      }
+    }
+  }
+
+  return ticketInput
 }
 
 export function getPrismaUpdateEventQuery(event) {
-  return {
-    address: event.address,
-    description: event.description,
-    endDate: event.endDate,
-    endTime: event.endTime,
-    id: event.id,
+  let eventInput: Prisma.EventsUpdateInput;
+  eventInput = {
+    // id: event.id,
     imageUrl: event.imageUrl,
     name: event.name,
+    description: event.description,
+    summary: event.summary,
     organizer: event.organizer,
+    organizerUserId: event.organizerUserId,
+    endDate: event.endDate,
+    endTime: event.endTime,
     startDate: event.startDate,
     startTime: event.startTime,
-  };
+    venue: event.venue,
+    address: event.address,
+    countryCode: event.country_code,
+    latitude: event.latitude,
+    longitude: event.longitude,
+    country: event.country,
+  }
+
+  return eventInput;
 }
 
 export function getPrismaCreateEventQuery(event) {
@@ -55,12 +72,18 @@ export function getPrismaCreateEventQuery(event) {
     imageUrl: event.imageUrl,
     name: event.name,
     description: event.description,
+    summary: event.summary,
     organizer: event.organizer,
+    organizerUserId: event.organizerUserId,
     endDate: event.endDate,
     endTime: event.endTime,
     startDate: event.startDate,
     startTime: event.startTime,
+    venue: event.venue,
     address: event.address,
+    countryCode: event.country_code,
+    latitude: event.latitude,
+    longitude: event.longitude,
     country: event.country,
     ticketTypes: {
       createMany: {
@@ -87,7 +110,9 @@ export function getPrismaCreateOrderQuery(order) {
 
   orderInput = {
     id: order.id,
-    amount: order.amount,
+    total: order.total,
+    fees: order.fees,
+    subtotal: order.subtotal,
     user: {
       connect: {
         id: order.userId
@@ -106,15 +131,4 @@ export function getPrismaCreateOrderQuery(order) {
   }
 
   return orderInput;
-  // return {
-  //   id: order.id,
-  //   amount: order.amount,
-  //   userId: order.userId,
-  //   eventId: order.eventId,
-  //   tickets: {
-  //     createMany: {
-  //       data: order.tickets,
-  //     },
-  //   },
-  // };
 }

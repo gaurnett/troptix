@@ -19,10 +19,11 @@ import {
 } from 'react-native-ui-lib';
 import { Keyboard, KeyboardAvoidingView, Pressable, ScrollView, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import tickets from '../data/tickets';
-import { formatPrice } from '../shared/TroptixHelper';
+import { formatPrice } from '../../shared/TroptixHelper';
 import { TicketType, TicketFeeStructure } from 'troptix-models';
 import { format } from 'date-fns'
+import CustomTextField from '../../components/CustomTextField';
+import CustomDateTimeField from '../../components/CustomDateTimeField';
 
 export default function TicketFormScreen({ route, navigation }) {
   const { ticketObject, isEditTicket, addTicket, editTicket, ticketIndex } = route.params;
@@ -246,10 +247,26 @@ export default function TicketFormScreen({ route, navigation }) {
                 Ticket Details
               </Text>
               <View>
-                {fetchTextField("name", "default", "Ticket Name", "Very Cool Ticket", ticket.name, ticketNameRef)}
+                <CustomTextField
+                  name="name"
+                  label="Ticket Name"
+                  placeholder="General Admission"
+                  value={ticket.name}
+                  reference={ticketNameRef}
+                  handleChange={handleChange}
+                />
               </View>
               <View>
-                {fetchTextArea("description", "Ticket Description", "Very Cool Ticket Description", ticket.description, ticketDescriptionRef)}
+                <CustomTextField
+                  name="description"
+                  label="Ticket Description"
+                  placeholder="Describe what patrons get with this ticket"
+                  value={ticket.description}
+                  reference={ticketDescriptionRef}
+                  handleChange={handleChange}
+                  isTextArea={true}
+                  textAreaSize={150}
+                />
               </View>
             </View>
 
@@ -259,18 +276,66 @@ export default function TicketFormScreen({ route, navigation }) {
               </Text>
               <View row>
                 <View marginR-8 flex>
-                  {fetchDateTimeField("saleStartDate", "Sale Start Date", ticket.saleStartDate, getDatePlaceholder(ticket.saleStartDate, false), ticketStartDateRef, 'date')}
+                  <CustomDateTimeField
+                    name="saleStartDate"
+                    label="Sales start"
+                    placeholder={
+                      getDatePlaceholder(
+                        ticket.saleStartDate,
+                        false
+                      )}
+                    value={ticket.saleStartDate}
+                    reference={ticketStartDateRef}
+                    dateMode={"date"}
+                    handleChange={handleChange}
+                  />
                 </View>
                 <View marginL-8 flex>
-                  {fetchDateTimeField("saleStartTime", "Sale Start Time", ticket.saleStartTime, getDatePlaceholder(ticket.saleStartTime, true), ticketStartTimeRef, 'time')}
+                  <CustomDateTimeField
+                    name="saleStartTime"
+                    label="Start time"
+                    placeholder={
+                      getDatePlaceholder(
+                        ticket.saleStartTime,
+                        false
+                      )}
+                    value={ticket.saleStartTime}
+                    reference={ticketStartTimeRef}
+                    dateMode={"time"}
+                    handleChange={handleChange}
+                  />
                 </View>
               </View>
               <View row>
                 <View marginR-8 flex>
-                  {fetchDateTimeField("saleEndDate", "Sale End Date", ticket.saleEndDate, getDatePlaceholder(ticket.saleEndDate, false), ticketEndDateRef, 'date')}
+                  <CustomDateTimeField
+                    name="saleEndDate"
+                    label="Sales end"
+                    placeholder={
+                      getDatePlaceholder(
+                        ticket.saleStartDate,
+                        false
+                      )}
+                    value={ticket.saleEndDate}
+                    reference={ticketEndDateRef}
+                    dateMode={"date"}
+                    handleChange={handleChange}
+                  />
                 </View>
                 <View marginL-8 flex>
-                  {fetchDateTimeField("saleEndTime", "Sale End Time", ticket.saleEndTime, getDatePlaceholder(ticket.saleEndTime, true), ticketEndTimeRef, 'time')}
+                  <CustomDateTimeField
+                    name="saleEndTime"
+                    label="End time"
+                    placeholder={
+                      getDatePlaceholder(
+                        ticket.saleEndTime,
+                        false
+                      )}
+                    value={ticket.saleEndTime}
+                    reference={ticketEndTimeRef}
+                    dateMode={"time"}
+                    handleChange={handleChange}
+                  />
                 </View>
               </View>
             </View>
@@ -281,7 +346,7 @@ export default function TicketFormScreen({ route, navigation }) {
               </Text>
               <View row>
                 <View marginR-8 flex>
-                  {fetchTextField("price", "numeric", "Ticket Price ($)", "Very Cool Location", String(ticket.price ? ticket.price : 0), ticketPriceRef)}
+                  {fetchTextField("price", "numeric", "Ticket Price ($)", "$130.00", ticket.price ? String(ticket.price) : undefined, ticketPriceRef)}
                 </View>
                 <View marginL-8 flex>
                   {fetchPicker("Fee Structure", "Very Cool Location", "ticket.price", ticketFeeRef)}
@@ -289,10 +354,10 @@ export default function TicketFormScreen({ route, navigation }) {
               </View>
               <View row>
                 <View marginR-8 flex>
-                  {fetchTextField("quantity", "numeric", "Ticket Quantity", "Very Cool Location", String(ticket.quantity ? ticket.quantity : 0), ticketQuantityRef)}
+                  {fetchTextField("quantity", "numeric", "Ticket Quantity", "100", ticket.quantity ? String(ticket.quantity) : undefined, ticketQuantityRef)}
                 </View>
                 <View marginL-8 flex>
-                  {fetchTextField("maxPurchasePerUser", "numeric", "Max Purchase Per User", "Very Cool Location", String(ticket.maxPurchasePerUser ? ticket.maxPurchasePerUser : 0), ticketMaxPurchaseRef)}
+                  {fetchTextField("maxPurchasePerUser", "numeric", "Max Purchase Per User", "10", ticket.maxPurchasePerUser ? String(ticket.maxPurchasePerUser) : undefined, ticketMaxPurchaseRef)}
                 </View>
               </View>
             </View>

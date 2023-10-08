@@ -2,15 +2,17 @@ import { TicketType } from "./ticketType";
 import uuid from 'react-native-uuid';
 
 export class Event {
-  id: String;
+  id: string;
   createdAt: Date;
   updatedAt: Date;
+  isDraft: boolean;
 
   // Event Details
-  imageUrl: String;
-  name: String;
-  description: String;
-  organizer: String;
+  imageUrl: string;
+  name: string;
+  description: string;
+  organizer: string;
+  organizerUserId: string;
 
   // Date and Time Details
   startDate: Date;
@@ -19,17 +21,19 @@ export class Event {
   endTime: Date;
 
   // Location Details
-  address: String;
-  country: String;
+  venue: string
+  address: string
+  country: string
+  countryCode: string
+  latitude: number
+  longitude: number
 
   // Ticket Details
   ticketTypes: TicketType[];
 
-  constructor() {
+  constructor(organizerUserId: string = "") {
     this.id = String(uuid.v4());
-    this.organizer = "Sunnation";
-    this.country = "Jamaica";
-    this.imageUrl = "https://assets.fete.land/vibes/styles/full/s3/event/image/202303/fetelist-sunrise-breakfast-party-jamaica-carnival-2023.jpg";
+    this.organizerUserId = organizerUserId;
 
     // Start date construction
     this.startDate = new Date();

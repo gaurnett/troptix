@@ -1,9 +1,10 @@
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { Text, View, Card, Colors, CardProps, Button, LoaderScreen } from 'react-native-ui-lib';
 import { Event, getEventsFromRequest } from 'troptix-models';
 import { TropTixResponse, getEvents } from 'troptix-api';
+import { Image } from 'expo-image';
 
 const cardImage = require('../../assets/favicon.png');
 
@@ -11,6 +12,7 @@ export default function EventsScreen({ navigation }) {
 
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [events, setEvents] = useState<Event[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchEvents = async () => {
     try {
@@ -27,6 +29,13 @@ export default function EventsScreen({ navigation }) {
 
   useEffect(() => {
     fetchEvents();
+  }, []);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
   }, []);
 
   function formatDate(date: Date) {
@@ -51,18 +60,16 @@ export default function EventsScreen({ navigation }) {
           style={{ marginBottom: 15 }}
           onPress={() => onEventClick(event)}
         >
-          <Card.Section
-            contentStyle={{
-              flex: 1,
-            }}
-            imageSource={{
-              uri: event.imageUrl
-            }}
-            imageStyle={{
-              width: '100%',
+
+          <Image
+            contentFit='cover'
+            style={{
               height: 200,
+              width: '100%'
             }}
-          />
+            source={{
+              uri: event.imageUrl
+            }} />
 
           <View padding-20>
             <Text text50 $textDefault>
@@ -95,7 +102,10 @@ export default function EventsScreen({ navigation }) {
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <LoaderScreen message={'Fetching events'} color={Colors.grey40} />
           </View> :
-          <ScrollView>
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
             <View flex padding-20>
               {renderEvents()}
             </View>

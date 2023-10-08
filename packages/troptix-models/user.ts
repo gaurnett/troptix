@@ -4,13 +4,13 @@ enum Role {
 }
 
 export class User {
-  id: String;
+  id: string;
   createdAt: Date;
   updatedAt: Date;
 
-  // Event Details
-  name: String;
-  email: String;
+  name: string;
+  email: string;
+  stripeId: string;
   role: Role;
 
   constructor() {
@@ -24,6 +24,8 @@ export function setUserFromResponse(response): User {
   user.id = response.id;
   user.email = response.email;
   user.name = response.name;
+  user.stripeId = response.stripeId;
+
   // user.role = response.role;
 
   return user;

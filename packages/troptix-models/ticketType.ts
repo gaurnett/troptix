@@ -11,16 +11,16 @@ export enum TicketFeeStructure {
 }
 
 export class TicketType {
-  id: String;
-  eventId: String;
+  id: string;
+  eventId: string;
   createdAt: Date;
   updatedAt: Date;
 
   // Ticket Details
-  name: String;
-  description: String;
-  maxPurchasePerUser: Number;
-  quantity: Number;
+  name: string;
+  description: string;
+  maxPurchasePerUser: number;
+  quantity: number;
 
   // Sale Date Details
   saleStartDate: Date;
@@ -29,7 +29,7 @@ export class TicketType {
   saleEndTime: Date;
 
   // Price Details
-  price: Number;
+  price: number;
   ticketingFees: TicketFeeStructure;
 
   constructor(event: Event) {

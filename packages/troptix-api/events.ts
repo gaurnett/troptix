@@ -14,6 +14,20 @@ export async function getEvents(): Promise<TropTixResponse> {
   return tropTixResponse;
 }
 
+export async function getEventsForOrganizer(organizerUserId): Promise<TropTixResponse> {
+  const tropTixResponse: TropTixResponse = new TropTixResponse();
+
+  try {
+    const response = await fetch(prodUrl + '/api/get-events-for-organizer?id=' + organizerUserId);
+    const json = await response.json();
+    tropTixResponse.response = json;
+  } catch (error) {
+    tropTixResponse.error = error;
+  }
+
+  return tropTixResponse;
+}
+
 export async function saveEvent(event, editEvent): Promise<TropTixResponse> {
   const tropTixResponse: TropTixResponse = new TropTixResponse();
   var url = prodUrl;

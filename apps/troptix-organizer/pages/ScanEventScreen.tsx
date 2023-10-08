@@ -1,9 +1,10 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import { Text, View, Button } from 'react-native-ui-lib';
 import { Camera } from 'expo-camera';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
 import { StyleSheet, Dimensions } from 'react-native';
 import BarcodeMask from 'react-native-barcode-mask';
+import { scanTicket } from 'troptix-api';
 
 const finderWidth: number = 250;
 const finderHeight: number = 250;
@@ -27,7 +28,7 @@ export default function ScanEventScreen({ route, navigation }) {
   const [scanned, setScanned] = useState(false);
 
   useEffect(() => {
-    (async() => {
+    (async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
     })();
@@ -35,20 +36,30 @@ export default function ScanEventScreen({ route, navigation }) {
 
   useEffect(() => {
     navigation.setOptions({
-      title: event.title,
+      title: event.name,
     });
   }, [event.title, navigation]);
 
-  const handleBarCodeScanned = (scanningResult: BarCodeScannerResult) => {
-      if (!scanned) {
-          const {type, data, bounds} = scanningResult;
-          // @ts-ignore
-          const {x, y} = bounds.origin;
-          if (x >= viewMinX && y >= viewMinY && x <= (viewMinX + finderWidth / 2) && y <= (viewMinY + finderHeight / 2)) {
-              setScanned(true);
-              alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+  async function handleBarCodeScanned(scanningResult: BarCodeScannerResult) {
+    if (!scanned) {
+      const { type, data, bounds } = scanningResult;
+      // @ts-ignore
+      const { x, y } = bounds.origin;
+      if (x >= viewMinX && y >= viewMinY && x <= (viewMinX + finderWidth / 2) && y <= (viewMinY + finderHeight / 2)) {
+        setScanned(true);
+        console.log(data);
+        try {
+          const response = await scanTicket(data);
+          if (response.response.scan_succeeded) {
+            alert(`Ticket scanned successfully`);
+          } else {
+            alert(`Ticket already scanned`);
           }
+        } catch (error) {
+          console.log(error);
+        }
       }
+    }
   };
 
   // const handleBarCodeScanned = ({ type, data }) => {
@@ -70,15 +81,15 @@ export default function ScanEventScreen({ route, navigation }) {
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}
       >
-        <BarcodeMask 
+        <BarcodeMask
           width={finderWidth}
           height={finderHeight}
-          edgeColor="#62B1F6" 
-          showAnimatedLine/>
+          edgeColor="#62B1F6"
+          showAnimatedLine />
       </BarCodeScanner>
-      {scanned && 
+      {scanned &&
         <Button onPress={() => setScanned(false)}>
-          <Text style={{color: '#ffffff', fontSize: 16}} marginL-10>Tap to Scan Again</Text>
+          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>Tap to Scan Again</Text>
         </Button>
       }
     </View>

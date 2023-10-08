@@ -7,6 +7,8 @@ apps/server/.env
 
 # Ignoring Troptix App
 apps/troptix-app/node_modules
+apps/troptix-app/.expo
 
 # Ignoring Troptix Organizer
 apps/troptix-organizer/node_modules
+apps/troptix-organizer/.expo

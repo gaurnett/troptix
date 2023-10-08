@@ -2,7 +2,7 @@ import uuid from 'react-native-uuid';
 import { TicketFeeStructure } from './ticketType';
 import { TicketType } from "./ticketType";
 
-export function createTicket(checkoutTicket: CheckoutTicket, orderId: String, userId: String) {
+export function createTicket(checkoutTicket: CheckoutTicket, orderId: string, userId: string) {
   const ticket = {} as Ticket;
 
   ticket.id = String(uuid.v4());
@@ -15,26 +15,26 @@ export function createTicket(checkoutTicket: CheckoutTicket, orderId: String, us
 }
 
 export interface Ticket {
-  id: String;
-  ticketTypeId: String;
-  eventId: String;
-  userId: String;
-  orderId?: String;
-  name: String;
-  description: String;
-  price: Number;
-  fees: Number;
+  id: string;
+  ticketTypeId: string;
+  eventId: string;
+  userId: string;
+  orderId?: string;
+  name: string;
+  description: string;
+  price: number;
+  fees: number;
 }
 
 export class CheckoutTicket {
-  id: String;
-  ticketTypeId: String;
-  eventId: String;
-  name: String;
-  description: String;
-  quantitySelected: Number;
-  price: Number;
-  maxPurchasePerUser: Number;
+  id: string;
+  ticketTypeId: string;
+  eventId: string;
+  name: string;
+  description: string;
+  quantitySelected: number;
+  price: number;
+  maxPurchasePerUser: number;
   ticketFees: TicketFeeStructure;
 
   constructor(ticketType: TicketType) {

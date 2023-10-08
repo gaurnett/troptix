@@ -1,18 +1,20 @@
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
-import { Text, View, Card, Colors, CardProps, Button, LoaderScreen } from 'react-native-ui-lib';
+import { Text, View, Card, Colors, CardProps, Button, LoaderScreen, FloatingButton, FloatingButtonLayouts } from 'react-native-ui-lib';
 import { Event, getEventsFromRequest } from 'troptix-models';
-import { TropTixResponse, getEvents } from 'troptix-api';
+import { TropTixResponse, getEventsForOrganizer } from 'troptix-api';
+import { TropTixContext } from '../App';
 
 export default function ManageEventsScreen({ navigation }) {
-
+  const [user, setUser] = useContext(TropTixContext);
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [events, setEvents] = useState<Event[]>([]);
 
   const fetchEvents = async () => {
     try {
-      const response: TropTixResponse = await getEvents();
+      const response: TropTixResponse = await getEventsForOrganizer(user.id);
+
       if (response.response !== undefined && response.response.length !== 0) {
         setEvents(getEventsFromRequest(response.response));
       }
@@ -37,6 +39,12 @@ export default function ManageEventsScreen({ navigation }) {
     })
   }
 
+  function openAddEvents() {
+    navigation.navigate('AddEventScreen', {
+      eventObject: undefined
+    })
+  }
+
   function renderEvents() {
     return _.map(events, (event, i) => {
       return (
@@ -47,7 +55,7 @@ export default function ManageEventsScreen({ navigation }) {
         >
           <Card.Section
             contentStyle={{
-              flex: 1,
+              // flex: 1,
             }}
             imageSource={{
               uri: event.imageUrl
@@ -84,18 +92,33 @@ export default function ManageEventsScreen({ navigation }) {
   };
 
   return (
-    <View style={{ height: '100%', backgroundColor: 'white' }}>
+    <View style={{ flex: 1, height: '100%', backgroundColor: 'white' }}>
       {
         isFetchingEvents ?
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <LoaderScreen message={'Fetching events'} color={Colors.grey40} />
           </View>
           :
-          <ScrollView>
-            <View flex padding-20>
-              {renderEvents()}
+          <View>
+            <View style={{ height: "100%" }}>
+              <ScrollView>
+                <View padding-20>
+                  {renderEvents()}
+                </View>
+              </ScrollView>
             </View>
-          </ScrollView>
+            <View>
+              <FloatingButton
+                visible={true}
+                button={{
+                  label: 'Add Event',
+                  onPress: openAddEvents
+                }}
+                buttonLayout={FloatingButtonLayouts.HORIZONTAL}
+                bottomMargin={16}
+              />
+            </View>
+          </View>
       }
     </View>
   );

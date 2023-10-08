@@ -1,11 +1,45 @@
 import 'react-native-gesture-handler';
+import _ from 'lodash';
 import Animated from 'react-native-reanimated';
-import * as React from 'react';
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView } from 'react-native';
-import { Image, ListItem, Text, View } from 'react-native-ui-lib';
+import { Colors, Image, ListItem, LoaderScreen, Text, View } from 'react-native-ui-lib';
 import CircularProgress from 'react-native-circular-progress-indicator';
+import { TropTixResponse, getOrdersForEvent } from 'troptix-api';
+import { Event, OrderSummary } from "troptix-models";
+import { RefreshControl } from 'react-native-gesture-handler';
 
-export default function EventDashboardScreen() {
+export default function EventDashboardScreen({ eventObject }) {
+  const [event, setEvent] = useState<Event>(eventObject);
+  const [orderSummary, setOrderSummary] = useState<OrderSummary>();
+  const [isFetchingEvents, setIsFetchingEvents] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchOrderSummary = async () => {
+    try {
+      const response: TropTixResponse = await getOrdersForEvent(event.id);
+
+      if (response.response !== undefined && response.response.length !== 0) {
+        const summary = new OrderSummary(response.response)
+        setOrderSummary(summary);
+      }
+    } catch (error) {
+      console.log("EventDashboardScreen [fetchEvents] error: " + error)
+    }
+
+    setIsFetchingEvents(false);
+  };
+
+  useEffect(() => {
+    fetchOrderSummary();
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchOrderSummary();
+    setRefreshing(false);
+  }, []);
+
   function getFormattedCurrency(price) {
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -17,28 +51,29 @@ export default function EventDashboardScreen() {
 
   function TicketSoldItem(ticketName, sold, total) {
     return (
-      <View style={{backgroundColor: 'white', height: 80}}>
+      <View style={{ backgroundColor: 'white', height: 80 }}>
         <ListItem>
           <ListItem.Part left>
-            <CircularProgress 
-              value={sold/total * 100}
-              radius={30}
+            <CircularProgress
+              value={sold / total * 100}
+              radius={40}
               inActiveStrokeOpacity={0.5}
-              inActiveStrokeWidth={1}
-              activeStrokeWidth={2}
+              inActiveStrokeWidth={2}
+              activeStrokeWidth={4}
+              duration={0}
               progressFormatter={(value: number) => {
                 'worklet';
                 return value + "%"
               }}
-            />        
+            />
           </ListItem.Part>
           <ListItem.Part>
-            <ListItem.Part containerStyle={{marginBottom: 3}}>
+            <ListItem.Part containerStyle={{ marginBottom: 3 }}>
               <View>
-                <Text grey10 text70 style={{marginLeft: 16}}>
+                <Text grey10 text70 style={{ marginLeft: 16 }}>
                   {ticketName}
                 </Text>
-                <Text grey10 text70 style={{marginLeft: 16}}>
+                <Text grey10 text70 style={{ marginLeft: 16 }}>
                   {sold}/{total}
                 </Text>
               </View>
@@ -49,38 +84,46 @@ export default function EventDashboardScreen() {
     );
   }
 
+  function renderTicketSummary() {
+    return _.map(Array.from(orderSummary.ticketsSummary.keys()), (key, i) => {
+      const ticket = orderSummary.ticketsSummary.get(key);
+      return (
+        <View key={key} marginT-16>
+          {TicketSoldItem(ticket.name, ticket.quantitySold, ticket.quantity)}
+        </View>
+      )
+    })
+  }
+
   return (
-    <View paddingR-16 paddingL-16 style={{height: "100%"}} backgroundColor='white'>
-      <ScrollView>
-        <View>
-          <Text style={{fontSize: 20}} marginT-16 marginB-8 $textDefault>
-            Gross Sales
-          </Text> 
-          <Text style={{fontSize: 42, fontWeight: '600' }} $textDefault>
-            {getFormattedCurrency(12000)}
-          </Text>
-        </View>
-        <View>
-          <Text style={{fontSize: 20}} marginT-16 marginB-8 $textDefault>
-            Ticket Summary
-          </Text> 
-          {TicketSoldItem("Total Tickets", 500, 1000)}
-          {TicketSoldItem("Early Bird", 500, 500)}
-          {TicketSoldItem("General Admission", 100, 250)}
-          {TicketSoldItem("VIP", 150, 250)}
-        </View>
-        <View>
-          <Text style={{fontSize: 20}} marginT-16 marginB-8 $textDefault>
-            Ticket Summaryy
-          </Text> 
-          <Text text80 $textDefault>
-            Tickets Sold
-          </Text>
-          <Text text80 $textDefault>
-            500/1000
-          </Text>
-        </View>
-      </ScrollView>
+    <View paddingR-16 paddingL-16 style={{ height: "100%" }} backgroundColor='white'>
+      {
+        isFetchingEvents ?
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <LoaderScreen message={'Fetching Order Summary'} color={Colors.grey40} />
+          </View>
+          :
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
+            <View>
+              <Text style={{ fontSize: 20 }} marginT-16 marginB-8 $textDefault>
+                Gross Sales
+              </Text>
+              <Text style={{ fontSize: 42, fontWeight: '600' }} $textDefault>
+                {getFormattedCurrency(orderSummary.gross)}
+              </Text>
+            </View>
+            <View>
+              <Text style={{ fontSize: 20 }} marginT-16 marginB-8 $textDefault>
+                Ticket Summary
+              </Text>
+              {renderTicketSummary()}
+            </View>
+          </ScrollView>
+      }
+
     </View>
   );
 }

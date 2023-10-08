@@ -1,15 +1,17 @@
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { Text, View, Card, Colors, CardProps, Button, LoaderScreen } from 'react-native-ui-lib';
 import { Event, getEventsFromRequest } from 'troptix-models';
 import { TropTixResponse, getOrders } from 'troptix-api';
+import { TropTixContext } from '../../App';
+import { Image } from 'expo-image';
 
-export default function TicketsScreen({ route, navigation }) {
-  const { user } = route.params
-
+export default function TicketsScreen({ navigation }) {
+  const [user, setUser] = useContext(TropTixContext);
   const [isFetchingOrders, setIsFetchingOrders] = useState(true);
   const [orders, setOrders] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   function onOrderClick(order) {
     navigation.navigate('TicketDetailsScreen', {
@@ -19,8 +21,8 @@ export default function TicketsScreen({ route, navigation }) {
 
   const fetchOrders = async () => {
     try {
-      const response: TropTixResponse = await getOrders(user.user.id);
-      if (response.response !== undefined) {
+      const response: TropTixResponse = await getOrders(user.id);
+      if (response.response !== undefined && response.response.length !== 0) {
         setOrders(response.response);
       }
     } catch (error) {
@@ -32,6 +34,12 @@ export default function TicketsScreen({ route, navigation }) {
 
   useEffect(() => {
     fetchOrders();
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchOrders();
+    setRefreshing(false);
   }, []);
 
   function renderOrders() {
@@ -51,15 +59,13 @@ export default function TicketsScreen({ route, navigation }) {
           onPress={() => onOrderClick(order)}
         >
           <View style={{ height: '100%' }}>
-            <Card.Section
-              imageSource={{
+            <Image
+              contentFit='cover'
+              height={120}
+              width={120}
+              source={{
                 uri: order.event.imageUrl
-              }}
-              imageStyle={{
-                width: 115,
-                height: 120,
-              }}
-            />
+              }} />
           </View>
 
           <View marginL-12 marginT-8>
@@ -91,7 +97,10 @@ export default function TicketsScreen({ route, navigation }) {
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <LoaderScreen message={'Fetching tickets'} color={Colors.grey40} />
           </View> :
-          <ScrollView>
+          <ScrollView
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
             <View flex padding-20>
               {renderOrders()}
             </View>

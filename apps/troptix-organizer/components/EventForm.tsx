@@ -29,6 +29,8 @@ import { TicketType } from "troptix-models";
 import { format } from 'date-fns';
 import uuid from 'react-native-uuid';
 import { TropTixResponse, getEvents, saveEvent, } from 'troptix-api';
+import * as ImagePicker from 'expo-image-picker';
+import CustomTextField from "./CustomTextField";
 
 export default function EventForm({ eventObject, editEvent, navigation }) {
   const [date, setDate] = useState(new Date(1598051730000));
@@ -40,6 +42,23 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
   const eventLocationRef = useRef();
   const eventDateRef = useRef();
   const eventDatePickerRef = useRef();
+  const [image, setImage] = useState(null);
+
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    console.log(result);
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   function showDateTime(ref) {
     setShow(true);
@@ -61,7 +80,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
   }
 
   function handleChange(name, value) {
-    setEvent(previousEvent => ({ ...previousEvent, [name]: value }))
+    setEvent(previousEvent => ({ ...previousEvent, [name]: value }));
   }
 
   function getDateFormatter(): DateTimePickerProps['dateTimeFormatter'] {
@@ -373,16 +392,43 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
                 marginB-8
                 $textDefault
               >
+                Event Flyer
+              </Text>
+              <View>
+                <Button onPress={() => pickImage()}>
+                  <Text>Add Flyer</Text>
+                </Button>
+              </View>
+              <Image
+                marginT-8
+                marginB-8
+                style={{ alignSelf: 'center' }}
+                source={{
+                  uri: image
+                }}
+                width={300}
+                height={300}
+              />
+            </View>
+
+            <View>
+              <Text
+                style={{ fontSize: 24, fontWeight: "bold" }}
+                marginT-16
+                marginB-8
+                $textDefault
+              >
                 Event Details
               </Text>
               <View>
-                {fetchTextField(
-                  "name",
-                  "Event Name",
-                  "Very Cool Event",
-                  event.name,
-                  eventNameRef
-                )}
+                <CustomTextField
+                  name="name"
+                  label="Event Title"
+                  placeholder="TropTix Beach Party"
+                  value={event.name}
+                  reference={eventNameRef}
+                  handleChange={handleChange}
+                />
               </View>
               <View>
                 {fetchTextArea(

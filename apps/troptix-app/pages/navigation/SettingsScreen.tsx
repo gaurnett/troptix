@@ -1,8 +1,9 @@
-import * as React from 'react';
+import { useContext } from 'react';
 import { StyleSheet, Alert, FlatList, ScrollView } from 'react-native';
 import { View, Text, Colors, ListItem, Image, BorderRadiuses } from 'react-native-ui-lib';
 import orders, { OrderType } from '../../data/orders';
 import { auth } from 'troptix-firebase';
+import { TropTixContext } from '../../App';
 
 const cardImage = require('../../assets/favicon.png');
 const styles = StyleSheet.create({
@@ -27,8 +28,8 @@ enum SettingsType {
   PRIVACY
 }
 
-export default function SettingsScreen({ route, navigation }) {
-  const { user } = route.params;
+export default function SettingsScreen({ navigation }) {
+  const [user, setUser] = useContext(TropTixContext);
 
   function signOut() {
     auth.signOut();
@@ -41,6 +42,7 @@ export default function SettingsScreen({ route, navigation }) {
           user: user
         })
       case SettingsType.ORDERS:
+        setUser(prevUser => ({ ...prevUser, ["name"]: "Hello" }));
         break;
       case SettingsType.MANAGE_ACCOUNT:
         break;
@@ -86,8 +88,8 @@ export default function SettingsScreen({ route, navigation }) {
       <View>
         <ScrollView style={{ height: '100%' }}>
           <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
-            <Text style={{ fontSize: 28, fontWeight: "500" }} marginL-10>{user.user.name}</Text>
-            <Text style={{ fontSize: 20, fontWeight: "200" }} marginL-10>{user.user.email}</Text>
+            <Text style={{ fontSize: 28, fontWeight: "500" }} marginL-10>Hi {user !== undefined ? user.name : ""}</Text>
+            <Text style={{ fontSize: 20, fontWeight: "200" }} marginL-10>{user !== undefined ? user.email : ""}</Text>
           </View>
 
           <View marginL-16>
@@ -135,23 +137,6 @@ export default function SettingsScreen({ route, navigation }) {
           </View>
         </ScrollView>
       </View>
-
     </View>
-
-    // <FlatList
-    //     data={orders}
-    //     renderItem={({item, index}) => renderSelectableCards(item, index)}
-    //     keyExtractor={this.keyExtractor}
-    //   />
-    // <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white'}}>
-    //   {/* <ScrollView> */}
-    //     <View>
-    //       <Text h1 marginB-s4 $textDefault>Cards</Text>
-    //       <Text h3 $textDefault>Selectable Cards</Text>
-    //       {renderSelectableCards()}
-    //       {/* <Text>Home Hello!</Text> */}
-    //     </View>
-    //   {/* </ScrollView> */}
-    // </View>
   );
 }

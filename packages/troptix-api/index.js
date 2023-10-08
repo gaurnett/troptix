@@ -1,7 +1,8 @@
 import { TropTixResponse } from "./api";
-import { getEvents, saveEvent } from "./events";
+import { getEvents, getEventsForOrganizer, saveEvent } from "./events";
 import { addUser, getUser } from "./users";
-import { createCharge, createOrder, getOrders } from "./charge";
+import { scanTicket } from "./tickets";
+import { createCharge, createOrder, getOrders, getOrdersForEvent } from "./charge";
 
 export {
   TropTixResponse,
@@ -12,4 +13,7 @@ export {
   createCharge,
   createOrder,
   getOrders,
+  getOrdersForEvent,
+  scanTicket,
+  getEventsForOrganizer,
 };
