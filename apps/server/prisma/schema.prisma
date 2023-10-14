@@ -58,12 +58,14 @@ enum OrderStatus {
 }
 
 model Orders {
-  id       String      @id @default(uuid())
-  total    Float
-  subtotal Float
-  fees     Float
-  tickets  Tickets[]
-  status   OrderStatus @default(PENDING)
+  id        String      @id @default(uuid())
+  createdAt DateTime?   @default(now())
+  updatedAt DateTime?   @updatedAt
+  total     Float
+  subtotal  Float
+  fees      Float
+  tickets   Tickets[]
+  status    OrderStatus @default(PENDING)
 
   user    Users  @relation(fields: [userId], references: [id])
   userId  String
@@ -106,6 +108,9 @@ model Events {
   tickets     Tickets[]
   ticketTypes TicketTypes[]
   orders      Orders[]
+
+  // Delegated User
+  delegatedUsers DelegatedUsers[]
 }
 
 enum TicketFeeStructure {
@@ -141,6 +146,24 @@ model TicketTypes {
   event   Events    @relation(fields: [eventId], references: [id])
   eventId String
   tickets Tickets[]
+
+  @@index([eventId])
+}
+
+enum DelegatedAccess {
+  OWNER
+  TICKET_SCANNER
+}
+
+model DelegatedUsers {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  delegatedAccess DelegatedAccess
+  email           String
+  events          Events          @relation(fields: [eventId], references: [id])
+  eventId         String
 
   @@index([eventId])
 }

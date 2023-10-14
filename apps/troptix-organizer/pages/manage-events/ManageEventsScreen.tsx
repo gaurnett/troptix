@@ -3,8 +3,9 @@ import { useContext, useEffect, useState } from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 import { Text, View, Card, Colors, CardProps, Button, LoaderScreen, FloatingButton, FloatingButtonLayouts } from 'react-native-ui-lib';
 import { Event, getEventsFromRequest } from 'troptix-models';
-import { TropTixResponse, getEventsForOrganizer } from 'troptix-api';
-import { TropTixContext } from '../App';
+import { TropTixResponse, getEvents, GetEventsRequest, GetEventsType } from 'troptix-api';
+import { TropTixContext } from '../../App';
+import { Image } from 'expo-image';
 
 export default function ManageEventsScreen({ navigation }) {
   const [user, setUser] = useContext(TropTixContext);
@@ -13,7 +14,11 @@ export default function ManageEventsScreen({ navigation }) {
 
   const fetchEvents = async () => {
     try {
-      const response: TropTixResponse = await getEventsForOrganizer(user.id);
+      const getEventsRequest: GetEventsRequest = {
+        getEventsType: GetEventsType.GET_EVENTS_BY_ORGANIZER,
+        organizerId: user.id
+      }
+      const response: TropTixResponse = await getEvents(getEventsRequest);
 
       if (response.response !== undefined && response.response.length !== 0) {
         setEvents(getEventsFromRequest(response.response));
@@ -53,18 +58,15 @@ export default function ManageEventsScreen({ navigation }) {
           style={{ marginBottom: 15 }}
           onPress={() => onEventClick(event)}
         >
-          <Card.Section
-            contentStyle={{
-              // flex: 1,
-            }}
-            imageSource={{
-              uri: event.imageUrl
-            }}
-            imageStyle={{
-              width: '100%',
+          <Image
+            contentFit='cover'
+            style={{
               height: 200,
+              width: '100%'
             }}
-          />
+            source={{
+              uri: event.imageUrl
+            }} />
 
           <View padding-20>
             <Text text50 $textDefault>

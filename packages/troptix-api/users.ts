@@ -1,5 +1,29 @@
 import { TropTixResponse, prodUrl } from "./api";
 
+export enum GetUsersType {
+  GET_USERS_BY_ID,
+}
+
+export interface GetUsersRequest {
+  getUsersType: GetUsersType;
+  userId?: string;
+}
+
+export async function getUsers(request: GetUsersRequest): Promise<TropTixResponse> {
+  const tropTixResponse: TropTixResponse = new TropTixResponse();
+  const url = prodUrl + `/api/users?getUsersType=${request.getUsersType}&id=${request.userId}`;
+
+  try {
+    const response = await fetch(url, { method: 'GET' });
+    const json = await response.json();
+    tropTixResponse.response = json;
+  } catch (error) {
+    tropTixResponse.error = error;
+  }
+
+  return tropTixResponse;
+}
+
 export async function addUser(user): Promise<TropTixResponse> {
   const tropTixResponse: TropTixResponse = new TropTixResponse();
   const url = prodUrl + '/api/add-user';
@@ -16,20 +40,6 @@ export async function addUser(user): Promise<TropTixResponse> {
       })
     });
     const json = await response.text();
-    tropTixResponse.response = json;
-  } catch (error) {
-    tropTixResponse.error = error;
-  }
-
-  return tropTixResponse;
-}
-
-export async function getUser(id: String): Promise<TropTixResponse> {
-  const tropTixResponse: TropTixResponse = new TropTixResponse();
-
-  try {
-    const response = await fetch(prodUrl + '/api/get-user?id=' + id);
-    const json = await response.json();
     tropTixResponse.response = json;
   } catch (error) {
     tropTixResponse.error = error;

@@ -7,16 +7,17 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Colors, Image } from 'react-native-ui-lib';
 import SignInWithEmailScreen from '../auth/SignInWithEmailScreen';
 import SignUpWithEmailScreen from '../auth/SignUpWithEmailScreen';
-import ManageEventsScreen from '../ManageEventsScreen';
+import ManageEventsScreen from '../manage-events/ManageEventsScreen';
 import ScanEventsScreen from '../ScanEventsScreen';
 import SettingsScreen from '../SettingsScreen';
 import SplashScreen from '../SplashScreen';
 import AddEventScreen from '../event/AddEventScreen';
 import GooglePlacesScreen from '../event/GooglePlacesScreen';
 import ScanEventScreen from '../ScanEventScreen';
-import ManageEventScreen from '../ManageEventScreen';
+import ManageEventScreen from '../manage-events/ManageEventScreen';
 import TicketFormScreen from '../event/TicketFormScreen';
 import SignInScreen from '../SignInScreen';
+import AddDelegatorScreen from '../manage-events/AddDelegatorScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -222,6 +223,15 @@ export default function AppNavigator({ isLoadingUser, user }) {
                   component={ManageEventScreen}
                   options={{
                     title: '',
+                    headerBackTitle: 'Back',
+                    headerShadowVisible: false,
+                  }}
+                />
+                <Stack.Screen
+                  name='AddDelegatorScreen'
+                  component={AddDelegatorScreen}
+                  options={{
+                    title: 'Add Delegator',
                     headerBackTitle: 'Back',
                     headerShadowVisible: false,
                   }}

@@ -34,6 +34,12 @@
           "enableGooglePay": true
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "5bab0430-d24c-49e2-9952-9346c4f39483"
+      }
+    },
+    "owner": "gaurnett"
   }
 }

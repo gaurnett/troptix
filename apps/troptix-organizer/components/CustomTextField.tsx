@@ -12,6 +12,9 @@ import {
 export default function CustomTextField({ name, label, placeholder, value, reference, handleChange, secureTextEntry = false, isTextArea = false, textAreaSize = 60 }) {
 
   function setTextFieldFocused(ref) {
+    if (ref === undefined || ref.current === undefined)
+      return;
+
     ref.current.focus();
   }
 

@@ -1,56 +1,28 @@
 {
   "routes": [
     {
-      "src": "/api/add-event",
-      "dest": "./api/add-event.js"
+      "src": "/api/events",
+      "dest": "./api/events.js"
     },
     {
-      "src": "/api/update-event",
-      "dest": "./api/update-event.js"
+      "src": "/api/events/:getEventsType/:id",
+      "dest": "./api/events.js"
     },
     {
-      "src": "/api/get-events",
-      "dest": "./api/get-events.js"
+      "src": "/api/orders",
+      "dest": "./api/orders.js"
     },
     {
-      "src": "/api/add-user",
-      "dest": "./api/add-user.js"
+      "src": "/api/orders/:getOrdersType/:id",
+      "dest": "./api/orders.js"
     },
     {
-      "src": "/api/get-user/:id",
-      "dest": "./api/get-user.js"
+      "src": "/api/users",
+      "dest": "./api/users.js"
     },
     {
-      "src": "/api/create-charge",
-      "dest": "./api/create-charge.js"
-    },
-    {
-      "src": "/api/create-order",
-      "dest": "./api/create-order.js"
-    },
-    {
-      "src": "/api/get-orders/:id",
-      "dest": "./api/get-orders.js"
-    },
-    {
-      "src": "/api/scan-ticket",
-      "dest": "./api/scan-ticket.js"
-    },
-    {
-      "src": "/api/stripe-charge-succeeded-webhook",
-      "dest": "./api/stripe-charge-succeeded-webhook.js"
-    },
-    {
-      "src": "/api/get-events-for-organizer/:id",
-      "dest": ".api/get-events-for-organizer.js"
-    },
-    {
-      "src": "/api/get-orders-for-event/:id",
-      "dest": ".api/get-orders-for-event.js"
-    },
-    {
-      "src": "/api/send-order-email",
-      "dest": ".api/send-order-email.js"
+      "src": "/api/users/:getUsersType/:id",
+      "dest": "./api/users.js"
     }
   ]
 }

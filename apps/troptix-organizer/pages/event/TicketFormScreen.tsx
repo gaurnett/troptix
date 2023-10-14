@@ -57,11 +57,17 @@ export default function TicketFormScreen({ route, navigation }) {
   });
 
   function showDateTime(ref) {
+    if (ref === undefined || ref.current === undefined)
+      return;
+
     setShow(true);
     ref.current.focus();
   }
 
   function setTextFieldFocused(ref) {
+    if (ref === undefined || ref.current === undefined)
+      return;
+
     ref.current.focus();
   }
 
@@ -132,90 +138,6 @@ export default function TicketFormScreen({ route, navigation }) {
         </View>
       </Pressable>
     )
-  }
-
-  function fetchPriceField(name, textLabel, placeholder, textFieldValue, textFieldReference) {
-    return (
-      <Pressable onPress={() => setTextFieldFocused(textFieldReference)} style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
-        <View marginT-16 paddingT-6 paddingL-8 style={{ height: 60, width: '100%', borderWidth: 0.5, borderColor: '#D3D3D3' }}>
-          <TextField
-            label={textLabel}
-            placeholder={placeholder}
-            value={textFieldValue}
-            ref={textFieldReference}
-            labelColor={Colors.black}
-            keyboardType='numeric'
-            labelStyle={{
-              marginBottom: 4
-            }}
-            enableErrors
-            style={{ fontSize: 16 }}
-            onChangeText={(txt) => handlePriceChange(name, txt)}
-          />
-        </View>
-      </Pressable>
-    )
-  }
-
-  function fetchTextArea(name, textLabel, placeholder, textFieldValue, textFieldReference) {
-    return (
-      <Pressable onPress={() => setTextFieldFocused(textFieldReference)} style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
-        <View marginT-16 paddingT-6 paddingL-8 style={{ height: 150, width: '100%', borderWidth: 0.5, borderColor: '#D3D3D3' }}>
-          <TextField
-            label={textLabel}
-            placeholder={placeholder}
-            multiline={true}
-            scrollEnabled={true}
-            value={textFieldValue}
-            ref={textFieldReference}
-            labelColor={Colors.black}
-            labelStyle={{
-              marginBottom: 4
-            }}
-            enableErrors
-            style={{ fontSize: 16 }}
-            onChangeText={(txt) => handleChange(name, txt)}
-          />
-        </View>
-      </Pressable>
-    )
-  }
-
-  function fetchDateTimeField(name, textLabel, textFieldDate, textFieldPlaceholder, textFieldReference, mode) {
-    return (
-      <Pressable onPress={() => showDateTime(textFieldReference)} style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
-        <View marginT-16 paddingT-6 paddingL-8 style={{ height: 60, width: '100%', borderWidth: 0.5, borderColor: '#D3D3D3' }}>
-          <DateTimePicker
-            migrateTextField
-            label={textLabel}
-            placeholder={textFieldPlaceholder}
-            onChange={(date) => handleChange(name, date)}
-            ref={textFieldReference}
-            labelStyle={{
-              marginBottom: 4
-            }}
-            mode={mode}
-            dateTimeFormatter={getDateFormatter()}
-            value={textFieldDate == undefined ? textFieldDate : new Date(textFieldDate)}
-          />
-        </View>
-      </Pressable>
-    )
-  }
-
-  const onChange = (ticket, selectedDate) => {
-    const currentDate = selectedDate;
-    setShow(false);
-    setDate(currentDate);
-  };
-
-  function getFormattedCurrency(price) {
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    });
-
-    return formatter.format(price)
   }
 
   function getDatePlaceholder(date, time) {

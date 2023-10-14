@@ -3,9 +3,10 @@ import { useContext, useEffect, useState } from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 import { Text, View, Card, Colors, CardProps, Button } from 'react-native-ui-lib';
 import events from '../data/events';
-import { TropTixResponse, getEventsForOrganizer } from 'troptix-api';
+import { TropTixResponse, getEvents, GetEventsRequest, GetEventsType } from 'troptix-api';
 import { TropTixContext } from '../App';
 import { Event, getEventsFromRequest } from 'troptix-models';
+import { Image } from 'expo-image';
 
 export default function ScanEventsScreen({ navigation }) {
   const [user, setUser] = useContext(TropTixContext);
@@ -14,7 +15,11 @@ export default function ScanEventsScreen({ navigation }) {
 
   const fetchEvents = async () => {
     try {
-      const response: TropTixResponse = await getEventsForOrganizer(user.id);
+      const getEventsRequest: GetEventsRequest = {
+        getEventsType: GetEventsType.GET_EVENTS_BY_ORGANIZER,
+        organizerId: user.id
+      }
+      const response: TropTixResponse = await getEvents(getEventsRequest);
 
       if (response.response !== undefined && response.response.length !== 0) {
         setEvents(getEventsFromRequest(response.response));
@@ -49,15 +54,15 @@ export default function ScanEventsScreen({ navigation }) {
           onPress={() => onEventClick(event)}
         >
           <View style={{ height: '100%' }}>
-            <Card.Section
-              imageSource={{
-                uri: event.imageUrl
-              }}
-              imageStyle={{
-                width: 115,
+            <Image
+              contentFit='cover'
+              style={{
                 height: 120,
+                width: 120
               }}
-            />
+              source={{
+                uri: event.imageUrl
+              }} />
           </View>
 
           <View style={{ justifyContent: 'center', alignItems: 'center' }} marginL-12>

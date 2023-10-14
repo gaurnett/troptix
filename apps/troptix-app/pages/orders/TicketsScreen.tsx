@@ -3,7 +3,7 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { Text, View, Card, Colors, CardProps, Button, LoaderScreen } from 'react-native-ui-lib';
 import { Event, getEventsFromRequest } from 'troptix-models';
-import { TropTixResponse, getOrders } from 'troptix-api';
+import { TropTixResponse, getOrders, GetOrdersType, GetOrdersRequest } from 'troptix-api';
 import { TropTixContext } from '../../App';
 import { Image } from 'expo-image';
 
@@ -21,12 +21,17 @@ export default function TicketsScreen({ navigation }) {
 
   const fetchOrders = async () => {
     try {
-      const response: TropTixResponse = await getOrders(user.id);
+      const getOrdersRequest: GetOrdersRequest = {
+        getOrdersType: GetOrdersType.GET_ORDERS_FOR_USER,
+        userId: user.id
+      }
+      const response: TropTixResponse = await getOrders(getOrdersRequest);
+
       if (response.response !== undefined && response.response.length !== 0) {
         setOrders(response.response);
       }
     } catch (error) {
-      console.log("Fetching Orders Error: " + error)
+      console.log("TicketsScreen [fetchOrders] error: " + error)
     }
 
     setIsFetchingOrders(false);

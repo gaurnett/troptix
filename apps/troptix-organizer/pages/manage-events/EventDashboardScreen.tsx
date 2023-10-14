@@ -3,28 +3,38 @@ import _ from 'lodash';
 import Animated from 'react-native-reanimated';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ScrollView } from 'react-native';
-import { Colors, Image, ListItem, LoaderScreen, Text, View } from 'react-native-ui-lib';
+import { Colors, FloatingButton, FloatingButtonLayouts, Image, ListItem, LoaderScreen, Text, View } from 'react-native-ui-lib';
 import CircularProgress from 'react-native-circular-progress-indicator';
-import { TropTixResponse, getOrdersForEvent } from 'troptix-api';
+import { TropTixResponse, getOrders, GetOrdersType, GetOrdersRequest } from 'troptix-api';
 import { Event, OrderSummary } from "troptix-models";
 import { RefreshControl } from 'react-native-gesture-handler';
 
-export default function EventDashboardScreen({ eventObject }) {
+export default function EventDashboardScreen({ eventObject, navigation }) {
   const [event, setEvent] = useState<Event>(eventObject);
-  const [orderSummary, setOrderSummary] = useState<OrderSummary>();
+  const [orderSummary, setOrderSummary] = useState<OrderSummary>(new OrderSummary([]));
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  function openAddEvents() {
+    navigation.navigate('AddEventScreen', {
+      eventObject: event
+    })
+  }
+
   const fetchOrderSummary = async () => {
     try {
-      const response: TropTixResponse = await getOrdersForEvent(event.id);
+      const getOrdersRequest: GetOrdersRequest = {
+        getOrdersType: GetOrdersType.GET_ORDERS_FOR_EVENT,
+        eventId: event.id
+      }
+      const response: TropTixResponse = await getOrders(getOrdersRequest);
 
       if (response.response !== undefined && response.response.length !== 0) {
         const summary = new OrderSummary(response.response)
         setOrderSummary(summary);
       }
     } catch (error) {
-      console.log("EventDashboardScreen [fetchEvents] error: " + error)
+      console.log("EventDashboardScreen [fetchOrderSummary] error: " + error)
     }
 
     setIsFetchingEvents(false);
@@ -103,25 +113,41 @@ export default function EventDashboardScreen({ eventObject }) {
             <LoaderScreen message={'Fetching Order Summary'} color={Colors.grey40} />
           </View>
           :
-          <ScrollView
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }>
-            <View>
-              <Text style={{ fontSize: 20 }} marginT-16 marginB-8 $textDefault>
-                Gross Sales
-              </Text>
-              <Text style={{ fontSize: 42, fontWeight: '600' }} $textDefault>
-                {getFormattedCurrency(orderSummary.gross)}
-              </Text>
+          <View style={{ flex: 1, backgroundColor: 'white' }}>
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
+              <ScrollView
+                refreshControl={
+                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }>
+                <View>
+                  <Text style={{ fontSize: 20 }} marginT-16 marginB-8 $textDefault>
+                    Gross Sales
+                  </Text>
+                  <Text style={{ fontSize: 42, fontWeight: '600' }} $textDefault>
+                    {getFormattedCurrency(orderSummary.gross)}
+                  </Text>
+                </View>
+                <View>
+                  <Text style={{ fontSize: 20 }} marginT-16 marginB-8 $textDefault>
+                    Ticket Summary
+                  </Text>
+                  {renderTicketSummary()}
+                </View>
+              </ScrollView>
             </View>
-            <View>
-              <Text style={{ fontSize: 20 }} marginT-16 marginB-8 $textDefault>
-                Ticket Summary
-              </Text>
-              {renderTicketSummary()}
+
+            <View marginB-16>
+              <FloatingButton
+                visible={true}
+                button={{
+                  label: 'Edit Event',
+                  onPress: openAddEvents
+                }}
+                buttonLayout={FloatingButtonLayouts.HORIZONTAL}
+                bottomMargin={16}
+              />
             </View>
-          </ScrollView>
+          </View>
       }
 
     </View>

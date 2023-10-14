@@ -3,7 +3,7 @@ import 'react-native-gesture-handler';
 import { createContext, useEffect, useState } from "react";
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { auth } from 'troptix-firebase';
-import { getUser, TropTixResponse } from 'troptix-api';
+import { getUsers, GetUsersType } from 'troptix-api';
 import { User, setUserFromResponse } from 'troptix-models';
 import AppNavigator from './pages/navigation/AppNavigator';
 
@@ -15,11 +15,21 @@ export default function App() {
 
   useEffect(() => {
     async function fetchUser(id) {
-      const response = await getUser(id);
-      let currentUser = setUserFromResponse(response.response);
+      try {
+        const getUsersRequest = {
+          getUsersType: GetUsersType.GET_USERS_BY_ID,
+          userId: id
+        };
 
-      setUser(prevUser => ({ ...prevUser, currentUser }));
-      setIsLoadingUser(false);
+        const response = await getUsers(getUsersRequest);
+        let currentUser = setUserFromResponse(response.response);
+
+        setUser(prevUser => ({ ...prevUser, currentUser }));
+        setIsLoadingUser(false);
+      } catch (error) {
+        console.log("TropTix App: " + error);
+      }
+
     }
 
     const unsubscribeFromAuthStateChange = auth.onAuthStateChanged(user => {

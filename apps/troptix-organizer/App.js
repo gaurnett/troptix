@@ -4,7 +4,7 @@ import { useState, useEffect, createContext } from 'react';
 import { auth } from 'troptix-firebase';
 import AppNavigator from './pages/navigation/AppNavigator';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { getUser } from 'troptix-api';
+import { getUsers, GetUsersType } from 'troptix-api';
 import { User, setUserFromResponse } from 'troptix-models';
 
 export const TropTixContext = createContext();
@@ -16,13 +16,18 @@ export default function App() {
   useEffect(() => {
     async function fetchUser(id) {
       try {
-        const response = await getUser(id);
+        const getUsersRequest = {
+          getUsersType: GetUsersType.GET_USERS_BY_ID,
+          userId: id
+        };
+
+        const response = await getUsers(getUsersRequest);
         let currentUser = setUserFromResponse(response.response);
 
         setUser(prevUser => ({ ...prevUser, currentUser }));
         setIsLoadingUser(false);
       } catch (error) {
-        console.log(error);
+        console.log("TropTix Organizer: " + error);
       }
     }
 

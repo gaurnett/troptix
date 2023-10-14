@@ -88,3 +88,10 @@ export class Checkout {
     });
   }
 }
+
+export class Charge {
+  total: number = 0;
+  userId: string = "";
+
+  constructor() { }
+}

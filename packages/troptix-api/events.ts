@@ -1,24 +1,34 @@
 import { TropTixResponse, prodUrl } from "./api";
 
-export async function getEvents(): Promise<TropTixResponse> {
-  const tropTixResponse: TropTixResponse = new TropTixResponse();
-
-  try {
-    const response = await fetch(prodUrl + '/api/get-events');
-    const json = await response.json();
-    tropTixResponse.response = json;
-  } catch (error) {
-    tropTixResponse.error = error;
-  }
-
-  return tropTixResponse;
+export enum GetEventsType {
+  GET_EVENTS_ALL,
+  GET_EVENTS_BY_ID,
+  GET_EVENTS_BY_ORGANIZER
 }
 
-export async function getEventsForOrganizer(organizerUserId): Promise<TropTixResponse> {
+export interface GetEventsRequest {
+  getEventsType: GetEventsType;
+  eventId?: string;
+  organizerId?: string;
+}
+
+export async function getEvents(request: GetEventsRequest): Promise<TropTixResponse> {
+  let url = prodUrl + `/api/events?getEventsType=${request.getEventsType}`;
+  switch (request.getEventsType) {
+    case GetEventsType.GET_EVENTS_BY_ID:
+      url += `&id=${request.eventId}`
+      break;
+    case GetEventsType.GET_EVENTS_BY_ORGANIZER:
+      url += `&id=${request.organizerId}`
+      break;
+  }
+
   const tropTixResponse: TropTixResponse = new TropTixResponse();
 
   try {
-    const response = await fetch(prodUrl + '/api/get-events-for-organizer?id=' + organizerUserId);
+    const response = await fetch(url, {
+      method: 'GET'
+    });
     const json = await response.json();
     tropTixResponse.response = json;
   } catch (error) {

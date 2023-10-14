@@ -17,6 +17,9 @@ export default function CustomDateTimeField({ name, label, placeholder, value, r
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   function showDateTime(ref) {
+    if (ref === undefined || ref.current === undefined)
+      return;
+
     setShowDatePicker(true);
     ref.current.focus();
   }
@@ -27,6 +30,9 @@ export default function CustomDateTimeField({ name, label, placeholder, value, r
   };
 
   function setTextFieldFocused(ref) {
+    if (ref === undefined || ref.current === undefined)
+      return;
+
     ref.current.focus();
   }
 

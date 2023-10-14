@@ -21,14 +21,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "d33292e5-88f6-47dd-bd77-259e7306bbf3"
+        "projectId": "5831737d-5d6e-4d8a-84fb-a3e926c92b23"
       }
     },
     "plugins": [

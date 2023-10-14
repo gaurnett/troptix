@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Text, View, Image, ListItem, Colors, BorderRadiuses, Button } from 'react-native-ui-lib';
+import { Text, View, ListItem, Colors, BorderRadiuses, Button } from 'react-native-ui-lib';
 import { Alert, FlatList, ScrollView, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 
 const styles = StyleSheet.create({
   detailsIcon: {

@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { Text, View, Card, Colors, CardProps, Button, LoaderScreen } from 'react-native-ui-lib';
 import { Event, getEventsFromRequest } from 'troptix-models';
-import { TropTixResponse, getEvents } from 'troptix-api';
+import { TropTixResponse, getEvents, GetEventsType, GetEventsRequest } from 'troptix-api';
 import { Image } from 'expo-image';
 
 const cardImage = require('../../assets/favicon.png');
@@ -15,13 +15,18 @@ export default function EventsScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchEvents = async () => {
+    const getEventsRequest: GetEventsRequest = {
+      getEventsType: GetEventsType.GET_EVENTS_ALL
+    }
+
     try {
-      const response: TropTixResponse = await getEvents();
+      const response: TropTixResponse = await getEvents(getEventsRequest);
       if (response.response !== undefined) {
         setEvents(getEventsFromRequest(response.response));
       }
+      console.log("[EventsScreen fetchEvents] response: " + response.response);
     } catch (error) {
-      console.log("[EventsScreen fetchEvents] error: " + error)
+      console.log("[EventsScreen fetchEvents] error: " + error);
     }
 
     setIsFetchingEvents(false);
@@ -60,7 +65,6 @@ export default function EventsScreen({ navigation }) {
           style={{ marginBottom: 15 }}
           onPress={() => onEventClick(event)}
         >
-
           <Image
             contentFit='cover'
             style={{

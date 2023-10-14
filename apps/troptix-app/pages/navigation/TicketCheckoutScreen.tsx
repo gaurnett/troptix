@@ -3,8 +3,8 @@ import { useContext, useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, TouchableOpacity } from 'react-native';
 import { Button, Colors, Icon, Image, Picker, Text, View } from 'react-native-ui-lib';
 import tickets from '../../data/tickets';
-import { Checkout, Order } from 'troptix-models';
-import { createCharge, createOrder } from 'troptix-api';
+import { Checkout, Order, Charge } from 'troptix-models';
+import { postOrders, PostOrdersType, PostOrdersRequest } from 'troptix-api';
 import { PlatformPay, PlatformPayButton, StripeProvider, createPlatformPayPaymentMethod, initPaymentSheet, isPlatformPaySupported, presentPaymentSheet, useStripe } from "@stripe/stripe-react-native";
 import { auth } from 'troptix-firebase';
 import { TropTixContext } from '../../App';
@@ -42,7 +42,16 @@ export default function TicketCheckoutScreen({ route, navigation }) {
   );
 
   const fetchPaymentSheetParams = async () => {
-    const response = await createCharge(checkout.total * 100, user.id);
+    const charge = new Charge();
+    charge.total = checkout.total * 100;
+    charge.userId = user.id;
+
+    const postOrdersRequest: PostOrdersRequest = {
+      type: PostOrdersType.POST_ORDERS_CREATE_CHARGE,
+      charge: charge
+    }
+
+    const response = await postOrders(postOrdersRequest);
     const { paymentId, paymentIntent, ephemeralKey, customer } = await response.response;
 
     return {
@@ -61,6 +70,8 @@ export default function TicketCheckoutScreen({ route, navigation }) {
       customer,
     } = await fetchPaymentSheetParams();
 
+    console.log("fetchPaymentSheetParams: " + paymentId + " " + paymentIntent + " " + ephemeralKey + " " + customer);
+
     const { error } = await initPaymentSheet({
       merchantDisplayName: "TropTix",
       customerId: customer,
@@ -73,6 +84,7 @@ export default function TicketCheckoutScreen({ route, navigation }) {
     });
 
     if (error) {
+      console.log("Error: " + error.localizedMessage);
       // setLoading(true);
     }
 
@@ -81,9 +93,19 @@ export default function TicketCheckoutScreen({ route, navigation }) {
 
   async function openStripePayment() {
     const paymentId = await initializePaymentSheet();
+
+    if (paymentId === undefined) {
+      Alert.alert("Cannot create payment order, please try again later");
+      return;
+    }
+
     const order = new Order(checkout, paymentId, event.id, user.id);
     try {
-      await createOrder(order);
+      const postOrdersRequest: PostOrdersRequest = {
+        type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
+        order: order
+      }
+      await postOrders(postOrdersRequest);
     } catch (error) {
       console.log("[openStripePayment] create order error: " + error);
       return;

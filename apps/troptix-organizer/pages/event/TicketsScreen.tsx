@@ -58,11 +58,17 @@ export default function TicketsScreen({ event, setEvent, navigation }) {
   };
 
   function showDateTime(ref) {
+    if (ref === undefined || ref.current === undefined)
+      return;
+
     setShow(true);
     ref.current.focus();
   }
 
   function setTextFieldFocused(ref) {
+    if (ref === undefined || ref.current === undefined)
+      return;
+
     ref.current.focus();
   }
 
