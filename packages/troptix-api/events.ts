@@ -1,9 +1,10 @@
 import { TropTixResponse, prodUrl } from "./api";
 
 export enum GetEventsType {
-  GET_EVENTS_ALL,
-  GET_EVENTS_BY_ID,
-  GET_EVENTS_BY_ORGANIZER
+  GET_EVENTS_ALL = 'GET_EVENTS_ALL',
+  GET_EVENTS_BY_ID = 'GET_EVENTS_BY_ID',
+  GET_EVENTS_BY_ORGANIZER = 'GET_EVENTS_BY_ORGANIZER',
+  GET_EVENTS_SCANNABLE_BY_ORGANIZER = 'GET_EVENTS_SCANNABLE_BY_ORGANIZER'
 }
 
 export interface GetEventsRequest {
@@ -19,6 +20,9 @@ export async function getEvents(request: GetEventsRequest): Promise<TropTixRespo
       url += `&id=${request.eventId}`
       break;
     case GetEventsType.GET_EVENTS_BY_ORGANIZER:
+      url += `&id=${request.organizerId}`
+      break;
+    case GetEventsType.GET_EVENTS_SCANNABLE_BY_ORGANIZER:
       url += `&id=${request.organizerId}`
       break;
   }
@@ -40,17 +44,12 @@ export async function getEvents(request: GetEventsRequest): Promise<TropTixRespo
 
 export async function saveEvent(event, editEvent): Promise<TropTixResponse> {
   const tropTixResponse: TropTixResponse = new TropTixResponse();
-  var url = prodUrl;
-
-  if (editEvent) {
-    url += '/api/update-event';
-  } else {
-    url += '/api/add-event';
-  }
+  let url = prodUrl + `/api/events`;
+  let method = editEvent ? "PUT" : "POST";
 
   try {
     const response = await fetch(url, {
-      method: 'POST',
+      method: method,
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',

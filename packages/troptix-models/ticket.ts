@@ -26,6 +26,18 @@ export interface Ticket {
   fees: number;
 }
 
+export interface TicketSummary {
+  id: string;
+  status: any;
+  orderId: string;
+  ticketType: any;
+}
+
+export interface TicketsSummary {
+  event: any;
+  tickets: TicketSummary[];
+}
+
 export class CheckoutTicket {
   id: string;
   ticketTypeId: string;

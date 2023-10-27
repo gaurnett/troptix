@@ -75,6 +75,10 @@ export class Checkout {
   total: number = 0;
   subtotal: number = 0;
   fees: number = 0;
+  discountedSubtotal: number = 0;
+  discountedTotal: number = 0;
+  discountedFees: number = 0;
+  promotionApplied: boolean = false;
   tickets: CheckoutTicket[];
 
   constructor(event: Event) {

@@ -24,6 +24,7 @@ import { TicketType, TicketFeeStructure } from 'troptix-models';
 import { format } from 'date-fns'
 import CustomTextField from '../../components/CustomTextField';
 import CustomDateTimeField from '../../components/CustomDateTimeField';
+import { TropTixResponse, saveTicketType } from 'troptix-api';
 
 export default function TicketFormScreen({ route, navigation }) {
   const { ticketObject, isEditTicket, addTicket, editTicket, ticketIndex } = route.params;
@@ -148,7 +149,18 @@ export default function TicketFormScreen({ route, navigation }) {
     }
   }
 
-  function saveTicket() {
+  async function saveTicket() {
+    try {
+      const response = await saveTicketType(ticket, isEditTicket);
+
+      if (response.error !== null) {
+        console.log("TicketFormScreen [saveTicket] response error: " + JSON.stringify(response.error));
+        return;
+      }
+    } catch (error) {
+      console.log("TicketFormScreen [saveTicket] error: " + error);
+    }
+
     if (isEditTicket) {
       editTicket(ticketIndex, ticket);
     } else {
@@ -158,12 +170,12 @@ export default function TicketFormScreen({ route, navigation }) {
   }
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={{ height: "100%", backgroundColor: Colors.white }}>
+    <View style={{ height: "100%", backgroundColor: Colors.white }}>
       <View paddingR-16 paddingL-16 style={{ flex: 1, backgroundColor: 'white' }}>
         <TouchableWithoutFeedback
           onPress={Keyboard.dismiss}
           accessible={false}>
-          <ScrollView>
+          <ScrollView automaticallyAdjustKeyboardInsets>
             <View>
               <Text style={{ fontSize: 24, fontWeight: "bold" }} marginT-16 marginB-8 $textDefault>
                 Ticket Details
@@ -296,6 +308,6 @@ export default function TicketFormScreen({ route, navigation }) {
           label={isEditTicket ? "Save Ticket" : "Add Ticket"}
           labelStyle={{ fontSize: 18 }} />
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 }

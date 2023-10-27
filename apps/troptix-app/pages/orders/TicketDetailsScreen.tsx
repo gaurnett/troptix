@@ -5,9 +5,14 @@ import QRCode from 'react-native-qrcode-svg';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
+import { format } from 'date-fns'
 
 export default function TicketDetailsScreen({ route }) {
-  const { order } = route.params;
+  const { summary } = route.params;
+
+  function getDateFormatted(date, time) {
+    return format(date, 'MMM dd, yyyy') + ", " + format(time, 'hh:mm a');
+  }
 
   function renderTicket(ticket, index, total) {
     return (
@@ -41,7 +46,7 @@ export default function TicketDetailsScreen({ route }) {
               Event
             </Text>
             <Text style={[styles.itemBody]} $textDefault>
-              Sunrise Breakfast Party
+              {summary.event.name}
             </Text>
           </View>
 
@@ -50,34 +55,32 @@ export default function TicketDetailsScreen({ route }) {
               Ticket
             </Text>
             <Text style={[styles.itemBody]} $textDefault>
-              General Admission
+              {ticket.ticketType.name}
             </Text>
           </View>
 
-          <View marginT-16 row>
-            <View marginR-8 style={{ flex: 1 }}>
-              <Text style={[styles.itemTitle]} marginB-8 $textDefault>
-                Date
-              </Text>
-              <Text style={[styles.itemBody]} $textDefault>
-                Sat Sept 2, 8PM -
-              </Text>
-              <Text style={[styles.itemBody]} $textDefault>
-                Sun Sept 3, 4AM
-              </Text>
+          <View marginT-16 >
+            <Text style={[styles.itemTitle]} marginB-8 $textDefault>
+              Date
+            </Text>
+            <Text style={[styles.itemBody]} $textDefault>
+              Start: {getDateFormatted(new Date(summary.event.startDate), new Date(summary.event.startTime))}
+            </Text>
+            <Text style={[styles.itemBody]} $textDefault>
+              End: {getDateFormatted(new Date(summary.event.endDate), new Date(summary.event.endTime))}
+            </Text>
+          </View>
 
-            </View>
-            <View marginL-8 style={{ flex: 1 }}>
-              <Text style={[styles.itemTitle]} marginB-8 $textDefault>
-                Venue
-              </Text>
-              <Text style={[styles.itemBody]} $textDefault>
-                Melrose Ballroom
-              </Text>
-              <Text style={[styles.itemBody]} $textDefault>
-                3608 33rd Street Queens, NY 11106
-              </Text>
-            </View>
+          <View marginT-16>
+            <Text style={[styles.itemTitle]} marginB-8 $textDefault>
+              Venue
+            </Text>
+            <Text style={[styles.itemBody]} $textDefault>
+              {summary.event.venue}
+            </Text>
+            <Text style={[styles.itemBody]} $textDefault>
+              {summary.event.address}
+            </Text>
           </View>
 
           <View>
@@ -85,7 +88,7 @@ export default function TicketDetailsScreen({ route }) {
               Order Number
             </Text>
             <Text style={[styles.itemBody]} $textDefault>
-              #19300392843500324
+              {String(ticket.orderId).substring(3).toUpperCase()}
             </Text>
           </View>
 
@@ -94,7 +97,7 @@ export default function TicketDetailsScreen({ route }) {
               Event Summary
             </Text>
             <Text style={[styles.itemBody]} $textDefault>
-              Lorem Ipsum
+              {summary.event.summary}
             </Text>
           </View>
 
@@ -103,7 +106,7 @@ export default function TicketDetailsScreen({ route }) {
               Organizer
             </Text>
             <Text style={[styles.itemBody]} $textDefault>
-              Sunnation Jamaica
+              {summary.event.organizer}
             </Text>
           </View>
 
@@ -117,10 +120,10 @@ export default function TicketDetailsScreen({ route }) {
     <View style={styles.container}>
       <Image
         source={{
-          uri: order.event.imageUrl
+          uri: summary.event.imageUrl
         }}
         blurRadius={Platform.OS === 'ios' ? 8 : 3}
-        resizeMode="cover"
+        contentFit="cover"
         style={styles.image}>
 
         <SafeAreaView>
@@ -132,11 +135,11 @@ export default function TicketDetailsScreen({ route }) {
                   height={350}
                   width='100%'
                   source={{
-                    uri: order.event.imageUrl
+                    uri: summary.event.imageUrl
                   }} />
               </View>
 
-              <View style={[styles.ticketDetailsArea, { borderRadius: 15, marginTop: -48, marginBottom: 80, zIndex: 3 }]}>
+              <View style={[styles.ticketDetailsArea, { borderRadius: 15, marginTop: -48, zIndex: 3, height: '80%' }]}>
                 <ScrollView>
                   <Carousel
                     showCounter={true}
@@ -144,9 +147,9 @@ export default function TicketDetailsScreen({ route }) {
                       height: '100%'
                     }}
                     onChangePage={() => console.log('page changed')}>
-                    {_.map(order.tickets, (ticket, i) => {
+                    {_.map(summary.tickets, (ticket, i) => {
                       return (
-                        renderTicket(ticket, i, order.tickets.length)
+                        renderTicket(ticket, i, summary.tickets.length)
                       )
                     })}
                   </Carousel>

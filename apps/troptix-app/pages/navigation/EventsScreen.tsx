@@ -106,14 +106,24 @@ export default function EventsScreen({ navigation }) {
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <LoaderScreen message={'Fetching events'} color={Colors.grey40} />
           </View> :
-          <ScrollView
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }>
-            <View flex padding-20>
-              {renderEvents()}
-            </View>
-          </ScrollView>
+          <View>
+            {
+              events.length === 0 ?
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%" }}>
+                  <Image source={require('../../assets/icons/empty-events.png')} width={120} height={120} />
+                  <Text marginT-24 style={{ fontSize: 24 }}>No events nearby</Text>
+                </View>
+                :
+                <ScrollView
+                  refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  }>
+                  <View flex padding-20>
+                    {renderEvents()}
+                  </View>
+                </ScrollView>
+            }
+          </View>
       }
     </View>
   );

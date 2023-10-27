@@ -57,7 +57,7 @@ function ManageEventScreen({ route, navigation }) {
           <EventDashboardScreen eventObject={event} navigation={navigation} />
         </TabController.TabPage>
         <TabController.TabPage index={1}>
-          <PromotionsScreen eventObject={event} />
+          <PromotionsScreen eventObject={event} navigation={navigation} />
         </TabController.TabPage>
         <TabController.TabPage index={2}>
           <EventDelegationScreen eventObject={event} navigation={navigation} />

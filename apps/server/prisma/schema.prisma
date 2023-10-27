@@ -108,9 +108,29 @@ model Events {
   tickets     Tickets[]
   ticketTypes TicketTypes[]
   orders      Orders[]
+  promotions  Promotions[]
 
   // Delegated User
   delegatedUsers DelegatedUsers[]
+}
+
+enum PromotionType {
+  PERCENTAGE
+  DOLLAR_AMOUNT
+}
+
+model Promotions {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  code          String
+  promotionType PromotionType
+  value         Float
+  event         Events?       @relation(fields: [eventId], references: [id])
+  eventId       String?
+
+  @@index([eventId])
 }
 
 enum TicketFeeStructure {
@@ -162,7 +182,8 @@ model DelegatedUsers {
 
   delegatedAccess DelegatedAccess
   email           String
-  events          Events          @relation(fields: [eventId], references: [id])
+  userId          String
+  event           Events          @relation(fields: [eventId], references: [id])
   eventId         String
 
   @@index([eventId])

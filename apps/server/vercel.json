@@ -23,6 +23,38 @@
     {
       "src": "/api/users/:getUsersType/:id",
       "dest": "./api/users.js"
+    },
+    {
+      "src": "/api/ticketTypes",
+      "dest": "./api/ticketTypes.js"
+    },
+    {
+      "src": "/api/tickets",
+      "dest": "./api/tickets.js"
+    },
+    {
+      "src": "/api/tickets/:userId",
+      "dest": "./api/tickets.js"
+    },
+    {
+      "src": "/api/delegatedUsers",
+      "dest": "./api/delegatedUsers.js"
+    },
+    {
+      "src": "/api/delegatedUsers/:eventId",
+      "dest": "./api/delegatedUsers.js"
+    },
+    {
+      "src": "/api/promotions",
+      "dest": "./api/promotions.js"
+    },
+    {
+      "src": "/api/promotions/:getPromotionsType/:eventId/:code",
+      "dest": "./api/promotions.js"
+    },
+    {
+      "src": "/api/promotions/:eventId",
+      "dest": "./api/promotions.js"
     }
   ]
 }

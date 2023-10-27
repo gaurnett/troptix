@@ -1,22 +1,27 @@
 import _ from 'lodash';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { Alert, Pressable, ScrollView, TouchableOpacity } from 'react-native';
 import { Button, Colors, Icon, Image, Picker, Text, View } from 'react-native-ui-lib';
 import tickets from '../../data/tickets';
 import { Checkout, Order, Charge } from 'troptix-models';
-import { postOrders, PostOrdersType, PostOrdersRequest } from 'troptix-api';
+import { postOrders, PostOrdersType, PostOrdersRequest, GetPromotionsType, GetPromotionsRequest, getPromotions } from 'troptix-api';
 import { PlatformPay, PlatformPayButton, StripeProvider, createPlatformPayPaymentMethod, initPaymentSheet, isPlatformPaySupported, presentPaymentSheet, useStripe } from "@stripe/stripe-react-native";
 import { auth } from 'troptix-firebase';
 import { TropTixContext } from '../../App';
+import CustomTextField from '../../components/CustomTextField';
 
 export default function TicketCheckoutScreen({ route, navigation }) {
   const [total, setTotal] = useState(0);
+  const codeRef = useRef();
   const [user, setUser] = useContext(TropTixContext);
   const { event } = route.params;
   const [checkout, setCheckout] = useState<Checkout>(new Checkout(event));
   const [ticketList, setTicketList] = useState(event.ticketTypes);
   const stripe = useStripe();
   const [isApplePaySupported, setIsApplePaySupported] = useState(false);
+  const [promotionCode, setPromotionCode] = useState();
+  const [promotion, setPromotion] = useState(null);
+  const [promotionApplied, setPromotionApplied] = useState(false);
 
   useEffect(() => {
     (async function () {
@@ -41,9 +46,53 @@ export default function TicketCheckoutScreen({ route, navigation }) {
     [navigation]
   );
 
+  async function applyPromotion() {
+    if (promotionCode === undefined) {
+      Alert.alert("Promotion code is empty");
+      return;
+    }
+
+    if (promotionApplied && promotion.code === String(promotionCode)) {
+      Alert.alert("Promotion already applied");
+      return;
+    }
+
+    const getPromotionsRequest: GetPromotionsRequest = {
+      getPromotionsType: GetPromotionsType.GET_PROMOTIONS_BY_EVENT,
+      eventId: event.id,
+      code: String(promotionCode).toUpperCase()
+    }
+
+    try {
+      const response = await getPromotions(getPromotionsRequest);
+
+      if (response !== null && response !== undefined) {
+        setPromotion(response);
+        setPromotionApplied(true);
+
+        setCheckout(previousOrder => ({
+          ...previousOrder,
+          ["promotionApplied"]: true,
+          ["discountedSubtotal"]: getPromotionPriceFromResponse(checkout.subtotal, response),
+          ["discountedFees"]: getPromotionPriceFromResponse(checkout.fees, response),
+          ["discountedTotal"]: getPromotionPriceFromResponse(checkout.total, response)
+        }))
+      } else {
+        Alert.alert("There was a problem applying promotion code.");
+      }
+      console.log("[TicketCheckoutScreen applyPromotion] response: " + response);
+    } catch (error) {
+      console.log("[TicketCheckoutScreen applyPromotion] error: " + error);
+    }
+  }
+
+  function updateCode(name, value) {
+    setPromotionCode(value);
+  }
+
   const fetchPaymentSheetParams = async () => {
     const charge = new Charge();
-    charge.total = checkout.total * 100;
+    charge.total = checkout.promotionApplied ? checkout.discountedTotal * 100 : checkout.total * 100;
     charge.userId = user.id;
 
     const postOrdersRequest: PostOrdersRequest = {
@@ -52,7 +101,7 @@ export default function TicketCheckoutScreen({ route, navigation }) {
     }
 
     const response = await postOrders(postOrdersRequest);
-    const { paymentId, paymentIntent, ephemeralKey, customer } = await response.response;
+    const { paymentId, paymentIntent, ephemeralKey, customer } = await response;
 
     return {
       paymentId,
@@ -69,8 +118,6 @@ export default function TicketCheckoutScreen({ route, navigation }) {
       ephemeralKey,
       customer,
     } = await fetchPaymentSheetParams();
-
-    console.log("fetchPaymentSheetParams: " + paymentId + " " + paymentIntent + " " + ephemeralKey + " " + customer);
 
     const { error } = await initPaymentSheet({
       merchantDisplayName: "TropTix",
@@ -92,7 +139,13 @@ export default function TicketCheckoutScreen({ route, navigation }) {
   };
 
   async function openStripePayment() {
-    const paymentId = await initializePaymentSheet();
+    let paymentId = undefined;
+
+    try {
+      paymentId = await initializePaymentSheet();
+    } catch (error) {
+      console.log("[openStripePayment] initializePaymentSheet error: " + error);
+    }
 
     if (paymentId === undefined) {
       Alert.alert("Cannot create payment order, please try again later");
@@ -114,23 +167,62 @@ export default function TicketCheckoutScreen({ route, navigation }) {
     const { error, paymentOption } = await presentPaymentSheet();
 
     if (error) {
-      Alert.alert(`Error code: ${error.code}`, error.message);
+      Alert.alert(`Error`, error.message);
     } else {
       console.log(paymentOption);
       Alert.alert('Success', 'Your order is confirmed!');
     }
   }
 
-  const createPaymentMethod = async () => {
-  };
+  function getPromotionPriceFromResponse(price, response) {
+    switch (response.promotionType) {
+      case 'PERCENTAGE':
+        return price - (price * (response.value / 100));
+      case 'DOLLAR_AMOUNT':
+        return price - response.value;
+    }
 
-  function getFormattedCurrency(price) {
+    return price;
+  }
+
+  function getPromotionPrice(price) {
+    if (promotionApplied && promotion) {
+      switch (promotion.promotionType) {
+        case 'PERCENTAGE':
+          return price - (price * (promotion.value / 100));
+        case 'DOLLAR_AMOUNT':
+          return price - promotion.value;
+      }
+    }
+
+    return price;
+  }
+
+  function getFormattedCurrency(price, includePromotion = false) {
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     });
 
-    return formatter.format(price)
+    if (includePromotion) {
+      return formatter.format(getPromotionPrice(price));
+    }
+
+    return formatter.format(price);
+  }
+
+  function getFormattedFeesCurrency(price) {
+    price = price * .1;
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    });
+
+    if (promotionApplied) {
+      return formatter.format(getPromotionPrice(price));
+    }
+
+    return formatter.format(price);
   }
 
   function reduceCost(ticket, index) {
@@ -155,6 +247,15 @@ export default function TicketCheckoutScreen({ route, navigation }) {
       ["fees"]: fees,
       ["subtotal"]: subtotal
     }))
+
+    if (checkout.promotionApplied) {
+      setCheckout(previousOrder => ({
+        ...previousOrder,
+        ["discountedSubtotal"]: getPromotionPrice(subtotal),
+        ["discountedFees"]: getPromotionPrice(fees),
+        ["discountedTotal"]: getPromotionPrice(currentTotal)
+      }))
+    }
   }
 
   function increaseCost(ticket, index) {
@@ -179,6 +280,15 @@ export default function TicketCheckoutScreen({ route, navigation }) {
       ["fees"]: fees,
       ["subtotal"]: subtotal
     }))
+
+    if (checkout.promotionApplied) {
+      setCheckout(previousOrder => ({
+        ...previousOrder,
+        ["discountedSubtotal"]: getPromotionPrice(subtotal),
+        ["discountedFees"]: getPromotionPrice(fees),
+        ["discountedTotal"]: getPromotionPrice(currentTotal)
+      }))
+    }
   }
 
   function renderTickets() {
@@ -221,8 +331,18 @@ export default function TicketCheckoutScreen({ route, navigation }) {
           </View>
           <View style={{ flex: 1, height: 1, backgroundColor: '#D3D3D3' }} />
           <View margin-12>
-            <Text>{getFormattedCurrency(ticket.price)}</Text>
-            <Text>+ {getFormattedCurrency(ticket.price * .1)} fees</Text>
+            {
+              promotionApplied ?
+                <View row>
+                  <Text style={{ textDecorationLine: 'line-through' }}>
+                    {getFormattedCurrency(ticket.price)}
+                  </Text>
+                  <Text> </Text>
+                  <Text>{getFormattedCurrency(ticket.price, true)}</Text>
+                </View> :
+                <Text>{getFormattedCurrency(ticket.price)}</Text>
+            }
+            <Text>+ {getFormattedFeesCurrency(ticket.price)} fees</Text>
             <Text marginT-8>
               {ticket.description}
             </Text>
@@ -238,6 +358,28 @@ export default function TicketCheckoutScreen({ route, navigation }) {
       merchantIdentifier="merchant.identifier" >
       <View style={{ flex: 1, backgroundColor: 'white' }}>
         <View style={{ flex: 1, backgroundColor: 'white' }}>
+          <View row>
+            <View marginL-20 flex>
+              <CustomTextField
+                name="code"
+                label="Promotion Code"
+                placeholder="SAVE15"
+                value={promotionCode}
+                reference={codeRef}
+                handleChange={updateCode}
+              />
+            </View>
+
+            <Pressable>
+              <Button
+                onPress={() => applyPromotion()}
+                marginT-16
+                style={{ backgroundColor: '#fff', height: 60 }}>
+                <Text style={{ fontSize: 16, color: '#000' }}>Apply</Text>
+              </Button>
+            </Pressable>
+
+          </View>
           <ScrollView style={{ height: '100%' }}>
             <View margin-20>
               {renderTickets()}
@@ -247,22 +389,28 @@ export default function TicketCheckoutScreen({ route, navigation }) {
         <View
           backgroundColor="transparent"
           marginB-24
-          style={{ borderTopColor: '#D3D3D3', borderTopWidth: 1, height: 160 }}>
+          style={{ borderTopColor: '#D3D3D3', borderTopWidth: 1, height: 120 }}>
           <View
-            margin-16
+            marginT-16
             marginR-20
             style={{ alignItems: 'flex-end' }}>
-            <Text style={{ fontSize: 18 }}>{getFormattedCurrency(checkout.total)}</Text>
+            {
+              promotionApplied && checkout.total > 0 ?
+                <View row>
+                  <Text style={{ fontSize: 18, textDecorationLine: 'line-through' }}>{getFormattedCurrency(checkout.total)}</Text>
+                  <Text style={{ fontSize: 18 }}> </Text>
+                  <Text style={{ fontSize: 18 }}>{getFormattedCurrency(checkout.total, true)}</Text>
+                </View> :
+                <Text style={{ fontSize: 18 }}>{getFormattedCurrency(checkout.total)}</Text>
+            }
           </View>
-          <View
-            marginL-20
-            marginR-20>
-            <Button
+          <View marginL-20 marginR-20>
+            {/* <Button
               backgroundColor={Colors.orange30}
               borderRadius={30}
               style={{ backgroundColor: '#000', height: 45, width: '100%' }}>
               <Image source={require('../../assets/logo/apple-pay.png')} tintColor={Colors.white} width={48} height={48} />
-            </Button>
+            </Button> */}
 
             {/* <View >
               {isApplePaySupported && (
@@ -283,7 +431,7 @@ export default function TicketCheckoutScreen({ route, navigation }) {
               marginT-16
               borderRadius={30}
               style={{ backgroundColor: '#2196F3', height: 45, width: '100%' }}>
-              <Text style={{ fontSize: 16, color: '#fff' }} marginL-10>Pay another way</Text>
+              <Text style={{ fontSize: 16, color: '#fff' }} marginL-10>Pay</Text>
             </Button>
           </View>
         </View>

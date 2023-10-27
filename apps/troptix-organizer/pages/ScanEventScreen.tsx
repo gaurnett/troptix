@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Text, View, Button } from 'react-native-ui-lib';
 import { Camera } from 'expo-camera';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Alert } from 'react-native';
 import BarcodeMask from 'react-native-barcode-mask';
 import { scanTicket } from 'troptix-api';
 
@@ -46,14 +46,28 @@ export default function ScanEventScreen({ route, navigation }) {
       // @ts-ignore
       const { x, y } = bounds.origin;
       if (x >= viewMinX && y >= viewMinY && x <= (viewMinX + finderWidth / 2) && y <= (viewMinY + finderHeight / 2)) {
+        console.log("Ticket Data: " + data);
         setScanned(true);
-        console.log(data);
         try {
           const response = await scanTicket(data);
           if (response.response.scan_succeeded) {
-            alert(`Ticket scanned successfully`);
+            setScanned(true);
+            Alert.alert('Scan Successful', 'This ticket has been scanned successfully', [
+              {
+                text: 'Okay', onPress: () => {
+                  setScanned(false);
+                }
+              },
+            ]);
           } else {
-            alert(`Ticket already scanned`);
+            setScanned(true);
+            Alert.alert('Scan Failed', 'This ticket has already been scanned', [
+              {
+                text: 'Okay', onPress: () => {
+                  setScanned(false);
+                }
+              },
+            ]);
           }
         } catch (error) {
           console.log(error);
@@ -87,11 +101,6 @@ export default function ScanEventScreen({ route, navigation }) {
           edgeColor="#62B1F6"
           showAnimatedLine />
       </BarCodeScanner>
-      {scanned &&
-        <Button onPress={() => setScanned(false)}>
-          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>Tap to Scan Again</Text>
-        </Button>
-      }
     </View>
   );
 }

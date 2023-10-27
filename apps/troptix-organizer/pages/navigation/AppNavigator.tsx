@@ -18,6 +18,7 @@ import ManageEventScreen from '../manage-events/ManageEventScreen';
 import TicketFormScreen from '../event/TicketFormScreen';
 import SignInScreen from '../SignInScreen';
 import AddDelegatorScreen from '../manage-events/AddDelegatorScreen';
+import AddPromotionScreen from '../manage-events/AddPromotionScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -63,7 +64,7 @@ function SettingsStack({ route }) {
         component={SettingsScreen}
         initialParams={{ user: user }}
         options={{
-          title: 'Settings',
+          title: '',
           headerShadowVisible: false,
         }}
       />
@@ -80,14 +81,15 @@ function MainAppScreen({ route }) {
         name="ManageEventStack" component={ManageEventStack}
         options={{
           headerShown: false,
-          tabBarLabel: "Manage Events",
+          tabBarLabel: "",
           tabBarIcon: ({ focused }) => {
             return (
               <View>
                 <Image
-                  source={require("../../assets/icons/calendar.png")}
+                  marginT-16
+                  source={require("../../assets/icons/calendar_64.png")}
                   resizeMode="contain"
-                  style={{ width: 24 }}
+                  style={{ width: 24, height: 24 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>
@@ -99,14 +101,15 @@ function MainAppScreen({ route }) {
         name="ScanEventsStack" component={ScanEventsStack}
         options={{
           headerShown: false,
-          tabBarLabel: "Scan",
+          tabBarLabel: "",
           tabBarIcon: ({ focused }) => {
             return (
               <View>
                 <Image
-                  source={require("../../assets/icons/scan.png")}
+                  marginT-16
+                  source={require("../../assets/icons/qr-code-scan_64.png")}
                   resizeMode="contain"
-                  style={{ width: 24 }}
+                  style={{ width: 24, height: 24 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>
@@ -120,14 +123,15 @@ function MainAppScreen({ route }) {
         initialParams={{ user: user }}
         options={{
           headerShown: false,
-          tabBarLabel: "Settings",
+          tabBarLabel: "",
           tabBarIcon: ({ focused }) => {
             return (
               <View>
                 <Image
-                  source={require("../../assets/icons/settings.png")}
+                  marginT-16
+                  source={require("../../assets/icons/settings_64.png")}
                   resizeMode="contain"
-                  style={{ width: 24 }}
+                  style={{ width: 24, height: 24 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>
@@ -232,6 +236,15 @@ export default function AppNavigator({ isLoadingUser, user }) {
                   component={AddDelegatorScreen}
                   options={{
                     title: 'Add Delegator',
+                    headerBackTitle: 'Back',
+                    headerShadowVisible: false,
+                  }}
+                />
+                <Stack.Screen
+                  name='AddPromotionScreen'
+                  component={AddPromotionScreen}
+                  options={{
+                    title: 'Add Promotion',
                     headerBackTitle: 'Back',
                     headerShadowVisible: false,
                   }}

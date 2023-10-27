@@ -9,7 +9,7 @@ export default async function handler(request, response) {
 
   switch (method) {
     case "POST":
-      break;
+      return addUser(body, response);
     case "GET":
       const getUserType = request.query.getUsersType;
       const id = request.query.id;
@@ -20,6 +20,21 @@ export default async function handler(request, response) {
       break;
     default:
       break;
+  }
+}
+
+async function addUser(body, response) {
+  if (body === undefined || body.user === undefined) {
+    return response.status(500).json({ error: 'No body found in User POST request' });
+  }
+
+  try {
+    const user = await prisma.users.create({
+      data: body.user,
+    });
+    return response.status(200).json({ error: null, message: "Successfully added user" });
+  } catch (e) {
+    return response.status(500).json({ error: 'Error adding user' });
   }
 }
 

@@ -78,8 +78,9 @@ function MainAppScreen() {
             return (
               <View>
                 <Image
-                  source={require("../../assets/icons/event.png")}
-                  style={{ width: 26, height: 26, marginTop: 16 }}
+                  marginT-16
+                  source={require("../../assets/icons/party_64.png")}
+                  style={{ width: 24, height: 24 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>
@@ -96,8 +97,9 @@ function MainAppScreen() {
             return (
               <View>
                 <Image
-                  source={require("../../assets/icons/ticket.png")}
-                  style={{ width: 26, height: 26, marginTop: 16 }}
+                  marginT-16
+                  source={require("../../assets/icons/tickets_64.png")}
+                  style={{ width: 24, height: 24 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>
@@ -114,8 +116,9 @@ function MainAppScreen() {
             return (
               <View>
                 <Image
-                  source={require("../../assets/icons/settings.png")}
-                  style={{ width: 26, height: 26, marginTop: 16 }}
+                  marginT-16
+                  source={require("../../assets/icons/settings_64.png")}
+                  style={{ width: 24, height: 24 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>

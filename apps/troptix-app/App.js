@@ -14,19 +14,23 @@ export default function App() {
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 
   useEffect(() => {
-    async function fetchUser(id) {
+    async function fetchUser(user) {
       try {
         const getUsersRequest = {
           getUsersType: GetUsersType.GET_USERS_BY_ID,
-          userId: id
+          userId: user.uid
         };
 
         const response = await getUsers(getUsersRequest);
-        let currentUser = setUserFromResponse(response.response);
+        let currentUser = setUserFromResponse(response.response, user);
 
         setUser(prevUser => ({ ...prevUser, currentUser }));
         setIsLoadingUser(false);
       } catch (error) {
+        let currentUser = setUserFromResponse(null, user);
+
+        setUser(prevUser => ({ ...prevUser, currentUser }));
+        setIsLoadingUser(false);
         console.log("TropTix App: " + error);
       }
 
@@ -34,7 +38,7 @@ export default function App() {
 
     const unsubscribeFromAuthStateChange = auth.onAuthStateChanged(user => {
       if (user) {
-        fetchUser(user.uid);
+        fetchUser(user);
       } else {
         setUser(undefined);
         setIsLoadingUser(false);

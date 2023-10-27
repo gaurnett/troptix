@@ -2,7 +2,6 @@ import { useRef, useState } from 'react';
 import * as React from 'react';
 import { Keyboard, SafeAreaView, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { Button, Colors, Image, Text, TextField, View } from 'react-native-ui-lib';
-import { greeting } from 'cool-package';
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from 'troptix-firebase';
 import { User } from 'troptix-models';

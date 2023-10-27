@@ -1,9 +1,10 @@
 import { Event, getEventsFromRequest } from './event';
 import { TicketType, TicketFeeStructure } from './ticketType';
-import { Ticket } from './ticket';
+import { Ticket, TicketSummary, TicketsSummary } from './ticket';
 import { Order, Charge, Checkout, OrderSummary, createTicketOrder } from './order';
 import { User, setUserFromResponse } from './user';
-import { DelegatedAccess, DelegatedUser } from './delegated-access';
+import { DelegatedAccess, DelegatedUser } from './delegatedUser';
+import { PromotionType, Promotion } from './promotions';
 
 export {
   // Event Details
@@ -14,11 +15,15 @@ export {
   TicketFeeStructure,
   // Order Details
   Ticket,
+  TicketSummary,
+  TicketsSummary,
   Order,
   Charge,
   OrderSummary,
   Checkout,
   createTicketOrder,
+  Promotion,
+  PromotionType,
   // User Details
   User,
   setUserFromResponse,

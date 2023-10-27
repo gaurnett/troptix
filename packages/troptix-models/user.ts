@@ -17,16 +17,18 @@ export class User {
   }
 }
 
-export function setUserFromResponse(response): User {
+export function setUserFromResponse(response, firebaseUser): User {
   const user = new User();
-  user.createdAt = response.createdAt;
-  user.updatedAt = response.updatedAt;
-  user.id = response.id;
-  user.email = response.email;
-  user.name = response.name;
-  user.stripeId = response.stripeId;
 
-  // user.role = response.role;
+  user.id = firebaseUser.uid;
+  user.email = firebaseUser.email;
+
+  if (response !== null) {
+    user.createdAt = response.createdAt;
+    user.updatedAt = response.updatedAt;
+    user.name = response.name;
+    user.stripeId = response.stripeId;
+  }
 
   return user;
 }

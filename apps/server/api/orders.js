@@ -1,10 +1,11 @@
 import prisma from "../prisma/prisma";
 import { getPrismaCreateOrderQuery } from "../lib/eventHelper";
 import { getBuffer, updateSuccessfulOrder } from "../lib/orderHelper";
+import { sendEmailToUser } from "../lib/emailHelper";
 
 const stripe = require('stripe')(process.env.STRIPE_TEST_SECRET_KEY);
-const endpointSecret = process.env.STRIPE_TEST_CHARGE_SUCCEEDED_WEBHOOK;
-// const endpointSecret = 'whsec_570f36e545a3bc4d66bf9501ae42327ebb200303a4d9068d39bb7821e48b50ff';
+// const endpointSecret = process.env.STRIPE_TEST_CHARGE_SUCCEEDED_WEBHOOK;
+const endpointSecret = 'whsec_570f36e545a3bc4d66bf9501ae42327ebb200303a4d9068d39bb7821e48b50ff';
 
 export default async function handler(request, response) {
   const { body, method } = request;
@@ -154,7 +155,6 @@ async function stripePaymentIntentSucceeded(body, headers, request, response) {
   switch (event.type) {
     case 'payment_intent.succeeded':
       const paymentIntent = event.data.object;
-      // console.log(`Payment succeeded for ${paymentIntent.id} ${paymentIntent.amount} was successful!`);
       return updateOrderAfterPaymentSucceeds(paymentIntent.id, response);
     case 'payment_method.failed':
       const paymentFailed = event.data.object;
@@ -188,6 +188,9 @@ async function updateOrderAfterPaymentSucceeds(id, response) {
       }
     });
 
+    // const email = await sendEmailToUser(response);
+    // console.log("Email: " + email);
+
     return response.status(200).json({ message: "Updated order successfully" });
   } catch (e) {
     console.error('Request error', e);
@@ -195,11 +198,11 @@ async function updateOrderAfterPaymentSucceeds(id, response) {
   }
 }
 
-async function getOrders(getEventType, id, response) {
-  switch (Number(getEventType)) {
-    case 0: // GetOrdersType.GET_ORDERS_FOR_USER
+async function getOrders(getOrderType, id, response) {
+  switch (String(getOrderType)) {
+    case 'GET_ORDERS_FOR_USER': // GetOrdersType.GET_ORDERS_FOR_USER
       return getOrdersForUser(response, id);
-    case 1: // GetOrdersType.GET_ORDERS_FOR_EVENT
+    case 'GET_ORDERS_FOR_EVENT': // GetOrdersType.GET_ORDERS_FOR_EVENT
       return getOrdersForEvent(response, id);
     default:
       return response.status(500).json({ error: 'No get order type set' });
@@ -211,9 +214,14 @@ async function getOrdersForUser(response, id) {
     const user = await prisma.orders.findMany({
       where: {
         userId: id,
+        status: 'COMPLETED'
       },
       include: {
-        tickets: true,
+        tickets: {
+          include: {
+            ticketType: true,
+          }
+        },
         event: true
       },
     });

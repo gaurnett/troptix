@@ -9,7 +9,17 @@ import {
   Colors,
 } from "react-native-ui-lib";
 
-export default function CustomTextField({ name, label, placeholder, value, reference, handleChange, secureTextEntry = false, isTextArea = false, textAreaSize = 60 }) {
+export default function CustomTextField({
+  name,
+  label,
+  placeholder,
+  value, reference,
+  handleChange,
+  secureTextEntry = false,
+  isTextArea = false,
+  textAreaSize = 60,
+  autoCap = "sentences",
+  keyboardType = "default" }) {
 
   function setTextFieldFocused(ref) {
     if (ref === undefined || ref.current === undefined)
@@ -44,6 +54,8 @@ export default function CustomTextField({ name, label, placeholder, value, refer
           labelStyle={{
             marginBottom: 4,
           }}
+          keyboardType={keyboardType}
+          autoCapitalize={autoCap}
           enableErrors
           style={{ fontSize: 16 }}
           secureTextEntry={secureTextEntry}

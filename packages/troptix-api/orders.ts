@@ -24,7 +24,6 @@ export interface PostOrdersRequest {
 }
 
 export async function getOrders(request: GetOrdersRequest): Promise<TropTixResponse> {
-  const tropTixResponse: TropTixResponse = new TropTixResponse();
 
   let url = prodUrl + `/api/orders?getOrdersType=${request.getOrdersType}`;
   switch (request.getOrdersType) {
@@ -36,41 +35,29 @@ export async function getOrders(request: GetOrdersRequest): Promise<TropTixRespo
       break;
   }
 
-  try {
-    const response = await fetch(url, {
-      method: 'GET'
-    });
-    const json = await response.json();
-    tropTixResponse.response = json;
-  } catch (error) {
-    tropTixResponse.error = error;
-  }
+  const response = await fetch(url, {
+    method: 'GET'
+  });
+  const json = await response.json();
 
-  return tropTixResponse;
+  return json;
 }
 
 export async function postOrders(request: PostOrdersRequest): Promise<TropTixResponse> {
-  const tropTixResponse: TropTixResponse = new TropTixResponse();
 
   let url = prodUrl + `/api/orders`;
 
-  try {
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request)
-    });
-    const json = await response.json();
-    tropTixResponse.response = json;
-  } catch (error) {
-    tropTixResponse.error = error;
-  }
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request)
+  });
+  const json = await response.json();
 
-  console.log(tropTixResponse.response);
-  console.log(tropTixResponse.error);
+  console.log("post orders json: " + JSON.stringify(json));
 
-  return tropTixResponse
+  return json
 }

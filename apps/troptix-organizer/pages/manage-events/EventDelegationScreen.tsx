@@ -5,17 +5,26 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Alert, Pressable, ScrollView } from 'react-native';
 import { Button, Colors, FloatingButton, FloatingButtonLayouts, Image, ListItem, LoaderScreen, Text, View } from 'react-native-ui-lib';
 import CircularProgress from 'react-native-circular-progress-indicator';
-import { TropTixResponse } from 'troptix-api';
-import { Event, DelegatedUser } from "troptix-models";
+import { getDelegatedUsers } from 'troptix-api';
+import { Event, DelegatedUser, DelegatedAccess } from "troptix-models";
 import { RefreshControl } from 'react-native-gesture-handler';
 
 export default function EventDelegationScreen({ eventObject, navigation }) {
-  const [event, setEvent] = useState<Event>(eventObject);
   const [delegatedUsers, setDelegatedUsers] = useState<DelegatedUser[]>([]);
   const [isFetchingUsers, setIsFetchingUsers] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchUsers = async () => {
+    try {
+      const response = await getDelegatedUsers(eventObject.id);
+
+      console.log("Delegated Users Response: " + JSON.stringify(response));
+      if (response !== undefined && response.length !== 0) {
+        setDelegatedUsers(response);
+      }
+    } catch (error) {
+      console.log("EventDelegationScreen [fetchUsers] error: " + error)
+    }
     setIsFetchingUsers(false);
   };
 
@@ -71,23 +80,33 @@ export default function EventDelegationScreen({ eventObject, navigation }) {
     })
   }
 
+  function getDelegatedAccess(access) {
+    switch (access) {
+      case DelegatedAccess.OWNER:
+        return "Owner";
+      case DelegatedAccess.TICKET_SCANNER:
+        return "Ticket Scanner";
+      default:
+        break;
+    }
+  }
+
   function UserItem(user, index) {
     return (
       <View style={{
         backgroundColor: 'white',
-        height: 80,
         borderWidth: 1,
-        borderRadius: 10,
+        borderRadius: 5,
         borderColor: "#D3D3D3",
       }}>
 
         <Pressable onPress={() => openAddUserPage(user, true, index)}>
-          <View>
-            <Text grey10 text70 style={{ marginLeft: 16 }}>
+          <View marginL-8 marginT-4 marginB-4>
+            <Text grey10 text70 style={{ fontWeight: 'bold' }}>
               {user.email}
             </Text>
-            <Text grey10 text70 style={{ marginLeft: 16 }}>
-              Role: {user.delegatedAccess}
+            <Text grey10 text70>
+              Role: {getDelegatedAccess(user.delegatedAccess)}
             </Text>
           </View>
         </Pressable>
@@ -96,9 +115,7 @@ export default function EventDelegationScreen({ eventObject, navigation }) {
   }
 
   function renderUsers() {
-    return _.map(delegatedUsers, (key, i) => {
-      console.log(i);
-      const user = delegatedUsers.at(i);
+    return _.map(delegatedUsers, (user, i) => {
       return (
         <View key={i} marginT-16 row>
           <View flex>
@@ -148,7 +165,7 @@ export default function EventDelegationScreen({ eventObject, navigation }) {
                 visible={true}
                 button={{
                   label: 'Add User',
-                  onPress: () => openAddUserPage(new DelegatedUser())
+                  onPress: () => openAddUserPage(new DelegatedUser(eventObject.id))
                 }}
                 buttonLayout={FloatingButtonLayouts.HORIZONTAL}
                 bottomMargin={16}

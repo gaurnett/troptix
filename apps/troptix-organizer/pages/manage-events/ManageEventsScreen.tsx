@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { useContext, useEffect, useState } from 'react';
-import { StyleSheet, ScrollView } from 'react-native';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { Text, View, Card, Colors, CardProps, Button, LoaderScreen, FloatingButton, FloatingButtonLayouts } from 'react-native-ui-lib';
 import { Event, getEventsFromRequest } from 'troptix-models';
 import { TropTixResponse, getEvents, GetEventsRequest, GetEventsType } from 'troptix-api';
@@ -11,6 +11,7 @@ export default function ManageEventsScreen({ navigation }) {
   const [user, setUser] = useContext(TropTixContext);
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [events, setEvents] = useState<Event[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchEvents = async () => {
     try {
@@ -32,6 +33,12 @@ export default function ManageEventsScreen({ navigation }) {
 
   useEffect(() => {
     fetchEvents();
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchEvents();
+    setRefreshing(false);
   }, []);
 
   function formatDate(date: Date) {
@@ -102,13 +109,24 @@ export default function ManageEventsScreen({ navigation }) {
           </View>
           :
           <View>
-            <View style={{ height: "100%" }}>
-              <ScrollView>
-                <View padding-20>
-                  {renderEvents()}
+            {
+              events.length === 0 ?
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%" }}>
+                  <Image source={require('../../assets/icons/empty-events.png')} width={120} height={120} />
+                  <Text marginT-24 style={{ fontSize: 24 }}>No events managed</Text>
                 </View>
-              </ScrollView>
-            </View>
+                :
+                <View style={{ height: "100%" }}>
+                  <ScrollView
+                    refreshControl={
+                      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }>
+                    <View padding-20>
+                      {renderEvents()}
+                    </View>
+                  </ScrollView>
+                </View>
+            }
             <View>
               <FloatingButton
                 visible={true}

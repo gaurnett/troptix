@@ -6,9 +6,10 @@ import {
   Button,
   Picker
 } from 'react-native-ui-lib';
-import { Keyboard, KeyboardAvoidingView, Pressable, ScrollView, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Pressable, ScrollView, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import CustomTextField from '../../components/CustomTextField';
 import { DelegatedUser, DelegatedAccess } from "troptix-models";
+import { TropTixResponse, addDelegatedUser } from 'troptix-api';
 
 export default function AddDelegatorScreen({ route, navigation }) {
   const { isEditUser, userIndex, user, addUser, editUser } = route.params;
@@ -63,13 +64,33 @@ export default function AddDelegatorScreen({ route, navigation }) {
     )
   }
 
-  function saveUser() {
-    if (isEditUser) {
-      editUser(userIndex, delegatedUser);
-    } else {
-      addUser(delegatedUser);
+  async function saveUser() {
+    try {
+      const response = await addDelegatedUser(delegatedUser, isEditUser);
+
+      console.log("User response: " + response.error);
+
+      if (response.error === null || response.error === undefined) {
+        if (isEditUser) {
+          editUser(userIndex, delegatedUser);
+        } else {
+          addUser(delegatedUser);
+        }
+        navigation.goBack();
+      } else {
+        Alert.alert('Adding user failed', 'Please check the user email and try again.', [
+          {
+            text: 'Okay', onPress: () => {
+            }
+          },
+        ]);
+        console.log("AddDelegatorScreen [saveUser] response error: " + JSON.stringify(response));
+        return;
+      }
+    } catch (error) {
+      console.log("AddDelegatorScreen [saveUser] error: " + error);
+      return;
     }
-    navigation.goBack();
   }
 
   return (
@@ -83,6 +104,7 @@ export default function AddDelegatorScreen({ route, navigation }) {
               <CustomTextField
                 name="email"
                 label="User Email"
+                autoCap='none'
                 placeholder="johndoe@gmail.com"
                 value={delegatedUser.email}
                 reference={userEmailRef}

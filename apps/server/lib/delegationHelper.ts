@@ -1,12 +1,14 @@
 import { PrismaClient, Prisma } from '@prisma/client';
 
-export function getPrismaCreateDelegatedUserQuery(user) {
-  let delegatedUser: Prisma.DelegatedUsersCreateInput;
+export function getPrismaUpdateDelegatedUserQuery(user, userId) {
+  let delegatedUser: Prisma.DelegatedUsersUpdateInput;
 
   delegatedUser = {
+    id: user.id,
     delegatedAccess: user.delegatedAccess,
+    userId: userId,
     email: user.email,
-    events: {
+    event: {
       connect: {
         id: user.eventId
       }

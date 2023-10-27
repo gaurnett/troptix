@@ -3,7 +3,7 @@ import { useCallback, useContext, useEffect, useState } from 'react';
 import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { Text, View, Card, Colors, CardProps, Button, LoaderScreen } from 'react-native-ui-lib';
 import { Event, getEventsFromRequest } from 'troptix-models';
-import { TropTixResponse, getOrders, GetOrdersType, GetOrdersRequest } from 'troptix-api';
+import { TicketSummary, TicketsSummary, getOrders, Ticket, getTicketsForUser, GetOrdersType, GetOrdersRequest } from 'troptix-api';
 import { TropTixContext } from '../../App';
 import { Image } from 'expo-image';
 
@@ -13,10 +13,85 @@ export default function TicketsScreen({ navigation }) {
   const [orders, setOrders] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  function onOrderClick(order) {
+  function onOrderClick(summary) {
     navigation.navigate('TicketDetailsScreen', {
-      order: order,
+      summary: summary,
     })
+  }
+
+  function groupOrders(response) {
+    let ticketsMap = new Map<string, TicketsSummary>();
+
+    for (const order of response) {
+      const eventId = order.eventId;
+
+      if (ticketsMap.has(eventId)) {
+        let ticketsSummary = ticketsMap.get(eventId);
+
+        for (const ticket of order.tickets) {
+          let ticketSummary: TicketSummary = {
+            id: ticket.id,
+            status: ticket.status,
+            orderId: ticket.orderId,
+            ticketType: ticket.ticketType
+          }
+          ticketsSummary.tickets.push(ticketSummary);
+        }
+
+        ticketsMap.set(eventId, ticketsSummary);
+      } else {
+        let tickets: TicketSummary[] = [];
+
+        for (const ticket of order.tickets) {
+          console.log(ticket.id);
+          let ticketSummary: TicketSummary = {
+            id: ticket.id,
+            status: ticket.status,
+            orderId: ticket.orderId,
+            ticketType: ticket.ticketType
+          }
+          tickets.push(ticketSummary);
+        }
+
+        let ticketsSummary: TicketsSummary = {
+          event: order.event,
+          tickets: tickets
+        }
+        ticketsMap.set(eventId, ticketsSummary);
+      }
+    }
+
+    return Array.from(ticketsMap.values());
+  }
+
+  function groupTickets(response) {
+    let ticketsMap = new Map<string, TicketsSummary>();
+
+    for (const ticket of response) {
+      const eventId = ticket.eventId;
+      let ticketSummary: TicketSummary = {
+        id: ticket.id,
+        status: ticket.status,
+        orderId: ticket.orderId,
+        ticketType: ticket.ticketType
+      }
+
+      if (ticketsMap.has(eventId)) {
+        let ticketsSummary = ticketsMap.get(eventId);
+        ticketsSummary.tickets.push(ticketSummary);
+        ticketsMap.set(eventId, ticketsSummary);
+      } else {
+        let tickets: TicketSummary[] = [];
+        tickets.push(ticketSummary);
+        let ticketsSummary: TicketsSummary = {
+          event: ticket.event,
+          tickets: tickets
+        }
+        ticketsMap.set(eventId, ticketsSummary);
+      }
+    }
+
+    return Array.from(ticketsMap.values());
   }
 
   const fetchOrders = async () => {
@@ -25,10 +100,10 @@ export default function TicketsScreen({ navigation }) {
         getOrdersType: GetOrdersType.GET_ORDERS_FOR_USER,
         userId: user.id
       }
-      const response: TropTixResponse = await getOrders(getOrdersRequest);
+      const response = await getOrders(getOrdersRequest);
 
-      if (response.response !== undefined && response.response.length !== 0) {
-        setOrders(response.response);
+      if (response !== undefined && response.length !== 0) {
+        setOrders(groupOrders(response));
       }
     } catch (error) {
       console.log("TicketsScreen [fetchOrders] error: " + error)
@@ -75,9 +150,11 @@ export default function TicketsScreen({ navigation }) {
 
           <View marginL-12 marginT-8>
             <View style={{ flex: 1 }}>
-              <Text text60 $textDefault>
-                {order.event.name}
-              </Text>
+              <View style={{ flexDirection: 'row' }}>
+                <Text style={{ flex: 1, flexWrap: 'wrap', fontWeight: 'bold' }} text70 $textDefault>
+                  {order.event.name}
+                </Text>
+              </View>
 
               <Text text70 $textDefault>
                 {new Date(order.event.startDate).toDateString()} at 8PM
@@ -102,14 +179,28 @@ export default function TicketsScreen({ navigation }) {
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <LoaderScreen message={'Fetching tickets'} color={Colors.grey40} />
           </View> :
-          <ScrollView
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }>
-            <View flex padding-20>
-              {renderOrders()}
-            </View>
-          </ScrollView>
+          <View>
+            {
+              orders.length === 0 ?
+                <View style={{ alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%" }}>
+                  <Image source={require('../../assets/icons/empty-tickets.png')} width={120} height={120} />
+                  <Text marginT-24 style={{ fontSize: 24 }}>No tickets purchased</Text>
+                </View>
+                :
+                <View style={{ height: "100%" }}>
+                  <ScrollView
+                    refreshControl={
+                      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    }>
+                    <View flex padding-20>
+                      {renderOrders()}
+                    </View>
+                  </ScrollView>
+                </View>
+            }
+
+          </View>
+
       }
     </View>
   )

@@ -27,10 +27,10 @@ export default function EventDashboardScreen({ eventObject, navigation }) {
         getOrdersType: GetOrdersType.GET_ORDERS_FOR_EVENT,
         eventId: event.id
       }
-      const response: TropTixResponse = await getOrders(getOrdersRequest);
+      const response = await getOrders(getOrdersRequest);
 
-      if (response.response !== undefined && response.response.length !== 0) {
-        const summary = new OrderSummary(response.response)
+      if (response !== undefined && response.length !== 0) {
+        const summary = new OrderSummary(response)
         setOrderSummary(summary);
       }
     } catch (error) {
@@ -65,16 +65,13 @@ export default function EventDashboardScreen({ eventObject, navigation }) {
         <ListItem>
           <ListItem.Part left>
             <CircularProgress
-              value={sold / total * 100}
+              value={(sold / total) * 100}
               radius={40}
               inActiveStrokeOpacity={0.5}
               inActiveStrokeWidth={2}
               activeStrokeWidth={4}
               duration={0}
-              progressFormatter={(value: number) => {
-                'worklet';
-                return value + "%"
-              }}
+              valueSuffix='%'
             />
           </ListItem.Part>
           <ListItem.Part>
