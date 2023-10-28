@@ -154,7 +154,7 @@ export default function DetailsScreen({ event, setEvent }) {
               <View>
                 <CustomTextField
                   name="summary"
-                  label="Event Summary"
+                  label="Event Summary *"
                   placeholder="Summary"
                   value={event.summary}
                   reference={eventSummaryRef}
@@ -166,7 +166,7 @@ export default function DetailsScreen({ event, setEvent }) {
               <View>
                 <CustomTextField
                   name="description"
-                  label="Event Description"
+                  label="Event Description *"
                   placeholder="Description"
                   value={event.description}
                   reference={eventDescriptionRef}

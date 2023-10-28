@@ -17,7 +17,7 @@ import {
   Button,
   Picker
 } from 'react-native-ui-lib';
-import { Keyboard, KeyboardAvoidingView, Pressable, ScrollView, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Pressable, ScrollView, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatPrice } from '../../shared/TroptixHelper';
 import { TicketType, TicketFeeStructure } from 'troptix-models';
@@ -56,14 +56,6 @@ export default function TicketFormScreen({ route, navigation }) {
       title: title,
     });
   });
-
-  function showDateTime(ref) {
-    if (ref === undefined || ref.current === undefined)
-      return;
-
-    setShow(true);
-    ref.current.focus();
-  }
 
   function setTextFieldFocused(ref) {
     if (ref === undefined || ref.current === undefined)
@@ -149,17 +141,58 @@ export default function TicketFormScreen({ route, navigation }) {
     }
   }
 
-  async function saveTicket() {
-    try {
-      const response = await saveTicketType(ticket, isEditTicket);
+  function checkInputNullOrUndefined(input): boolean {
+    return input === null || input === undefined || input === "";
+  }
 
-      if (response.error !== null) {
-        console.log("TicketFormScreen [saveTicket] response error: " + JSON.stringify(response.error));
-        return;
-      }
-    } catch (error) {
-      console.log("TicketFormScreen [saveTicket] error: " + error);
+  function validateTicketInputs(): string {
+    if (checkInputNullOrUndefined(ticket.name)
+      || checkInputNullOrUndefined(ticket.description)
+      || checkInputNullOrUndefined(ticket.price)
+      || checkInputNullOrUndefined(ticket.quantity)
+      || checkInputNullOrUndefined(ticket.maxPurchasePerUser)) {
+      return "Please populate all required fields.";
     }
+
+    const startDate = new Date(ticket.saleStartDate);
+    const endDate = new Date(ticket.saleEndDate);
+    const startTime = new Date(ticket.saleEndTime);
+    const endTime = new Date(ticket.saleEndTime);
+
+    console.log(startDate + " " + startDate.getTime());
+    console.log(endDate + " " + endDate.getTime());
+    if (startDate.getTime() > endDate.getTime()) {
+      return "Event start date is after end date."
+    }
+
+    if (startDate === endDate && startTime.getTime() > endTime.getTime()) {
+      return "Event start time is after end time."
+    }
+
+    if (startDate === endDate && startTime.getTime() === endTime.getTime()) {
+      return "Event start time is after end time."
+    }
+
+    return "dfv";
+  }
+
+  async function saveTicket() {
+    const errorMessage = validateTicketInputs();
+    if (errorMessage !== "") {
+      Alert.alert("Error saving ticket", errorMessage);
+      return;
+    }
+    // try {
+    //   const response = await saveTicketType(ticket, isEditTicket);
+
+    //   if (response.error !== null) {
+    //     console.log("TicketFormScreen [saveTicket] response error: " + JSON.stringify(response.error));
+    //     return;
+    //   }
+    // } catch (error) {
+    //   console.log("TicketFormScreen [saveTicket] error: " + error);
+    //   return;
+    // }
 
     if (isEditTicket) {
       editTicket(ticketIndex, ticket);
@@ -183,7 +216,7 @@ export default function TicketFormScreen({ route, navigation }) {
               <View>
                 <CustomTextField
                   name="name"
-                  label="Ticket Name"
+                  label="Ticket Name *"
                   placeholder="General Admission"
                   value={ticket.name}
                   reference={ticketNameRef}
@@ -193,7 +226,7 @@ export default function TicketFormScreen({ route, navigation }) {
               <View>
                 <CustomTextField
                   name="description"
-                  label="Ticket Description"
+                  label="Ticket Description *"
                   placeholder="Describe what patrons get with this ticket"
                   value={ticket.description}
                   reference={ticketDescriptionRef}
@@ -212,7 +245,7 @@ export default function TicketFormScreen({ route, navigation }) {
                 <View marginR-8 flex>
                   <CustomDateTimeField
                     name="saleStartDate"
-                    label="Sales start"
+                    label="Sales start date *"
                     placeholder={
                       getDatePlaceholder(
                         ticket.saleStartDate,
@@ -227,7 +260,7 @@ export default function TicketFormScreen({ route, navigation }) {
                 <View marginL-8 flex>
                   <CustomDateTimeField
                     name="saleStartTime"
-                    label="Start time"
+                    label="Start time *"
                     placeholder={
                       getDatePlaceholder(
                         ticket.saleStartTime,
@@ -244,7 +277,7 @@ export default function TicketFormScreen({ route, navigation }) {
                 <View marginR-8 flex>
                   <CustomDateTimeField
                     name="saleEndDate"
-                    label="Sales end"
+                    label="Sales end date *"
                     placeholder={
                       getDatePlaceholder(
                         ticket.saleStartDate,
@@ -259,7 +292,7 @@ export default function TicketFormScreen({ route, navigation }) {
                 <View marginL-8 flex>
                   <CustomDateTimeField
                     name="saleEndTime"
-                    label="End time"
+                    label="End time *"
                     placeholder={
                       getDatePlaceholder(
                         ticket.saleEndTime,
@@ -280,18 +313,18 @@ export default function TicketFormScreen({ route, navigation }) {
               </Text>
               <View row>
                 <View marginR-8 flex>
-                  {fetchTextField("price", "numeric", "Ticket Price ($)", "$130.00", ticket.price ? String(ticket.price) : undefined, ticketPriceRef)}
+                  {fetchTextField("price", "numeric", "Ticket Price ($) *", "$130.00", ticket.price ? String(ticket.price) : undefined, ticketPriceRef)}
                 </View>
                 <View marginL-8 flex>
-                  {fetchPicker("Fee Structure", "Very Cool Location", "ticket.price", ticketFeeRef)}
+                  {fetchPicker("Fee Structure *", "Very Cool Location", "ticket.price", ticketFeeRef)}
                 </View>
               </View>
               <View row>
                 <View marginR-8 flex>
-                  {fetchTextField("quantity", "numeric", "Ticket Quantity", "100", ticket.quantity ? String(ticket.quantity) : undefined, ticketQuantityRef)}
+                  {fetchTextField("quantity", "numeric", "Ticket Quantity *", "100", ticket.quantity ? String(ticket.quantity) : undefined, ticketQuantityRef)}
                 </View>
                 <View marginL-8 flex>
-                  {fetchTextField("maxPurchasePerUser", "numeric", "Max Purchase Per User", "10", ticket.maxPurchasePerUser ? String(ticket.maxPurchasePerUser) : undefined, ticketMaxPurchaseRef)}
+                  {fetchTextField("maxPurchasePerUser", "numeric", "Max Purchase Per User *", "10", ticket.maxPurchasePerUser ? String(ticket.maxPurchasePerUser) : undefined, ticketMaxPurchaseRef)}
                 </View>
               </View>
             </View>

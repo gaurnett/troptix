@@ -82,7 +82,7 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
               <View>
                 <CustomTextField
                   name="name"
-                  label="Event Title"
+                  label="Event Title *"
                   placeholder="TropTix Beach Party"
                   value={event.name}
                   reference={eventNameRef}
@@ -92,7 +92,7 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
               <View>
                 <CustomTextField
                   name="organizer"
-                  label="Event Organizer"
+                  label="Event Organizer *"
                   placeholder="TropTix"
                   value={event.organizer}
                   reference={eventOrganizerRef}
@@ -101,7 +101,7 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
               </View>
               <View>
                 <CustomLocationTextField
-                  label="Event Location"
+                  label="Event Location *"
                   placeholder="Kingston, Jamaica"
                   value={event.address}
                   reference={eventLocationRef}
@@ -124,7 +124,7 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
                 <View marginR-8 flex>
                   <CustomDateTimeField
                     name="startDate"
-                    label="Start Date"
+                    label="Start Date *"
                     placeholder={
                       getDatePlaceholder(
                         event.startDate,
@@ -139,7 +139,7 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
                 <View marginL-8 flex>
                   <CustomDateTimeField
                     name="startTime"
-                    label="Start Time"
+                    label="Start Time *"
                     placeholder={
                       getDatePlaceholder(
                         event.startTime,
@@ -156,7 +156,7 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
                 <View marginR-8 flex>
                   <CustomDateTimeField
                     name="endDate"
-                    label="Start Date"
+                    label="Start Date *"
                     placeholder={
                       getDatePlaceholder(
                         event.endDate,
@@ -171,7 +171,7 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
                 <View marginL-8 flex>
                   <CustomDateTimeField
                     name="endTime"
-                    label="End Time"
+                    label="End Time *"
                     placeholder={
                       getDatePlaceholder(
                         event.startTime,
