@@ -83,7 +83,7 @@ model Events {
   isDraft   Boolean  @default(true)
 
   // Event Details
-  imageUrl        String
+  imageUrl        String?
   name            String
   description     String
   summary         String?
@@ -97,12 +97,12 @@ model Events {
   endTime   DateTime
 
   // Location Details
-  venue       String
+  venue       String?
   address     String
-  country     String
-  countryCode String
-  latitude    Float
-  longitude   Float
+  country     String?
+  countryCode String?
+  latitude    Float?
+  longitude   Float?
 
   // Ticket Details
   tickets     Tickets[]

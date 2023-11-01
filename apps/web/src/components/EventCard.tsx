@@ -16,8 +16,8 @@ const EventCard: React.FC<EventCardProps> = ({
   price,
 }) => {
   return (
-    <div className=" rounded-md flex flex-col items-center  overflow-hidden shadow-lg hover:shadow-xl ">
-      <img className="w-full" src={image} alt={eventName} />
+    <div className=" rounded-md flex flex-col overflow-hidden shadow-lg hover:shadow-xl ">
+      <img className="w-auto h-72" style={{ objectFit: 'cover' }} src={image} alt={eventName} />
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2">{eventName}</div>
         <p className="text-gray-700 text-base">

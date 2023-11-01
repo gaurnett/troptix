@@ -4,7 +4,8 @@ export async function getTicketsForUser(userId) {
   const url = prodUrl + `/api/tickets?userId=${userId}`;
 
   const response = await fetch(url, {
-    method: 'GET'
+    method: 'GET',
+    cache: 'no-cache',
   });
 
   const json = await response.json();

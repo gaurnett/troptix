@@ -1,9 +1,17 @@
+'use client'
+
+import WebNavigator from "@/components/WebNavigator";
 import Navbar from "@/components/navbar";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, withRouter } from "next/router";
+import { useEffect, useLayoutEffect } from "react";
+import { useParams } from "react-router-dom";
 
-export default function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps }: AppProps) {
+
   return (
     <>
       <Head>
@@ -11,12 +19,9 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
 
-      <div className="container mx-auto ">
-        <Navbar />
-        <div className="min-h-screen flex-grow border-x">
-          <Component {...pageProps} />
-        </div>
-      </div>
+      <WebNavigator pageProps={pageProps} Component={Component} />
     </>
   );
 }
+
+export default withRouter(App); 

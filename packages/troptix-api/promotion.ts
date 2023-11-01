@@ -44,7 +44,8 @@ export async function getPromotions(request: GetPromotionsRequest) {
       break;
   }
   const response = await fetch(url, {
-    method: 'GET'
+    method: 'GET',
+    cache: 'no-cache',
   });
 
   const json = await response.json();
