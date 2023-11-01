@@ -36,7 +36,8 @@ export async function getOrders(request: GetOrdersRequest): Promise<TropTixRespo
   }
 
   const response = await fetch(url, {
-    method: 'GET'
+    method: 'GET',
+    cache: 'no-cache',
   });
   const json = await response.json();
 

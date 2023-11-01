@@ -1,4 +1,4 @@
-import { getPrismaCreateEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
+import { getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 
 export default async function handler(request, response) {
@@ -29,7 +29,7 @@ async function getEvents(getEventType, id, response) {
     case 'GET_EVENTS_ALL': // GetEventsType.GET_EVENTS_ALL
       return getAllEvents(response);
     case 'GET_EVENTS_BY_ID': // GetEventsType.GET_EVENTS_BY_ID
-      return response.status(500).json({ error: 'Not implemented' });
+      return getEventById(response, id);
     case 'GET_EVENTS_BY_ORGANIZER': // GetEventsType.GET_EVENTS_BY_ORGANIZER
       return getEventsByOrganizerId(response, id);
     case 'GET_EVENTS_SCANNABLE_BY_ORGANIZER': // GetEventsType.GET_EVENTS_SCANNABLE_BY_ORGANIZER
@@ -53,9 +53,26 @@ async function getAllEvents(response) {
   }
 }
 
+async function getEventById(response, id) {
+  try {
+    const event = await prisma.events.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        ticketTypes: true,
+      },
+    });
+    return response.status(200).json(event);
+  } catch (e) {
+    console.error('Request error', e);
+    return response.status(500).json({ error: 'Error fetching event' });
+  }
+}
+
 async function getEventsByOrganizerId(response, id) {
   try {
-    const user = await prisma.events.findMany({
+    const events = await prisma.events.findMany({
       where: {
         organizerUserId: id,
       },
@@ -63,10 +80,10 @@ async function getEventsByOrganizerId(response, id) {
         ticketTypes: true,
       },
     });
-    return response.status(200).json(user);
+    return response.status(200).json(events);
   } catch (e) {
     console.error('Request error', e);
-    return response.status(500).json({ error: 'Error fetching orders' });
+    return response.status(500).json({ error: 'Error fetching organizer events' });
   }
 }
 
@@ -109,10 +126,7 @@ async function addEvent(body, response) {
 
   try {
     const event = await prisma.events.create({
-      data: getPrismaCreateEventQuery(body.event),
-      include: {
-        ticketTypes: true,
-      }
+      data: getPrismaCreateStarterEventQuery(body.event),
     });
 
     return response.status(200).json({ error: null, message: "Successfully added event" });

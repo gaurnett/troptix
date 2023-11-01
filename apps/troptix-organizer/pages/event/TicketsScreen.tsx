@@ -241,7 +241,7 @@ export default function TicketsScreen({ event, setEvent, navigation }) {
                 visible={true}
                 button={{
                   label: 'Add Ticket',
-                  onPress: () => onTicketClick(new TicketType(event), false, 0)
+                  onPress: () => onTicketClick(new TicketType(event.id), false, 0)
                 }}
                 buttonLayout={FloatingButtonLayouts.HORIZONTAL}
                 bottomMargin={16}

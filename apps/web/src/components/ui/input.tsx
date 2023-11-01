@@ -1,11 +1,18 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { DatePicker, DatePickerProps, Form, Input, InputNumber, TimePicker } from "antd"
+import { DatePickerType } from "antd/es/date-picker"
+import { format } from 'date-fns';
+import dayjs from "dayjs";
+// import TextArea from "antd/es/input/TextArea";
+
+const { TextArea } = Input;
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> { }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
+const Input2 = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
       <input
@@ -20,6 +27,90 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     )
   }
 )
-Input.displayName = "Input"
+Input2.displayName = "Input"
 
-export { Input }
+function CustomInput({ name, value, id, label, type, placeholder, handleChange, required, prefix = "" }) {
+  return (
+    <div>
+      <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={id}>{label}</label>
+      <Input onChange={handleChange} name={name} value={value} id={id} type={type} classNames={{ input: "form-input w-full text-gray-800" }} prefix={prefix} placeholder={placeholder} required={required} />
+    </div>
+  )
+}
+
+function CustomNumberInput({ name, value, id, label, placeholder, handleChange, required, useFormatter = false }) {
+  return (
+    <div>
+      <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={id}>{label}</label>
+      <InputNumber
+        defaultValue={1000}
+        formatter={(value) => useFormatter ? `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value}
+        parser={(value) => useFormatter ? value!.replace(/\$\s?|(,*)/g, '') : value}
+        onChange={handleChange}
+        name={name}
+        value={value}
+        id={id}
+        controls={false}
+        classNames={{ input: "form-input w-full text-gray-800 custom-number-input" }}
+        placeholder={placeholder} required={required}
+      />
+    </div>
+  )
+}
+
+function CustomTextArea({ name, value, id, label, rows, placeholder, handleChange, required, maxLength = 150 }) {
+  return (
+    <div>
+      <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={id}>{label}</label>
+      <TextArea maxLength={maxLength} onChange={handleChange} name={name} value={value} id={id} rows={rows} classNames={{ textarea: "form-input w-full text-gray-800" }} placeholder={placeholder} required={required} showCount />
+    </div>
+  )
+}
+
+function CustomDateField({ name, value, id, label, placeholder, handleChange, required }) {
+  function getDateFormatter(value): DatePickerProps['format'] {
+    return format(value.toDate(), 'MMM dd, yyyy');
+  };
+
+  return (
+    <div>
+      <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={id}>{label}</label>
+      <DatePicker
+        placeholder={placeholder}
+        name={name}
+        format={getDateFormatter}
+        className="form-input w-full text-gray-800"
+        value={
+          value === undefined || value === null
+            ? dayjs(new Date())
+            : dayjs(new Date(value))
+        }
+        onChange={handleChange} />
+    </div>
+  )
+}
+
+function CustomTimeField({ name, value, id, label, placeholder, handleChange, required }) {
+  const format = 'hh:mm A';
+
+  return (
+    <div>
+      <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={id}>{label}</label>
+      <TimePicker
+        changeOnBlur={true}
+        placeholder={placeholder}
+        name={name}
+        format={format}
+        className="form-input w-full text-gray-800 time-picker-button"
+        value={
+          value === undefined || value === null
+            ? dayjs(new Date())
+            : dayjs(new Date(value))
+        }
+        onChange={handleChange}
+      />
+    </div>
+  )
+}
+
+export { Input, CustomInput, CustomNumberInput, CustomTextArea, CustomDateField, CustomTimeField }

@@ -15,6 +15,7 @@ export async function saveTicketType(ticketType, editTicketType): Promise<TropTi
       ticketType: ticketType,
     })
   });
+
   const json = await response.json();
 
   return json;
