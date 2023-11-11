@@ -43,6 +43,7 @@ export default function EventDetailPage() {
       <ul className="">
         {ticketTypes.map((ticket, index) => (
           <TicketDetail
+            key={index}
             ticketName={ticket.name}
             price={ticket.price}
             description={ticket.description}
