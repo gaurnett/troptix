@@ -39,7 +39,7 @@ export default function EventDetailPage() {
 
       <h2 className="text-xl font-semibold text-center mb-2">Tickets:</h2>
       <ul className="">
-        {ticketTypes.map((ticket: any, index: number) => (
+        {/* {ticketTypes.map((ticket: any, index: number) => (
           <TicketDetail
             key={index}
             ticketName={ticket.name}
@@ -50,7 +50,7 @@ export default function EventDetailPage() {
           // <li key={index} className="m-2 px-4 py-2 bg-gray-200 rounded-md">
           //   {ticket.name}: ${ticket.price.toFixed(2)}
           // </li>
-        ))}
+        ))} */}
       </ul>
     </div>
   );
