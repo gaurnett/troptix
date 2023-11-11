@@ -13,11 +13,11 @@ export default function UserDelegationPage() {
   const eventId = router.query.eventId;
 
   const [messageApi, contextHolder] = message.useMessage();
-  const [delegatedUsers, setDelegatedUsers] = useState<DelegatedUser[]>([]);
+  const [delegatedUsers, setDelegatedUsers] = useState<any[]>([]);
   const [isFetchingUsers, setIsFetchingUsers] = useState(true);
   const [show, setShow] = useState(false);
   const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState({});
+  const [selectedUser, setSelectedUser] = useState<any>();
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   useEffect(() => {

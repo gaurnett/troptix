@@ -35,7 +35,7 @@ export const options = {
 };
 
 export default function QuantityChart({ orders }) {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>();
 
   useEffect(() => {
     function mapOrdersToDateCount(orders: []) {

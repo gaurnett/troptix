@@ -14,14 +14,14 @@ export default function TicketsPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [show, setShow] = useState(false);
   const [open, setOpen] = useState(false);
-  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]);
-  const [selectedTicket, setSelectedTicket] = useState({});
+  const [ticketTypes, setTicketTypes] = useState<any[]>([]);
+  const [selectedTicket, setSelectedTicket] = useState<any>();
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isFetchingTicketTypes, setIsFetchingTicketTypes] = useState(true);
 
   useEffect(() => {
     async function fetchTicketTypes() {
-      const getTicketTypesRequest: GetTicketTypesRequest = {
+      const getTicketTypesRequest: any = {
         getTicketTypesType: GetTicketTypesType.GET_TICKET_TYPES_BY_EVENT,
         eventId: eventId,
       }

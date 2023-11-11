@@ -18,7 +18,7 @@ export default function TicketsPage() {
   const { user } = useContext(TropTixContext);
   const userId = user === null || user === undefined ? null : user.id;
   const [isFetchingOrders, setIsFetchingOrders] = useState(true);
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState<any>([]);
 
   useEffect(() => {
     async function fetchOrders() {
@@ -28,7 +28,7 @@ export default function TicketsPage() {
       }
 
       try {
-        const getOrdersRequest: GetOrdersRequest = {
+        const getOrdersRequest: any = {
           getOrdersType: GetOrdersType.GET_ORDERS_FOR_USER,
           userId: userId
         }
@@ -62,7 +62,7 @@ export default function TicketsPage() {
               itemLayout="vertical"
               size="large"
               dataSource={orders}
-              renderItem={(order) => (
+              renderItem={(order: any) => (
                 <List.Item>
                   <Link key={order.id} href={{ pathname: "/tickets", query: { orderId: order.id } }} >
                     <List.Item.Meta

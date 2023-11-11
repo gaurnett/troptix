@@ -21,16 +21,16 @@ const contentStyle: React.CSSProperties = {
 
 export default function TicketsPage() {
   const router = useRouter();
-  const carouselRef = useRef();
+  const carouselRef = useRef<any>();
   const orderId = router.query.orderId;
   const { user } = useContext(TropTixContext);
   const [isFetchingOrders, setIsFetchingOrders] = useState(true);
-  const [order, setOrder] = useState([]);
+  const [order, setOrder] = useState<any>();
 
   useEffect(() => {
     async function fetchOrders() {
       try {
-        const getOrdersRequest: GetOrdersRequest = {
+        const getOrdersRequest: any = {
           getOrdersType: GetOrdersType.GET_ORDER_BY_ID,
           orderId: orderId
         }
