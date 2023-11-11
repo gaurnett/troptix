@@ -13,16 +13,16 @@ export default function PromotionCodesPage() {
   const eventId = router.query.eventId;
 
   const [messageApi, contextHolder] = message.useMessage();
-  const [promotions, setPromotions] = useState<Promotion[]>([]);
+  const [promotions, setPromotions] = useState<any[]>([]);
   const [isFetchingPromotions, setIsFetchingPromotions] = useState(true);
   const [show, setShow] = useState(false);
   const [open, setOpen] = useState(false);
-  const [selectedPromotion, setSelectedPromotion] = useState({});
+  const [selectedPromotion, setSelectedPromotion] = useState<any>();
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   useEffect(() => {
     async function fetchPromotions() {
-      const getPromotionsRequest: GetPromotionsRequest = {
+      const getPromotionsRequest: any = {
         getPromotionsType: GetPromotionsType.GET_PROMOTIONS_ALL,
         eventId: eventId,
       }

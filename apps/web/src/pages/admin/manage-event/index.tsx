@@ -20,13 +20,13 @@ export default function ManageEventPage() {
   const router = useRouter();
   const eventId = router.query.eventId;
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
-  const [event, setEvent] = useState<Event[]>([]);
+  const [event, setEvent] = useState<any>();
 
   useEffect(() => {
     async function fetchEvents() {
       console.log("fetching 1");
       try {
-        const getEventsRequest: GetEventsRequest = {
+        const getEventsRequest: any = {
           getEventsType: GetEventsType.GET_EVENTS_BY_ID,
           eventId: eventId
         }

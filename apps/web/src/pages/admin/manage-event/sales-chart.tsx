@@ -37,7 +37,7 @@ export const options = {
 };
 
 export default function SalesChart({ orders }) {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>();
 
   useEffect(() => {
     function mapOrdersToDateSales(orders: []) {

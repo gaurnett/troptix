@@ -13,7 +13,7 @@ export default function ManageEventsPage() {
   const { user } = useContext(TropTixContext);
   const userId = user === null || user === undefined ? null : user.id;
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -24,11 +24,11 @@ export default function ManageEventsPage() {
       }
 
       try {
-        const getEventsRequest: GetEventsRequest = {
+        const getEventsRequest: any = {
           getEventsType: GetEventsType.GET_EVENTS_BY_ORGANIZER,
           organizerId: userId
         }
-        const response: TropTixResponse = await getEvents(getEventsRequest);
+        const response: any = await getEvents(getEventsRequest);
 
         if (response !== undefined && response.length !== 0) {
           setEvents(getEventsFromRequest(response));

@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 
 export default function EventDetailPage() {
   const router = useRouter();
-  const eventIndex = Number(router.query.slug[0]);
+  const eventIndex = 1;
 
   const { event, isLoading, isError } = useFetchEvent(eventIndex);
   const ticketTypes = event.ticketTypes;

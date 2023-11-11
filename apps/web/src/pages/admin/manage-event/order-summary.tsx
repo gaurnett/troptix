@@ -17,14 +17,14 @@ const tickets = [{
 export default function OrderSummaryPage() {
   const router = useRouter();
   const eventId = router.query.eventId;
-  const [orderSummary, setOrderSummary] = useState<OrderSummary>(new OrderSummary([]));
+  const [orderSummary, setOrderSummary] = useState<any>(new OrderSummary([]));
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     async function fetchOrderSummary() {
       try {
-        const getOrdersRequest: GetOrdersRequest = {
+        const getOrdersRequest: any = {
           getOrdersType: GetOrdersType.GET_ORDERS_FOR_EVENT,
           eventId: eventId
         }
@@ -144,7 +144,7 @@ export default function OrderSummaryPage() {
                   className="demo-loadmore-list"
                   itemLayout="horizontal"
                   dataSource={orderSummary.ticketsSummary}
-                  renderItem={(summary) => (
+                  renderItem={(summary: any) => (
                     <List.Item>
                       {TicketSoldItem(summary[1])}
                     </List.Item>
