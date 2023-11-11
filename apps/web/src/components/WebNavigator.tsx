@@ -94,7 +94,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
       value={
         (user === undefined || user === null) ?
           {
-            user: {},
+            user: undefined,
             setUser: (user: any) => { }
           } :
           {
