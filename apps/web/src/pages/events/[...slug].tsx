@@ -17,7 +17,9 @@ export default function EventDetailPage() {
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-8">
       <div className="flex flex-wrap md:flex-nowrap mb-6">
-        <img
+        <Image
+          width={150}
+          height={150}
           src={event.imageUrl}
           alt={event.name}
           className="w-full md:w-1/2 rounded-md shadow-md mb-4 md:mb-0 md:mr-6"
@@ -44,7 +46,7 @@ export default function EventDetailPage() {
             ticketName={ticket.name}
             price={ticket.price}
             description={ticket.description}
-            onAdd={() => {}}
+            onAdd={() => { }}
           />
           // <li key={index} className="m-2 px-4 py-2 bg-gray-200 rounded-md">
           //   {ticket.name}: ${ticket.price.toFixed(2)}
