@@ -12,7 +12,7 @@ import { Dropdown, MenuProps } from 'antd'
 import {
   getAuth,
 } from "firebase/auth";
-import firebaseApp from '../../config';
+import { auth } from '../../config';
 
 export default function Header() {
   const [top, setTop] = useState<boolean>(true);
