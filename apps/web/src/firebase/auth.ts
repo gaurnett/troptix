@@ -6,7 +6,7 @@ import { User } from 'troptix-models';
 import { NextRouter } from "next/router";
 
 export async function signUpWithEmail(signUpFields: SignUpFields, router: NextRouter) {
-  let result = null, error = null;
+  let result: any, error: any;
   try {
     await createUserWithEmailAndPassword(auth, signUpFields.email, signUpFields.password)
       .then(async result => {
@@ -32,8 +32,8 @@ export async function signUpWithEmail(signUpFields: SignUpFields, router: NextRo
 }
 
 export async function signInWithEmail(email: string, password: string) {
-  let result = null;
-  let error = null;
+  let result: any;
+  let error: any;
   try {
     result = await signInWithEmailAndPassword(auth, email, password);
   } catch (e) {
