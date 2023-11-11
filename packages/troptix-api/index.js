@@ -8,7 +8,7 @@ import { saveTicketType } from "./ticketTypes";
 import { addPromotion, getPromotions, GetPromotionsRequest, GetPromotionsType } from "./promotion";
 
 const monorepoTest = {
-  title: 'Hello World',
+  title: 'Hello TropTix',
   subtitle: 'My great monorepo',
 };
 
