@@ -1,7 +1,7 @@
 
 import EventCard from '@/components/EventCard';
 import { CustomInput } from '@/components/ui/input';
-import { message, Button, Tabs } from 'antd';
+import { message, Button, Tabs, Spin } from 'antd';
 import type { TabsProps } from 'antd';
 import { useRouter } from 'next/router';
 import { IoMdArrowRoundBack } from "react-icons/io";
@@ -19,7 +19,7 @@ export default function ManageEventPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const eventId = router.query.eventId;
-  const [isFetchingEvents, setIsFetchingEvents] = useState(true);
+  const [isFetchingEvent, setIsFetchingEvent] = useState(true);
   const [event, setEvent] = useState<any>();
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export default function ManageEventPage() {
         console.log("ManageEventScreen [fetchEvents] error: " + error)
       }
 
-      setIsFetchingEvents(false);
+      setIsFetchingEvent(false);
     };
 
     fetchEvents();
@@ -114,33 +114,40 @@ export default function ManageEventPage() {
   return (
     <div className="w-full md:max-w-2xl mx-auto">
       {contextHolder}
-      <div className='mx-4'>
-        <h1 className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">{event.name}</span></h1>
+      {!isFetchingEvent
+        ?
+        <div className='mx-4'>
+          <h1 className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">{event.name}</span></h1>
 
-        <div className=''>
-          <div className='flow-root'>
-            <div className="flex mt-2">
-              <div className='flex'>
-                <a className='justify-center align-middle my-auto' style={{ cursor: 'pointer' }} onClick={goBack}>
-                  <IoMdArrowRoundBack className="text-4xl mr-8" />
-                </a>
-                <Button onClick={updateEvent} className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Save Event</Button>
-              </div>
+          <div className=''>
+            <div className='flow-root'>
+              <div className="flex mt-2">
+                <div className='flex'>
+                  <a className='justify-center align-middle my-auto' style={{ cursor: 'pointer' }} onClick={goBack}>
+                    <IoMdArrowRoundBack className="text-4xl mr-8" />
+                  </a>
+                  <Button onClick={updateEvent} className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Save Event</Button>
+                </div>
 
-              <div className="">
-                <div className="mb-2 ml-4">
-                  <Button type="primary" className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex bg-blue-600 hover:bg-blue-700">Publish Event</Button>
+                <div className="">
+                  <div className="mb-2 ml-4">
+                    <Button type="primary" className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex bg-blue-600 hover:bg-blue-700">Publish Event</Button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="float-right w-full">
-              <Tabs defaultActiveKey="0" items={items} onChange={onChange} />
-            </div>
+              <div className="float-right w-full">
+                <Tabs defaultActiveKey="0" items={items} onChange={onChange} />
+              </div>
 
+            </div>
           </div>
         </div>
-      </div>
+        :
+        <Spin className="mt-16" tip="Fetching Event" size="large">
+          <div className="content" />
+        </Spin>
+      }
     </div>
   );
 }
