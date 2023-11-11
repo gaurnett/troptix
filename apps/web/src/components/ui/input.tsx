@@ -73,14 +73,16 @@ function CustomTextArea({ name, value, id, label, rows, placeholder, handleChang
 }
 
 function CustomDateField({ name, value, id, label, placeholder, handleChange, required, useCustomDisableDate = false, startDate = null }) {
-  function getDateFormatter(value): DatePickerProps['format'] {
-    return format(value.toDate(), 'MMM dd, yyyy');
+  const dateFormat = 'MMM dd, yyyy';
+  function getDateFormatter(value) {
+    return `${format(value.toDate(), 'MMM dd, yyyy')}`;
   };
 
+  // eslint-disable-next-line arrow-body-style
   const disabledDate: RangePickerProps['disabledDate'] = (current) => {
     // Can not select days before today and today
     if (useCustomDisableDate) {
-      return startDate && current < dayjs(startDate).subtract(1, 'day').endOf('day');
+      return current && current < dayjs(startDate).subtract(1, 'day').endOf('day');
     } else {
       return current && current < dayjs().subtract(1, 'day').endOf('day');
     }
