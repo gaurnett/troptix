@@ -62,9 +62,9 @@ export default function AdminHeader() {
     {
       key: '1',
       label: (
-        <a rel="noopener noreferrer" href="/">
+        <Link rel="noopener noreferrer" href="/">
           Home
-        </a>
+        </Link>
       ),
     },
     {

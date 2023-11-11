@@ -39,17 +39,17 @@ export default function Header() {
     {
       key: '1',
       label: (
-        <a rel="noopener noreferrer" href="/admin">
+        <Link rel="noopener noreferrer" href="/admin">
           Admin Portal
-        </a>
+        </Link>
       ),
     },
     {
       key: '2',
       label: (
-        <a rel="noopener noreferrer" href="/orders">
+        <Link rel="noopener noreferrer" href="/orders">
           Your Tickets
-        </a>
+        </Link>
       ),
     },
     {
