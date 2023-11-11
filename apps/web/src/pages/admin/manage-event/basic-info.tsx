@@ -6,7 +6,6 @@ import { DatePicker, DatePickerProps, Drawer } from "antd";
 
 export default function BasicInfoPage({ event, setEvent }) {
   const placesLibrary = ['places']
-  const [searchResult, setSearchResult] = useState(null)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     console.log(e);
@@ -25,51 +24,44 @@ export default function BasicInfoPage({ event, setEvent }) {
     }))
   }
 
-  async function signIn() {
-    console.log("signing in");
-  }
+  function getValueOrDefault(value: any, defaultValue: any) {
+    if (value === undefined || value === null) {
+      return defaultValue;
+    }
 
-  function onLoad(autocomplete) {
-    setSearchResult(autocomplete);
+    return value;
   }
 
   function onPlaceChanged(place) {
-    if (searchResult !== null) {
-      // console.log(searchResult.getPlace())
-    } else {
-      console.log('Autocomplete is not loaded yet!')
+    if (place === null || place === undefined) {
+      return;
     }
-
-    if (searchResult != null) {
-      const place = searchResult.getPlace();
-      const name = place.name;
-      const status = place.business_status;
-      const formattedAddress = place.formatted_address;
-      console.log(`Name: ${name}`);
-      console.log(`Business Status: ${status}`);
-      console.log(`Formatted Address: ${formattedAddress}`);
-
-      let country = ""
-      let countryCode = "";
+    let country = ""
+    let countryCode = "";
+    let lat = 0;
+    let lng = 0
+    if (place.address_components !== undefined) {
       place.address_components.forEach(component => {
         if (component.types.includes("country")) {
           country = component.long_name;
           countryCode = component.short_name
         }
       })
-
-      setEvent(previousEvent => ({
-        ...previousEvent,
-        ["address"]: place.formatted_address,
-        ["venue"]: place.name,
-        ["country"]: country,
-        ["country_code"]: countryCode,
-        ["latitude"]: place.geometry.location.lat,
-        ["longitude"]: place.geometry.location.lng
-      }))
-    } else {
-      // alert("Please enter text");
     }
+
+    if (place.geometry?.location !== undefined) {
+      lat = place.geometry.location.lat();
+      lng = place.geometry.location.lng();
+    }
+
+    setEvent((previousEvent: any) => ({
+      ...previousEvent,
+      ["address"]: getValueOrDefault(place.formatted_address, ""),
+      ["country"]: getValueOrDefault(country, ""),
+      ["country_code"]: getValueOrDefault(countryCode, ""),
+      ["latitude"]: getValueOrDefault(lat, 0),
+      ["longitude"]: getValueOrDefault(lng, 0)
+    }))
   }
 
   return (
@@ -101,7 +93,7 @@ export default function BasicInfoPage({ event, setEvent }) {
               defaultValue={event.address}
               apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
               onPlaceSelected={(place) => {
-                console.log(place);
+                onPlaceChanged(place);
               }}
               options={{
                 types: [],

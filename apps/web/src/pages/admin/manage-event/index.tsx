@@ -8,11 +8,10 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import TicketsPage from './tickets';
 import { useEffect, useState } from 'react';
 import { Event, getEventsFromRequest } from 'troptix-models';
-import { TropTixResponse, getEvents, GetEventsRequest, GetEventsType } from 'troptix-api';
+import { TropTixResponse, getEvents, saveEvent, GetEventsRequest, GetEventsType } from 'troptix-api';
 import BasicInfoPage from './basic-info';
 import DetailsPage from './details';
 import OrderSummaryPage from './order-summary';
-import { saveEvent } from "troptix-api";
 import PromotionCodesPage from './promotions-codes';
 import UserDelegationPage from './user-delegation';
 

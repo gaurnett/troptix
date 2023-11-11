@@ -89,9 +89,6 @@ export default function AddEventStarterPage({ event, setEvent }) {
       return;
     }
 
-    console.log("Name: " + place.name);
-    console.log("Place: " + JSON.stringify(place));
-
     let country = ""
     let countryCode = "";
     let lat = 0;
