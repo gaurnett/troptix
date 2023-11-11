@@ -18,7 +18,6 @@ export default function Header() {
   const [top, setTop] = useState<boolean>(true);
   const { user } = useContext(TropTixContext);
   const pathname = usePathname();
-  const auth = getAuth(firebaseApp);
 
   // detect whether user has scrolled the page down by 10px
   const scrollHandler = () => {
