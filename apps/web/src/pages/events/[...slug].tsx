@@ -1,6 +1,6 @@
 import { TicketDetail } from "@/components/TicketDetail";
 import { useFetchEvent } from "@/hooks/useFetchEvent";
-import Image from "next/image";
+import { Image } from "antd";
 import { useRouter } from "next/router";
 
 export default function EventDetailPage() {

@@ -10,7 +10,7 @@ import {
   onAuthStateChanged,
   getAuth,
 } from "firebase/auth";
-import firebaseApp from '../config';
+import { auth } from '../config';
 import { getUsers, GetUsersType } from 'troptix-api';
 import { User, setUserFromResponse } from 'troptix-models';
 import Navbar from './navbar';
@@ -28,12 +28,11 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
   const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const auth = getAuth(firebaseApp);
 
   console.log("Path: " + pathname);
 
   useEffect(() => {
-    async function fetchUserFromDatbase(user) {
+    async function fetchUserFromDatbase(user: any) {
       try {
         const getUsersRequest = {
           getUsersType: GetUsersType.GET_USERS_BY_ID,
@@ -69,7 +68,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
     });
 
     return () => unsubscribe();
-  }, [auth]);
+  }, []);
 
   function oldAdminNavBar() {
     return (
