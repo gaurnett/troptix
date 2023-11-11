@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 
 export default function EventDetailPage() {
   const router = useRouter();
-  const eventIndex = Number(router.query.slug[0]);
+  const eventIndex = 1;
 
   const { event, isLoading, isError } = useFetchEvent(eventIndex);
   const ticketTypes = event.ticketTypes;
@@ -41,7 +41,7 @@ export default function EventDetailPage() {
         <h2 className="text-xl font-semibold text-center mb-2">Tickets:</h2>
       )}
       <ul className="">
-        {ticketTypes.map((ticket, index) => (
+        {ticketTypes.map((ticket: any, index: number) => (
           <TicketDetail
             key={index}
             ticketName={ticket.name}
