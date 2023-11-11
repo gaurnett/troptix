@@ -21,7 +21,10 @@ const inter = Inter({
   display: 'swap'
 })
 
-export const TropTixContext = createContext({});
+export const TropTixContext = createContext({
+  user: {},
+  setUser: (user: any) => { }
+});
 export const useTropTixContext = () => useContext(TropTixContext);
 
 export default function WebNavigator({ Component, pageProps }: AppProps) {
@@ -89,7 +92,11 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
   return (
     <TropTixContext.Provider
       value={
-        (user === undefined || user === null) ? {} :
+        (user === undefined || user === null) ?
+          {
+            user: {},
+            setUser: (user: any) => { }
+          } :
           {
             user: user,
             setUser: setUser
