@@ -37,9 +37,7 @@ export default function EventDetailPage() {
         </div>
       </div>
 
-      {Boolean(ticketTypes.length) && (
-        <h2 className="text-xl font-semibold text-center mb-2">Tickets:</h2>
-      )}
+      <h2 className="text-xl font-semibold text-center mb-2">Tickets:</h2>
       <ul className="">
         {ticketTypes.map((ticket: any, index: number) => (
           <TicketDetail
