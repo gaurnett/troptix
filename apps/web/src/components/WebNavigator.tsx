@@ -22,7 +22,7 @@ const inter = Inter({
 })
 
 export const TropTixContext = createContext({
-  user: {},
+  user: new User(),
   setUser: (user: any) => { }
 });
 export const useTropTixContext = () => useContext(TropTixContext);
