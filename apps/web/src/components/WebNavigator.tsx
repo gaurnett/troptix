@@ -42,14 +42,14 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
         const response = await getUsers(getUsersRequest);
         let currentUser = setUserFromResponse(response.response, user);
 
-        setUser(prevUser => ({ ...prevUser, currentUser }));
+        setUser(currentUser);
         setLoading(false);
 
         console.log("TropTix Web: " + JSON.stringify(currentUser));
       } catch (error) {
         let currentUser = setUserFromResponse(null, user);
 
-        setUser(prevUser => ({ ...prevUser, currentUser }));
+        setUser(currentUser);
         setLoading(false);
         console.log("TropTix Web: " + error);
       }
@@ -59,7 +59,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
       console.log("User: " + JSON.stringify(user));
       if (user) {
         let currentUser = setUserFromResponse(null, user);
-        setUser(prevUser => ({ ...prevUser, currentUser }));
+        setUser(currentUser);
         setLoading(false);
       } else {
         setUser(null);
@@ -91,7 +91,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
       value={
         (user === undefined || user === null) ? {} :
           {
-            user: user.currentUser,
+            user: user,
             setUser: setUser
           }}>
       {
