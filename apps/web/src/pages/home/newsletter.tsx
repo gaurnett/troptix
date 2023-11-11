@@ -37,8 +37,8 @@ export default function Newsletter() {
 
               {/* CTA content */}
               <div className="text-center lg:text-left lg:max-w-xl">
-                <h3 className="h3 text-white mb-2">Want more tutorials & guides?</h3>
-                <p className="text-gray-300 text-lg mb-6">Lorem ipsum dolor sit amet consectetur adipisicing elit nemo expedita voluptas culpa sapiente.</p>
+                <h3 className="h3 text-white mb-2">Want to host events on our platform?</h3>
+                <p className="text-gray-300 text-lg mb-6">Get in touch with our team today and see how we can improve your event management needs.</p>
 
                 {/* CTA form */}
                 <form className="w-full lg:w-auto">
@@ -48,7 +48,7 @@ export default function Newsletter() {
                   </div>
                   {/* Success message */}
                   {/* <p className="text-sm text-gray-400 mt-3">Thanks for subscribing!</p> */}
-                  <p className="text-sm text-gray-400 mt-3">No spam. You can unsubscribe at any time.</p>
+                  {/* <p className="text-sm text-gray-400 mt-3">No spam. You can unsubscribe at any time.</p> */}
                 </form>
               </div>
 

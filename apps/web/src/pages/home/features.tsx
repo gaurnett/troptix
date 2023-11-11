@@ -11,8 +11,8 @@ export default function Features() {
 
           {/* Section header */}
           <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20">
-            <h2 className="h2 mb-4">Explore the solutions</h2>
-            <p className="text-xl text-gray-600">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint occaecat cupidatat.</p>
+            <h2 className="h2 mb-4">Explore our solutions</h2>
+            <p className="text-xl text-gray-600">Discover a range of tailored product solutions crafted your event organization needs. Want a custom feature? Reach out to our team to see what we can do.</p>
           </div>
 
           {/* Items */}
@@ -31,8 +31,8 @@ export default function Features() {
                   </g>
                 </g>
               </svg>
-              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Headless CMS</h4>
-              <p className="text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Create Events</h4>
+              <p className="text-gray-600 text-center">Effortlessly plan and manage your own events, from small gatherings to large-scale occasions, offering customization options, ticketing, and promotional tools for a seamless event organization experience for you and your patrons.</p>
             </div>
 
             {/* 2nd item */}
@@ -47,8 +47,8 @@ export default function Features() {
                   </g>
                 </g>
               </svg>
-              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Headless CMS</h4>
-              <p className="text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Sell Tickets Online</h4>
+              <p className="text-gray-600 text-center">List and sell tickets for their events through a user-friendly platform. It provides a streamlined process for setting prices, managing sales, and reaching a broader audience, simplifying the entire ticket-selling experience.</p>
             </div>
 
             {/* 3rd item */}
@@ -64,8 +64,8 @@ export default function Features() {
                   </g>
                 </g>
               </svg>
-              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Headless CMS</h4>
-              <p className="text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Ticket Customization</h4>
+              <p className="text-gray-600 text-center">Tailor and personalize event tickets, allowing for unique branding, specific event details, and varied designs. This feature ensures a professional and distinctive touch to tickets, enhancing the event's overall appeal and memorability.</p>
             </div>
 
             {/* 4th item */}
@@ -81,8 +81,8 @@ export default function Features() {
                   </g>
                 </g>
               </svg>
-              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Headless CMS</h4>
-              <p className="text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Track Registration</h4>
+              <p className="text-gray-600 text-center">Monitor and manage attendee sign-ups and information. It provides a streamlined system to categorize, organize, and track participant details, ensuring a smooth and organized registration process for different segments or sessions within an event.</p>
             </div>
 
             {/* 5th item */}
@@ -97,8 +97,8 @@ export default function Features() {
                   </g>
                 </g>
               </svg>
-              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Headless CMS</h4>
-              <p className="text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Manage Attendees</h4>
+              <p className="text-gray-600 text-center">Oversee attendee information, ticket status, and engagement. It enables easy access to attendee data, simplifies check-ins, and facilitates personalized communication, ensuring a seamless and enhanced experience for any user.</p>
             </div>
 
             {/* 6th item */}
@@ -112,8 +112,8 @@ export default function Features() {
                   </g>
                 </g>
               </svg>
-              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Headless CMS</h4>
-              <p className="text-gray-600 text-center">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Payouts and Analytics</h4>
+              <p className="text-gray-600 text-center">See comprehensive insights into ticket sale performance. Easily track your event earnings, facilitate efficient payouts, and see valuable analytics to understand event success, attendee demographics, and revenue trends.</p>
             </div>
 
           </div>

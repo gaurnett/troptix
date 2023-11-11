@@ -19,10 +19,10 @@ export default function ManageEventsScreen({ navigation }) {
         getEventsType: GetEventsType.GET_EVENTS_BY_ORGANIZER,
         organizerId: user.id
       }
-      const response: TropTixResponse = await getEvents(getEventsRequest);
+      const response = await getEvents(getEventsRequest);
 
-      if (response.response !== undefined && response.response.length !== 0) {
-        setEvents(getEventsFromRequest(response.response));
+      if (response !== undefined && response.length !== 0) {
+        setEvents(getEventsFromRequest(response));
       }
     } catch (error) {
       console.log("ManageEventsScreen [fetchEvents] error: " + error)

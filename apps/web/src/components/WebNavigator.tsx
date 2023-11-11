@@ -33,18 +33,17 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
   console.log("Path: " + pathname);
 
   useEffect(() => {
-    async function fetchUser(user) {
+    async function fetchUserFromDatbase(user) {
       try {
-        // const getUsersRequest = {
-        //   getUsersType: GetUsersType.GET_USERS_BY_ID,
-        //   userId: user.uid
-        // };
+        const getUsersRequest = {
+          getUsersType: GetUsersType.GET_USERS_BY_ID,
+          userId: user.uid
+        };
 
-        // const response = await getUsers(getUsersRequest);
-        // let currentUser = setUserFromResponse(response.response, user);
+        const response = await getUsers(getUsersRequest);
+        let currentUser = setUserFromResponse(response.response, user);
 
-        // setUser(prevUser => ({ ...prevUser, currentUser }));
-        setUser(null);
+        setUser(prevUser => ({ ...prevUser, currentUser }));
         setLoading(false);
 
         console.log("TropTix Web: " + JSON.stringify(currentUser));
@@ -60,7 +59,9 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       console.log("User: " + JSON.stringify(user));
       if (user) {
-        fetchUser(user);
+        let currentUser = setUserFromResponse(null, user);
+        setUser(prevUser => ({ ...prevUser, currentUser }));
+        setLoading(false);
       } else {
         setUser(null);
         setLoading(false);

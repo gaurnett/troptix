@@ -1,11 +1,11 @@
 
 import { Tabs } from 'antd';
 import type { TabsProps } from 'antd';
-import BasicInfoPage from './basic-info';
+import BasicInfoPage from '../manage-event/basic-info';
 import { Event } from 'troptix-models';
 import { useContext, useState } from 'react';
-import DetailsPage from './details';
-import TicketsPage from './tickets';
+import DetailsPage from '../manage-event/details';
+import TicketsPage from '../manage-event/tickets';
 import EventCard from '@/components/EventCard';
 import { TropTixContext } from '@/components/WebNavigator';
 import AddEventStarterPage from './add-event-starter';

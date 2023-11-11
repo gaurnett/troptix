@@ -2,43 +2,48 @@ import { CustomInput, CustomTextArea } from "@/components/ui/input";
 import { Card, Col, List, Progress, Row, Spin, Statistic } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, PureComponent } from "react";
 import { TropTixResponse, getOrders, GetOrdersType, GetOrdersRequest } from 'troptix-api';
 import { Event, OrderSummary } from "troptix-models";
 import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
+import SalesChart from "./sales-chart";
+import QuantityChart from "./quantity-chart";
 
 const tickets = [{
   quantity: 100,
   total: 200
 }]
+
 export default function OrderSummaryPage() {
   const router = useRouter();
   const eventId = router.query.eventId;
   const [orderSummary, setOrderSummary] = useState<OrderSummary>(new OrderSummary([]));
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     async function fetchOrderSummary() {
-      console.log("fetching 2");
-      // try {
-      //   const getOrdersRequest: GetOrdersRequest = {
-      //     getOrdersType: GetOrdersType.GET_ORDERS_FOR_EVENT,
-      //     eventId: eventId
-      //   }
-      //   const response = await getOrders(getOrdersRequest);
+      try {
+        const getOrdersRequest: GetOrdersRequest = {
+          getOrdersType: GetOrdersType.GET_ORDERS_FOR_EVENT,
+          eventId: eventId
+        }
+        const response = await getOrders(getOrdersRequest);
+        setOrders(response);
 
-      //   if (response !== undefined && response.length !== 0) {
-      //     const summary = new OrderSummary(response)
-      //     setOrderSummary(summary);
-      //   }
 
-      //   setIsFetchingEvents(false);
-      //   console.log("EventDashboardScreen [fetchOrderSummary]: " + response)
-      // } catch (error) {
+        if (response !== undefined && response.length !== 0) {
+          const summary = new OrderSummary(response)
+          setOrderSummary(summary);
+        }
 
-      //   setIsFetchingEvents(false);
-      //   console.log("EventDashboardScreen [fetchOrderSummary] error: " + error)
-      // }
+        setIsFetchingEvents(false);
+        console.log("EventDashboardScreen [fetchOrderSummary]: " + response)
+      } catch (error) {
+
+        setIsFetchingEvents(false);
+        console.log("EventDashboardScreen [fetchOrderSummary] error: " + error)
+      }
     };
 
     fetchOrderSummary();
@@ -85,12 +90,13 @@ export default function OrderSummaryPage() {
   return (
     <div className="w-full md:max-w-md mr-8">
       {
-        isFetchingEvents ? <Spin className="mt-16" tip="Fetching Order Summary" size="large">
-          <div className="content" />
-        </Spin> :
+        isFetchingEvents ?
+          <Spin className="mt-16" tip="Fetching Order Summary" size="large">
+            <div className="content" />
+          </Spin> :
           <div>
-            <h2 className="text-xl md:text-1xl font-medium leading-tighter tracking-tighter mb-1" data-aos="zoom-y-out">Gross Sales</h2>
-            <h2 className="text-3xl md:text-4xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">{getFormattedCurrency(orderSummary.gross)}</h2>
+            {/* <h2 className="text-xl md:text-1xl font-medium leading-tighter tracking-tighter mb-1" data-aos="zoom-y-out">Gross Sales</h2>
+            <h2 className="text-3xl md:text-4xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">{getFormattedCurrency(orderSummary.gross)}</h2> */}
 
 
             <div className="md:flex ">
@@ -118,7 +124,20 @@ export default function OrderSummaryPage() {
               </div>
             </div>
 
-            <div className="flex flex-wrap -mx-3 mb-4">
+            <div className="flex flex-wrap mb-4">
+              <div className="w-full px-3">
+                <label className="text-xl md:text-1xl font-medium text-sm mb-1">Sale Analysis</label>
+                <SalesChart orders={orders} />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap">
+              <div className="w-full px-3">
+                <QuantityChart orders={orders} />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap mb-4 mt-8">
               <div className="w-full px-3">
                 <label className="text-xl md:text-1xl font-medium text-sm mb-1">Ticket Summary</label>
                 <List

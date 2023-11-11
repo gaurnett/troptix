@@ -8,6 +8,7 @@ import Head from 'next/head'
 import Sidebar from "@/components/admin/Sidebar";
 import { useState } from "react";
 import DashboardPage from "./dashboard";
+import ManageEventsPage from "./manage-events";
 export default function AdminPage({ children }) {
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -15,7 +16,7 @@ export default function AdminPage({ children }) {
 
   return (
     <div>
-      <DashboardPage />
+      <ManageEventsPage />
     </div>
   );
 }
