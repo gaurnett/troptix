@@ -7,6 +7,11 @@ import { GetOrdersType, GetOrdersRequest, getOrders, PostOrdersType, PostOrdersR
 import { saveTicketType } from "./ticketTypes";
 import { addPromotion, getPromotions, GetPromotionsRequest, GetPromotionsType } from "./promotion";
 
+const monorepoTest = {
+  title: 'Hello World',
+  subtitle: 'My great monorepo',
+};
+
 export {
   TropTixResponse,
   getEvents,
@@ -31,5 +36,6 @@ export {
   GetOrdersRequest,
   postOrders,
   PostOrdersType,
-  PostOrdersRequest
+  PostOrdersRequest,
+  monorepoTest
 };

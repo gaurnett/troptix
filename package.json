@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "babel src -d lib",
-    "test": "jest"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "next": "yarn --cwd apps/web dev",
+    "dev": "npm-run-all --parallel next"
   },
   "workspaces": [
     "apps/*",

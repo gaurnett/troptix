@@ -6,6 +6,7 @@ import { useFetchEvents } from "@/hooks/useFetchEvents";
 import EventCard from "@/components/EventCard";
 import { EventType } from "@/types/Event";
 import Link from "next/link";
+import { monorepoTest } from 'troptix-api';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +17,7 @@ export default function Home() {
     <main className="">
       <div>
         <h1 className="text-3xl font-bold my-14">
-          Troptix is a better way to{" "}
+          Troptix is a better way to {monorepoTest.title} {" "}
           <span className="text-red-100">get tickets</span>
         </h1>
         {/* <Button variant={"secondary"}>Explore Events</Button> */}
