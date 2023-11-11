@@ -5,6 +5,10 @@ node_modules
 apps/server/node_modules
 apps/server/.env
 
+# Ignoring Web
+apps/server/node_modules
+apps/web/.env
+
 # Ignoring Troptix App
 apps/troptix-app/node_modules
 apps/troptix-app/.expo

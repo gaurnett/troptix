@@ -26,18 +26,18 @@ export default function Home() {
         <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {!isLoading
             ? events.map((event: EventType, index: number) => {
-                return (
-                  <Link href={`/events/${index}`}>
-                    <EventCard
-                      image={event.imageUrl}
-                      eventName={event.name}
-                      date={""}
-                      location={""}
-                      price={""}
-                    />
-                  </Link>
-                );
-              })
+              return (
+                <Link key={index} href={`/events/${index}`}>
+                  <EventCard
+                    image={event.imageUrl}
+                    eventName={event.name}
+                    date={""}
+                    location={""}
+                    price={""}
+                  />
+                </Link>
+              );
+            })
             : null}
         </div>
       </section>
