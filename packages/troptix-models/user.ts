@@ -13,8 +13,7 @@ export class User {
   stripeId: string;
   role: Role;
 
-  constructor() {
-  }
+  constructor() { }
 }
 
 export function setUserFromResponse(response, firebaseUser): User {
