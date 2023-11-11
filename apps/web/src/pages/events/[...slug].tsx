@@ -1,6 +1,6 @@
 import { TicketDetail } from "@/components/TicketDetail";
 import { useFetchEvent } from "@/hooks/useFetchEvent";
-import Image from "next/image";
+import { Image } from "antd";
 import { useRouter } from "next/router";
 
 export default function EventDetailPage() {
@@ -17,11 +17,16 @@ export default function EventDetailPage() {
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-8">
       <div className="flex flex-wrap md:flex-nowrap mb-6">
-        <Image
-          src={event.imageUrl}
-          alt={event.name}
-          className="w-full md:w-1/2 rounded-md shadow-md mb-4 md:mb-0 md:mr-6"
-        />
+        <div>
+          <Image
+            preview={false}
+            width={"100%"}
+            height={"100%"}
+            src={event.imageUrl}
+            alt={event.name}
+            className="w-full md:w-1/2 rounded-md shadow-md mb-4 md:mb-0 md:mr-6"
+          />
+        </div>
         <div>
           <h1 className="text-2xl font-bold mb-2">{event.name}</h1>
           <p className="text-gray-600 mb-4">Organized by {event.organizer}</p>

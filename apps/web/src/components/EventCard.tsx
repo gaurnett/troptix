@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Image } from "antd";
 import React from "react";
 
 type EventCardProps = {
@@ -16,9 +16,19 @@ const EventCard: React.FC<EventCardProps> = ({
   location,
   price,
 }) => {
+  console.log(image);
   return (
     <div className=" rounded-md flex flex-col overflow-hidden shadow-lg hover:shadow-xl ">
-      <Image className="w-auto h-72" style={{ objectFit: 'cover' }} src={image} alt={eventName} />
+      <div>
+        <Image
+          preview={false}
+          width={"100%"}
+          height={"100%"}
+          className="w-auto h-72"
+          style={{ objectFit: 'cover' }}
+          src={"https://i0.wp.com/35.196.75.28/wp-content/uploads/2023/03/Sunrise-Breakfast-Party.jpg?fit=1440%2C1440&ssl=1"}
+          alt={eventName} />
+      </div>
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2">{eventName}</div>
         <p className="text-gray-700 text-base">
