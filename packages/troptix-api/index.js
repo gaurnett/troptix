@@ -4,7 +4,7 @@ import { addUser, getUsers, GetUsersType, GetUsersRequest } from "./users";
 import { scanTicket, getTicketsForUser } from "./tickets";
 import { addDelegatedUser, getDelegatedUsers } from "./delegatedUsers";
 import { GetOrdersType, GetOrdersRequest, getOrders, PostOrdersType, PostOrdersRequest, postOrders } from "./orders";
-import { saveTicketType } from "./ticketTypes";
+import { saveTicketType, GetTicketTypesType, GetTicketTypesRequest, getTicketTypes } from "./ticketTypes";
 import { addPromotion, getPromotions, GetPromotionsRequest, GetPromotionsType } from "./promotion";
 
 export {
@@ -20,6 +20,9 @@ export {
   scanTicket,
   getTicketsForUser,
   saveTicketType,
+  getTicketTypes,
+  GetTicketTypesType,
+  GetTicketTypesRequest,
   addPromotion,
   getPromotions,
   GetPromotionsRequest,

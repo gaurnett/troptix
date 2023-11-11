@@ -5,14 +5,16 @@ import { message, Button, Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import { useRouter } from 'next/router';
 import { IoMdArrowRoundBack } from "react-icons/io";
-import TicketsPage from '../add-event/tickets';
+import TicketsPage from './tickets';
 import { useEffect, useState } from 'react';
 import { Event, getEventsFromRequest } from 'troptix-models';
 import { TropTixResponse, getEvents, GetEventsRequest, GetEventsType } from 'troptix-api';
-import BasicInfoPage from '../add-event/basic-info';
-import DetailsPage from '../add-event/details';
+import BasicInfoPage from './basic-info';
+import DetailsPage from './details';
 import OrderSummaryPage from './order-summary';
 import { saveEvent } from "troptix-api";
+import PromotionCodesPage from './promotions-codes';
+import UserDelegationPage from './user-delegation';
 
 export default function ManageEventPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -96,17 +98,17 @@ export default function ManageEventPage() {
     {
       key: '3',
       label: 'Tickets',
-      children: <TicketsPage event={event} setEvent={setEvent} />,
+      children: <TicketsPage />,
     },
     {
       key: '4',
       label: 'Promotion Codes',
-      children: <DetailsPage event={event} setEvent={setEvent} />,
+      children: <PromotionCodesPage />,
     },
     {
       key: '5',
       label: 'User Delegation',
-      children: <TicketsPage event={event} setEvent={setEvent} />,
+      children: <UserDelegationPage />,
     },
   ];
 
@@ -120,7 +122,7 @@ export default function ManageEventPage() {
           <div className='flow-root'>
             <div className="flex mt-2">
               <div className='flex'>
-                <a className='justify-center align-middle' style={{ cursor: 'pointer' }} onClick={goBack}>
+                <a className='justify-center align-middle my-auto' style={{ cursor: 'pointer' }} onClick={goBack}>
                   <IoMdArrowRoundBack className="text-4xl mr-8" />
                 </a>
                 <Button onClick={updateEvent} className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Save Event</Button>

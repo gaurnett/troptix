@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { DatePicker, DatePickerProps, Form, Input, InputNumber, TimePicker } from "antd"
-import { DatePickerType } from "antd/es/date-picker"
+import { DatePickerType, RangePickerProps } from "antd/es/date-picker"
 import { format } from 'date-fns';
 import dayjs from "dayjs";
 // import TextArea from "antd/es/input/TextArea";
@@ -29,11 +29,17 @@ const Input2 = React.forwardRef<HTMLInputElement, InputProps>(
 )
 Input2.displayName = "Input"
 
-function CustomInput({ name, value, id, label, type, placeholder, handleChange, required, prefix = "" }) {
+function CustomInput({ name, value, id, label, type, placeholder, handleChange, required, password = false, prefix = "" }) {
   return (
     <div>
       <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={id}>{label}</label>
-      <Input onChange={handleChange} name={name} value={value} id={id} type={type} classNames={{ input: "form-input w-full text-gray-800" }} prefix={prefix} placeholder={placeholder} required={required} />
+      {
+        password ?
+          <Input.Password onChange={handleChange} name={name} value={value} id={id} type={type} className="form-input w-full text-gray-800" prefix={prefix} placeholder={placeholder} required={required} />
+          :
+          <Input onChange={handleChange} name={name} value={value} id={id} type={type} classNames={{ input: "form-input w-full text-gray-800" }} prefix={prefix} placeholder={placeholder} required={required} />
+
+      }
     </div>
   )
 }
@@ -43,7 +49,6 @@ function CustomNumberInput({ name, value, id, label, placeholder, handleChange, 
     <div>
       <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={id}>{label}</label>
       <InputNumber
-        defaultValue={1000}
         formatter={(value) => useFormatter ? `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : value}
         parser={(value) => useFormatter ? value!.replace(/\$\s?|(,*)/g, '') : value}
         onChange={handleChange}
@@ -67,9 +72,18 @@ function CustomTextArea({ name, value, id, label, rows, placeholder, handleChang
   )
 }
 
-function CustomDateField({ name, value, id, label, placeholder, handleChange, required }) {
+function CustomDateField({ name, value, id, label, placeholder, handleChange, required, useCustomDisableDate = false, startDate = null }) {
   function getDateFormatter(value): DatePickerProps['format'] {
     return format(value.toDate(), 'MMM dd, yyyy');
+  };
+
+  const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+    // Can not select days before today and today
+    if (useCustomDisableDate) {
+      return startDate && current < dayjs(startDate).subtract(1, 'day').endOf('day');
+    } else {
+      return current && current < dayjs().subtract(1, 'day').endOf('day');
+    }
   };
 
   return (
@@ -77,6 +91,7 @@ function CustomDateField({ name, value, id, label, placeholder, handleChange, re
       <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={id}>{label}</label>
       <DatePicker
         placeholder={placeholder}
+        disabledDate={disabledDate}
         name={name}
         format={getDateFormatter}
         className="form-input w-full text-gray-800"

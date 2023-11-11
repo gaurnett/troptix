@@ -12,13 +12,40 @@ export default async function handler(request, response) {
     case "POST":
       return await updateTicket(body, response);
     case "GET":
-      break;
+      return await getTicketTypes(request, response);
     case "PUT":
       return await updateTicket(body, response);
     case "DELETE":
       break;
     default:
       break;
+  }
+}
+
+async function getTicketTypes(request, response) {
+  const getTicketTypesType = request.query.getTicketTypesType;
+
+  switch (String(getTicketTypesType)) {
+    case 'GET_TICKET_TYPES_BY_EVENT':
+      return getTicketTypesByEvent(request, response);
+    default:
+      return response.status(500).json({ error: 'No ticket type set' });
+  }
+}
+
+async function getTicketTypesByEvent(request, response) {
+  const eventId = request.query.eventId;
+
+  try {
+    const ticketTypes = await prisma.ticketTypes.findMany({
+      where: {
+        eventId: eventId,
+      },
+    });
+    return response.status(200).json(ticketTypes);
+  } catch (e) {
+    console.error('Request error', e);
+    return response.status(500).json({ error: 'Error fetching promotion by code' });
   }
 }
 

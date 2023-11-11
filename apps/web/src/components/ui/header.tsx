@@ -7,13 +7,18 @@ import Logo from './logo'
 import MobileMenu from './mobile-menu'
 import Image from 'next/image'
 import { TropTixContext, useTropTixContext } from '../WebNavigator'
+import { usePathname } from 'next/navigation'
+import { Dropdown, MenuProps } from 'antd'
+import {
+  getAuth,
+} from "firebase/auth";
+import firebaseApp from '../../config';
 
 export default function Header() {
-
   const [top, setTop] = useState<boolean>(true);
   const { user } = useContext(TropTixContext);
-
-  console.log(JSON.stringify(user));
+  const pathname = usePathname();
+  const auth = getAuth(firebaseApp);
 
   // detect whether user has scrolled the page down by 10px
   const scrollHandler = () => {
@@ -24,7 +29,38 @@ export default function Header() {
     scrollHandler()
     window.addEventListener('scroll', scrollHandler)
     return () => window.removeEventListener('scroll', scrollHandler)
-  }, [top])
+  }, [top]);
+
+  async function signOut() {
+    await auth.signOut();
+  }
+
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <a rel="noopener noreferrer" href="/admin">
+          Admin Portal
+        </a>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <a rel="noopener noreferrer" href="/orders">
+          Your Tickets
+        </a>
+      ),
+    },
+    {
+      key: '3',
+      label: (
+        <a onClick={signOut} rel="noopener noreferrer">
+          Sign Out
+        </a>
+      ),
+    },
+  ];
 
   return (
     <header className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${!top ? 'bg-white backdrop-blur-sm shadow-lg' : ''}`}>
@@ -36,27 +72,24 @@ export default function Header() {
             </Link>
           </div>
 
-          <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+          <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
             <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
-              <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+              <ul className="flex flex-col mt-4 font-medium border rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                 <li>
-                  <a href="#" className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500" aria-current="page">Home</a>
+                  <Link href="/" className={`${pathname === '/' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Home</a>
                 </li>
                 <li>
-                  <a href="#" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</a>
+                  <Link href="/about" className={`${pathname === '/about' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>About</a>
                 </li>
                 <li>
-                  <a href="#" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Services</a>
-                </li>
-                <li>
-                  <a href="#" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</a>
+                  <Link href="/contact" className={`${pathname === '/contact' ? 'md:text-blue-700' : ''} block py-2 pl-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Contact</a>
                 </li>
               </ul>
             </div>
           </div>
 
-          <div className="max-w-screen-xl flex flex-wrap items-center justify-end p-4">
-            <nav className="hidden md:flex md:grow">
+          <div className="max-w-screen-xl flex flex-wrap items-center justify-end">
+            <nav className="hidden md:flex">
               <div className='flex md:order-2'>
                 {
                   user === undefined || user === null || user.name === "" ?
@@ -74,11 +107,18 @@ export default function Header() {
                       </li>
                     </ul>
                     :
-                    <Link className="flex grow justify-end flex-wrap items-center" href="/admin">
-                      <div style={{ fontSize: '20px' }}>
-                        Hi {user.name}
-                      </div>
-                    </Link>
+                    <ul className="flex justify-end">
+                      <Dropdown className='cursor-pointer' menu={{ items }}>
+                        <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
+                          <div style={{ fontSize: '16px' }}>
+                            {
+                              user.name === null || user.name === undefined || user.name === "" ? user.email : `Hi ${user.name}`
+                            }
+                          </div>
+                        </a>
+                      </Dropdown>
+                    </ul>
+
                 }
               </div>
 

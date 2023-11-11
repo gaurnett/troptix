@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 
 import Link from 'next/link'
 import Logo from './logo'
@@ -9,6 +9,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { Disclosure } from '@headlessui/react'
 import { GiHamburgerMenu } from "react-icons/gi";
+import { Dropdown, MenuProps } from 'antd'
 
 import {
   MdOutlineSpaceDashboard,
@@ -27,19 +28,22 @@ import { FaRegComments } from "react-icons/fa";
 import { BiMessageSquareDots } from "react-icons/bi";
 import { usePathname } from 'next/navigation'
 import AdminMobileMenu from './admin-mobile-menu'
+import { TropTixContext } from '../WebNavigator'
+import {
+  getAuth,
+} from "firebase/auth";
+import firebaseApp from '../../config';
 
 export default function AdminHeader() {
-
+  const { user } = useContext(TropTixContext);
   const pathname = usePathname();
   const [top, setTop] = useState<boolean>(true)
-
-  console.log(pathname);
+  const auth = getAuth(firebaseApp);
 
   // detect whether user has scrolled the page down by 10px
   const scrollHandler = () => {
     window.pageYOffset > 10 ? setTop(false) : setTop(true)
   }
-
 
   const router = useRouter();
 
@@ -47,20 +51,29 @@ export default function AdminHeader() {
     scrollHandler()
     window.addEventListener('scroll', scrollHandler)
     return () => window.removeEventListener('scroll', scrollHandler)
-  }, [top])
+  }, [top]);
 
-  const menuItems = [
+  async function signOut() {
+    await auth.signOut();
+    router.push('/');
+  }
+
+  const items: MenuProps['items'] = [
     {
-      href: '/',
-      title: 'Homepage',
+      key: '1',
+      label: (
+        <a rel="noopener noreferrer" href="/">
+          Home
+        </a>
+      ),
     },
     {
-      href: 'admin/about',
-      title: 'About',
-    },
-    {
-      href: 'admin/contact',
-      title: 'Contact',
+      key: '2',
+      label: (
+        <a onClick={signOut} rel="noopener noreferrer">
+          Sign Out
+        </a>
+      ),
     },
   ];
 
@@ -155,34 +168,27 @@ export default function AdminHeader() {
             <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
               <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                 <li>
-                  <a href="/admin" className={`${pathname === '/admin' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Dashboard</a>
+                  <Link href="/admin/manage-events" className={`${pathname === '/admin' || pathname === '/admin/manage-events' || pathname === '/admin/manage-event' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Manage Events</a>
                 </li>
                 <li>
-                  <a href="/admin/manage-events" className={`${pathname === '/admin/manage-events' || pathname === '/admin/manage-event' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Manage Events</a>
-                </li>
-                <li>
-                  <a href="/admin/add-event" className={`${pathname === '/admin/add-event' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Add Event</a>
+                  <Link href="/admin/add-event" className={`${pathname === '/admin/add-event' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Add Event</a>
                 </li>
               </ul>
             </div>
           </div>
 
-          <div className="max-w-screen-xl flex flex-wrap items-center justify-end p-4">
-            <nav className="hidden md:flex md:grow">
+          <div className="max-w-screen-xl flex flex-wrap items-center justify-end">
+            <nav className="hidden md:flex">
               <div className='flex md:order-2'>
-                <ul className="flex grow justify-end flex-wrap items-center">
-                  <li>
-                    <Link href="/auth/signin" className="font-medium text-gray-600 hover:text-gray-900 px-5 py-3 flex items-center transition duration-150 ease-in-out">Sign in</Link>
-                  </li>
-                  <li>
-                    <Link href="/auth/signup" className="btn-sm text-gray-200 bg-gray-900 hover:bg-gray-800 ml-3">
-                      <span>Sign up</span>
-                      <svg className="w-3 h-3 fill-current text-gray-400 shrink-0 ml-2 -mr-1" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z" fillRule="nonzero" />
-                      </svg>
-                    </Link>
-                  </li>
-                </ul>
+                <Dropdown className='cursor-pointer' menu={{ items }}>
+                  <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
+                    <div style={{ fontSize: '16px' }}>
+                      {
+                        user.name === null || user.name === undefined || user.name === "" ? user.email : `Hi ${user.name}`
+                      }
+                    </div>
+                  </a>
+                </Dropdown>
               </div>
 
             </nav>

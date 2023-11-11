@@ -1,16 +1,16 @@
 "use client";
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { signInWithEmail } from '@/firebase/auth';
+import { TropTixContext } from '@/components/WebNavigator';
+import { useRouter } from 'next/router';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // const auth = getAuth(firebaseApp)
-
-
-  console.log("sign in");
+  const { user } = useContext(TropTixContext);
+  const router = useRouter();
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (event.target.name === "email") {
@@ -19,6 +19,14 @@ export default function SignInPage() {
       setPassword(event.target.value);
     }
   }
+
+  useEffect(() => {
+    console.log(user);
+    if (user !== undefined) {
+      router.push('/');
+    }
+  }, [router, user]);
+
 
   async function signIn() {
     console.log("signing in");
@@ -35,8 +43,8 @@ export default function SignInPage() {
         <div className="pt-32 pb-12 md:pt-40 md:pb-20">
 
           {/* Page header */}
-          <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20">
-            <h1 className="h1">Welcome back. We exist to make entrepreneurism easier.</h1>
+          <div className="max-w-3xl mx-auto text-center pb-8">
+            <h1 className="h1">Welcome back.</h1>
           </div>
 
           {/* Form */}
