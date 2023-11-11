@@ -65,7 +65,7 @@ export default function Features() {
                 </g>
               </svg>
               <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Ticket Customization</h4>
-              <p className="text-gray-600 text-center">Tailor and personalize event tickets, allowing for unique branding, specific event details, and varied designs. This feature ensures a professional and distinctive touch to tickets, enhancing the event's overall appeal and memorability.</p>
+              <p className="text-gray-600 text-center">Tailor and personalize event tickets, allowing for unique branding, specific event details, and varied designs. This feature ensures a professional and distinctive touch to tickets, enhancing the event&apos;s overall appeal and memorability.</p>
             </div>
 
             {/* 4th item */}
