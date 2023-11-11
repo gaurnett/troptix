@@ -10,8 +10,7 @@ import { useRouter, withRouter } from "next/router";
 import { useEffect, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
 
-function App({ Component, pageProps }: AppProps) {
-
+function App({ Component, pageProps, router }: AppProps) {
   return (
     <>
       <Head>
@@ -19,7 +18,7 @@ function App({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
 
-      <WebNavigator pageProps={pageProps} Component={Component} />
+      <WebNavigator pageProps={pageProps} Component={Component} router={router} />
     </>
   );
 }
