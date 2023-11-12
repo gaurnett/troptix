@@ -20,6 +20,7 @@ export default function OrderSummaryPage() {
   const [orderSummary, setOrderSummary] = useState<any>(new OrderSummary([]));
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [orders, setOrders] = useState([]);
+  const [ticketsSold, setTicketsSold] = useState(0);
 
   useEffect(() => {
     async function fetchOrderSummary() {
@@ -31,18 +32,20 @@ export default function OrderSummaryPage() {
         const response = await getOrders(getOrdersRequest);
         setOrders(response);
 
-
         if (response !== undefined && response.length !== 0) {
           const summary = new OrderSummary(response)
           setOrderSummary(summary);
         }
 
-        setIsFetchingEvents(false);
-        console.log("EventDashboardScreen [fetchOrderSummary]: " + response)
-      } catch (error) {
+        let totalTicketCount = 0;
+        for (const order of response) {
+          totalTicketCount += order.tickets.length
+        }
+        setTicketsSold(totalTicketCount);
 
         setIsFetchingEvents(false);
-        console.log("EventDashboardScreen [fetchOrderSummary] error: " + error)
+      } catch (error) {
+        setIsFetchingEvents(false);
       }
     };
 
@@ -98,7 +101,6 @@ export default function OrderSummaryPage() {
             {/* <h2 className="text-xl md:text-1xl font-medium leading-tighter tracking-tighter mb-1" data-aos="zoom-y-out">Gross Sales</h2>
             <h2 className="text-3xl md:text-4xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">{getFormattedCurrency(orderSummary.gross)}</h2> */}
 
-
             <div className="md:flex ">
               <div className="mb-4 md:mr-4">
                 <Card>
@@ -117,7 +119,7 @@ export default function OrderSummaryPage() {
                 <Card>
                   <Statistic
                     title="Total Tickets Sold"
-                    value={26}
+                    value={ticketsSold}
                     valueStyle={{ color: '#3f8600' }}
                   />
                 </Card>
