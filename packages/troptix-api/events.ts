@@ -1,3 +1,4 @@
+import axios from "axios";
 import { TropTixResponse, prodUrl } from "./api";
 
 export enum GetEventsType {
@@ -27,14 +28,17 @@ export async function getEvents(request: GetEventsRequest): Promise<any> {
       break;
   }
 
-  const response = await fetch(url, {
+  return await fetch(url, {
     method: 'GET',
-    cache: 'no-cache',
-  });
-
-  const json = await response.json();
-
-  return json;
+    cache: "no-cache"
+  }).then(async response => {
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  }).catch(error => {
+    return error;
+  })
 }
 
 export async function saveEvent(event, editEvent): Promise<any> {
