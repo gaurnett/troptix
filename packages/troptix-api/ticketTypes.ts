@@ -35,7 +35,7 @@ export async function saveTicketType(ticketType, editTicketType): Promise<TropTi
   let url = prodUrl + `/api/ticketTypes`;
   let method = editTicketType ? "PUT" : "POST";
 
-  const response = await fetch(url, {
+  return await fetch(url, {
     method: method,
     headers: {
       Accept: 'application/json',
@@ -44,9 +44,13 @@ export async function saveTicketType(ticketType, editTicketType): Promise<TropTi
     body: JSON.stringify({
       ticketType: ticketType,
     })
-  });
-
-  const json = await response.json();
-
-  return json;
+  }).then(async response => {
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  }).catch(error => {
+    console.log(error);
+    return error;
+  })
 }

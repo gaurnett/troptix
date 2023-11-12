@@ -26,7 +26,7 @@ const EventCard: React.FC<EventCardProps> = ({
           height={"100%"}
           className="w-auto h-72"
           style={{ objectFit: 'cover' }}
-          src={"https://i0.wp.com/35.196.75.28/wp-content/uploads/2023/03/Sunrise-Breakfast-Party.jpg?fit=1440%2C1440&ssl=1"}
+          src={image}
           alt={eventName} />
       </div>
       <div className="px-6 py-4">

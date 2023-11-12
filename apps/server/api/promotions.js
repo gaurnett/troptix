@@ -17,6 +17,8 @@ export default async function handler(request, response) {
       return await updatePromotion(body, response);
     case "DELETE":
       break;
+    case "OPTIONS":
+      return response.status(200).end();
     default:
       break;
   }

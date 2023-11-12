@@ -17,7 +17,10 @@ export default async function handler(request, response) {
       return await updateTicket(body, response);
     case "DELETE":
       break;
+    case "OPTIONS":
+      return response.status(200).end();
     default:
+      console.log(method);
       break;
   }
 }
@@ -58,13 +61,6 @@ async function updateTicket(body, response) {
   const ticketType = body.ticketType;
 
   try {
-    // await prisma.ticketTypes.update({
-    //   where: {
-    //     id: body.ticketType.id,
-    //   },
-    //   data: getPrismaTicketTypeQuery(body.ticketType),
-    // });
-
     await prisma.ticketTypes.upsert({
       where: {
         id: ticketType.id,
