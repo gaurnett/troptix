@@ -32,8 +32,6 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  console.log("Path: " + pathname);
-
   useEffect(() => {
     async function fetchUserFromDatbase(user: any) {
       try {
@@ -47,19 +45,15 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
 
         setUser(currentUser);
         setLoading(false);
-
-        console.log("TropTix Web: " + JSON.stringify(currentUser));
       } catch (error) {
         let currentUser = setUserFromResponse(null, user);
 
         setUser(currentUser);
         setLoading(false);
-        console.log("TropTix Web: " + error);
       }
     }
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      console.log("User: " + JSON.stringify(user));
       if (user) {
         let currentUser = setUserFromResponse(null, user);
         setUser(currentUser);

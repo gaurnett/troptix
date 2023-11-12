@@ -14,7 +14,6 @@ export default function ManageEventsPage() {
   const userId = user === null || user === undefined ? null : user.id;
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [events, setEvents] = useState<any[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     async function fetchEvents() {

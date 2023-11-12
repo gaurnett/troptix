@@ -3,8 +3,6 @@
 import { useState, useEffect, useContext } from 'react'
 
 import Link from 'next/link'
-import Logo from './logo'
-import MobileMenu from './mobile-menu'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { Disclosure } from '@headlessui/react'
@@ -12,9 +10,6 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { Dropdown, MenuProps } from 'antd'
 
 import {
-  MdOutlineSpaceDashboard,
-  MdOutlineAnalytics,
-  MdOutlineIntegrationInstructions,
   MdOutlineMoreHoriz,
   MdOutlineSettings,
   MdOutlineLogout,
@@ -23,15 +18,9 @@ import {
 } from "react-icons/md";
 
 import { AiOutlineHome } from "react-icons/ai";
-import { CgProfile } from "react-icons/cg";
-import { FaRegComments } from "react-icons/fa";
-import { BiMessageSquareDots } from "react-icons/bi";
 import { usePathname } from 'next/navigation'
 import AdminMobileMenu from './admin-mobile-menu'
 import { TropTixContext } from '../WebNavigator'
-import {
-  getAuth,
-} from "firebase/auth";
 import { auth } from '../../config';
 
 export default function AdminHeader() {
@@ -176,22 +165,27 @@ export default function AdminHeader() {
             </div>
           </div>
 
-          <div className="max-w-screen-xl flex flex-wrap items-center justify-end">
-            <nav className="hidden md:flex">
-              <div className='flex md:order-2'>
-                <Dropdown className='cursor-pointer' menu={{ items }}>
-                  <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
-                    <div style={{ fontSize: '16px' }}>
-                      {
-                        user.name === null || user.name === undefined || user.name === "" ? user.email : `Hi ${user.name}`
-                      }
-                    </div>
-                  </a>
-                </Dropdown>
-              </div>
+          {
+            user === undefined || user === null
+              ? <></>
+              :
+              <div className="max-w-screen-xl flex flex-wrap items-center justify-end">
+                <nav className="hidden md:flex">
+                  <div className='flex md:order-2'>
+                    <Dropdown className='cursor-pointer' menu={{ items }}>
+                      <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
+                        <div style={{ fontSize: '16px' }}>
+                          {
+                            user.name === null || user.name === undefined || user.name === "" ? user.email : `Hi ${user.name}`
+                          }
+                        </div>
+                      </a>
+                    </Dropdown>
+                  </div>
 
-            </nav>
-          </div>
+                </nav>
+              </div>
+          }
 
           <AdminMobileMenu />
 
