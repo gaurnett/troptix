@@ -36,6 +36,7 @@ export const options = {
 
 export default function QuantityChart({ orders }) {
   const [data, setData] = useState<any>();
+  const [isSettingData, setIsSettingData] = useState(true);
 
   useEffect(() => {
     function mapOrdersToDateCount(orders: []) {
@@ -56,6 +57,7 @@ export default function QuantityChart({ orders }) {
           },
         ],
       })
+      setIsSettingData(false);
     }
 
     mapOrdersToDateCount(orders);
@@ -64,7 +66,7 @@ export default function QuantityChart({ orders }) {
   return (
     <div>
       {
-        data !== null ?
+        data !== null && !isSettingData ?
           <Bar options={options} data={data} /> : <></>
       }
     </div>
