@@ -23,19 +23,17 @@ export default function ManageEventsPage() {
         return;
       }
 
-      try {
-        const getEventsRequest: any = {
-          getEventsType: GetEventsType.GET_EVENTS_BY_ORGANIZER,
-          organizerId: userId
-        }
-        const response: any = await getEvents(getEventsRequest);
-
-        if (response !== undefined && response.length !== 0) {
-          setEvents(getEventsFromRequest(response));
-        }
-      } catch (error) {
-        console.log("ManageEventsScreen [fetchEvents] error: " + error)
+      const getEventsRequest: any = {
+        getEventsType: GetEventsType.GET_EVENTS_BY_ORGANIZER,
+        organizerId: userId
       }
+      const response: any = await getEvents(getEventsRequest);
+
+      if (response !== undefined && response.length !== 0) {
+        setEvents(getEventsFromRequest(response));
+      }
+
+      console.log("ManageEventsScreen [fetchEvents]: " + response)
 
       setIsFetchingEvents(false);
     };
