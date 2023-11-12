@@ -38,6 +38,7 @@ export const options = {
 
 export default function SalesChart({ orders }) {
   const [data, setData] = useState<any>();
+  const [isSettingData, setIsSettingData] = useState(true);
 
   useEffect(() => {
     function mapOrdersToDateSales(orders: []) {
@@ -59,6 +60,7 @@ export default function SalesChart({ orders }) {
           },
         ],
       })
+      setIsSettingData(false);
     }
 
     mapOrdersToDateSales(orders);
@@ -67,7 +69,7 @@ export default function SalesChart({ orders }) {
   return (
     <div>
       {
-        data !== null ?
+        data !== null && !isSettingData ?
           <Line options={options} data={data} /> : <></>
       }
     </div>
