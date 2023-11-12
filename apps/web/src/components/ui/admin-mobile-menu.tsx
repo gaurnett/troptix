@@ -6,10 +6,12 @@ import Link from 'next/link'
 import { Dropdown, MenuProps } from 'antd'
 import { TropTixContext } from '../WebNavigator'
 import { auth } from '../../config';
+import { useRouter } from 'next/router'
 
 export default function AdminMobileMenu() {
   const { user } = useContext(TropTixContext);
-  const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false)
+  const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
+  const router = useRouter();
 
   const trigger = useRef<HTMLButtonElement>(null)
   const mobileNav = useRef<HTMLDivElement>(null)
@@ -35,8 +37,13 @@ export default function AdminMobileMenu() {
     return () => document.removeEventListener('keydown', keyHandler)
   })
 
+  function closeMobileMenu() {
+    setMobileNavOpen(false);
+  }
+
   async function signOut() {
     await auth.signOut();
+    router.push('/');
   }
 
   const items: MenuProps['items'] = [
@@ -93,10 +100,10 @@ export default function AdminMobileMenu() {
 
           <ul className="px-5 py-2">
             <li>
-              <Link href="/admin/manage-events" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Manage Events</Link>
+              <Link onClick={closeMobileMenu} href="/admin/manage-events" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Manage Events</Link>
             </li>
             <li>
-              <Link href="/admin/add-event" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Add Event</Link>
+              <Link onClick={closeMobileMenu} href="/admin/add-event" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Add Event</Link>
             </li>
             {
               user === undefined || user === null
