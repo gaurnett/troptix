@@ -4,6 +4,8 @@ import { useState, useRef, useEffect, useContext } from 'react'
 import { Transition } from '@headlessui/react'
 import Link from 'next/link'
 import { TropTixContext } from '../WebNavigator'
+import { Dropdown, MenuProps } from 'antd'
+import { auth } from '../../config';
 
 export default function MobileMenu() {
   const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false)
@@ -11,6 +13,32 @@ export default function MobileMenu() {
 
   const trigger = useRef<HTMLButtonElement>(null)
   const mobileNav = useRef<HTMLDivElement>(null)
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <Link rel="noopener noreferrer" href="/admin">
+          Admin Portal
+        </Link>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <Link rel="noopener noreferrer" href="/orders">
+          Your Tickets
+        </Link>
+      ),
+    },
+    {
+      key: '3',
+      label: (
+        <a onClick={signOut} rel="noopener noreferrer">
+          Sign Out
+        </a>
+      ),
+    },
+  ];
 
   // close the mobile menu on click outside
   useEffect(() => {
@@ -32,6 +60,14 @@ export default function MobileMenu() {
     document.addEventListener('keydown', keyHandler)
     return () => document.removeEventListener('keydown', keyHandler)
   })
+
+  function closeMobileMenu() {
+    setMobileNavOpen(false);
+  }
+
+  async function signOut() {
+    await auth.signOut();
+  }
 
   return (
     <div className="flex md:hidden">
@@ -67,17 +103,14 @@ export default function MobileMenu() {
         >
 
           <ul className="px-5 py-2">
-            {/* <li>
-              <a href="#" className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500">Home</a>
-            </li> */}
             <li>
-              <Link href="/" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Home</Link>
+              <Link onClick={closeMobileMenu} href="/" rel="noopener noreferrer" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Home</Link>
             </li>
             <li>
-              <Link href="/about" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</Link>
+              <Link onClick={closeMobileMenu} href="/about" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</Link>
             </li>
             <li>
-              <Link href="/contact" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</Link>
+              <Link onClick={closeMobileMenu} href="/contact" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</Link>
             </li>
             {
               user === undefined || user === null || user.name === "" ?
@@ -95,11 +128,17 @@ export default function MobileMenu() {
                   </li>
                 </div>
                 :
-                <Link className="flex grow justify-end flex-wrap items-center" href="/admin">
-                  <div style={{ fontSize: '20px' }}>
-                    Hi {user.name}
-                  </div>
-                </Link>
+                <li className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                  <Dropdown className='cursor-pointer' menu={{ items }}>
+                    <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
+                      <div style={{ fontSize: '16px' }}>
+                        {
+                          user.name === null || user.name === undefined || user.name === "" ? user.email : `Hi ${user.name}`
+                        }
+                      </div>
+                    </a>
+                  </Dropdown>
+                </li>
             }
 
           </ul>

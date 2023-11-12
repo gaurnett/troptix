@@ -1,6 +1,6 @@
 import { SignUpFields } from "@/pages/auth/signup";
 import { auth } from "../config";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, sendEmailVerification } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { addUser } from 'troptix-api';
 import { User } from 'troptix-models';
 import { NextRouter } from "next/router";
@@ -36,6 +36,26 @@ export async function signInWithEmail(email: string, password: string) {
   let error: any;
   try {
     result = await signInWithEmailAndPassword(auth, email, password);
+  } catch (e) {
+    error = e;
+  }
+
+  return { result, error };
+}
+
+export async function signInWithGoogle() {
+  let result: any;
+  let error: any;
+  try {
+    result = await signInWithPopup(auth, new GoogleAuthProvider())
+      .then(async (result) => {
+        const userResult = result.user;
+        const user = new User();
+        user.id = userResult.uid
+        user.name = userResult.displayName;
+        user.email = userResult.email;
+        await addUser(user);
+      });
   } catch (e) {
     error = e;
   }

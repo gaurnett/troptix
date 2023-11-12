@@ -1,10 +1,14 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useContext } from 'react'
 import { Transition } from '@headlessui/react'
 import Link from 'next/link'
+import { Dropdown, MenuProps } from 'antd'
+import { TropTixContext } from '../WebNavigator'
+import { auth } from '../../config';
 
 export default function AdminMobileMenu() {
+  const { user } = useContext(TropTixContext);
   const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false)
 
   const trigger = useRef<HTMLButtonElement>(null)
@@ -30,6 +34,29 @@ export default function AdminMobileMenu() {
     document.addEventListener('keydown', keyHandler)
     return () => document.removeEventListener('keydown', keyHandler)
   })
+
+  async function signOut() {
+    await auth.signOut();
+  }
+
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: (
+        <Link rel="noopener noreferrer" href="/">
+          Home
+        </Link>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <a onClick={signOut} rel="noopener noreferrer">
+          Sign Out
+        </a>
+      ),
+    },
+  ];
 
   return (
     <div className="flex md:hidden">
@@ -65,29 +92,29 @@ export default function AdminMobileMenu() {
         >
 
           <ul className="px-5 py-2">
-            {/* <li>
-              <a href="#" className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500">Home</a>
-            </li> */}
-            <li>
-              <Link href="/admin" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Dashboard</Link>
-            </li>
             <li>
               <Link href="/admin/manage-events" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Manage Events</Link>
             </li>
             <li>
               <Link href="/admin/add-event" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Add Event</Link>
             </li>
-            <li>
-              <Link href="/auth/signin" className="flex font-medium w-full text-gray-600 hover:text-gray-900 py-2 justify-center" onClick={() => setMobileNavOpen(false)}>Sign in</Link>
-            </li>
-            <li>
-              <Link href="/auth/signup" className="btn-sm text-gray-200 bg-gray-900 hover:bg-gray-800 w-full my-2" onClick={() => setMobileNavOpen(false)}>
-                <span>Sign up</span>
-                <svg className="w-3 h-3 fill-current text-gray-400 shrink-0 ml-2 -mr-1" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z" fill="#999" fillRule="nonzero" />
-                </svg>
-              </Link>
-            </li>
+            {
+              user === undefined || user === null
+                ? <></>
+                :
+                <li>
+                  <Dropdown className='cursor-pointer' menu={{ items }}>
+                    <a className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
+                      <div style={{ fontSize: '16px' }}>
+                        {
+                          user.name === null || user.name === undefined || user.name === "" ? user.email : `Hi ${user.name}`
+                        }
+                      </div>
+                    </a>
+                  </Dropdown>
+                </li>
+            }
+
           </ul>
         </Transition>
       </div>

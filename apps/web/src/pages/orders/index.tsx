@@ -1,5 +1,5 @@
 import { TropTixContext } from "@/components/WebNavigator";
-import { Avatar, List, Spin } from "antd";
+import { Avatar, List, Spin, Image } from "antd";
 import Link from "next/link";
 import { useContext, useEffect, useState } from 'react';
 import { TicketSummary, TicketsSummary, getOrders, Ticket, getTicketsForUser, GetOrdersType, GetOrdersRequest } from 'troptix-api';
@@ -58,18 +58,30 @@ export default function TicketsPage() {
           </Spin> :
           <div>
             <List
-              // locale={{ emptyText: "No Orders Available" }}
               itemLayout="vertical"
               size="large"
               dataSource={orders}
               renderItem={(order: any) => (
                 <List.Item>
                   <Link key={order.id} href={{ pathname: "/tickets", query: { orderId: order.id } }} >
-                    <List.Item.Meta
-                      avatar={<Avatar size={"large"} src={order.event.imageUrl} />}
-                      title={<a href={"/"}>{order.event.name}</a>}
-                      description={new Date(order.event.startDate).toDateString()}
-                    />
+                    <div className="flex">
+                      <div>
+                        <Image
+                          preview={false}
+                          width={75}
+                          height={75}
+                          className="w-auto"
+                          style={{ objectFit: 'cover' }}
+                          src={order.event.imageUrl}
+                          alt={"event flyer image"} />
+                      </div>
+                      <div className="ml-4 my-auto">
+                        <div>{order.event.name}</div>
+                        <div>{order.event.address}</div>
+                        <div>{new Date(order.event.startDate).toDateString()}</div>
+
+                      </div>
+                    </div>
                   </Link>
                 </List.Item>
 
