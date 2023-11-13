@@ -1,14 +1,10 @@
 'use client'
 
 import WebNavigator from "@/components/WebNavigator";
-import Navbar from "@/components/navbar";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
-import { usePathname, useSearchParams } from 'next/navigation';
-import { useRouter, withRouter } from "next/router";
-import { useEffect, useLayoutEffect } from "react";
-import { useParams } from "react-router-dom";
+import { withRouter } from "next/router";
 
 function App({ Component, pageProps, router }: AppProps) {
   return (
