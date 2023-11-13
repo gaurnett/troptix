@@ -2,18 +2,16 @@
 
 import { Inter } from 'next/font/google'
 import type { AppProps } from "next/app";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Header from "./ui/header";
 import AdminHeader from './ui/admin-header';
 import { createContext, useContext, useEffect, useState } from 'react';
 import {
   onAuthStateChanged,
-  getAuth,
 } from "firebase/auth";
 import { auth } from '../config';
 import { getUsers, GetUsersType } from 'troptix-api';
 import { User, setUserFromResponse } from 'troptix-models';
-import Navbar from './navbar';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -31,6 +29,13 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
   const pathname = usePathname();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showHeader, setShowHeader] = useState(true);
+
+  useEffect(() => {
+    if (pathname.includes("order-confirmation")) {
+      setShowHeader(false);
+    }
+  }, [pathname]);
 
   useEffect(() => {
     async function fetchUserFromDatbase(user: any) {
@@ -103,15 +108,17 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
                 {
                   !pathname.includes("admin") ?
                     <div>
-                      <Header />
+                      {
+                        showHeader ? <Header /> : <></>
+                      }
                       <div className="min-h-screen flex-grow border-x">
                         <Component {...pageProps} />
                       </div>
                     </div> :
                     <div>
-                      <AdminHeader />
-                      {/* min-h-screen flex-grow mx-4 md:max-w-6xl md:mx-auto md:px-5 sm:px-6 mt-32 */}
-                      {/* max-w-6xl mx-auto px-5 sm:px-6 mt-32 */}
+                      {
+                        showHeader ? <AdminHeader /> : <></>
+                      }
                       <div className="min-h-screen flex-grow mt-32">
                         <Component {...pageProps} />
                       </div>
