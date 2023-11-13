@@ -91,10 +91,10 @@ export default function TicketForm({ selectedTicket, setSelectedTicket, saveTick
 
         <div className="flex flex-wrap -mx-3 mb-4 mt-4">
           <div className="px-3">
-            <Button className="px-8 py-6 shadow-md items-center justify-center font-medium inline-flex">Discard</Button>
+            <Button className="px-6 py-5 shadow-md items-center justify-center font-medium inline-flex">Discard</Button>
           </div>
           <div className="px-3">
-            <Button onClick={saveTicket} type="primary" className="px-8 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Ticket</Button>
+            <Button onClick={saveTicket} type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Ticket</Button>
           </div>
         </div>
       </form>

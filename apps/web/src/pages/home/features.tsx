@@ -32,7 +32,7 @@ export default function Features() {
                 </g>
               </svg>
               <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Create Events</h4>
-              <p className="text-gray-600 text-center">Effortlessly plan and manage your own events, from small gatherings to large-scale occasions, offering customization options, ticketing, and promotional tools for a seamless event organization experience for you and your patrons.</p>
+              <p className="text-gray-600 text-center">Effortlessly plan and manage your own events, from small gatherings to large-scale occasions, offering customization options, ticketing, and promotional tools for a seamless event planning and organization experience for you and your patrons.</p>
             </div>
 
             {/* 2nd item */}
@@ -82,7 +82,7 @@ export default function Features() {
                 </g>
               </svg>
               <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">Track Registration</h4>
-              <p className="text-gray-600 text-center">Monitor and manage attendee sign-ups and information. It provides a streamlined system to categorize, organize, and track participant details, ensuring a smooth and organized registration process for different segments or sessions within an event.</p>
+              <p className="text-gray-600 text-center">Monitor and manage attendee sign-ups and information. It provides a streamlined system to categorize, organize, and track participant details, ensuring a smooth registration process for different segments or sessions within an event.</p>
             </div>
 
             {/* 5th item */}

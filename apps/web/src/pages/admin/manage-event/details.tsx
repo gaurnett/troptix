@@ -71,7 +71,7 @@ export default function DetailsPage({ event, setEvent }) {
           </div>
         </div>
 
-        <div className="flex flex-wrap -mx-3 mb-12">
+        <div className="flex flex-wrap -mx-3 mb-8">
           <div className="w-full px-3">
             <label className="block text-gray-800 text-sm font-medium mb-1">Event Flyer</label>
 
@@ -87,6 +87,9 @@ export default function DetailsPage({ event, setEvent }) {
             </Upload>
 
           </div>
+        </div>
+        <div>
+          <Button type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Event Details</Button>
         </div>
       </form>
     </div>

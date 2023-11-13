@@ -123,16 +123,13 @@ export default function ManageEventPage() {
             <div className='flow-root'>
               <div className="flex mt-2">
                 <div className='flex'>
-                  <a className='justify-center align-middle my-auto' style={{ cursor: 'pointer' }} onClick={goBack}>
-                    <IoMdArrowRoundBack className="text-4xl mr-8" />
+                  <a className='justify-center align-middle my-auto mr-4' style={{ cursor: 'pointer' }} onClick={goBack}>
+                    <IoMdArrowRoundBack className="text-4xl" />
                   </a>
-                  <Button onClick={updateEvent} className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Save Event</Button>
                 </div>
 
-                <div className="">
-                  <div className="mb-2 ml-4">
-                    <Button type="primary" className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex bg-blue-600 hover:bg-blue-700">Publish Event</Button>
-                  </div>
+                <div className="mb-2">
+                  <Button className="my-auto px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Publish Event</Button>
                 </div>
               </div>
 
