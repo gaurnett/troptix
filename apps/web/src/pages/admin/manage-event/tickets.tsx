@@ -103,7 +103,7 @@ export default function TicketsPage() {
             <div>
               <h2 className="text-2xl md:text-3xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Ticket Details</h2>
 
-              <button onClick={() => showDrawer(new TicketType(eventId), -1)} className="btn text-white bg-blue-600 hover:bg-blue-700 mb-4">Add Ticket</button>
+              <Button onClick={() => showDrawer(new TicketType(eventId), -1)} type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Add Ticket</Button>
 
               <List
                 className="demo-loadmore-list"
@@ -112,7 +112,7 @@ export default function TicketsPage() {
                 renderItem={(item, index) => (
                   <List.Item
                     actions={[
-                      <Button type="text" onClick={() => showDrawer(item, index)} key="edit">Edit</Button>,
+                      <Button onClick={() => showDrawer(item, index)} key="edit">Edit</Button>,
                       <Popconfirm
                         key="delete"
                         title="Delete this ticket"

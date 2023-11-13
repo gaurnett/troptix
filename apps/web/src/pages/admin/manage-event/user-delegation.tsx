@@ -99,7 +99,7 @@ export default function UserDelegationPage() {
             <div>
               <h2 className="text-2xl md:text-3xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Users</h2>
 
-              <button onClick={() => showDrawer(new DelegatedUser(eventId), -1)} className="btn text-white bg-blue-600 hover:bg-blue-700 mb-4">Add User</button>
+              <Button onClick={() => showDrawer(new DelegatedUser(eventId), -1)} type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Add User</Button>
 
               <List
                 className="demo-loadmore-list"
@@ -108,7 +108,7 @@ export default function UserDelegationPage() {
                 renderItem={(item, index) => (
                   <List.Item
                     actions={[
-                      <Button type="text" onClick={() => showDrawer(item, index)} key="edit">Edit</Button>,
+                      <Button onClick={() => showDrawer(item, index)} key="edit">Edit</Button>,
                       <Popconfirm
                         key="delete"
                         title="Delete this promotion"

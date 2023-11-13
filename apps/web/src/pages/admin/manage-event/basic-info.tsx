@@ -2,7 +2,7 @@ import { CustomDateField, CustomInput, CustomTimeField } from "@/components/ui/i
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import Autocomplete from "react-google-autocomplete";
-import { DatePicker, DatePickerProps, Drawer } from "antd";
+import { Button, DatePicker, DatePickerProps, Drawer } from "antd";
 
 export default function BasicInfoPage({ event, setEvent }) {
   const placesLibrary = ['places']
@@ -117,6 +117,9 @@ export default function BasicInfoPage({ event, setEvent }) {
           <div className="mb-4 md:ml-4 w-full">
             <CustomTimeField value={event.endTime} name={"endTime"} id={"endTime"} label={"End Time"} placeholder={"End Time"} handleChange={(value) => updateDate("endTime", value)} required={true} />
           </div>
+        </div>
+        <div className="mt-4">
+          <Button type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Event Details</Button>
         </div>
       </form>
     </div>
