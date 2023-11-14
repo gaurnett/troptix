@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import 'buttons.css';
+@import 'ant.css';
 
 @layer base {
   :root {

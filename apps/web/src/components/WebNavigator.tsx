@@ -32,7 +32,8 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
   const [showHeader, setShowHeader] = useState(true);
 
   useEffect(() => {
-    if (pathname.includes("order-confirmation")) {
+    if (pathname.includes("order-confirmation")
+      || pathname.includes("tickets")) {
       setShowHeader(false);
     }
   }, [pathname]);
