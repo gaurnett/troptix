@@ -17,10 +17,10 @@ export class TicketType {
   updatedAt: Date;
 
   // Ticket Details
-  name: string;
-  description: string;
-  maxPurchasePerUser: number;
-  quantity: number;
+  name: string = "";
+  description: string = "";
+  maxPurchasePerUser: number = 0;
+  quantity: number = 0;
 
   // Sale Date Details
   saleStartDate: Date;
@@ -29,12 +29,12 @@ export class TicketType {
   saleEndTime: Date;
 
   // Price Details
-  price: number;
+  price: number = 0;
   ticketingFees: TicketFeeStructure;
 
-  constructor(event: Event) {
+  constructor(eventId: string) {
     this.id = String(uuid.v4());
-    this.eventId = event.id;
+    this.eventId = eventId;
 
     // Start date construction
     this.saleStartDate = new Date();

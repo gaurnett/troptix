@@ -13,8 +13,7 @@ export class User {
   stripeId: string;
   role: Role;
 
-  constructor() {
-  }
+  constructor() { }
 }
 
 export function setUserFromResponse(response, firebaseUser): User {
@@ -22,6 +21,10 @@ export function setUserFromResponse(response, firebaseUser): User {
 
   user.id = firebaseUser.uid;
   user.email = firebaseUser.email;
+
+  if (firebaseUser.displayName !== null) {
+    user.name = firebaseUser.displayName;
+  }
 
   if (response !== null) {
     user.createdAt = response.createdAt;

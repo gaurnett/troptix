@@ -25,6 +25,8 @@ export default async function handler(request, response) {
       break;
     case "DELETE":
       break;
+    case "OPTIONS":
+      return response.status(200).end();
     default:
       break;
   }
@@ -202,6 +204,8 @@ async function getOrders(getOrderType, id, response) {
   switch (String(getOrderType)) {
     case 'GET_ORDERS_FOR_USER': // GetOrdersType.GET_ORDERS_FOR_USER
       return getOrdersForUser(response, id);
+    case 'GET_ORDER_BY_ID': // GetOrdersType.GET_ORDER_BY_ID
+      return getOrderById(response, id);
     case 'GET_ORDERS_FOR_EVENT': // GetOrdersType.GET_ORDERS_FOR_EVENT
       return getOrdersForEvent(response, id);
     default:
@@ -214,6 +218,29 @@ async function getOrdersForUser(response, id) {
     const user = await prisma.orders.findMany({
       where: {
         userId: id,
+        status: 'COMPLETED'
+      },
+      include: {
+        tickets: {
+          include: {
+            ticketType: true,
+          }
+        },
+        event: true
+      },
+    });
+    return response.status(200).json(user);
+  } catch (e) {
+    console.error('Request error', e);
+    return response.status(500).json({ error: 'Error fetching orders' });
+  }
+}
+
+async function getOrderById(response, id) {
+  try {
+    const user = await prisma.orders.findUnique({
+      where: {
+        id: id,
         status: 'COMPLETED'
       },
       include: {

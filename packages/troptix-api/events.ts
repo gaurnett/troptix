@@ -1,3 +1,4 @@
+import axios from "axios";
 import { TropTixResponse, prodUrl } from "./api";
 
 export enum GetEventsType {
@@ -13,7 +14,7 @@ export interface GetEventsRequest {
   organizerId?: string;
 }
 
-export async function getEvents(request: GetEventsRequest): Promise<TropTixResponse> {
+export async function getEvents(request: GetEventsRequest): Promise<any> {
   let url = prodUrl + `/api/events?getEventsType=${request.getEventsType}`;
   switch (request.getEventsType) {
     case GetEventsType.GET_EVENTS_BY_ID:
@@ -27,42 +28,35 @@ export async function getEvents(request: GetEventsRequest): Promise<TropTixRespo
       break;
   }
 
-  const tropTixResponse: TropTixResponse = new TropTixResponse();
-
-  try {
-    const response = await fetch(url, {
-      method: 'GET'
-    });
-    const json = await response.json();
-    tropTixResponse.response = json;
-  } catch (error) {
-    tropTixResponse.error = error;
-  }
-
-  return tropTixResponse;
+  return await fetch(url, {
+    method: 'GET',
+    cache: "no-cache"
+  }).then(async response => {
+    if (response.ok) {
+      const data = await response.json();
+      return data;
+    }
+  }).catch(error => {
+    return error;
+  })
 }
 
-export async function saveEvent(event, editEvent): Promise<TropTixResponse> {
-  const tropTixResponse: TropTixResponse = new TropTixResponse();
+export async function saveEvent(event, editEvent): Promise<any> {
   let url = prodUrl + `/api/events`;
   let method = editEvent ? "PUT" : "POST";
 
-  try {
-    const response = await fetch(url, {
-      method: method,
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        event: event,
-      })
-    });
-    const json = await response.json();
-    tropTixResponse.response = json;
-  } catch (error) {
-    tropTixResponse.error = error;
-  }
+  const response = await fetch(url, {
+    method: method,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      event: event,
+    })
+  });
 
-  return tropTixResponse;
+  const json = await response.json();
+
+  return json;
 }

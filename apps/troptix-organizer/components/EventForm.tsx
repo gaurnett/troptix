@@ -530,7 +530,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
                 Ticket Details
               </Text>
               <Button
-                onPress={() => onTicketClick(new TicketType(event), false, 0)}
+                onPress={() => onTicketClick(new TicketType(event.id), false, 0)}
                 marginT-16
                 outline
                 borderRadius={25}

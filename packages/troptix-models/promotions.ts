@@ -18,5 +18,6 @@ export class Promotion {
   constructor(eventId: string) {
     this.id = String(uuid.v4());
     this.eventId = eventId
+    this.promotionType = PromotionType.PERCENTAGE
   }
 }

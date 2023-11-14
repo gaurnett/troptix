@@ -9,12 +9,19 @@ export interface GetUsersRequest {
   userId?: string;
 }
 
+const allowedOrigins = [
+  'http://localhost:3000',
+];
+
 export async function getUsers(request: GetUsersRequest): Promise<TropTixResponse> {
   const tropTixResponse: TropTixResponse = new TropTixResponse();
   const url = prodUrl + `/api/users?getUsersType=${request.getUsersType}&id=${request.userId}`;
 
   try {
-    const response = await fetch(url, { method: 'GET' });
+    const response = await fetch(url, {
+      method: 'GET',
+      cache: 'no-cache',
+    });
     const json = await response.json();
     tropTixResponse.response = json;
   } catch (error) {
@@ -34,7 +41,7 @@ export async function addUser(user) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      "user": user,
+      user: user,
     })
   });
   const json = await response.text();

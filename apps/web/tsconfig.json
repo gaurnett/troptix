@@ -12,11 +12,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "noImplicitAny": false,
     "incremental": true,
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/config.js", "src/firebase/storage.ts", "src/firebase/auth.ts"],
   "exclude": ["node_modules"]
 }

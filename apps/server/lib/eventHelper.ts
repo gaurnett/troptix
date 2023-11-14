@@ -27,11 +27,34 @@ export function getPrismaTicketTypeQuery(ticket) {
 export function getPrismaUpdateEventQuery(event) {
   let eventInput: Prisma.EventsUpdateInput;
   eventInput = {
-    // id: event.id,
     imageUrl: event.imageUrl,
     name: event.name,
     description: event.description,
     summary: event.summary,
+    organizer: event.organizer,
+    organizerUserId: event.organizerUserId,
+    endDate: event.endDate,
+    endTime: event.endTime,
+    startDate: event.startDate,
+    startTime: event.startTime,
+    venue: event.venue,
+    address: event.address,
+    countryCode: event.country_code,
+    latitude: event.latitude,
+    longitude: event.longitude,
+    country: event.country,
+  }
+
+  return eventInput;
+}
+
+export function getPrismaCreateStarterEventQuery(event) {
+  let eventInput: Prisma.EventsCreateInput;
+
+  eventInput = {
+    id: event.id,
+    name: event.name,
+    description: event.description,
     organizer: event.organizer,
     organizerUserId: event.organizerUserId,
     endDate: event.endDate,

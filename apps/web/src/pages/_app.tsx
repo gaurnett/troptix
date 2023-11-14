@@ -1,22 +1,22 @@
-import Navbar from "@/components/navbar";
+'use client'
+
+import WebNavigator from "@/components/WebNavigator";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
+import { withRouter } from "next/router";
 
-export default function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps, router }: AppProps) {
   return (
     <>
       <Head>
-        <title>Troptix</title>
+        <title>TropTix</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
 
-      <div className="container mx-auto ">
-        <Navbar />
-        <div className="min-h-screen flex-grow border-x">
-          <Component {...pageProps} />
-        </div>
-      </div>
+      <WebNavigator pageProps={pageProps} Component={Component} router={router} />
     </>
   );
 }
+
+export default withRouter(App); 

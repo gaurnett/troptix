@@ -1,60 +1,87 @@
 {
-  "routes": [
+  "headers": [
     {
-      "src": "/api/events",
-      "dest": "./api/events.js"
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "./api/test/handler.js"
     },
     {
-      "src": "/api/events/:getEventsType/:id",
-      "dest": "./api/events.js"
+      "source": "/api/events",
+      "destination": "./api/events.js"
     },
     {
-      "src": "/api/orders",
-      "dest": "./api/orders.js"
+      "source": "/api/events/:getEventsType/:id",
+      "destination": "./api/events.js"
     },
     {
-      "src": "/api/orders/:getOrdersType/:id",
-      "dest": "./api/orders.js"
+      "source": "/api/orders",
+      "destination": "./api/orders.js"
     },
     {
-      "src": "/api/users",
-      "dest": "./api/users.js"
+      "source": "/api/orders/:getOrdersType/:id",
+      "destination": "./api/orders.js"
     },
     {
-      "src": "/api/users/:getUsersType/:id",
-      "dest": "./api/users.js"
+      "source": "/api/users",
+      "destination": "./api/users.js"
     },
     {
-      "src": "/api/ticketTypes",
-      "dest": "./api/ticketTypes.js"
+      "source": "/api/users/:getUsersType/:id",
+      "destination": "./api/users.js"
     },
     {
-      "src": "/api/tickets",
-      "dest": "./api/tickets.js"
+      "source": "/api/ticketTypes",
+      "destination": "./api/ticketTypes.js"
     },
     {
-      "src": "/api/tickets/:userId",
-      "dest": "./api/tickets.js"
+      "source": "/api/tickets",
+      "destination": "./api/tickets.js"
     },
     {
-      "src": "/api/delegatedUsers",
-      "dest": "./api/delegatedUsers.js"
+      "source": "/api/tickets/:userId",
+      "destination": "./api/tickets.js"
     },
     {
-      "src": "/api/delegatedUsers/:eventId",
-      "dest": "./api/delegatedUsers.js"
+      "source": "/api/delegatedUsers",
+      "destination": "./api/delegatedUsers.js"
     },
     {
-      "src": "/api/promotions",
-      "dest": "./api/promotions.js"
+      "source": "/api/delegatedUsers/:eventId",
+      "destination": "./api/delegatedUsers.js"
     },
     {
-      "src": "/api/promotions/:getPromotionsType/:eventId/:code",
-      "dest": "./api/promotions.js"
+      "source": "/api/promotions",
+      "destination": "./api/promotions.js"
     },
     {
-      "src": "/api/promotions/:eventId",
-      "dest": "./api/promotions.js"
+      "source": "/api/promotions/:getPromotionsType/:eventId/:code",
+      "destination": "./api/promotions.js"
+    },
+    {
+      "source": "/api/promotions/:eventId",
+      "destination": "./api/promotions.js"
     }
   ]
 }
