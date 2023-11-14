@@ -1,5 +1,5 @@
 import { TropTixContext } from "@/components/WebNavigator";
-import { Avatar, List, Spin, Image } from "antd";
+import { Avatar, List, Spin, Image, Button } from "antd";
 import Link from "next/link";
 import { useContext, useEffect, useState } from 'react';
 import { TicketSummary, TicketsSummary, getOrders, Ticket, getTicketsForUser, GetOrdersType, GetOrdersRequest } from 'troptix-api';
@@ -48,7 +48,7 @@ export default function TicketsPage() {
   }, [userId]);
 
   return (
-    <div className="mt-32 w-full md:max-w-xl mx-auto">
+    <div className="mt-32 w-full md:max-w-2xl mx-auto">
       <h1 className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">Tickets</span></h1>
 
       {
@@ -58,12 +58,21 @@ export default function TicketsPage() {
           </Spin> :
           <div>
             <List
-              itemLayout="vertical"
+              itemLayout="horizontal"
               size="large"
               dataSource={orders}
               renderItem={(order: any) => (
-                <List.Item>
-                  <Link key={order.id} href={{ pathname: "/tickets", query: { orderId: order.id } }} >
+                <List.Item
+                  actions={[
+                    <Link key="receipt" target="_blank" rel="noopener noreferrer" href={{ pathname: "/order-confirmation", query: { orderId: order.id } }}>
+                      <Button>Receipt</Button>
+                    </Link>,
+                    <Link key="tickets" target="_blank" rel="noopener noreferrer" href={{ pathname: "/tickets", query: { orderId: order.id } }}>
+                      <Button className="bg-blue-600 hover:bg-blue-700" type="primary">Tickets</Button>
+                    </Link>
+
+                  ]}>
+                  <div key={order.id} >
                     <div className="flex">
                       <div>
                         <Image
@@ -82,7 +91,7 @@ export default function TicketsPage() {
 
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 </List.Item>
 
               )}

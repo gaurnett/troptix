@@ -101,7 +101,7 @@ export default function OrderConfirmationPage() {
     return (
       <div className="mt-2 mb-2">
         <label className="block text-gray-800 text-base font-bold">{label}</label>
-        <p className="text-base ">{value}</p>
+        <p className="text-base">{value}</p>
       </div>
     )
   }

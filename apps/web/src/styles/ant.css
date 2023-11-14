@@ -1,0 +1,14 @@
+.ant-divider-horizontal.ant-divider-with-text-center::before,
+.ant-divider-horizontal.ant-divider-with-text-center::after {
+  border-top: .5px solid black;
+}
+
+.ant-carousel .slick-dots li button {
+  background: #ff4ef6;
+  opacity: 0.4;
+}
+
+.ant-carousel .slick-dots li.slick-active button {
+  opacity: 1;
+  background: #ff4ef6;
+}
