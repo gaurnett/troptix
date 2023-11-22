@@ -1,6 +1,6 @@
 import { TropTixResponse } from "./api";
 import { getEvents, saveEvent, GetEventsType, GetEventsRequest, } from "./events";
-import { addUser, getUsers, GetUsersType, GetUsersRequest } from "./users";
+import { addUser, getUsers, GetUsersType, GetUsersRequest, putUsers, PutUsersRequest, PutUsersType } from "./users";
 import { scanTicket, getTicketsForUser } from "./tickets";
 import { addDelegatedUser, getDelegatedUsers } from "./delegatedUsers";
 import { GetOrdersType, GetOrdersRequest, getOrders, PostOrdersType, PostOrdersRequest, postOrders } from "./orders";
@@ -22,6 +22,9 @@ export {
   getUsers,
   GetUsersType,
   GetUsersRequest,
+  putUsers,
+  PutUsersType,
+  PutUsersRequest,
   scanTicket,
   getTicketsForUser,
   saveTicketType,

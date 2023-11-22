@@ -127,7 +127,10 @@ export function getPrismaCreateOrderQuery(order) {
       id: ticket.id,
       eventId: ticket.eventId,
       ticketTypeId: ticket.ticketTypeId,
-      userId: ticket.userId
+      userId: ticket.userId,
+      fees: ticket.fees,
+      subtotal: ticket.subtotal,
+      total: ticket.total,
     })
   }
 
@@ -136,6 +139,13 @@ export function getPrismaCreateOrderQuery(order) {
     total: order.total,
     fees: order.fees,
     subtotal: order.subtotal,
+    telephoneNumber: order.telephoneNumber,
+    billingAddress1: order.billingAddress1,
+    billingAddress2: order.billingAddress2,
+    billingCity: order.billingCity,
+    billingCountry: order.billingCountry,
+    billingZip: order.billingZip,
+    billingState: order.billingState,
     user: {
       connect: {
         id: order.userId

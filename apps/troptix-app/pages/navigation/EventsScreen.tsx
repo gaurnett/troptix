@@ -20,11 +20,11 @@ export default function EventsScreen({ navigation }) {
     }
 
     try {
-      const response: TropTixResponse = await getEvents(getEventsRequest);
-      if (response.response !== undefined) {
-        setEvents(getEventsFromRequest(response.response));
+      const response = await getEvents(getEventsRequest);
+      if (response !== undefined) {
+        setEvents(getEventsFromRequest(response));
       }
-      console.log("[EventsScreen fetchEvents] response: " + response.response);
+      console.log("[EventsScreen fetchEvents] response: " + response);
     } catch (error) {
       console.log("[EventsScreen fetchEvents] error: " + error);
     }

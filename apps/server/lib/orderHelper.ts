@@ -12,11 +12,13 @@ export async function getBuffer(request) {
   return buf;
 }
 
-export function updateSuccessfulOrder() {
+export function updateSuccessfulOrder(paymentMethod) {
   let orderUpdate: Prisma.OrdersUpdateInput;
 
   orderUpdate = {
     status: OrderStatus.COMPLETED,
+    cardType: paymentMethod.card.brand,
+    cardLast4: paymentMethod.card.last4,
     tickets: {
       updateMany: {
         where: {

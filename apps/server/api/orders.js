@@ -4,8 +4,8 @@ import { getBuffer, updateSuccessfulOrder } from "../lib/orderHelper";
 import { sendEmailToUser } from "../lib/emailHelper";
 
 const stripe = require('stripe')(process.env.STRIPE_TEST_SECRET_KEY);
-// const endpointSecret = process.env.STRIPE_TEST_CHARGE_SUCCEEDED_WEBHOOK;
-const endpointSecret = 'whsec_570f36e545a3bc4d66bf9501ae42327ebb200303a4d9068d39bb7821e48b50ff';
+const endpointSecret = process.env.STRIPE_TEST_CHARGE_SUCCEEDED_WEBHOOK;
+// const endpointSecret = 'whsec_570f36e545a3bc4d66bf9501ae42327ebb200303a4d9068d39bb7821e48b50ff';
 
 export default async function handler(request, response) {
   const { body, method } = request;
@@ -153,11 +153,17 @@ async function stripePaymentIntentSucceeded(body, headers, request, response) {
     }
   }
 
+  const data = event.data.object;
+
+  const paymentMethod = await stripe.paymentMethods.retrieve(
+    data.payment_method
+  );
+
   // Handle the event
   switch (event.type) {
     case 'payment_intent.succeeded':
       const paymentIntent = event.data.object;
-      return updateOrderAfterPaymentSucceeds(paymentIntent.id, response);
+      return updateOrderAfterPaymentSucceeds(paymentIntent.id, paymentMethod, response);
     case 'payment_method.failed':
       const paymentFailed = event.data.object;
       console.log(`attached for ${paymentFailed.id} ${paymentFailed.amount} was successful!`);
@@ -178,24 +184,37 @@ async function stripePaymentIntentSucceeded(body, headers, request, response) {
   response.status(200).json({ message: "Payment succeeded and tickets added to database" });
 }
 
-async function updateOrderAfterPaymentSucceeds(id, response) {
+async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
   try {
     await prisma.orders.update({
       where: {
         id: id,
       },
-      data: updateSuccessfulOrder(),
+      data: updateSuccessfulOrder(paymentMethod),
       include: {
         tickets: true
       }
     });
 
-    // const email = await sendEmailToUser(response);
-    // console.log("Email: " + email);
+    const order = await prisma.orders.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        tickets: {
+          include: {
+            ticketType: true,
+          }
+        },
+        event: true,
+        user: true,
+      },
+    });
+
+    const email = await sendEmailToUser(order, response);
 
     return response.status(200).json({ message: "Updated order successfully" });
   } catch (e) {
-    console.error('Request error', e);
     return response.status(500).json({ error: 'Error fetching posts' });
   }
 }

@@ -14,6 +14,7 @@ import DetailsPage from './details';
 import OrderSummaryPage from './order-summary';
 import PromotionCodesPage from './promotions-codes';
 import UserDelegationPage from './user-delegation';
+import OrdersPage from './orders';
 
 export default function ManageEventPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -80,32 +81,32 @@ export default function ManageEventPage() {
 
   const items: TabsProps['items'] = [
     {
-      key: '0',
-      label: 'Dashboard',
-      children: <OrderSummaryPage />,
+      key: 'orders',
+      label: 'Orders',
+      children: <OrdersPage />,
     },
     {
-      key: '1',
+      key: 'basic-info',
       label: 'Basic Info',
       children: <BasicInfoPage event={event} setEvent={setEvent} />,
     },
     {
-      key: '2',
+      key: 'details',
       label: 'Details',
       children: <DetailsPage event={event} setEvent={setEvent} />,
     },
     {
-      key: '3',
+      key: 'tickets',
       label: 'Tickets',
       children: <TicketsPage />,
     },
     {
-      key: '4',
+      key: 'promotion-codes',
       label: 'Promotion Codes',
       children: <PromotionCodesPage />,
     },
     {
-      key: '5',
+      key: 'user-delegation',
       label: 'User Delegation',
       children: <UserDelegationPage />,
     },

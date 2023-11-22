@@ -15,6 +15,7 @@ import SignInWithEmailScreen from '../auth/SignInWithEmailScreen';
 import SignUpWithEmailScreen from '../auth/SignUpWithEmailScreen';
 import TicketsScreen from '../orders/TicketsScreen';
 import TicketDetailsScreen from '../orders/TicketDetailsScreen';
+import TicketBillingAndPaymentScreen from './TicketBillingAndPaymentScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -198,6 +199,17 @@ export default function AppNavigator({ isLoadingUser, user }) {
                     headerBackTitle: 'Back',
                     headerBackTitleVisible: false,
                     headerLeft: null,
+                    gestureEnabled: false,
+                  }}
+                />
+                <Stack.Screen
+                  name='TicketBillingAndPaymentScreen'
+                  component={TicketBillingAndPaymentScreen}
+                  options={{
+                    title: 'Ticket Checkout',
+                    headerBackTitleVisible: true,
+                    headerTransparent: false,
+                    headerBackTitle: 'Back',
                     gestureEnabled: false,
                   }}
                 />

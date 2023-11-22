@@ -10,6 +10,9 @@ export function createTicket(checkoutTicket: CheckoutTicket, orderId: string, us
   ticket.orderId = orderId;
   ticket.ticketTypeId = checkoutTicket.ticketTypeId;
   ticket.userId = userId;
+  ticket.fees = checkoutTicket.fees;
+  ticket.subtotal = checkoutTicket.subtotal;
+  ticket.total = checkoutTicket.total;
 
   return ticket;
 }
@@ -24,6 +27,8 @@ export interface Ticket {
   description: string;
   price: number;
   fees: number;
+  subtotal: number;
+  total: number;
 }
 
 export interface TicketSummary {
@@ -46,6 +51,9 @@ export class CheckoutTicket {
   description: string;
   quantitySelected: number;
   price: number;
+  fees: number;
+  subtotal: number;
+  total: number;
   maxPurchasePerUser: number;
   ticketFees: TicketFeeStructure;
 
@@ -58,5 +66,8 @@ export class CheckoutTicket {
     this.ticketTypeId = ticketType.id;
     this.maxPurchasePerUser = ticketType.maxPurchasePerUser;
     this.quantitySelected = 0;
+    this.fees = 0;
+    this.subtotal = 0;
+    this.total = 0;
   }
 }
