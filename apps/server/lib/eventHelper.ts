@@ -28,6 +28,7 @@ export function getPrismaUpdateEventQuery(event) {
   let eventInput: Prisma.EventsUpdateInput;
   eventInput = {
     imageUrl: event.imageUrl,
+    isDraft: event.isDraft,
     name: event.name,
     description: event.description,
     summary: event.summary,

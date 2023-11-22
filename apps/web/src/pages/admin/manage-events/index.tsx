@@ -67,12 +67,11 @@ export default function ManageEventsPage() {
                         <div>{event.name}</div>
                         <div>{event.address}</div>
                         <div>{new Date(event.startDate).toDateString()}</div>
-
+                        <div className='text-blue-500'>Status: {event.isDraft ? "Draft" : "Published"}</div>
                       </div>
                     </div>
                   </Link>
                 </List.Item>
-
               )}
             />
           </div>
