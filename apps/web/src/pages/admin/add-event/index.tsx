@@ -20,6 +20,5 @@ export default function AddEventPage() {
       <h1 className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-8" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">Add Event</span></h1>
       <AddEventStarterPage event={event} setEvent={setEvent} />
     </div>
-
   );
 }

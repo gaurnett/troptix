@@ -14,6 +14,7 @@ import DetailsPage from './details';
 import OrderSummaryPage from './order-summary';
 import PromotionCodesPage from './promotions-codes';
 import UserDelegationPage from './user-delegation';
+import OrdersPage from './orders';
 
 export default function ManageEventPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -24,7 +25,6 @@ export default function ManageEventPage() {
 
   useEffect(() => {
     async function fetchEvents() {
-      console.log("fetching 1");
       try {
         const getEventsRequest: any = {
           getEventsType: GetEventsType.GET_EVENTS_BY_ID,
@@ -35,10 +35,7 @@ export default function ManageEventPage() {
         if (response !== undefined && response.length !== 0) {
           setEvent(response);
         }
-
-        console.log("ManageEventScreen [events]: " + JSON.stringify(response));
       } catch (error) {
-        console.log("ManageEventScreen [fetchEvents] error: " + error)
       }
 
       setIsFetchingEvent(false);
@@ -48,64 +45,40 @@ export default function ManageEventPage() {
   }, [eventId]);
 
   function onChange(key: string) {
-    console.log(key);
   };
-
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log(event.target.name);
-    console.log(event.target.value);
-  }
 
   function goBack() {
     router.back();
   }
 
-  async function updateEvent() {
-    console.log(event);
-    const response = await saveEvent(event, true);
-
-    if (response === null || response === undefined || response.error !== null) {
-      messageApi.open({
-        type: 'error',
-        content: 'Failed to create event, please try again.',
-      });
-      return;
-    }
-
-    messageApi.open({
-      type: 'success',
-      content: 'Successfully updated event.',
-    });
-  }
-
   const items: TabsProps['items'] = [
     {
-      key: '0',
-      label: 'Dashboard',
-      children: <OrderSummaryPage />,
+      key: 'orders',
+      label: 'Orders',
+      children: <OrdersPage />,
     },
     {
-      key: '1',
+      key: 'basic-info',
       label: 'Basic Info',
       children: <BasicInfoPage event={event} setEvent={setEvent} />,
     },
     {
-      key: '2',
+      key: 'details',
       label: 'Details',
       children: <DetailsPage event={event} setEvent={setEvent} />,
     },
     {
-      key: '3',
+      key: 'tickets',
       label: 'Tickets',
       children: <TicketsPage />,
     },
     {
-      key: '4',
+      key: 'promotion-codes',
       label: 'Promotion Codes',
       children: <PromotionCodesPage />,
     },
     {
-      key: '5',
+      key: 'user-delegation',
       label: 'User Delegation',
       children: <UserDelegationPage />,
     },

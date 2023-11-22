@@ -27,7 +27,7 @@ export default function OrderConfirmationPage() {
   const orderId = router.query.orderId;
   const { user } = useContext(TropTixContext);
   const [isFetchingOrders, setIsFetchingOrders] = useState(true);
-  const [order, setOrder] = useState<any>();
+  const [order, setOrder] = useState<any>({});
 
   useEffect(() => {
     async function fetchOrders() {
@@ -110,14 +110,16 @@ export default function OrderConfirmationPage() {
     <div className="md:mt-8 md:mb-8 w-full md:max-w-3xl mx-auto">
       {
         isFetchingOrders ?
-          <></> :
+          <Spin className="mt-16" tip="Fetching Order" size="large">
+            <div className="content" />
+          </Spin> :
           <div className="border px-4">
             <div className='flex w-full md:max-w-2xl md:mx-auto my-6'>
               <div>
                 <Image src={"/logos/logo_v1.png"} width={75} height={75} alt='troptix-logo' />
               </div>
               <div className="w-full text-right my-auto">
-                <div className="text-sm md:text-md font-bold">Order #{String(order.id).toUpperCase().slice(3)}</div>
+                <div className="text-sm md:text-md font-bold">Order #{String(orderId).toUpperCase().slice(3)}</div>
                 <div className="text-sm md:text-md font-bold">Gaurnett Flowers</div>
                 <div className="text-sm md:text-md font-bold">Sunday, November 12, 2023</div>
               </div>

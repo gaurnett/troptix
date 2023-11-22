@@ -14,7 +14,7 @@ const awsChromium = require("@sparticuz/chromium");
 const playwright = require('playwright-core');
 
 // stripe trigger payment_intent.succeeded
-// stripe listen --forward-to localhost:3000/api/orders
+// stripe listen --forward-to localhost:3001/api/orders
 
 sgMail.setApiKey(process.env.RESEND_DYNAMIC_TEMPLATE_API);
 
@@ -113,47 +113,56 @@ async function gethtmltopdf(response) {
   }
 };
 
-export async function sendEmailToUser(response) {
-  // const resend = new Resend(process.env.RESEND_RESTRICTED_ACCESS_MAIL_SEND_API);
-  // const resend = new Resend(process.env.RESEND_API);
+export async function sendEmailToUser(order, response) {
+  const orderMap = new Map();
 
-  console.log("Hello");
-
-  gethtmltopdf(response).then(async (res) => {
-    console.log("Content: " + res);
-    const msg = {
-      to: 'flowersgaurnett@gmail.com',
-      from: 'flowersgaurnett@gmail.com',
-      subject: 'Sending with SendGrid is Fun',
-      templateId: 'd-658d88a06f0b443ca36d12d5e47e9275',
-      dynamicTemplateData: {
-        eventTitle: 'Sunrise Breakfast Party',
-      },
-      attachments: [
-        {
-          content: res,
-          filename: "attachment.pdf",
-          type: "application/pdf",
-          disposition: "attachment"
-        }
-      ]
-    };
-
-    try {
-      const mailResponse = await sgMail.send(msg);
-      // console.log('Email sent');
-      return response.status(200).json({
-        message: "email sent",
-      });
-    } catch (error) {
-      // console.error(error);
-      return response.status(500).json({ error: 'Error sending email' });
+  order.tickets.forEach(ticket => {
+    const ticketId = ticket.ticketType.id;
+    if (orderMap.has(ticketId)) {
+      const order = orderMap.get(ticketId);
+      orderMap.set(ticketId, {
+        ...order,
+        ticketQuantity: order.ticketQuantity + 1,
+      })
+    } else {
+      orderMap.set(ticketId, {
+        ticketQuantity: 1,
+        ticketName: ticket.ticketType.name,
+        ticketTotalPaid: ticket.total
+      })
     }
   });
 
-  // }).catch((error) => {
-  //   console.error(error);
-  //   return response.status(500).json({ error: 'Error sending email' });
-  // });
+  const templateData = {
+    id: order.id,
+    eventTitle: order.event.name,
+    subtotal: order.subtotal,
+    totalFees: order.fees,
+    totalPrice: order.total,
+    username: order.user.name,
+    cardType: order.cardType,
+    cardLast4: order.cardLast4,
+    ticketsPurchased: "15",
+    orderNumber: String(order.id).slice(3),
+    orderDate: new Date(order.createdAt).toLocaleDateString(),
+    orders: Array.from(orderMap.values())
+  }
 
+  const msg = {
+    to: 'flowersgaurnett@gmail.com',
+    from: 'flowersgaurnett@gmail.com',
+    subject: 'Sending with SendGrid is Fun',
+    templateId: 'd-658d88a06f0b443ca36d12d5e47e9275',
+    dynamicTemplateData: templateData,
+  };
+
+  try {
+    const mailResponse = await sgMail.send(msg);
+    console.log(mailResponse);
+    return response.status(200).json({
+      message: "email sent",
+    });
+  } catch (error) {
+    return response.status(500).json({ error: 'Error sending email' });
+  }
 }

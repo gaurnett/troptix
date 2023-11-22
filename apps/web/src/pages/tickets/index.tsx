@@ -9,6 +9,7 @@ import {
   MdOutlineKeyboardArrowRight,
 } from "react-icons/md";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import JsPDF from 'jspdf';
 
 export default function TicketsPage() {
   const router = useRouter();
@@ -55,6 +56,20 @@ export default function TicketsPage() {
     return format(new Date(date), 'MMM dd, yyyy') + ", " + format(new Date(time), 'hh:mm a');
   }
 
+  function saveToPdf() {
+    const element = document.querySelector('#ticket') as HTMLElement;
+
+    if (element === null) {
+      return;
+    } else {
+      const report = new JsPDF('portrait', 'pt', 'letter');
+      report.html(element).then(() => {
+        report.output('dataurlnewwindow');
+      });
+    }
+
+  }
+
   function renderTicketRow(label, value) {
     return (
       <div className="mt-2 mb-2">
@@ -63,6 +78,7 @@ export default function TicketsPage() {
       </div>
     )
   }
+
   function renderTicket(ticket: any, event: any, index: number, count: number) {
     return (
       <div className="" key={index}>
@@ -75,7 +91,7 @@ export default function TicketsPage() {
                 </div>
                 : <></>
             }
-            <div className={`${count === 1 ? 'mx-4' : ''} py-4 grow px-4 rounded-xl border`}>
+            <div id="ticket" className={`${count === 1 ? 'mx-4' : ''} py-4 grow px-4 rounded-xl border`}>
               <QRCode size={125} bgColor="white" className="mx-auto" value={ticket.id} />
               <Divider dashed={true} plain>
                 Ticket {index + 1} of {count}
@@ -123,8 +139,8 @@ export default function TicketsPage() {
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">{order.event.name}</span>
             </h1>
             <div className='flex w-full md:max-w-lg md:mx-auto my-6 mx-auto justify-center'>
-              <Button className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Save PDF</Button>
-              <Button className="ml-4 px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Add to mobile wallet</Button>
+              <Button onClick={saveToPdf} className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Save PDF</Button>
+              <Button className="ml-4 px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">View event details</Button>
             </div>
             <div className="w-full md:max-w-lg mx-auto">
               <div className="mx-auto w-full h-full">

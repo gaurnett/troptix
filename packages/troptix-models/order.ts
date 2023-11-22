@@ -1,13 +1,22 @@
 import { CheckoutTicket, Ticket, createTicket } from "./ticket";
 import { Event } from "./event";
+import uuid from 'react-native-uuid';
 
 export class Order {
   id: string;
+  stripePaymentId: string;
   eventId: string;
   total: number;
   subtotal: number;
   fees: number;
   userId: string;
+  telephoneNumber: string;
+  billingAddress1: string;
+  billingAddress2: string;
+  billingCity: string;
+  billingZip: string;
+  billingState: string;
+  billingCountry: string;
   tickets: Ticket[];
 
   constructor(checkout: Checkout, paymentId: string, eventId: string, userId: string) {
@@ -19,6 +28,13 @@ export class Order {
     this.tickets = new Array();
     this.userId = userId;
     this.eventId = eventId;
+    this.telephoneNumber = checkout.telephoneNumber;
+    this.billingAddress1 = checkout.billingAddress1;
+    this.billingAddress2 = checkout.billingAddress2;
+    this.billingCity = checkout.billingCity;
+    this.billingZip = checkout.billingZip;
+    this.billingState = checkout.billingState;
+    this.billingCountry = checkout.billingCountry;
 
     checkout.tickets.forEach(checkoutTicket => {
       if (checkoutTicket.quantitySelected > 0) {
@@ -79,10 +95,16 @@ export class Checkout {
   discountedTotal: number = 0;
   discountedFees: number = 0;
   promotionApplied: boolean = false;
+  telephoneNumber: string;
+  billingAddress1: string;
+  billingAddress2: string;
+  billingCity: string;
+  billingZip: string;
+  billingState: string;
+  billingCountry: string;
   tickets: CheckoutTicket[];
 
   constructor(event: Event) {
-    this.total = 0;
     const ticketTypes = event.ticketTypes;
     this.tickets = new Array();
 

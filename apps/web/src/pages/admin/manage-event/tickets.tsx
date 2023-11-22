@@ -29,12 +29,10 @@ export default function TicketsPage() {
       try {
         const response = await getTicketTypes(getTicketTypesRequest);
 
-        console.log("Ticket Types Response: " + JSON.stringify(response));
         if ((response.error === undefined || response.error === undefined) && response.length !== 0) {
           setTicketTypes(response);
         }
       } catch (error) {
-        console.log("Ticket Types [fetchTicketTypes] error: " + error)
       }
       setIsFetchingTicketTypes(false);
     };
@@ -46,7 +44,6 @@ export default function TicketsPage() {
     const response = await saveTicketType(selectedTicket, selectedIndex !== -1);
 
     if (response === null || response === undefined || response.error !== null) {
-      console.log("TicketFormScreen [saveTicket] response error: " + JSON.stringify(response.error));
       messageApi.open({
         type: 'error',
         content: 'Failed to save ticket, please try again.',

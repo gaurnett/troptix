@@ -8,7 +8,7 @@ import { TropTixContext } from '@/components/WebNavigator';
 import Link from 'next/link';
 import { List, Spin, Image } from 'antd';
 
-export default function ManageEventsPage() {
+export default function OrdersPage() {
   const router = useRouter();
   const { user } = useContext(TropTixContext);
   const userId = user === null || user === undefined ? null : user.id;

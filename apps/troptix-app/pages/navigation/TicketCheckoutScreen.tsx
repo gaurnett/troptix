@@ -52,7 +52,7 @@ export default function TicketCheckoutScreen({ route, navigation }) {
       return;
     }
 
-    if (promotionApplied && promotion.code === String(promotionCode)) {
+    if (promotionApplied && String(promotion.code).toUpperCase() === String(promotionCode).toUpperCase()) {
       Alert.alert("Promotion already applied");
       return;
     }
@@ -70,13 +70,29 @@ export default function TicketCheckoutScreen({ route, navigation }) {
         setPromotion(response);
         setPromotionApplied(true);
 
+        const updatedTickets = checkout.tickets.map((item, i) => {
+          if (item.quantitySelected > 0) {
+            return {
+              ...item,
+              subtotal: getPromotionPriceFromResponse(item.subtotal, response),
+              fees: getPromotionPriceFromResponse(item.fees, response),
+              total: getPromotionPriceFromResponse(item.total, response)
+            };
+          } else {
+            return item;
+          }
+        });
+
         setCheckout(previousOrder => ({
           ...previousOrder,
           ["promotionApplied"]: true,
+          ["tickets"]: updatedTickets,
           ["discountedSubtotal"]: getPromotionPriceFromResponse(checkout.subtotal, response),
           ["discountedFees"]: getPromotionPriceFromResponse(checkout.fees, response),
           ["discountedTotal"]: getPromotionPriceFromResponse(checkout.total, response)
         }))
+
+        Alert.alert("Promotion code applied");
       } else {
         Alert.alert("There was a problem applying promotion code.");
       }
@@ -138,40 +154,17 @@ export default function TicketCheckoutScreen({ route, navigation }) {
     return paymentId;
   };
 
-  async function openStripePayment() {
-    let paymentId = undefined;
+  async function openBillingAndPayment() {
 
-    try {
-      paymentId = await initializePaymentSheet();
-    } catch (error) {
-      console.log("[openStripePayment] initializePaymentSheet error: " + error);
-    }
+    const finalCheckout = { ...checkout };
+    finalCheckout.tickets = finalCheckout.tickets.filter(ticket => ticket.quantitySelected > 0);
 
-    if (paymentId === undefined) {
-      Alert.alert("Cannot create payment order, please try again later");
-      return;
-    }
+    console.log("Ticket: " + JSON.stringify(finalCheckout));
 
-    const order = new Order(checkout, paymentId, event.id, user.id);
-    try {
-      const postOrdersRequest: PostOrdersRequest = {
-        type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
-        order: order
-      }
-      await postOrders(postOrdersRequest);
-    } catch (error) {
-      console.log("[openStripePayment] create order error: " + error);
-      return;
-    }
-
-    const { error, paymentOption } = await presentPaymentSheet();
-
-    if (error) {
-      Alert.alert(`Error`, error.message);
-    } else {
-      console.log(paymentOption);
-      Alert.alert('Success', 'Your order is confirmed!');
-    }
+    navigation.navigate('TicketBillingAndPaymentScreen', {
+      finalCheckout: finalCheckout,
+      event: event
+    })
   }
 
   function getPromotionPriceFromResponse(price, response) {
@@ -226,15 +219,28 @@ export default function TicketCheckoutScreen({ route, navigation }) {
   }
 
   function reduceCost(ticket, index) {
-    var currentTotal = checkout.total;
-    var subtotal = checkout.subtotal;
-    var fees = checkout.fees;
+    var checkoutTotal = checkout.total;
+    var checkoutSubtotal = checkout.subtotal;
+    var checkoutFees = checkout.fees;
     const updatedTickets = checkout.tickets.map((item, i) => {
       if (index === i && item.quantitySelected > 0) {
-        subtotal -= ticket.price;
-        fees -= ticket.price * .1
-        currentTotal = subtotal + fees;
-        return { ...item, quantitySelected: item.quantitySelected - 1 };
+        checkoutSubtotal -= ticket.price;
+        checkoutFees -= ticket.price * .1
+        checkoutTotal = checkoutSubtotal + checkoutFees;
+
+        var ticketSubtotal = item.subtotal - ticket.price;
+        var ticketFees = item.fees - ticket.price * .1;
+        var ticketTotal = ticketSubtotal + ticketFees;
+
+        console.log(ticketTotal);
+
+        return {
+          ...item,
+          quantitySelected: item.quantitySelected - 1,
+          subtotal: ticketSubtotal,
+          fees: ticketFees,
+          total: ticketTotal
+        };
       } else {
         return item;
       }
@@ -243,17 +249,17 @@ export default function TicketCheckoutScreen({ route, navigation }) {
     setCheckout(previousOrder => ({
       ...previousOrder,
       ["tickets"]: updatedTickets,
-      ["total"]: currentTotal,
-      ["fees"]: fees,
-      ["subtotal"]: subtotal
+      ["total"]: checkoutTotal,
+      ["fees"]: checkoutFees,
+      ["subtotal"]: checkoutSubtotal
     }))
 
     if (checkout.promotionApplied) {
       setCheckout(previousOrder => ({
         ...previousOrder,
-        ["discountedSubtotal"]: getPromotionPrice(subtotal),
-        ["discountedFees"]: getPromotionPrice(fees),
-        ["discountedTotal"]: getPromotionPrice(currentTotal)
+        ["discountedSubtotal"]: getPromotionPrice(checkoutSubtotal),
+        ["discountedFees"]: getPromotionPrice(checkoutFees),
+        ["discountedTotal"]: getPromotionPrice(checkoutTotal)
       }))
     }
   }
@@ -267,7 +273,20 @@ export default function TicketCheckoutScreen({ route, navigation }) {
         subtotal += ticket.price;
         fees += ticket.price * .1
         currentTotal = subtotal + fees;
-        return { ...item, quantitySelected: item.quantitySelected + 1 };
+
+        var ticketSubtotal = item.subtotal + ticket.price;
+        var ticketFees = item.fees + ticket.price * .1;
+        var ticketTotal = ticketSubtotal + ticketFees;
+
+        console.log(ticketTotal);
+
+        return {
+          ...item,
+          quantitySelected: item.quantitySelected + 1,
+          subtotal: ticketSubtotal,
+          fees: ticketFees,
+          total: ticketTotal
+        };
       } else {
         return item;
       }
@@ -380,7 +399,9 @@ export default function TicketCheckoutScreen({ route, navigation }) {
             </Pressable>
 
           </View>
-          <ScrollView style={{ height: '100%' }}>
+          <ScrollView
+            keyboardDismissMode='on-drag'
+            style={{ height: '100%' }}>
             <View margin-20>
               {renderTickets()}
             </View>
@@ -405,33 +426,12 @@ export default function TicketCheckoutScreen({ route, navigation }) {
             }
           </View>
           <View marginL-20 marginR-20>
-            {/* <Button
-              backgroundColor={Colors.orange30}
-              borderRadius={30}
-              style={{ backgroundColor: '#000', height: 45, width: '100%' }}>
-              <Image source={require('../../assets/logo/apple-pay.png')} tintColor={Colors.white} width={48} height={48} />
-            </Button> */}
-
-            {/* <View >
-              {isApplePaySupported && (
-                <PlatformPayButton
-                  onPress={createPaymentMethod}
-                  type={PlatformPay.ButtonType.SetUp}
-                  appearance={PlatformPay.ButtonStyle.WhiteOutline}
-                  style={{
-                    width: '65%',
-                    height: 50,
-                  }}
-                />
-              )}
-            </View> */}
-
             <Button
-              onPress={() => openStripePayment()}
+              onPress={() => openBillingAndPayment()}
               marginT-16
               borderRadius={30}
               style={{ backgroundColor: '#2196F3', height: 45, width: '100%' }}>
-              <Text style={{ fontSize: 16, color: '#fff' }} marginL-10>Pay</Text>
+              <Text style={{ fontSize: 16, color: '#fff' }} marginL-10>Continue</Text>
             </Button>
           </View>
         </View>

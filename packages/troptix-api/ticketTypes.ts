@@ -18,8 +18,6 @@ export async function getTicketTypes(request: GetTicketTypesRequest) {
       break;
   }
 
-  console.log("URL: " + url);
-
   const response = await fetch(url, {
     method: 'GET',
     cache: 'no-cache',
@@ -50,7 +48,6 @@ export async function saveTicketType(ticketType, editTicketType): Promise<TropTi
       return data;
     }
   }).catch(error => {
-    console.log(error);
     return error;
   })
 }

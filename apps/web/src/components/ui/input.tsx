@@ -29,7 +29,7 @@ const Input2 = React.forwardRef<HTMLInputElement, InputProps>(
 )
 Input2.displayName = "Input"
 
-function CustomInput({ name, value, id, label, type, placeholder, handleChange, required, password = false, prefix = "" }) {
+function CustomInput({ name, value, id, label, type, placeholder, handleChange, disabled = false, required = false, password = false, prefix = "" }) {
   return (
     <div>
       <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={id}>{label}</label>
@@ -37,7 +37,7 @@ function CustomInput({ name, value, id, label, type, placeholder, handleChange, 
         password ?
           <Input.Password onChange={handleChange} name={name} value={value} id={id} type={type} className="form-input w-full text-gray-800" prefix={prefix} placeholder={placeholder} required={required} />
           :
-          <Input onChange={handleChange} name={name} value={value} id={id} type={type} classNames={{ input: "form-input w-full text-gray-800" }} prefix={prefix} placeholder={placeholder} required={required} />
+          <Input onChange={handleChange} name={name} value={value} id={id} type={type} classNames={{ input: "form-input w-full text-gray-800" }} prefix={prefix} placeholder={placeholder} disabled={disabled} required={required} />
 
       }
     </div>

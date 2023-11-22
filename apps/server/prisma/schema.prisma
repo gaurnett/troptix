@@ -15,15 +15,41 @@ enum Role {
 }
 
 model Users {
-  id        String    @id @default(uuid())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  email     String    @unique
-  name      String
-  stripeId  String?
-  role      Role      @default(PATRON)
-  tickets   Tickets[]
-  orders    Orders[]
+  id                  String                @id @default(uuid())
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  email               String                @unique
+  name                String
+  stripeId            String?
+  role                Role                  @default(PATRON)
+  tickets             Tickets[]
+  orders              Orders[]
+  socialMediaAccounts SocialMediaAccounts[]
+
+  telephoneNumber String?
+  billingAddress1 String?
+  billingAddress2 String?
+  billingCity     String?
+  billingCountry  String?
+  billingZip      String?
+  billingState    String?
+}
+
+enum SocialMediaAccountType {
+  FACEBOOK
+  INSTAGRAM
+  TIKTOK
+  TWITTER
+}
+
+model SocialMediaAccounts {
+  id                     String                 @id @default(uuid())
+  socialMediaAccountType SocialMediaAccountType
+  link                   String
+  user                   Users?                 @relation(fields: [userId], references: [id])
+  userId                 String?
+
+  @@index([userId])
 }
 
 enum TicketStatus {
@@ -35,6 +61,9 @@ model Tickets {
   id        String       @id @default(uuid())
   createdAt DateTime     @default(now())
   status    TicketStatus @default(NOT_AVAILABLE)
+  fees      Float?
+  subtotal  Float?
+  total     Float?
 
   event        Events      @relation(fields: [eventId], references: [id])
   eventId      String
@@ -58,14 +87,23 @@ enum OrderStatus {
 }
 
 model Orders {
-  id        String      @id @default(uuid())
-  createdAt DateTime?   @default(now())
-  updatedAt DateTime?   @updatedAt
-  total     Float
-  subtotal  Float
-  fees      Float
-  tickets   Tickets[]
-  status    OrderStatus @default(PENDING)
+  id              String      @id @default(uuid())
+  createdAt       DateTime?   @default(now())
+  updatedAt       DateTime?   @updatedAt
+  total           Float
+  subtotal        Float
+  fees            Float
+  cardType        String?
+  cardLast4       String?
+  telephoneNumber String?
+  billingAddress1 String?
+  billingAddress2 String?
+  billingCity     String?
+  billingCountry  String?
+  billingZip      String?
+  billingState    String?
+  tickets         Tickets[]
+  status          OrderStatus @default(PENDING)
 
   user    Users  @relation(fields: [userId], references: [id])
   userId  String

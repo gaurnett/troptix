@@ -1,6 +1,6 @@
 import { SignUpFields } from "@/pages/auth/signup";
 import { auth } from "../config";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from "firebase/auth";
 import { addUser } from 'troptix-api';
 import { User } from 'troptix-models';
 import { NextRouter } from "next/router";
@@ -25,7 +25,18 @@ export async function signUpWithEmail(signUpFields: SignUpFields, router: NextRo
       });
   } catch (e) {
     error = e;
-    console.log("Sign Up Error: " + e);
+  }
+
+  return { result, error };
+}
+
+export async function resetPassword(email: string) {
+  let result: any;
+  let error: any;
+  try {
+    result = await sendPasswordResetEmail(auth, email);
+  } catch (e) {
+    error = e;
   }
 
   return { result, error };

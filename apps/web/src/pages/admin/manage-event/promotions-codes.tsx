@@ -30,12 +30,10 @@ export default function PromotionCodesPage() {
       try {
         const response = await getPromotions(getPromotionsRequest);
 
-        console.log("Promotions Response: " + JSON.stringify(response));
         if ((response.error === undefined || response.error === undefined) && response.length !== 0) {
           setPromotions(response);
         }
       } catch (error) {
-        console.log("PromotionsScreen [fetchPromotions] error: " + error)
       }
       setIsFetchingPromotions(false);
     };
@@ -47,7 +45,6 @@ export default function PromotionCodesPage() {
     const response = await addPromotion(selectedPromotion, selectedIndex !== -1);
 
     if (response === null || response === undefined || response.error !== null) {
-      console.log("TicketFormScreen [saveTicket] response error: " + JSON.stringify(response.error));
       messageApi.open({
         type: 'error',
         content: 'Failed to save promotion code, please try again.',

@@ -2,7 +2,7 @@ import { Event, getEventsFromRequest } from './event';
 import { TicketType, TicketFeeStructure } from './ticketType';
 import { Ticket, TicketSummary, TicketsSummary } from './ticket';
 import { Order, Charge, Checkout, OrderSummary, createTicketOrder } from './order';
-import { User, setUserFromResponse } from './user';
+import { User, setUserFromResponse, SocialMediaAccount, SocialMediaAccountType } from './user';
 import { DelegatedAccess, DelegatedUser } from './delegatedUser';
 import { PromotionType, Promotion } from './promotions';
 
@@ -27,6 +27,8 @@ export {
   // User Details
   User,
   setUserFromResponse,
+  SocialMediaAccount,
+  SocialMediaAccountType,
   DelegatedAccess,
   DelegatedUser
 };

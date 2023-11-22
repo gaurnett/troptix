@@ -72,10 +72,6 @@ export default function AddEventStarterPage({ event, setEvent }) {
     }
   }
 
-  async function signIn() {
-    console.log("signing in");
-  }
-
   function getValueOrDefault(value: any, defaultValue: any) {
     if (value === undefined || value === null) {
       return defaultValue;
@@ -159,7 +155,6 @@ export default function AddEventStarterPage({ event, setEvent }) {
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
   };
 
   return (

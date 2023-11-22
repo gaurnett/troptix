@@ -12,6 +12,7 @@ import {
 import { auth } from '../config';
 import { getUsers, GetUsersType } from 'troptix-api';
 import { User, setUserFromResponse } from 'troptix-models';
+import { useRouter } from 'next/router';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,35 +31,21 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showHeader, setShowHeader] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     if (pathname.includes("order-confirmation")
       || pathname.includes("tickets")) {
       setShowHeader(false);
     }
-  }, [pathname]);
+
+    if (
+      (pathname.includes("admin") || pathname.includes("account")) && !loading && !user) {
+      router.push("/auth/signup");
+    }
+  }, [loading, pathname, router, user]);
 
   useEffect(() => {
-    async function fetchUserFromDatbase(user: any) {
-      try {
-        const getUsersRequest = {
-          getUsersType: GetUsersType.GET_USERS_BY_ID,
-          userId: user.uid
-        };
-
-        const response = await getUsers(getUsersRequest);
-        let currentUser = setUserFromResponse(response.response, user);
-
-        setUser(currentUser);
-        setLoading(false);
-      } catch (error) {
-        let currentUser = setUserFromResponse(null, user);
-
-        setUser(currentUser);
-        setLoading(false);
-      }
-    }
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         let currentUser = setUserFromResponse(null, user);
@@ -72,22 +59,6 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
 
     return () => unsubscribe();
   }, []);
-
-  function oldAdminNavBar() {
-    return (
-      <div className='min-h-screen flex flex-col'>
-        {/* <header className='bg-purple-200 sticky top-0 h-14 flex justify-center items-center font-semibold uppercase'>
-                        Next.js sidebar menu
-                      </header> */}
-        <div className='flex flex-col md:flex-row flex-1'>
-          <AdminHeader />
-          <div className="mt-8 ml-8 flex-1">
-            <Component {...pageProps} />
-          </div>
-        </div>
-      </div>
-    )
-  }
 
   return (
     <TropTixContext.Provider
@@ -118,11 +89,15 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
                     </div> :
                     <div>
                       {
-                        showHeader ? <AdminHeader /> : <></>
+                        user === null ?
+                          <></> :
+                          <>
+                            <AdminHeader />
+                            <div className="min-h-screen flex-grow mt-32">
+                              <Component {...pageProps} />
+                            </div>
+                          </>
                       }
-                      <div className="min-h-screen flex-grow mt-32">
-                        <Component {...pageProps} />
-                      </div>
                     </div>
                 }
               </div>
