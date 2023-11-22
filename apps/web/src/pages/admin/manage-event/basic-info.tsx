@@ -2,9 +2,9 @@ import { CustomDateField, CustomInput, CustomTimeField } from "@/components/ui/i
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import Autocomplete from "react-google-autocomplete";
-import { Button, DatePicker, DatePickerProps, Drawer } from "antd";
+import { Button, DatePicker, DatePickerProps, Drawer, Form } from "antd";
 
-export default function BasicInfoPage({ event, setEvent }) {
+export default function BasicInfoPage({ event, setEvent, updateEvent }) {
   const placesLibrary = ['places']
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -63,7 +63,10 @@ export default function BasicInfoPage({ event, setEvent }) {
 
   return (
     <div className="w-full md:max-w-md mr-8">
-      <form className="">
+      <Form
+        className=""
+        name="basic"
+        onFinish={updateEvent}>
         <h2 className="text-2xl md:text-3xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Event Details</h2>
 
         <div className="flex flex-wrap -mx-3 mb-4">
@@ -116,9 +119,9 @@ export default function BasicInfoPage({ event, setEvent }) {
           </div>
         </div>
         <div className="mt-4">
-          <Button type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Event Details</Button>
+          <Button htmlType="submit" type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Event Details</Button>
         </div>
-      </form>
+      </Form>
     </div>
   );
 }

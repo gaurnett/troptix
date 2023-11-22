@@ -3,14 +3,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { UploadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
-import { message, Upload, Image, Button } from 'antd';
+import { message, Upload, Image, Button, Form } from 'antd';
 import { RcFile } from "antd/es/upload";
 import { uploadFlyerToFirebase } from '@/firebase/storage';
 import { getDownloadURL, UploadTask } from "firebase/storage";
 
 const { Dragger } = Upload;
 
-export default function DetailsPage({ event, setEvent }) {
+export default function DetailsPage({ event, setEvent, updateEvent }) {
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setEvent(previousEvent => ({
       ...previousEvent,
@@ -56,7 +56,10 @@ export default function DetailsPage({ event, setEvent }) {
 
   return (
     <div className="w-full h-screen md:max-w-md mr-8">
-      <form className="">
+      <Form
+        className=""
+        name="basic"
+        onFinish={updateEvent}>
         <h2 className="text-2xl md:text-3xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Description & Photo</h2>
 
         <div className="flex flex-wrap -mx-3 mb-4">
@@ -66,7 +69,7 @@ export default function DetailsPage({ event, setEvent }) {
         </div>
         <div className="flex flex-wrap -mx-3 mb-4">
           <div className="w-full px-3">
-            <CustomTextArea value={event.description} name={"description"} id={"description"} label={"Event Description"} rows={6} placeholder={"Add a full description of your event. This will be presented on your event details page."} handleChange={handleChange} required={true} />
+            <CustomTextArea value={event.description} maxLength={500} name={"description"} id={"description"} label={"Event Description"} rows={6} placeholder={"Add a full description of your event. This will be presented on your event details page."} handleChange={handleChange} required={true} />
           </div>
         </div>
 
@@ -90,7 +93,7 @@ export default function DetailsPage({ event, setEvent }) {
         <div>
           <Button type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Event Details</Button>
         </div>
-      </form>
+      </Form>
     </div>
   );
 }

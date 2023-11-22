@@ -20,12 +20,15 @@ export default function OrderSummaryPage({ orders }) {
   const [orderSummary, setOrderSummary] = useState<any>(new OrderSummary([]));
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [ticketsSold, setTicketsSold] = useState(0);
+  const [showCharts, setShowCharts] = useState(false);
 
   useEffect(() => {
     if (orders !== undefined && orders.length !== 0) {
       const summary = new OrderSummary(orders)
       setOrderSummary(summary);
+      setShowCharts(true);
     } else {
+      setIsFetchingEvents(false);
       return;
     }
 
@@ -98,34 +101,42 @@ export default function OrderSummaryPage({ orders }) {
               </div>
             </div>
 
-            <div className="flex flex-wrap mb-4 mt-8">
-              <div className="w-full px-3">
-                <label className="text-xl md:text-1xl font-medium text-sm mb-1">Ticket Summary</label>
-                <List
-                  className="demo-loadmore-list"
-                  itemLayout="horizontal"
-                  dataSource={orderSummary.ticketsSummary}
-                  renderItem={(summary: any) => (
-                    <List.Item>
-                      {TicketSoldItem(summary[1])}
-                    </List.Item>
-                  )}
-                />
-              </div>
-            </div>
+            {
+              !showCharts
+                ? <></>
+                :
+                <div>
+                  <div className="flex flex-wrap mb-4 mt-8">
+                    <div className="w-full px-3">
+                      <label className="text-xl md:text-1xl font-medium text-sm mb-1">Ticket Summary</label>
+                      <List
+                        className="demo-loadmore-list"
+                        itemLayout="horizontal"
+                        dataSource={orderSummary.ticketsSummary}
+                        renderItem={(summary: any) => (
+                          <List.Item>
+                            {TicketSoldItem(summary[1])}
+                          </List.Item>
+                        )}
+                      />
+                    </div>
+                  </div>
 
-            <div className="flex flex-wrap mb-4">
-              <div className="w-full px-3">
-                <label className="text-xl md:text-1xl font-medium text-sm mb-1">Sale Analysis</label>
-                <SalesChart orders={orders} />
-              </div>
-            </div>
+                  <div className="flex flex-wrap mb-4">
+                    <div className="w-full px-3">
+                      <label className="text-xl md:text-1xl font-medium text-sm mb-1">Sale Analysis</label>
+                      <SalesChart orders={orders} />
+                    </div>
+                  </div>
 
-            <div className="flex flex-wrap">
-              <div className="w-full px-3">
-                <QuantityChart orders={orders} />
-              </div>
-            </div>
+                  <div className="flex flex-wrap">
+                    <div className="w-full px-3">
+                      <QuantityChart orders={orders} />
+                    </div>
+                  </div>
+                </div>
+            }
+
           </div>
       }
     </div>

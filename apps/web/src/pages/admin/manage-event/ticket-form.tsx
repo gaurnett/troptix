@@ -1,5 +1,5 @@
 import { CustomDateField, CustomInput, CustomNumberInput, CustomTextArea, CustomTimeField } from "@/components/ui/input";
-import { Button, Select } from "antd";
+import { Button, Form, Select } from "antd";
 import Link from "next/link";
 import { useState } from "react";
 import { TicketType, TicketFeeStructure } from 'troptix-models';
@@ -30,7 +30,10 @@ export default function TicketForm({ selectedTicket, setSelectedTicket, saveTick
 
   return (
     <div className="md:max-w-md">
-      <form>
+      <Form
+        className=""
+        name="basic"
+        onFinish={saveTicket}>
         <h3 className="text-xl md:text-xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Details</h3>
         <div className="flex flex-wrap -mx-3 mb-4">
           <div className="w-screen px-3">
@@ -93,10 +96,10 @@ export default function TicketForm({ selectedTicket, setSelectedTicket, saveTick
             <Button className="px-6 py-5 shadow-md items-center justify-center font-medium inline-flex">Discard</Button>
           </div>
           <div className="px-3">
-            <Button onClick={saveTicket} type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Ticket</Button>
+            <Button htmlType="submit" type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Ticket</Button>
           </div>
         </div>
-      </form>
+      </Form>
     </div>
   );
 }
