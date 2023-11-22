@@ -26,7 +26,6 @@ export default function PromotionCodeForm({ selectedPromotion, setSelectedPromot
       ...previousPromotion,
       ["ticketingFees"]: value,
     }))
-    console.log(`selected ${value}`);
   };
 
   return (

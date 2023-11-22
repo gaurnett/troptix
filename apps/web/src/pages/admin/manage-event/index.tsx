@@ -25,7 +25,6 @@ export default function ManageEventPage() {
 
   useEffect(() => {
     async function fetchEvents() {
-      console.log("fetching 1");
       try {
         const getEventsRequest: any = {
           getEventsType: GetEventsType.GET_EVENTS_BY_ID,
@@ -36,10 +35,7 @@ export default function ManageEventPage() {
         if (response !== undefined && response.length !== 0) {
           setEvent(response);
         }
-
-        console.log("ManageEventScreen [events]: " + JSON.stringify(response));
       } catch (error) {
-        console.log("ManageEventScreen [fetchEvents] error: " + error)
       }
 
       setIsFetchingEvent(false);
@@ -49,34 +45,10 @@ export default function ManageEventPage() {
   }, [eventId]);
 
   function onChange(key: string) {
-    console.log(key);
   };
-
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log(event.target.name);
-    console.log(event.target.value);
-  }
 
   function goBack() {
     router.back();
-  }
-
-  async function updateEvent() {
-    console.log(event);
-    const response = await saveEvent(event, true);
-
-    if (response === null || response === undefined || response.error !== null) {
-      messageApi.open({
-        type: 'error',
-        content: 'Failed to create event, please try again.',
-      });
-      return;
-    }
-
-    messageApi.open({
-      type: 'success',
-      content: 'Successfully updated event.',
-    });
   }
 
   const items: TabsProps['items'] = [

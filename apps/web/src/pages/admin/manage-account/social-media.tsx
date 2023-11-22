@@ -12,7 +12,6 @@ import SocialMediaForm from './social-media-form';
 import { putUsers, PutUsersType } from 'troptix-api';
 
 export default function SocialMedia({ adminUser, setAdminUser }) {
-  console.log(adminUser);
   const { user } = useContext(TropTixContext);
   const userId = user === null || user === undefined ? null : user.id;
   const [messageApi, contextHolder] = message.useMessage();
@@ -52,11 +51,9 @@ export default function SocialMedia({ adminUser, setAdminUser }) {
       socialMediaAccount: socialMediaAccount
     }
 
-    console.log(putUserRequest);
     const response = await putUsers(putUserRequest);
 
     if (response === null || response === undefined || response.error !== null) {
-      console.log("TicketFormScreen [saveTicket] response error: " + JSON.stringify(response.error));
       messageApi.open({
         type: 'error',
         content: 'Failed to save account, please try again.',
@@ -87,7 +84,6 @@ export default function SocialMedia({ adminUser, setAdminUser }) {
   }
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
   };
 
   function transformAccountType(accountType: string) {

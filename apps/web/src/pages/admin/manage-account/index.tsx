@@ -29,8 +29,6 @@ export default function ManageAccountPage() {
         setAdminUser(response);
       }
 
-      console.log("ManageAccountPage [fetchUser]: " + JSON.stringify(response));
-
       setIsFetchingUser(false);
     };
 

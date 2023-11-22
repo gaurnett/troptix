@@ -23,7 +23,6 @@ export default function AccountDetails({ adminUser, setAdminUser }) {
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
   };
 
   return (

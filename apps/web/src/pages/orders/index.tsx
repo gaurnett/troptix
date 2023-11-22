@@ -38,7 +38,6 @@ export default function TicketsPage() {
           setOrders(response);
         }
       } catch (error) {
-        console.log("TicketsScreen [fetchOrders] error: " + error)
       }
 
       setIsFetchingOrders(false);

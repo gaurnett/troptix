@@ -16,7 +16,6 @@ const EventCard: React.FC<EventCardProps> = ({
   location,
   price,
 }) => {
-  console.log(image);
   return (
     <div className=" rounded-md flex flex-col overflow-hidden shadow-lg hover:shadow-xl ">
       <div>

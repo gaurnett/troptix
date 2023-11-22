@@ -63,7 +63,5 @@ export async function postOrders(request: PostOrdersRequest): Promise<TropTixRes
   });
   const json = await response.json();
 
-  console.log("post orders json: " + JSON.stringify(json));
-
   return json
 }

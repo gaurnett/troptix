@@ -26,7 +26,6 @@ export default function TicketForm({ selectedTicket, setSelectedTicket, saveTick
       ...previousTicket,
       ["ticketingFees"]: value,
     }))
-    console.log(`selected ${value}`);
   };
 
   return (

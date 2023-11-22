@@ -51,7 +51,6 @@ export default function DetailsPage({ event, setEvent }) {
       }
     },
     onDrop(e) {
-      console.log('Dropped files', e.dataTransfer.files);
     },
   };
 

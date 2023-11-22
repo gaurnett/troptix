@@ -17,7 +17,7 @@ export default function AccountPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [isFetchingUser, setIsFetchingUser] = useState(true);
   const [socialMediaAccounts, setSocialMediaAccounts] = useState<any[]>([]);
-  const [adminUser, setAdminUser] = useState<any>(user);
+  const [adminUser, setAdminUser] = useState<any>();
   const [socialMediaAccount, setSocialMediaAccount] = useState<any>();
   const [socialMediaAccountIndex, setSocialMediaAccountIndex] = useState(0);
   const [socialMediaAccountOpen, setSocialMediaAccountOpen] = useState(false);
@@ -38,8 +38,6 @@ export default function AccountPage() {
       if (response !== undefined) {
         setAdminUser(response);
       }
-
-      console.log("ManageAccountPage [fetchUser]: " + response)
 
       setIsFetchingUser(false);
     };
@@ -74,11 +72,9 @@ export default function AccountPage() {
       user: adminUser
     }
 
-    console.log(putUserRequest);
     const response = await putUsers(putUserRequest);
 
     if (response === null || response === undefined || response.error !== null) {
-      console.log("TicketFormScreen [saveTicket] response error: " + JSON.stringify(response.error));
       messageApi.open({
         type: 'error',
         content: 'Failed to save account, please try again.',
@@ -103,7 +99,6 @@ export default function AccountPage() {
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
   };
 
   function transformAccountType(accountType: string) {
@@ -127,7 +122,7 @@ export default function AccountPage() {
       {contextHolder}
       <div className="mx-4">
         <h1 className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">Account Settings</span></h1>
-        {!isFetchingUser
+        {!isFetchingUser && adminUser
           ?
           <Form
             name="basic"

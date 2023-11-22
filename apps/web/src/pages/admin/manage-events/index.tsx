@@ -32,8 +32,6 @@ export default function ManageEventsPage() {
         setEvents(getEventsFromRequest(response));
       }
 
-      console.log("ManageEventsScreen [fetchEvents]: " + response)
-
       setIsFetchingEvents(false);
     };
 

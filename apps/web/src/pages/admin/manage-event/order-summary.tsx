@@ -38,11 +38,6 @@ export default function OrderSummaryPage({ orders }) {
     setIsFetchingEvents(false);
   }, [orders]);
 
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log(event.target.name);
-    console.log(event.target.value);
-  }
-
   function getFormattedCurrency(price) {
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -52,12 +47,7 @@ export default function OrderSummaryPage({ orders }) {
     return formatter.format(price)
   }
 
-  async function signIn() {
-    console.log("signing in");
-  }
-
   function TicketSoldItem(summary) {
-    console.log("Summary: " + JSON.stringify(summary));
     const percent = Math.trunc((summary.quantitySold / summary.quantity) * 100);
 
     return (

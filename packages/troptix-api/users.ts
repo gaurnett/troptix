@@ -47,8 +47,6 @@ export async function addUser(user) {
   });
   const json = await response.text();
 
-  console.log("Add user: " + json);
-
   return json;
 }
 

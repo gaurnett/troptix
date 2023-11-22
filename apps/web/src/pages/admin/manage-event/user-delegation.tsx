@@ -25,12 +25,10 @@ export default function UserDelegationPage() {
       try {
         const response = await getDelegatedUsers(eventId);
 
-        console.log("Delegated Users Response: " + JSON.stringify(response));
         if (response !== undefined && response.length !== 0) {
           setDelegatedUsers(response);
         }
       } catch (error) {
-        console.log("EventDelegationScreen [fetchUsers] error: " + error)
       }
       setIsFetchingUsers(false);
     };
@@ -42,7 +40,6 @@ export default function UserDelegationPage() {
     const response = await addDelegatedUser(selectedUser, selectedIndex !== -1);
 
     if (response === null || response === undefined || response.error !== null) {
-      console.log("TicketFormScreen [saveTicket] response error: " + JSON.stringify(response.error));
       messageApi.open({
         type: 'error',
         content: 'Failed to save user, please try again.',
