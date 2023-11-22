@@ -4,6 +4,9 @@ const nextConfig = {
     externalDir: true,
   },
   reactStrictMode: false,
+  images: {
+    domains: ["firebasestorage.googleapis.com"],
+  },
 };
 
 module.exports = nextConfig;
