@@ -24,9 +24,10 @@ const EventCard: React.FC<EventCardProps> = ({
           width={"100%"}
           height={"100%"}
           className="w-auto h-72"
-          style={{ objectFit: 'cover' }}
+          style={{ objectFit: "cover" }}
           src={image}
-          alt={eventName} />
+          alt={eventName}
+        />
       </div>
       <div className="px-6 py-4">
         <div className="font-bold text-xl mb-2">{eventName}</div>
