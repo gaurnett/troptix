@@ -4,12 +4,14 @@ import uuid from 'react-native-uuid';
 
 export class Order {
   id: string;
-  stripePaymentId: string;
+  stripeCustomerId: string;
   eventId: string;
   total: number;
   subtotal: number;
   fees: number;
   userId: string;
+  name: string;
+  email: string;
   telephoneNumber: string;
   billingAddress1: string;
   billingAddress2: string;
@@ -19,14 +21,17 @@ export class Order {
   billingCountry: string;
   tickets: Ticket[];
 
-  constructor(checkout: Checkout, paymentId: string, eventId: string, userId: string) {
+  constructor(checkout: Checkout, paymentId: string, eventId: string, userId: string, stripeCustomerId: string) {
 
     this.id = paymentId;
+    this.stripeCustomerId = stripeCustomerId;
     this.total = checkout.total;
     this.subtotal = checkout.subtotal;
     this.fees = checkout.fees
     this.tickets = new Array();
     this.userId = userId;
+    this.name = checkout.name;
+    this.email = checkout.email;
     this.eventId = eventId;
     this.telephoneNumber = checkout.telephoneNumber;
     this.billingAddress1 = checkout.billingAddress1;
@@ -88,6 +93,8 @@ export class OrderSummary {
 export class Checkout {
   id: string;
   eventId: string;
+  name: string;
+  email: string;
   total: number = 0;
   subtotal: number = 0;
   fees: number = 0;

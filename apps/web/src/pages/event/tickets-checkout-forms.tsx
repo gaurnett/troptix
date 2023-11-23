@@ -63,6 +63,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
     //   value: 15
     // });
     // setPromotionApplied(true);
+    // message.success("Promotion code applied");
     // return;
 
     if (promotionCode === undefined) {
@@ -268,20 +269,19 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   }
 
   return (
-    <div className="w-full mt-8">
+    <div className="w-full">
       {contextHolder}
       <div>
-        <div className="-mx-3 mb-4">
+        <div className="mb-4">
           <div className="w-full px-3">
             <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={"promotionCode"}>Promotion Code</label>
           </div>
-          <div className="flex w-full px-3">
+          <div className="flex w-full">
             <Input onChange={handleChange} name={"promotionCode"} value={promotionCode} id={"promotionCode"} type={"text"} classNames={{ input: "form-input w-full text-gray-800" }} placeholder={"SAVE15"} />
             <Button onClick={applyPromotion} className='my-auto ml-4' type='text'>
               Apply
             </Button>
           </div>
-
         </div>
 
         <List

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { message, Button, Spin, Modal, List, Steps, theme } from 'antd';
+import { message, Button, Spin, Modal, List, Steps, theme, Table } from 'antd';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { Event, getEventsFromRequest, Checkout, Order, Charge } from 'troptix-models';
@@ -24,7 +24,7 @@ export default function StripePage() {
   const [checkout, setCheckout] = useState<any>({});
   const [event, setEvent] = useState<any>();
   const [eventName, setEventName] = useState("");
-  const [publishButtonClicked, setPublishButtonClicked] = useState(false);
+  const [checkoutPreviousButtonClicked, setCheckoutPreviousButtonClicked] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [promotionCode, setPromotionCode] = useState();
   const [promotion, setPromotion] = useState<any>();
@@ -58,8 +58,12 @@ export default function StripePage() {
         if (response !== undefined && response.length !== 0) {
           setEvent(response);
           setCheckout(new Checkout(response));
+          setCheckout(previousCheckout => ({
+            ...previousCheckout,
+            ["username"]: user.name,
+            ["userEmail"]: user.email,
+          }))
           setEventName(response.name)
-
         }
       } catch (error) {
       }
@@ -68,19 +72,23 @@ export default function StripePage() {
     };
 
     fetchEvents();
-  }, [eventId]);
+  }, [eventId, user.email, user.name]);
 
   useEffect(() => {
     console.log(stripeOptions);
 
     setSteps([
       {
-        title: 'Ticket Details',
-        content: <TicketsCheckoutForm checkout={checkout} setCheckout={setCheckout} />,
+        title: 'Ticket',
+        content: <TicketsCheckoutForm event={event} checkout={checkout} setCheckout={setCheckout} />,
+      },
+      {
+        title: 'Billing',
+        content: <BillingForm checkout={checkout} setCheckout={setCheckout} />
       },
       {
         title: 'Checkout',
-        content: <CheckoutForm checkout={checkout} event={event} />
+        content: <CheckoutForm checkout={checkout} event={event} setCheckoutPreviousButtonClicked={setCheckoutPreviousButtonClicked} />
       },
     ])
   }, [checkout, event, stripeOptions]);
@@ -88,6 +96,14 @@ export default function StripePage() {
   useEffect(() => {
     setItems(steps.map((item) => ({ key: item.title, title: item.title })));
   }, [steps]);
+
+  useEffect(() => {
+    if (checkoutPreviousButtonClicked) {
+      setCurrent(current - 1);
+    }
+
+    setCheckoutPreviousButtonClicked(false);
+  }, [checkoutPreviousButtonClicked, current])
 
   async function next() {
     setCurrent(current + 1);
@@ -114,19 +130,19 @@ export default function StripePage() {
           <h1 className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">{eventName}</span></h1>
           <Button onClick={() => setIsModalOpen(true)}>Buy Tickets</Button>
           <Modal
-            title="Modal 1000spx width"
+            title="Ticket Checkout"
             centered
             closable={true}
             open={isModalOpen}
             okButtonProps={{ hidden: true }}
             cancelButtonProps={{ hidden: true }}
             onCancel={handleCancel}
-            width={800}
+            width={600}
           >
-            <div className="w-full md:max-w-2xl mx-auto">
+            <div className="w-full">
               <Steps current={current} items={[
                 {
-                  title: "Ticket Details"
+                  title: "Tickets"
                 },
                 {
                   title: "Billing"
@@ -136,18 +152,35 @@ export default function StripePage() {
                 }
               ]} />
               <div>{steps[current].content}</div>
-              <div style={{ marginTop: 24 }}>
+              <div className='mt-2'>
                 {current < steps.length - 1 && (
-                  <Button type='primary' onClick={next} className="px-4 py-4 shadow-md items-center bg-blue-600 hover:bg-blue-700 font-medium inline-flex">Continue</Button>
+                  <div className='my-auto flex'>
+                    <div className='border rounded border-1 flex p-2'>
+                      <div className=''>
+                        <div className=''>Subtotal:</div>
+                        <div className=''>Taxes & Fees:</div>
+                        <div className=''>Total:</div>
+                      </div>
+                      <div className='ml-4 border-l border-dashed'>
+                        <div className='ml-4'>
+                          <div>${checkout.subtotal}</div>
+                          <div>${checkout.fees}</div>
+                          <div>${checkout.total}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 )}
-                {current === steps.length - 1 && (
-                  <Button type='primary' onClick={() => message.success('Processing complete!')} className="px-4 py-4 shadow-md items-center bg-blue-600 hover:bg-blue-700 font-medium inline-flex">Complete Purchase</Button>
-                )}
-                {current > 0 && (
-                  <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
-                    Previous
-                  </Button>
-                )}
+                <div className='grow my-auto mt-4'>
+                  {current < steps.length - 1 && (
+                    <Button type='primary' onClick={next} className="px-4 py-4 shadow-md items-center bg-blue-600 hover:bg-blue-700 font-medium inline-flex">Continue</Button>
+                  )}
+                  {current > 0 && current < steps.length - 1 && (
+                    <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
+                      Previous
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </Modal>

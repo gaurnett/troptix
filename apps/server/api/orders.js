@@ -56,32 +56,38 @@ async function postOrders(request, response) {
 async function createCharge(body, response) {
   const charge = body.charge;
 
-  if (charge === undefined || charge.total === undefined || charge.userId === undefined) {
+  if (charge === undefined || charge.total === undefined) {
     return response.status(500).json({ error: 'No body found in create charge request' });
   }
 
   try {
-    const user = await prisma.users.findUnique({
-      where: {
-        id: charge.userId,
-      },
-    });
-
     var customerId = "";
-    if (user.stripeId === null || user.stripeId === undefined || user.stripeId === "") {
+
+    if (charge.userId === undefined) {
       const customer = await stripe.customers.create();
-      await prisma.users.update({
+      customerId = customer.id;
+    } else {
+      const user = await prisma.users.findUnique({
         where: {
           id: charge.userId,
         },
-        data: {
-          stripeId: customer.id,
-        },
       });
 
-      customerId = customer.id;
-    } else {
-      customerId = user.stripeId;
+      if (user.stripeId === null || user.stripeId === undefined || user.stripeId === "") {
+        const customer = await stripe.customers.create();
+        await prisma.users.update({
+          where: {
+            id: charge.userId,
+          },
+          data: {
+            stripeId: customer.id,
+          },
+        });
+
+        customerId = customer.id;
+      } else {
+        customerId = user.stripeId;
+      }
     }
 
     const ephemeralKey = await stripe.ephemeralKeys.create(
@@ -101,13 +107,13 @@ async function createCharge(body, response) {
 
     response.json({
       paymentId: paymentIntent.id,
-      paymentIntent: paymentIntent.client_secret,
+      clientSecret: paymentIntent.client_secret,
       ephemeralKey: ephemeralKey.secret,
-      customer: customerId,
-      publishableKey: 'pk_test_51Noxs0FEd6UvxBWGgUgu6JQw6VnDqC8ei9YkxAthxkjGBsAY3OKEKbkuRlnCTcHoVnQp5vvCrM0YfuhSFQZv3wR300x6wKe6oJ'
+      customerId: customerId,
     });
 
   } catch (error) {
+    console.log(error);
     return response.status(500).json({ error: error });
   }
 }
@@ -207,14 +213,16 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
           }
         },
         event: true,
-        user: true,
       },
     });
 
-    const email = await sendEmailToUser(order, response);
+    const mailResponse = await sendEmailToUser(order, response);
+
+    console.log("mail response: " + JSON.stringify(mailResponse));
 
     return response.status(200).json({ message: "Updated order successfully" });
   } catch (e) {
+    console.log("Error: " + e);
     return response.status(500).json({ error: 'Error fetching posts' });
   }
 }
