@@ -1,9 +1,9 @@
 import Footer from "@/components/ui/footer";
-import LandingHero from "./hero";
-import CurrentEvents from "./current-events";
-import Features from "./features";
-import Testimonials from "./testimonials";
-import Newsletter from "./newsletter";
+import LandingHero from "@/components/home/hero";
+import CurrentEvents from "@/components/home/current-events";
+import Features from "@/components/home/features";
+import Testimonials from "@/components/home/testimonials";
+import Newsletter from "@/components/home/newsletter";
 
 export default function LandingPage() {
   return (
