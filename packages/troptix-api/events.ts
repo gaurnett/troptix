@@ -1,5 +1,5 @@
 import axios from "axios";
-import { TropTixResponse, prodUrl } from "./api";
+import { prodUrl } from "./api";
 
 export enum GetEventsType {
   GET_EVENTS_ALL = 'GET_EVENTS_ALL',
