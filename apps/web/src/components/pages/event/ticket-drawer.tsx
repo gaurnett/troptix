@@ -21,7 +21,6 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
   const [checkout, setCheckout] = useState<any>({});
   const [checkoutPreviousButtonClicked, setCheckoutPreviousButtonClicked] = useState(false);
   const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);
-  const [orderSummary, setOrderSummary] = useState(new Map());
 
   const [current, setCurrent] = useState(0);
   const [steps, setSteps] = useState<any>([]);
@@ -49,7 +48,7 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
     setSteps([
       {
         title: 'Ticket',
-        content: <TicketsCheckoutForm event={event} checkout={checkout} setCheckout={setCheckout} orderSummary={orderSummary} setOrderSummary={setOrderSummary} />,
+        content: <TicketsCheckoutForm event={event} checkout={checkout} setCheckout={setCheckout} />,
       },
       {
         title: 'Billing',
@@ -66,7 +65,7 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
           setCompletePurchaseClicked={setCompletePurchaseClicked} />
       },
     ])
-  }, [checkout, event, completePurchaseClicked, orderSummary]);
+  }, [checkout, event, completePurchaseClicked]);
 
   useEffect(() => {
     setItems(steps.map((item) => ({ key: item.title, title: item.title })));
@@ -137,7 +136,6 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
   }
 
   function closeModal() {
-    setOrderSummary(new Map());
     setIsStripeLoaded(false);
     handleCancel()
   }
@@ -164,7 +162,7 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
                 <div className='flex-1 overflow-y-auto'>
                   <div>
                     {
-                      orderSummary.size === 0 ?
+                      checkout.tickets.size === 0 ?
                         <div className='mx-auto my-auto w-full text-center justify-center items-center'>
                           <ShoppingCartOutlined className='text-4xl my-auto mx-auto mt-2' />
                           <div className='text-xl font-bold'>Cart is empty</div>
@@ -174,16 +172,25 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
                           <List
                             itemLayout="vertical"
                             size="large"
-                            dataSource={Array.from(orderSummary.keys())}
+                            dataSource={Array.from(checkout.tickets.keys())}
                             split={false}
-                            renderItem={(name: any, index: number) => {
-                              const quantity = orderSummary.get(name)
+                            renderItem={(id: any, index: number) => {
+                              const summary = checkout.tickets.get(id)
                               return (
                                 <List.Item
                                   className='mb-4'
                                   style={{ padding: 0 }}>
-                                  <div className='text-base'>
-                                    {quantity} x {name}
+                                  <div className='w-full flex my-4'>
+                                    <div className='grow'>
+                                      <div className='text-base'>
+                                        {summary?.quantitySelected} x {summary.name}
+                                      </div>
+                                    </div>
+                                    <div className='ml-4'>
+                                      <div className='ml-4'>
+                                        <div className='text-base text-end'>{getFormattedCurrency(summary?.subtotal * summary.quantitySelected)}</div>
+                                      </div>
+                                    </div>
                                   </div>
                                 </List.Item>
                               )
@@ -199,8 +206,8 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
                             </div>
                             <div className='ml-4'>
                               <div className='ml-4'>
-                                <div className='text-base'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedSubtotal : checkout.subtotal)}</div>
-                                <div className='text-base'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedFees : checkout.fees)}</div>
+                                <div className='text-base text-end'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedSubtotal : checkout.subtotal)}</div>
+                                <div className='text-base text-end'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedFees : checkout.fees)}</div>
                               </div>
                             </div>
                           </div>
@@ -237,7 +244,7 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
             </Drawer>
 
             <div className="w-full h-full flex flex-col">
-              <div className='w-full sticky top-0 bg-white mx-auto mb-4'>
+              <div className='w-full sticky top-0 bg-white mx-auto mb-8'>
                 <Steps
                   responsive={false}
                   current={current} items={[

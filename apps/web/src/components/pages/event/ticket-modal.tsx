@@ -26,29 +26,23 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
   const [steps, setSteps] = useState<any>([]);
   const [items, setItems] = useState<any>();
   const [fetchingCheckout, setFetchingCheckout] = useState(true);
-  const [orderSummary, setOrderSummary] = useState(new Map());
+  const [fetchingItems, setFetchingItems] = useState(true);
   const [isStripeLoaded, setIsStripeLoaded] = useState(false);
 
   useEffect(() => {
     if (isTicketModalOpen) {
-      setCheckout(new Checkout(event));
-      setCheckout(previousCheckout => ({
-        ...previousCheckout,
-        ["name"]: user?.name,
-        ["email"]: user?.email,
-      }))
-
+      setCheckout(new Checkout(user));
       setCurrent(0);
       setFetchingCheckout(false);
     }
 
-  }, [event, isTicketModalOpen, user?.email, user?.name]);
+  }, [isTicketModalOpen, user]);
 
   useEffect(() => {
     setSteps([
       {
         title: 'Ticket',
-        content: <TicketsCheckoutForm event={event} checkout={checkout} setCheckout={setCheckout} orderSummary={orderSummary} setOrderSummary={setOrderSummary} />,
+        content: <TicketsCheckoutForm event={event} checkout={checkout} setCheckout={setCheckout} />,
       },
       {
         title: 'Billing',
@@ -65,7 +59,7 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
           setCheckoutPreviousButtonClicked={setCheckoutPreviousButtonClicked} />
       },
     ])
-  }, [checkout, event, completePurchaseClicked, orderSummary]);
+  }, [checkout, event, completePurchaseClicked]);
 
   useEffect(() => {
     setItems(steps.map((item) => ({ key: item.title, title: item.title })));
@@ -84,6 +78,7 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
   }
 
   async function next() {
+    console.log(checkout);
     if (current === 0) {
       if (checkout.total === 0) {
         message.warning("Please select a ticket quantity");
@@ -115,7 +110,6 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
   }
 
   function closeModal() {
-    setOrderSummary(new Map());
     setIsStripeLoaded(false);
     handleCancel();
   }
@@ -141,69 +135,75 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
             okButtonProps={{ hidden: true }}
             cancelButtonProps={{ hidden: true }}
             onCancel={closeModal}
-            width={900}
+            width={1080}
           >
             <div className="w-full">
-              <div className='md:w-3/4 md:mx-auto md:mt-4'>
-                <Steps current={current} items={[
-                  {
-                    title: "Tickets"
-                  },
-                  {
-                    title: "Billing"
-                  },
-                  {
-                    title: "Checkout"
-                  }
-                ]} />
-              </div>
-              <div className='md:flex md:mt-6'>
+              <div style={{ maxHeight: 600 }} className='flex mt-6'>
+                <div className='w-4/6 grow'>
+                  <div className='flex flex-col h-full px-12'>
+                    <div className='w-3/4 md:mx-auto mb-6'>
+                      <Steps current={current} items={[
+                        {
+                          title: "Tickets"
+                        },
+                        {
+                          title: "Billing"
+                        },
+                        {
+                          title: "Checkout"
+                        }
+                      ]} />
+                    </div>
 
-                <div className='grow'>
-                  <div style={{ maxHeight: 450 }} className='grow overflow-auto w-full h-full'>{steps[current].content}</div>
-                  <div className='flex flex-end content-end items-end self-end mt-4'>
-                    {current === 0 && (
-                      <Button
-                        type="primary"
-                        onClick={next}
-                        className="w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">
-                        Continue
-                      </Button>)}
-                    {current === 1 && (
-                      <div className='flex w-full'>
-                        <Button
-                          onClick={prev}
-                          className="mr-2 w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
-                          Previous
-                        </Button>
+                    <div className='flex-1 overflow-y-auto'>
+                      <div className='grow'>
+                        {steps[current].content}
+                      </div>
+                    </div>
+                    <div className='flex flex-end content-end items-end self-end mt-4'>
+                      {current === 0 && (
                         <Button
                           type="primary"
                           onClick={next}
-                          className="ml-2 w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">
+                          className="w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">
                           Continue
-                        </Button>
-                      </div>
-                    )}
-                    {current === 2 && (
-                      <div className='flex w-full'>
-                        <Button
-                          onClick={prev}
-                          className="mr-2 w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
-                          Previous
-                        </Button>
-                        <Button
-                          type="primary"
-                          onClick={completeStripePayment}
-                          disabled={!isStripeLoaded}
-                          className="ml-2 w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">
-                          Complete Purchase
-                        </Button>
-                      </div>
-                    )}
+                        </Button>)}
+                      {current === 1 && (
+                        <div className='flex w-full'>
+                          <Button
+                            onClick={prev}
+                            className="mr-2 w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                            Previous
+                          </Button>
+                          <Button
+                            type="primary"
+                            onClick={next}
+                            className="ml-2 w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">
+                            Continue
+                          </Button>
+                        </div>
+                      )}
+                      {current === 2 && (
+                        <div className='flex w-full'>
+                          <Button
+                            onClick={prev}
+                            className="mr-2 w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                            Previous
+                          </Button>
+                          <Button
+                            type="primary"
+                            onClick={completeStripePayment}
+                            disabled={!isStripeLoaded}
+                            className="ml-2 w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">
+                            Complete Purchase
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className='ml-8'>
-                  <div className='hidden md:block'>
+                <div className='w-2/6 ml-8 overflow-y-auto border-l pl-12 pr-6'>
+                  <div className='mx-auto text-center'>
                     <Image
                       height={250}
                       width={250}
@@ -214,10 +214,9 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
                   </div>
 
                   <div>
-                    {/* {current < steps.length - 1 && ( */}
                     <div className='mb-4 md:mt-4 md:mb-8 my-auto w-full'>
                       {
-                        orderSummary.size === 0 ?
+                        checkout.tickets.size === 0 ?
                           <div className='mx-auto my-auto w-full text-center justify-center align-center'>
                             <ShoppingCartOutlined className='text-4xl mx-auto mt-2' />
                             <div className='text-xl'>Cart is empty</div>
@@ -227,16 +226,24 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
                             <List
                               itemLayout="vertical"
                               size="large"
-                              dataSource={Array.from(orderSummary.keys())}
+                              dataSource={Array.from(checkout.tickets.keys())}
                               split={false}
-                              renderItem={(name: any, index: number) => {
-                                const quantity = orderSummary.get(name)
+                              renderItem={(id: any, index: number) => {
+                                const summary = checkout.tickets.get(id)
                                 return (
                                   <List.Item
-                                    className='mb-4'
                                     style={{ padding: 0 }}>
-                                    <div className='text-base'>
-                                      {quantity} x {name}
+                                    <div className='w-full flex my-4'>
+                                      <div className='grow'>
+                                        <div className='text-sm'>
+                                          {summary?.quantitySelected} x {summary.name}
+                                        </div>
+                                      </div>
+                                      <div className='ml-4'>
+                                        <div className='ml-4'>
+                                          <div className='text-sm text-end'>{getFormattedCurrency(summary?.subtotal * summary.quantitySelected)}</div>
+                                        </div>
+                                      </div>
                                     </div>
                                   </List.Item>
                                 )
@@ -247,13 +254,13 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
 
                             <div className='w-full flex my-4'>
                               <div className='grow'>
-                                <div className='text-base'>Subtotal:</div>
-                                <div className='text-base'>Taxes & Fees:</div>
+                                <div className='text-sm'>Subtotal:</div>
+                                <div className='text-sm'>Taxes & Fees:</div>
                               </div>
                               <div className='ml-4'>
                                 <div className='ml-4'>
-                                  <div className='text-base'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedSubtotal : checkout.subtotal)}</div>
-                                  <div className='text-base'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedFees : checkout.fees)}</div>
+                                  <div className='text-sm text-end'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedSubtotal : checkout.subtotal)}</div>
+                                  <div className='text-sm text-end'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedFees : checkout.fees)}</div>
                                 </div>
                               </div>
                             </div>
@@ -266,7 +273,7 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
                               </div>
                               <div className='ml-4'>
                                 <div className='ml-4'>
-                                  <div className='text-xl font-bold'>
+                                  <div className='text-xl font-bold text-end'>
                                     {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)}
                                   </div>
                                 </div>
@@ -275,7 +282,6 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
                           </div>
                       }
                     </div>
-                    {/* )} */}
                   </div>
                 </div>
               </div>

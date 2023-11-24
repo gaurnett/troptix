@@ -41,7 +41,8 @@ export class Order {
     this.billingState = checkout.billingState;
     this.billingCountry = checkout.billingCountry;
 
-    checkout.tickets.forEach(checkoutTicket => {
+    Array.from(checkout.tickets.keys()).forEach(checkoutItem => {
+      const checkoutTicket = checkout.tickets.get(checkoutItem);
       if (checkoutTicket.quantitySelected > 0) {
         for (let i = 0; i < checkoutTicket.quantitySelected; i++) {
           let ticket = createTicket(checkoutTicket, this.id, userId);
@@ -109,16 +110,11 @@ export class Checkout {
   billingZip: string;
   billingState: string;
   billingCountry: string;
-  tickets: CheckoutTicket[];
+  tickets: Map<string, CheckoutTicket> = new Map();
 
-  constructor(event: Event) {
-    const ticketTypes = event.ticketTypes;
-    this.tickets = new Array();
-
-    ticketTypes.forEach(ticketType => {
-      let ticket = new CheckoutTicket(ticketType);
-      this.tickets.push(ticket);
-    });
+  constructor(user: any) {
+    this.name = user?.name;
+    this.email = user?.email;
   }
 }
 

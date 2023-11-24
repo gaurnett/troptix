@@ -1,17 +1,19 @@
 import _ from 'lodash';
-import { message, Button, Spin, Modal, List, Steps, theme, Input } from 'antd';
+import { message, Button, Spin, Modal, List, Steps, theme, Input, Typography } from 'antd';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { Event, getEventsFromRequest, Checkout, Order, Charge } from 'troptix-models';
+import { Event, getEventsFromRequest, Checkout, Order, CheckoutTicket } from 'troptix-models';
 import { GetPromotionsType, getPromotions } from 'troptix-api';
+import { format } from 'date-fns';
 
 import {
   PlusOutlined,
   MinusOutlined
 } from '@ant-design/icons';
 import { CustomInput } from '@/components/ui/input';
+const { Paragraph } = Typography;
 
-export default function TicketsCheckoutForm({ checkout, event, setCheckout, orderSummary, setOrderSummary }) {
+export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   const { token } = theme.useToken();
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -57,6 +59,10 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout, orde
     setCurrent(current - 1);
   };
 
+  function getDateFormatter(date, time) {
+    return `${format(new Date(date), 'MMM dd, yyyy')} @ ${format(new Date(time), 'hh:mm a')}`;
+  };
+
   async function applyPromotion() {
     // setPromotion({
     //   promotionType: 'PERCENTAGE',
@@ -89,17 +95,15 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout, orde
         setPromotion(response);
         setPromotionApplied(true);
 
-        const updatedTickets = checkout.tickets.map((item, i) => {
-          if (item.quantitySelected > 0) {
-            return {
-              ...item,
-              subtotal: getPromotionPriceFromResponse(item.subtotal, response),
-              fees: getPromotionPriceFromResponse(item.fees, response),
-              total: getPromotionPriceFromResponse(item.total, response)
-            };
-          } else {
-            return item;
-          }
+        const updatedTickets = checkout.tickets;
+        Array.from(checkout.tickets.keys()).forEach((key, i) => {
+          const item = checkout.tickets.get(key);
+          updatedTickets.set(key, {
+            ...item,
+            subtotal: getPromotionPriceFromResponse(item.subtotal, response),
+            fees: getPromotionPriceFromResponse(item.fees, response),
+            total: getPromotionPriceFromResponse(item.total, response)
+          })
         });
 
         setCheckout(previousOrder => ({
@@ -176,47 +180,33 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout, orde
     return formatter.format(price);
   }
 
-  function reduceCost(ticket, index) {
+  function updateCost(ticket, reduce = false) {
+    var ticketSubtotal = ticket.price;
+    var ticketFees = ticket.price * .1;
+    var ticketTotal = ticketFees + ticketSubtotal;
+
+    const updatedTickets = checkout.tickets;
+    if (checkout.tickets.has(ticket.id)) {
+      const checkoutTicket = checkout.tickets.get(ticket.id);
+      const quantitySelected = checkoutTicket.quantitySelected
+      checkoutTicket.quantitySelected = reduce ? quantitySelected - 1 : quantitySelected + 1;
+      updatedTickets.set(ticket.id, checkoutTicket);
+    } else {
+      const checkoutTicket = new CheckoutTicket(ticket);
+      checkoutTicket.quantitySelected = 1;
+      checkoutTicket.subtotal = ticketSubtotal;
+      checkoutTicket.fees = ticketFees;
+      checkoutTicket.total = ticketTotal;
+      updatedTickets.set(ticket.id, checkoutTicket);
+    }
+
     var checkoutTotal = checkout.total;
     var checkoutSubtotal = checkout.subtotal;
     var checkoutFees = checkout.fees;
 
-    const name = ticket.name;
-    if (orderSummary.has(name)) {
-      const quantity = orderSummary.get(name) - 1;
-      if (quantity === 0) {
-        orderSummary.delete(name);
-      } else {
-        orderSummary.set(name, quantity);
-      }
-    } else {
-      orderSummary.set(name, 1);
-    }
-    setOrderSummary(orderSummary);
-
-    const updatedTickets = checkout.tickets.map((item, i) => {
-      if (index === i && item.quantitySelected > 0) {
-        checkoutSubtotal -= ticket.price;
-        checkoutFees -= ticket.price * .1
-        checkoutTotal = checkoutSubtotal + checkoutFees;
-
-        var ticketSubtotal = item.subtotal - ticket.price;
-        var ticketFees = item.fees - ticket.price * .1;
-        var ticketTotal = ticketSubtotal + ticketFees;
-
-        console.log(ticketTotal);
-
-        return {
-          ...item,
-          quantitySelected: item.quantitySelected - 1,
-          subtotal: ticketSubtotal,
-          fees: ticketFees,
-          total: ticketTotal
-        };
-      } else {
-        return item;
-      }
-    });
+    checkoutSubtotal = reduce ? checkoutSubtotal - ticketSubtotal : checkoutSubtotal + ticketSubtotal;
+    checkoutFees = reduce ? checkoutFees - ticketFees : checkoutFees + ticketFees
+    checkoutTotal = checkoutSubtotal + checkoutFees;
 
     setCheckout(previousOrder => ({
       ...previousOrder,
@@ -236,58 +226,12 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout, orde
     }
   }
 
+  function reduceCost(ticket, index) {
+    updateCost(ticket, true);
+  }
+
   function increaseCost(ticket, index) {
-    var currentTotal = checkout.total;
-    var subtotal = checkout.subtotal;
-    var fees = checkout.fees;
-
-    const name = ticket.name;
-    if (orderSummary.has(name)) {
-      const ticketSummary = orderSummary.get(name) + 1;
-      orderSummary.set(name, ticketSummary);
-    } else {
-      orderSummary.set(name, 1);
-    }
-    setOrderSummary(orderSummary)
-
-    const updatedTickets = checkout.tickets.map((item, i) => {
-      if (index === i && item.quantitySelected < item.maxPurchasePerUser) {
-        subtotal += ticket.price;
-        fees += ticket.price * .1
-        currentTotal = subtotal + fees;
-
-        var ticketSubtotal = item.subtotal + ticket.price;
-        var ticketFees = item.fees + ticket.price * .1;
-        var ticketTotal = ticketSubtotal + ticketFees;
-
-        return {
-          ...item,
-          quantitySelected: item.quantitySelected + 1,
-          subtotal: ticketSubtotal,
-          fees: ticketFees,
-          total: ticketTotal
-        };
-      } else {
-        return item;
-      }
-    });
-
-    setCheckout(previousOrder => ({
-      ...previousOrder,
-      ["tickets"]: updatedTickets,
-      ["total"]: currentTotal,
-      ["fees"]: fees,
-      ["subtotal"]: subtotal
-    }))
-
-    if (checkout.promotionApplied) {
-      setCheckout(previousOrder => ({
-        ...previousOrder,
-        ["discountedSubtotal"]: getPromotionPrice(subtotal),
-        ["discountedFees"]: getPromotionPrice(fees),
-        ["discountedTotal"]: getPromotionPrice(currentTotal)
-      }))
-    }
+    updateCost(ticket, false);
   }
 
   return (
@@ -309,68 +253,83 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout, orde
         <List
           itemLayout="vertical"
           size="large"
-          dataSource={checkout.tickets}
+          dataSource={event.ticketTypes}
           split={false}
-          renderItem={(ticket: any, index: number) => (
-            <List.Item
-              className='mb-4'
-              style={{ padding: 0 }}>
+          renderItem={(ticket: any, index: number) => {
+            let checkoutTicket: any
+            if (checkout.tickets && checkout.tickets.has(ticket.id)) {
+              checkoutTicket = checkout.tickets.get(ticket.id);
+            }
 
-              <div
-                className='px-4 w-full'
-                style={{ borderWidth: 1, borderRadius: 10, borderColor: '#D3D3D3' }}>
-                <div>
-                  <div className="my-auto">
-                    <div
-                      className='flex h-16'>
-                      <div className='grow my-auto'>{ticket.name}</div>
-                      <div className='flex my-auto justify-end items-end'>
-                        <div className='flex'>
-                          <Button
-                            onClick={() => reduceCost(ticket, index)}
-                            className='bg-blue-500 rounded'
-                            disabled={ticket.quantitySelected === 0}
-                            icon={<MinusOutlined className='text-white items-center justify-center' />}>
-                          </Button>
-                          <div
-                            className='mx-4'
-                            style={{ fontSize: 20 }}>{ticket.quantitySelected}</div>
-                          <Button
-                            onClick={() => increaseCost(ticket, index)}
-                            className='bg-blue-500 rounded'
-                            icon={<PlusOutlined className='text-white items-center justify-center' />}>
-                          </Button>
+            return (
+              <List.Item
+                className='mb-4'
+                style={{ padding: 0 }}>
+                <div
+                  className='px-4 w-full'
+                  style={{ borderWidth: 1, borderRadius: 10, borderColor: '#D3D3D3' }}>
+                  <div>
+                    <div className="my-auto">
+                      <div
+                        className='flex h-16'>
+                        <div className='grow my-auto'>{ticket.name}</div>
+                        <div className='flex my-auto justify-end items-end'>
+                          <div className='flex'>
+                            <Button
+                              onClick={() => reduceCost(ticket, index)}
+                              className='bg-blue-500 rounded'
+                              disabled={!checkoutTicket || checkoutTicket.quantitySelected === 0}
+                              icon={<MinusOutlined className='text-white items-center justify-center' />}>
+                            </Button>
+                            <div
+                              className='mx-4'
+                              style={{ fontSize: 20 }}>
+                              {!checkoutTicket ? 0 : checkoutTicket.quantitySelected}
+                            </div>
+                            <Button
+                              onClick={() => increaseCost(ticket, index)}
+                              className='bg-blue-500 rounded'
+                              icon={<PlusOutlined className='text-white items-center justify-center' />}>
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div key={index} style={{ width: '100%', borderColor: '#D3D3D3' }}>
-                  <div style={{ flex: 1, height: 1, backgroundColor: '#D3D3D3' }} />
-                  <div className='my-4'>
-                    {
-                      promotionApplied ?
-                        <div className='flex'>
-                          <div style={{ textDecorationLine: 'line-through' }}>
-                            {getFormattedCurrency(ticket.price)}
-                          </div>
-                          <div className='ml-1'>
-                            {getFormattedCurrency(ticket.price, true)}
-                          </div>
-                        </div>
-                        :
-                        <div>{getFormattedCurrency(ticket.price)}</div>
-                    }
-                    <div>+ {getFormattedFeesCurrency(ticket.price)} fees</div>
-                    <div>
-                      {ticket.description}
+                  <div key={index} style={{ width: '100%', borderColor: '#D3D3D3' }}>
+                    <div style={{ flex: 1, height: 1, backgroundColor: '#D3D3D3' }} />
+                    <div className='my-4'>
+                      <div className='flex'>
+                        {
+                          promotionApplied ?
+                            <div className='flex'>
+                              <div className='text-base' style={{ textDecorationLine: 'line-through' }}>
+                                {getFormattedCurrency(ticket.price)}
+                              </div>
+                              <div className='ml-1 text-base font-bold'>
+                                {getFormattedCurrency(ticket.price, true)}
+                              </div>
+                            </div>
+                            :
+                            <div className='text-base font-bold'>{getFormattedCurrency(ticket.price)}</div>
+                        }
+                        <div className='my-auto text-gray-500'>&nbsp;+ {getFormattedFeesCurrency(ticket.price)} fees</div>
+                      </div>
+                      <div className='text-sm'>Sale ends: {getDateFormatter(ticket.saleEndDate, ticket.saleEndTime)}</div>
+                      <div>
+                        <Paragraph className="text-justify text-sm" ellipsis={{ rows: 2, expandable: true, symbol: 'see more details' }}>
+                          {ticket.description}
+                        </Paragraph>
+                      </div>
+                      <div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-            </List.Item>
-          )}
+              </List.Item>
+            )
+          }}
         />
 
       </div>

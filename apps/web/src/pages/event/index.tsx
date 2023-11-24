@@ -13,14 +13,14 @@ import { IoTicket } from "react-icons/io5";
 import { Elements } from "@stripe/react-stripe-js";
 import TicketDrawer from "@/components/pages/event/ticket-drawer";
 import TicketModal from "@/components/pages/event/ticket-modal";
+import { RequestType, useFetchEventsById } from "@/hooks/useFetchEvents";
 const { Paragraph } = Typography;
 
 export default function EventDetailPage() {
 
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const router = useRouter();
-  const eventId = router.query.eventId;
-  const [event, setEvent] = useState<any>();
+  const eventId = router.query.eventId as string;
   const [isFetchingEvent, setIsFetchingEvent] = useState(true);
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [showLocationPin, setShowLocationPin] = useState(false);
@@ -39,25 +39,7 @@ export default function EventDetailPage() {
 
   const isMobile = width <= 768;
 
-  useEffect(() => {
-    async function fetchEvent() {
-      try {
-        const getEventsRequest: any = {
-          getEventsType: GetEventsType.GET_EVENTS_BY_ID,
-          eventId: eventId,
-        };
-        const response = await getEvents(getEventsRequest);
-
-        if (response !== undefined && response.length !== 0) {
-          setEvent(response);
-        }
-      } catch (error) { }
-
-      setIsFetchingEvent(false);
-    }
-
-    fetchEvent();
-  }, [eventId]);
+  const { isPending, isError, data: event, error } = useFetchEventsById({ requestType: RequestType.GET_EVENTS_BY_ID, id: eventId });
 
   function getDateFormatter(date, time) {
     return `${format(date, 'MMM dd, yyyy')} @ ${format(time, 'hh:mm a')}`;
@@ -74,7 +56,7 @@ export default function EventDetailPage() {
   return (
     <>
       {
-        isFetchingEvent ?
+        isPending ?
           <div className="">
             <div className={`max-w-4xl mx-auto p-4 sm:p-8`}>
               <Spin className="mt-32" tip="Fetching Event" size="large">

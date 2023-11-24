@@ -123,6 +123,7 @@ export async function sendEmailToUser(order, response) {
       orderMap.set(ticketId, {
         ...order,
         ticketQuantity: order.ticketQuantity + 1,
+        ticketTotalPaid: order.ticketTotalPaid + ticket.total,
       })
     } else {
       orderMap.set(ticketId, {
