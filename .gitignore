@@ -21,3 +21,4 @@ apps/troptix-organizer/.expo
 apps/web/node_modules
 apps/web/.expo
 apps/web/.env
+.vercel
