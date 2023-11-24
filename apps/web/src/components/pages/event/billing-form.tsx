@@ -1,17 +1,9 @@
 import _ from 'lodash';
-import { message, Button, Spin, Modal, List, Steps, theme, Form } from 'antd';
-import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
-import { Event, getEventsFromRequest, Checkout, Order, Charge } from 'troptix-models';
-import { postOrders, PostOrdersType, PostOrdersRequest, getEvents, saveEvent, GetEventsRequest, GetEventsType } from 'troptix-api';
+import { message, theme, Form } from 'antd';
+import { useContext } from 'react';
 import { TropTixContext } from '@/components/WebNavigator';
-import { PaymentElement } from '@stripe/react-stripe-js';
 
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
 import { CustomInput } from '@/components/ui/input';
-const stripeKey = process.env.NEXT_PUBLIC_STRIPE_TEST_KEY
-const stripePromise = loadStripe(stripeKey ? stripeKey : "");
 
 export default function BillingForm({ checkout, setCheckout }) {
   const { token } = theme.useToken();

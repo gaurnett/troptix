@@ -55,8 +55,7 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
           checkout={checkout}
           event={event}
           setCompletePurchaseClicked={setCompletePurchaseClicked}
-          setIsStripeLoaded={setIsStripeLoaded}
-          setCheckoutPreviousButtonClicked={setCheckoutPreviousButtonClicked} />
+          setIsStripeLoaded={setIsStripeLoaded} />
       },
     ])
   }, [checkout, event, completePurchaseClicked]);
