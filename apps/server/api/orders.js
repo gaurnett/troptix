@@ -3,8 +3,8 @@ import { getPrismaCreateOrderQuery } from "../lib/eventHelper";
 import { getBuffer, updateSuccessfulOrder } from "../lib/orderHelper";
 import { sendEmailToUser } from "../lib/emailHelper";
 
-const stripe = require('stripe')(process.env.STRIPE_TEST_SECRET_KEY);
-const endpointSecret = process.env.STRIPE_TEST_CHARGE_SUCCEEDED_WEBHOOK;
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
 // const endpointSecret = 'whsec_570f36e545a3bc4d66bf9501ae42327ebb200303a4d9068d39bb7821e48b50ff';
 
 export default async function handler(request, response) {
