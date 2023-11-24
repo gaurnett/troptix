@@ -11,105 +11,71 @@ import {
 import { TropTixContext } from "@/components/WebNavigator";
 import Link from "next/link";
 import { List, Spin, Image } from "antd";
+import { useFetchAllEvents } from "@/hooks/useFetchEvents";
 
 export default function ManageEventsPage() {
   const router = useRouter();
   const { user } = useContext(TropTixContext);
   const userId = user === null || user === undefined ? null : user.id;
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
-  const [events, setEvents] = useState<any[]>([]);
 
-  useEffect(() => {
-    async function fetchEvents() {
-      const getEventsRequest: any = {
-        getEventsType: GetEventsType.GET_EVENTS_ALL,
-      };
-      const response: any = await getEvents(getEventsRequest);
+  console.log(process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL);
 
-      if (response !== undefined && response.length !== 0) {
-        setEvents(getEventsFromRequest(response));
-      }
-
-      setIsFetchingEvents(false);
-    }
-
-    fetchEvents();
-  }, [userId]);
+  const { isPending, isError, data: events, error } = useFetchAllEvents();
 
   return (
     <div className="w-full mt-32 mx-auto">
       <div className="mx-4">
-        {/* <h1
+        <h1
           className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
           data-aos="zoom-y-out"
         >
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">
-            Manage Events
+            Current Events
           </span>
-        </h1> */}
-        {!isFetchingEvents ? (
+        </h1>
+        {!isPending ? (
           <div className="container mx-auto p-4">
             <div className="flex flex-wrap -mx-2">
-              {events.map((event) => (
-                <div
-                  key={event.id}
-                  className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4"
-                >
-                  <Link href={{ pathname: "/event", query: { eventId: event.id } }}>
-                    <EventCard
-                      eventName={event.name}
-                      image={
-                        event.imageUrl ??
-                        "https://placehold.co/400x400?text=Add+Event+Flyer"
-                      }
-                      date={new Date(event.startDate).toDateString()}
-                      location={event.address}
-                      price={"$0"}
-                    />
-                  </Link>
-                </div>
-              ))}
-            </div>
-
-            {/* <List
-              itemLayout="vertical"
-              size="large"
-              dataSource={events}
-              renderItem={(event: any) => (
-                <List.Item>
-                  <Link
-                    key={event.id}
-                    href={{
-                      pathname: "/admin/manage-event",
-                      query: { eventId: event.id },
-                    }}
-                  >
-                    <div className="flex">
-                      <div>
-                        <Image
-                          preview={false}
-                          width={75}
-                          height={75}
-                          className="w-auto"
-                          style={{ objectFit: "cover" }}
-                          src={
-                            event.imageUrl !== null
-                              ? event.imageUrl
-                              : "https://placehold.co/400x400?text=Add+Event+Flyer"
-                          }
-                          alt={"event flyer image"}
-                        />
-                      </div>
-                      <div className="ml-4 my-auto">
-                        <div>{event.name}</div>
-                        <div>{event.address}</div>
-                        <div>{new Date(event.startDate).toDateString()}</div>
-                      </div>
+              {
+                events.length === 0 ?
+                  <>
+                    <div className="text-center" style={{ alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%" }}>
+                      <Image
+                        preview={false}
+                        width={75}
+                        height={75}
+                        className="w-full mx-auto justify-center content-center items-center"
+                        style={{ objectFit: 'contain' }}
+                        src={"/icons/empty-events.png"}
+                        alt={"mobile wallet image"} />
+                      <div className="mt-4 font-bold text-xl">There are no events nearby</div>
                     </div>
-                  </Link>
-                </List.Item>
-              )}
-            /> */}
+                  </>
+                  :
+                  <>
+                    {events.map((event) => (
+                      <div
+                        key={event.id}
+                        className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4">
+                        <Link href={{ pathname: "/event", query: { eventId: event.id } }}>
+                          <EventCard
+                            eventName={event.name}
+                            image={
+                              event.imageUrl ??
+                              "https://placehold.co/400x400?text=Add+Event+Flyer"
+                            }
+                            date={new Date(event.startDate).toDateString()}
+                            location={event.address}
+                            price={"$0"}
+                          />
+                        </Link>
+                      </div>
+                    ))}
+                  </>
+              }
+
+            </div>
           </div>
         ) : (
           <Spin className="mt-16" tip="Fetching Events" size="large">
