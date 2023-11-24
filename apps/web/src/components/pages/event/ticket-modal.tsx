@@ -120,6 +120,15 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
     handleCancel();
   }
 
+  function getFormattedCurrency(price) {
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    });
+
+    return formatter.format(price);
+  }
+
   return (
     <>
       {
@@ -196,8 +205,8 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
                 <div className='ml-8'>
                   <div className='hidden md:block'>
                     <Image
-                      height={275}
-                      width={275}
+                      height={250}
+                      width={250}
                       src={event?.imageUrl}
                       alt={event.name}
                       className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg"
@@ -211,9 +220,10 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
                         orderSummary.size === 0 ?
                           <div className='mx-auto my-auto w-full text-center justify-center align-center'>
                             <ShoppingCartOutlined className='text-4xl mx-auto mt-2' />
+                            <div className='text-xl'>Cart is empty</div>
                           </div> :
                           <div>
-                            <h2 className="text-md font-bold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Order Summary</h2>
+                            <h2 className="text-xl font-bold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Order Summary</h2>
                             <List
                               itemLayout="vertical"
                               size="large"
@@ -225,7 +235,7 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
                                   <List.Item
                                     className='mb-4'
                                     style={{ padding: 0 }}>
-                                    <div>
+                                    <div className='text-base'>
                                       {quantity} x {name}
                                     </div>
                                   </List.Item>
@@ -237,13 +247,13 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
 
                             <div className='w-full flex my-4'>
                               <div className='grow'>
-                                <div className=''>Subtotal:</div>
-                                <div className=''>Taxes & Fees:</div>
+                                <div className='text-base'>Subtotal:</div>
+                                <div className='text-base'>Taxes & Fees:</div>
                               </div>
                               <div className='ml-4'>
                                 <div className='ml-4'>
-                                  <div>${checkout.subtotal}</div>
-                                  <div>${checkout.fees}</div>
+                                  <div className='text-base'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedSubtotal : checkout.subtotal)}</div>
+                                  <div className='text-base'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedFees : checkout.fees)}</div>
                                 </div>
                               </div>
                             </div>
@@ -256,7 +266,9 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
                               </div>
                               <div className='ml-4'>
                                 <div className='ml-4'>
-                                  <div className='text-xl font-bold'>${checkout.total}</div>
+                                  <div className='text-xl font-bold'>
+                                    {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)}
+                                  </div>
                                 </div>
                               </div>
                             </div>

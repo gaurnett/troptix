@@ -20,7 +20,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout, orde
   const [eventName, setEventName] = useState("");
   const [publishButtonClicked, setPublishButtonClicked] = useState(false);
 
-  const [promotionCode, setPromotionCode] = useState("");
+  const [promotionCode, setPromotionCode] = useState<any>();
   const [promotion, setPromotion] = useState<any>();
   const [promotionApplied, setPromotionApplied] = useState(false);
   const [open, setOpen] = useState(false);
@@ -260,8 +260,6 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout, orde
         var ticketFees = item.fees + ticket.price * .1;
         var ticketTotal = ticketSubtotal + ticketFees;
 
-        console.log(ticketTotal);
-
         return {
           ...item,
           quantitySelected: item.quantitySelected + 1,
@@ -302,7 +300,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout, orde
           </div>
           <div className="flex w-full">
             <Input onChange={handleChange} name={"promotionCode"} value={promotionCode} id={"promotionCode"} type={"text"} classNames={{ input: "form-input w-full text-gray-800" }} placeholder={"SAVE15"} />
-            <Button onClick={applyPromotion} className='my-auto ml-4' type='text'>
+            <Button onClick={applyPromotion} className='my-auto ml-2' type='text'>
               Apply
             </Button>
           </div>
@@ -330,15 +328,16 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout, orde
                         <div className='flex'>
                           <Button
                             onClick={() => reduceCost(ticket, index)}
-                            className='bg-blue-500 rounded-full'
+                            className='bg-blue-500 rounded'
+                            disabled={ticket.quantitySelected === 0}
                             icon={<MinusOutlined className='text-white items-center justify-center' />}>
                           </Button>
                           <div
-                            className='mx-2'
+                            className='mx-4'
                             style={{ fontSize: 20 }}>{ticket.quantitySelected}</div>
                           <Button
                             onClick={() => increaseCost(ticket, index)}
-                            className='bg-blue-500 rounded-full'
+                            className='bg-blue-500 rounded'
                             icon={<PlusOutlined className='text-white items-center justify-center' />}>
                           </Button>
                         </div>
@@ -373,6 +372,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout, orde
             </List.Item>
           )}
         />
+
       </div>
     </div>
   );

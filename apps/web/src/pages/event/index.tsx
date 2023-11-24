@@ -10,9 +10,9 @@ import GoogleMapReact from 'google-map-react';
 import { MdLocationOn } from "react-icons/md";
 import { format } from 'date-fns';
 import { IoTicket } from "react-icons/io5";
-import TicketModal from "./ticket-modal";
-import TicketDrawer from "./ticket-drawer";
 import { Elements } from "@stripe/react-stripe-js";
+import TicketDrawer from "@/components/pages/event/ticket-drawer";
+import TicketModal from "@/components/pages/event/ticket-modal";
 const { Paragraph } = Typography;
 
 export default function EventDetailPage() {
@@ -67,6 +67,10 @@ export default function EventDetailPage() {
     setIsTicketModalOpen(false);
   };
 
+  function openModal() {
+    setIsTicketModalOpen(true);
+  }
+
   return (
     <>
       {
@@ -81,7 +85,7 @@ export default function EventDetailPage() {
           :
           <div
             style={{
-              backgroundImage: `url("${event.imageUrl}")`,
+              backgroundImage: `url("${event?.imageUrl}")`,
               backgroundRepeat: 'no-repeat',
               backgroundSize: 'cover',
               WebkitBackgroundSize: 'cover',
@@ -105,7 +109,7 @@ export default function EventDetailPage() {
                     />
                     <Button
                       type="primary"
-                      onClick={() => setIsTicketModalOpen(true)}
+                      onClick={openModal}
                       className="w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
                       icon={<IoTicket />}>
                       Buy Tickets

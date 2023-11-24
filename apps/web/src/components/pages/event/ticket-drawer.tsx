@@ -80,6 +80,14 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
     setCheckoutPreviousButtonClicked(false);
   }, [checkoutPreviousButtonClicked, current])
 
+  useEffect(() => {
+    if (isTicketModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [isTicketModalOpen]);
+
   function checkUndefinedOrNull(value) {
     return value === undefined || value == null || value == "";
   }
@@ -152,66 +160,82 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
               onClose={closeSummary}
               width={900}
             >
-              <div className='mb-4 md:mt-4 md:mb-8 my-auto w-full'>
-                {
-                  orderSummary.size === 0 ?
-                    <div className='mx-auto my-auto w-full text-center justify-center align-center'>
-                      <ShoppingCartOutlined className='text-4xl mx-auto mt-2' />
-                    </div> :
-                    <div>
-                      <h2 className="text-md font-bold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Order Summary</h2>
-                      <List
-                        itemLayout="vertical"
-                        size="large"
-                        dataSource={Array.from(orderSummary.keys())}
-                        split={false}
-                        renderItem={(name: any, index: number) => {
-                          const quantity = orderSummary.get(name)
-                          return (
-                            <List.Item
-                              className='mb-4'
-                              style={{ padding: 0 }}>
-                              <div>
-                                {quantity} x {name}
+              <div className="w-full h-full flex flex-col">
+                <div className='flex-1 overflow-y-auto'>
+                  <div>
+                    {
+                      orderSummary.size === 0 ?
+                        <div className='mx-auto my-auto w-full text-center justify-center items-center'>
+                          <ShoppingCartOutlined className='text-4xl my-auto mx-auto mt-2' />
+                          <div className='text-xl font-bold'>Cart is empty</div>
+                        </div> :
+                        <div>
+                          <h2 className="text-xl font-bold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Order Summary</h2>
+                          <List
+                            itemLayout="vertical"
+                            size="large"
+                            dataSource={Array.from(orderSummary.keys())}
+                            split={false}
+                            renderItem={(name: any, index: number) => {
+                              const quantity = orderSummary.get(name)
+                              return (
+                                <List.Item
+                                  className='mb-4'
+                                  style={{ padding: 0 }}>
+                                  <div className='text-base'>
+                                    {quantity} x {name}
+                                  </div>
+                                </List.Item>
+                              )
+                            }}
+                          />
+
+                          <div style={{ flex: 1, height: 1, backgroundColor: '#D3D3D3' }} />
+
+                          <div className='w-full flex my-4'>
+                            <div className='grow'>
+                              <div className='text-base'>Subtotal:</div>
+                              <div className='text-base'>Taxes & Fees:</div>
+                            </div>
+                            <div className='ml-4'>
+                              <div className='ml-4'>
+                                <div className='text-base'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedSubtotal : checkout.subtotal)}</div>
+                                <div className='text-base'>{getFormattedCurrency(checkout.promotionApplied ? checkout.discountedFees : checkout.fees)}</div>
                               </div>
-                            </List.Item>
-                          )
-                        }}
-                      />
+                            </div>
+                          </div>
 
-                      <div style={{ flex: 1, height: 1, backgroundColor: '#D3D3D3' }} />
+                          <div style={{ flex: 1, height: 1, backgroundColor: '#D3D3D3' }} />
 
-                      <div className='w-full flex my-4'>
-                        <div className='grow'>
-                          <div className=''>Subtotal:</div>
-                          <div className=''>Taxes & Fees:</div>
-                        </div>
-                        <div className='ml-4'>
-                          <div className='ml-4'>
-                            <div>${checkout.subtotal}</div>
-                            <div>${checkout.fees}</div>
+                          <div className='w-full flex my-4'>
+                            <div className='grow'>
+                              <div className='text-2xl font-bold'>Total:</div>
+                            </div>
+                            <div className='ml-4'>
+                              <div className='ml-4'>
+                                <div className='text-2xl font-bold'>
+                                  {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)}
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-
-                      <div style={{ flex: 1, height: 1, backgroundColor: '#D3D3D3' }} />
-
-                      <div className='w-full flex my-4'>
-                        <div className='grow'>
-                          <div className='text-xl font-bold'>Total:</div>
-                        </div>
-                        <div className='ml-4'>
-                          <div className='ml-4'>
-                            <div className='text-xl font-bold'>${checkout.total}</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                }
-
+                    }
+                  </div>
+                </div>
+                <footer className='border-t'>
+                  <div className='flex flex-end content-end items-end self-end mt-4'>
+                    <Button
+                      type="primary"
+                      onClick={closeSummary}
+                      className="w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">
+                      Close
+                    </Button>
+                  </div>
+                </footer>
               </div>
-
             </Drawer>
+
             <div className="w-full h-full flex flex-col">
               <div className='w-full sticky top-0 bg-white mx-auto mb-4'>
                 <Steps
@@ -232,13 +256,15 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
                 <div className=''>{steps[current].content}</div>
               </div>
               <footer className='border-t'>
-                <div className='flex mt-4'>
-                  <div className='text-xl mr-2'>{getFormattedCurrency(checkout.total)}</div>
+                <div className='flex mt-2'>
+                  <div className='text-xl mr-2'>
+                    {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)}
+                  </div>
                   <div>
                     <Button onClick={() => setSummaryDrawerOpen(true)} type='text' className='text-blue-500'>Order Summary</Button>
                   </div>
                 </div>
-                <div className='flex flex-end content-end items-end self-end mt-4'>
+                <div className='flex flex-end content-end items-end self-end mt-2'>
                   {current === 0 && (
                     <Button
                       type="primary"
