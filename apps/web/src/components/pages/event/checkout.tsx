@@ -9,23 +9,19 @@ import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from './payment-form';
-const stripeKey = process.env.NEXT_PUBLIC_STRIPE_TEST_KEY
+const stripeKey = process.env.NEXT_PUBLIC_STRIPE_KEY
 const stripePromise = loadStripe(stripeKey ? stripeKey : "");
 
 export default function CheckoutForm({
   checkout,
   event,
-  setCheckoutPreviousButtonClicked,
   completePurchaseClicked,
   setCompletePurchaseClicked,
   setIsStripeLoaded }) {
-  const { token } = theme.useToken();
-  const [errorMessage, setErrorMessage] = useState(null);
 
-  const [messageApi, contextHolder] = message.useMessage();
+  const [contextHolder] = message.useMessage();
   const { user } = useContext(TropTixContext);
   const userId = user === null || user === undefined ? undefined : user.id;
-  const router = useRouter();
   const [fetchingStripeDetails, setFetchingStripeDetails] = useState(true);
   const [options, setOptions] = useState<any>();
 
@@ -90,15 +86,12 @@ export default function CheckoutForm({
       return paymentId;
     };
 
-    console.log("called");
-
     initializePaymentSheet();
 
   }, [checkout, checkout.discountedTotal, checkout.promotionApplied, checkout.total, event.id, setIsStripeLoaded, userId]);
 
   return (
     <div className="w-full md:max-w-2xl mx-auto h-full">
-      {contextHolder}
       <div className='flex flex-col h-full'>
         {
           fetchingStripeDetails ?

@@ -59,7 +59,6 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
         content: <CheckoutForm
           checkout={checkout}
           event={event}
-          setCheckoutPreviousButtonClicked={setCheckoutPreviousButtonClicked}
           setIsStripeLoaded={setIsStripeLoaded}
           completePurchaseClicked={completePurchaseClicked}
           setCompletePurchaseClicked={setCompletePurchaseClicked} />

@@ -1,30 +1,14 @@
 import _ from 'lodash';
-import { message, Button, Spin, Modal, List, Steps, theme, Form } from 'antd';
-import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
-import { Event, getEventsFromRequest, Checkout, Order, Charge } from 'troptix-models';
-import { postOrders, PostOrdersType, PostOrdersRequest, getEvents, saveEvent, GetEventsRequest, GetEventsType } from 'troptix-api';
-import CheckoutForms from './tickets-checkout-forms';
+import { message } from 'antd';
+import { useContext, useEffect } from 'react';
 import { TropTixContext } from '@/components/WebNavigator';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-const stripeKey = process.env.NEXT_PUBLIC_STRIPE_TEST_KEY
-const stripePromise = loadStripe(stripeKey ? stripeKey : "");
 
 export default function PaymentForm({
   completePurchaseClicked,
   setCompletePurchaseClicked }) {
-  const { token } = theme.useToken();
   const stripe = useStripe();
   const elements = useElements();
-  const [errorMessage, setErrorMessage] = useState(null);
-
-  const [messageApi, contextHolder] = message.useMessage();
-  const { user } = useContext(TropTixContext);
-  const userId = user === null || user === undefined ? null : user.id;
-  const router = useRouter();
-  const [fetchingStripeDetails, setFetchingStripeDetails] = useState(true);
-  const [options, setOptions] = useState<any>();
 
   useEffect(() => {
 
