@@ -4,12 +4,14 @@ import uuid from 'react-native-uuid';
 
 export class Order {
   id: string;
-  stripePaymentId: string;
+  stripeCustomerId: string;
   eventId: string;
   total: number;
   subtotal: number;
   fees: number;
   userId: string;
+  name: string;
+  email: string;
   telephoneNumber: string;
   billingAddress1: string;
   billingAddress2: string;
@@ -19,14 +21,17 @@ export class Order {
   billingCountry: string;
   tickets: Ticket[];
 
-  constructor(checkout: Checkout, paymentId: string, eventId: string, userId: string) {
+  constructor(checkout: Checkout, paymentId: string, eventId: string, userId: string, stripeCustomerId: string) {
 
     this.id = paymentId;
+    this.stripeCustomerId = stripeCustomerId;
     this.total = checkout.total;
     this.subtotal = checkout.subtotal;
     this.fees = checkout.fees
     this.tickets = new Array();
     this.userId = userId;
+    this.name = checkout.name;
+    this.email = checkout.email;
     this.eventId = eventId;
     this.telephoneNumber = checkout.telephoneNumber;
     this.billingAddress1 = checkout.billingAddress1;
@@ -36,7 +41,8 @@ export class Order {
     this.billingState = checkout.billingState;
     this.billingCountry = checkout.billingCountry;
 
-    checkout.tickets.forEach(checkoutTicket => {
+    Array.from(checkout.tickets.keys()).forEach(checkoutItem => {
+      const checkoutTicket = checkout.tickets.get(checkoutItem);
       if (checkoutTicket.quantitySelected > 0) {
         for (let i = 0; i < checkoutTicket.quantitySelected; i++) {
           let ticket = createTicket(checkoutTicket, this.id, userId);
@@ -88,6 +94,8 @@ export class OrderSummary {
 export class Checkout {
   id: string;
   eventId: string;
+  name: string;
+  email: string;
   total: number = 0;
   subtotal: number = 0;
   fees: number = 0;
@@ -102,16 +110,11 @@ export class Checkout {
   billingZip: string;
   billingState: string;
   billingCountry: string;
-  tickets: CheckoutTicket[];
+  tickets: Map<string, CheckoutTicket> = new Map();
 
-  constructor(event: Event) {
-    const ticketTypes = event.ticketTypes;
-    this.tickets = new Array();
-
-    ticketTypes.forEach(ticketType => {
-      let ticket = new CheckoutTicket(ticketType);
-      this.tickets.push(ticket);
-    });
+  constructor(user: any) {
+    this.name = user?.name;
+    this.email = user?.email;
   }
 }
 

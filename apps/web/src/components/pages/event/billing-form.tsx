@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { Event, getEventsFromRequest, Checkout, Order, Charge } from 'troptix-models';
 import { postOrders, PostOrdersType, PostOrdersRequest, getEvents, saveEvent, GetEventsRequest, GetEventsType } from 'troptix-api';
-import CheckoutForms from './tickets-checkout-forms';
 import { TropTixContext } from '@/components/WebNavigator';
 import { PaymentElement } from '@stripe/react-stripe-js';
 
@@ -22,7 +21,9 @@ export default function BillingForm({ checkout, setCheckout }) {
   const userId = user === null || user === undefined ? null : user.id;
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setCheckout({ ...checkout, [event.target.name]: event.target.value });
+    setCheckout((prevState) => ({
+      ...prevState, [event.target.name]: event.target.value
+    }));
   }
 
   const onFinishFailed = (errorInfo: any) => {
@@ -32,50 +33,50 @@ export default function BillingForm({ checkout, setCheckout }) {
   };
 
   return (
-    <div className="w-full md:max-w-2xl mx-auto">
+    <div className="w-full">
       {contextHolder}
       <div>
         <Form
           name="basic"
           onFinish={onFinish}
           onFinishFailed={onFinishFailed}>
-          <h2 className="text-xl font-bold leading-tighter tracking-tighter mb-4 mt-4" data-aos="zoom-y-out">Contact Information</h2>
+          <h2 className="text-xl font-bold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Contact Information</h2>
 
           <div className="flex justify-between">
             <div className="mb-4 mr-1 md:mr-4 w-full">
-              <CustomInput value={checkout.username} name={"username"} id={"username"} label={"Name"} type={"text"} placeholder={"John Doe"} handleChange={handleChange} required={true} />
+              <CustomInput value={checkout.name} name={"name"} id={"name"} label={"Name *"} type={"text"} placeholder={"John Doe"} handleChange={handleChange} required={true} />
             </div>
             <div className="mb-4 ml-1 md:ml-4 w-full">
-              <CustomInput value={checkout.userEmail} name={"userEmail"} id={"userEmail"} label={"Email"} type={"text"} placeholder={"johndoe@gmail.com"} handleChange={handleChange} required={true} />
+              <CustomInput value={checkout.email} name={"email"} id={"email"} label={"Email *"} type={"text"} placeholder={"johndoe@gmail.com"} handleChange={handleChange} required={true} />
             </div>
           </div>
 
           <h2 className="text-xl font-bold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Billing Address</h2>
 
-          <div className="flex flex-wrap -mx-3 mb-4">
-            <div className="w-full px-3">
-              <CustomInput value={checkout.billingAddress1} name={"billingAddress1"} id={"billingAddress1"} label={"Address"} type={"text"} placeholder={"185 Kings Street"} handleChange={handleChange} />
+          <div className="flex flex-wrap mb-4">
+            <div className="w-full">
+              <CustomInput value={checkout.billingAddress1} name={"billingAddress1"} id={"billingAddress1"} label={"Address *"} type={"text"} placeholder={"185 Kings Street"} handleChange={handleChange} />
             </div>
           </div>
-          <div className="flex flex-wrap -mx-3 mb-4">
-            <div className="w-full px-3">
+          <div className="flex flex-wrap mb-4">
+            <div className="w-full">
               <CustomInput value={checkout.billingAddress2} name={"billingAddress2"} id={"billingAddress2"} label={"Address 2"} type={"text"} placeholder={""} handleChange={handleChange} />
             </div>
           </div>
           <div className="flex justify-between">
             <div className="mb-4 mr-1 md:mr-4 w-full">
-              <CustomInput value={checkout.billingCity} name={"billingCity"} id={"billingCity"} label={"City"} type={"text"} placeholder={"Kingston"} handleChange={handleChange} />
+              <CustomInput value={checkout.billingCity} name={"billingCity"} id={"billingCity"} label={"City *"} type={"text"} placeholder={"Kingston"} handleChange={handleChange} />
             </div>
             <div className="mb-4 ml-1 md:ml-4 w-full">
-              <CustomInput value={checkout.billingZip} name={"billingZip"} id={"billingZip"} label={"Zip/Postal Code"} type={"text"} placeholder={"12345"} handleChange={handleChange} />
+              <CustomInput value={checkout.billingZip} name={"billingZip"} id={"billingZip"} label={"Zip/Postal Code *"} type={"text"} placeholder={"12345"} handleChange={handleChange} />
             </div>
           </div>
           <div className="flex justify-between">
             <div className="mb-4 mr-1 md:mr-4 w-full">
-              <CustomInput value={checkout.billingState} name={"billingState"} id={"billingState"} label={"State/Parish"} type={"text"} placeholder={"Kingston"} handleChange={handleChange} />
+              <CustomInput value={checkout.billingState} name={"billingState"} id={"billingState"} label={"State/Parish *"} type={"text"} placeholder={"Kingston"} handleChange={handleChange} />
             </div>
             <div className="mb-4 ml-1 md:ml-4 w-full">
-              <CustomInput value={checkout.billingCountry} name={"billingCountry"} id={"billingCountry"} label={"Country"} type={"text"} placeholder={"Jamaica"} handleChange={handleChange} />
+              <CustomInput value={checkout.billingCountry} name={"billingCountry"} id={"billingCountry"} label={"Country *"} type={"text"} placeholder={"Jamaica"} handleChange={handleChange} />
             </div>
           </div>
         </Form>

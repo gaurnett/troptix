@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { Event, getEventsFromRequest, Checkout, Order, Charge } from 'troptix-models';
 import { postOrders, PostOrdersType, PostOrdersRequest, getEvents, saveEvent, GetEventsRequest, GetEventsType } from 'troptix-api';
-import CheckoutForms from './tickets-checkout-forms';
 import { TropTixContext } from '@/components/WebNavigator';
 import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
@@ -13,13 +12,19 @@ import PaymentForm from './payment-form';
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_TEST_KEY
 const stripePromise = loadStripe(stripeKey ? stripeKey : "");
 
-export default function CheckoutForm({ checkout, event, setCheckoutPreviousButtonClicked }) {
+export default function CheckoutForm({
+  checkout,
+  event,
+  setCheckoutPreviousButtonClicked,
+  completePurchaseClicked,
+  setCompletePurchaseClicked,
+  setIsStripeLoaded }) {
   const { token } = theme.useToken();
   const [errorMessage, setErrorMessage] = useState(null);
 
   const [messageApi, contextHolder] = message.useMessage();
   const { user } = useContext(TropTixContext);
-  const userId = user === null || user === undefined ? null : user.id;
+  const userId = user === null || user === undefined ? undefined : user.id;
   const router = useRouter();
   const [fetchingStripeDetails, setFetchingStripeDetails] = useState(true);
   const [options, setOptions] = useState<any>();
@@ -28,7 +33,7 @@ export default function CheckoutForm({ checkout, event, setCheckoutPreviousButto
     async function fetchPaymentSheetParams() {
       const charge = new Charge();
       charge.total = checkout.promotionApplied ? checkout.discountedTotal * 100 : checkout.total * 100;
-      charge.userId = user.id;
+      charge.userId = userId;
 
       const postOrdersRequest = {
         type: PostOrdersType.POST_ORDERS_CREATE_CHARGE,
@@ -36,29 +41,36 @@ export default function CheckoutForm({ checkout, event, setCheckoutPreviousButto
       }
 
       const response = await postOrders(postOrdersRequest);
-      const { paymentId, paymentIntent, ephemeralKey, customer } = await response;
+      const { paymentId, clientSecret, ephemeralKey, customerId } = await response;
 
       return {
         paymentId,
-        paymentIntent,
+        clientSecret,
         ephemeralKey,
-        customer,
+        customerId,
       };
     };
 
     async function initializePaymentSheet() {
       const {
         paymentId,
-        paymentIntent
+        clientSecret,
+        customerId
       } = await fetchPaymentSheetParams();
 
+      if (paymentId === undefined || paymentId === null || paymentId === "") {
+        message.error("There was a problem with your request, please try again later");
+        // setCheckoutPreviousButtonClicked();
+        return;
+      }
+
       setOptions({
-        clientSecret: paymentIntent,
+        clientSecret: clientSecret,
         // Fully customizable with appearance API.
         appearance: {/*...*/ },
       })
 
-      const order = new Order(checkout, paymentId, event.id, user.id);
+      const order = new Order(checkout, paymentId, event.id, userId, customerId);
       console.log(order);
 
       try {
@@ -73,22 +85,30 @@ export default function CheckoutForm({ checkout, event, setCheckoutPreviousButto
       }
 
       setFetchingStripeDetails(false);
+      setIsStripeLoaded(true);
 
       return paymentId;
     };
 
+    console.log("called");
+
     initializePaymentSheet();
 
-  }, [checkout, checkout.discountedTotal, checkout.promotionApplied, checkout.total, event.id, user.id]);
+  }, [checkout, checkout.discountedTotal, checkout.promotionApplied, checkout.total, event.id, setIsStripeLoaded, userId]);
 
   return (
-    <div className="w-full md:max-w-2xl mx-auto">
+    <div className="w-full md:max-w-2xl mx-auto h-full">
       {contextHolder}
-      <div>
+      <div className='flex flex-col h-full'>
         {
-          fetchingStripeDetails ? <></> :
+          fetchingStripeDetails ?
+            <Spin className="mt-32" tip="Initializing Card Details" size="large">
+              <div className="content" />
+            </Spin> :
             <Elements stripe={stripePromise} options={options}>
-              <PaymentForm checkout={checkout} setCheckoutPreviousButtonClicked={setCheckoutPreviousButtonClicked} />
+              <PaymentForm
+                completePurchaseClicked={completePurchaseClicked}
+                setCompletePurchaseClicked={setCompletePurchaseClicked} />
             </Elements>
         }
       </div>

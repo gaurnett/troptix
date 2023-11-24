@@ -69,7 +69,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
         </div>
         <div className="flex flex-wrap -mx-3 mb-4">
           <div className="w-full px-3">
-            <CustomTextArea value={event.description} maxLength={500} name={"description"} id={"description"} label={"Event Description"} rows={6} placeholder={"Add a full description of your event. This will be presented on your event details page."} handleChange={handleChange} required={true} />
+            <CustomTextArea value={event.description} maxLength={2000} name={"description"} id={"description"} label={"Event Description"} rows={6} placeholder={"Add a full description of your event. This will be presented on your event details page."} handleChange={handleChange} required={true} />
           </div>
         </div>
 
@@ -91,7 +91,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
           </div>
         </div>
         <div>
-          <Button type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Event Details</Button>
+          <Button onClick={updateEvent} type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Event Details</Button>
         </div>
       </Form>
     </div>

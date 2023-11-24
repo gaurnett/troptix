@@ -50,21 +50,15 @@ export class CheckoutTicket {
   name: string;
   description: string;
   quantitySelected: number;
-  price: number;
   fees: number;
   subtotal: number;
   total: number;
-  maxPurchasePerUser: number;
-  ticketFees: TicketFeeStructure;
 
   constructor(ticketType: TicketType) {
     this.name = ticketType.name;
     this.description = ticketType.description;
-    this.price = ticketType.price;
-    this.ticketFees = ticketType.ticketingFees;
     this.eventId = ticketType.eventId;
     this.ticketTypeId = ticketType.id;
-    this.maxPurchasePerUser = ticketType.maxPurchasePerUser;
     this.quantitySelected = 0;
     this.fees = 0;
     this.subtotal = 0;

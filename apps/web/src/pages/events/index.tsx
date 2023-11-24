@@ -55,7 +55,7 @@ export default function ManageEventsPage() {
                   key={event.id}
                   className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4"
                 >
-                  <Link href={`/event/${event.id}`}>
+                  <Link href={{ pathname: "/event", query: { eventId: event.id } }}>
                     <EventCard
                       eventName={event.name}
                       image={

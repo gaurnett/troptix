@@ -71,8 +71,8 @@ model Tickets {
   orderId      String
   ticketType   TicketTypes @relation(fields: [ticketTypeId], references: [id])
   ticketTypeId String
-  user         Users       @relation(fields: [userId], references: [id])
-  userId       String
+  user         Users?      @relation(fields: [userId], references: [id])
+  userId       String?
 
   @@index([eventId])
   @@index([orderId])
@@ -87,31 +87,34 @@ enum OrderStatus {
 }
 
 model Orders {
-  id              String      @id @default(uuid())
-  createdAt       DateTime?   @default(now())
-  updatedAt       DateTime?   @updatedAt
-  total           Float
-  subtotal        Float
-  fees            Float
-  cardType        String?
-  cardLast4       String?
-  telephoneNumber String?
-  billingAddress1 String?
-  billingAddress2 String?
-  billingCity     String?
-  billingCountry  String?
-  billingZip      String?
-  billingState    String?
-  tickets         Tickets[]
-  status          OrderStatus @default(PENDING)
+  id               String      @id @default(uuid())
+  stripeCustomerId String?
+  createdAt        DateTime?   @default(now())
+  updatedAt        DateTime?   @updatedAt
+  total            Float
+  subtotal         Float
+  fees             Float
+  name             String?
+  email            String?
+  cardType         String?
+  cardLast4        String?
+  telephoneNumber  String?
+  billingAddress1  String?
+  billingAddress2  String?
+  billingCity      String?
+  billingCountry   String?
+  billingZip       String?
+  billingState     String?
+  tickets          Tickets[]
+  status           OrderStatus @default(PENDING)
 
-  user    Users  @relation(fields: [userId], references: [id])
-  userId  String
-  event   Events @relation(fields: [eventId], references: [id])
+  user    Users?  @relation(fields: [userId], references: [id])
+  userId  String?
+  event   Events  @relation(fields: [eventId], references: [id])
   eventId String
 
-  @@index([userId])
   @@index([eventId])
+  @@index([userId])
 }
 
 model Events {
@@ -123,7 +126,7 @@ model Events {
   // Event Details
   imageUrl        String?
   name            String
-  description     String
+  description     String  @db.VarChar(2000)
   summary         String?
   organizer       String
   organizerUserId String

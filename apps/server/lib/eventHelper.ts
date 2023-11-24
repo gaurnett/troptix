@@ -128,7 +128,6 @@ export function getPrismaCreateOrderQuery(order) {
       id: ticket.id,
       eventId: ticket.eventId,
       ticketTypeId: ticket.ticketTypeId,
-      userId: ticket.userId,
       fees: ticket.fees,
       subtotal: ticket.subtotal,
       total: ticket.total,
@@ -137,9 +136,12 @@ export function getPrismaCreateOrderQuery(order) {
 
   orderInput = {
     id: order.id,
+    stripeCustomerId: order.stripeCustomerId,
     total: order.total,
     fees: order.fees,
     subtotal: order.subtotal,
+    name: order.name,
+    email: order.email,
     telephoneNumber: order.telephoneNumber,
     billingAddress1: order.billingAddress1,
     billingAddress2: order.billingAddress2,
@@ -147,11 +149,6 @@ export function getPrismaCreateOrderQuery(order) {
     billingCountry: order.billingCountry,
     billingZip: order.billingZip,
     billingState: order.billingState,
-    user: {
-      connect: {
-        id: order.userId
-      }
-    },
     event: {
       connect: {
         id: order.eventId
@@ -162,6 +159,17 @@ export function getPrismaCreateOrderQuery(order) {
         data: orderTickets,
       },
     },
+  }
+
+  if (order.userId !== undefined) {
+    orderInput = {
+      ...orderInput,
+      user: {
+        connect: {
+          id: order.userId
+        }
+      },
+    }
   }
 
   return orderInput;

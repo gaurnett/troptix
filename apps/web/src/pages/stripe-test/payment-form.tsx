@@ -12,7 +12,7 @@ import { Elements } from '@stripe/react-stripe-js';
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_TEST_KEY
 const stripePromise = loadStripe(stripeKey ? stripeKey : "");
 
-export default function PaymentForm() {
+export default function PaymentForm({ checkout, setCheckoutPreviousButtonClicked }) {
   const { token } = theme.useToken();
   const stripe = useStripe();
   const elements = useElements();
@@ -68,8 +68,26 @@ export default function PaymentForm() {
         name="basic"
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}>
-        <PaymentElement />
-        <Button type='primary' htmlType='submit' className="px-4 py-4 shadow-md items-center bg-blue-600 hover:bg-blue-700 font-medium inline-flex">Purchase Tickets</Button>
+        <PaymentElement className='mt-8' />
+
+        <div className='my-auto flex mt-4'>
+          <div className='border rounded border-1 flex p-2'>
+            <div className=''>
+              <div className=''>Subtotal:</div>
+              <div className=''>Taxes & Fees:</div>
+              <div className=''>Total:</div>
+            </div>
+            <div className='ml-4 border-l border-dashed'>
+              <div className='ml-4'>
+                <div>${checkout.subtotal}</div>
+                <div>${checkout.fees}</div>
+                <div>${checkout.total}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <Button type='primary' htmlType='submit' className="mt-4 px-4 py-4 shadow-md items-center bg-blue-600 hover:bg-blue-700 font-medium inline-flex">Purchase Tickets</Button>
+        <Button onClick={() => setCheckoutPreviousButtonClicked(true)} className="mt-4 ml-4 px-4 py-4 shadow-md items-center font-medium inline-flex">Previous</Button>
       </Form>
     </div>
   );

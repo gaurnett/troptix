@@ -123,6 +123,7 @@ export async function sendEmailToUser(order, response) {
       orderMap.set(ticketId, {
         ...order,
         ticketQuantity: order.ticketQuantity + 1,
+        ticketTotalPaid: order.ticketTotalPaid + ticket.total,
       })
     } else {
       orderMap.set(ticketId, {
@@ -139,30 +140,22 @@ export async function sendEmailToUser(order, response) {
     subtotal: order.subtotal,
     totalFees: order.fees,
     totalPrice: order.total,
-    username: order.user.name,
+    username: order.name,
     cardType: order.cardType,
     cardLast4: order.cardLast4,
-    ticketsPurchased: "15",
+    ticketsPurchased: order.tickets.length,
     orderNumber: String(order.id).slice(3),
     orderDate: new Date(order.createdAt).toLocaleDateString(),
     orders: Array.from(orderMap.values())
   }
 
   const msg = {
-    to: 'flowersgaurnett@gmail.com',
+    to: order.email,
     from: 'flowersgaurnett@gmail.com',
     subject: 'Sending with SendGrid is Fun',
     templateId: 'd-658d88a06f0b443ca36d12d5e47e9275',
     dynamicTemplateData: templateData,
   };
 
-  try {
-    const mailResponse = await sgMail.send(msg);
-    console.log(mailResponse);
-    return response.status(200).json({
-      message: "email sent",
-    });
-  } catch (error) {
-    return response.status(500).json({ error: 'Error sending email' });
-  }
+  return await sgMail.send(msg);
 }
