@@ -12,7 +12,13 @@ import PaymentForm from './payment-form';
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_TEST_KEY
 const stripePromise = loadStripe(stripeKey ? stripeKey : "");
 
-export default function CheckoutForm({ checkout, event, setCheckoutPreviousButtonClicked }) {
+export default function CheckoutForm({
+  checkout,
+  event,
+  setCheckoutPreviousButtonClicked,
+  completePurchaseClicked,
+  setCompletePurchaseClicked,
+  setIsStripeLoaded }) {
   const { token } = theme.useToken();
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -79,13 +85,16 @@ export default function CheckoutForm({ checkout, event, setCheckoutPreviousButto
       }
 
       setFetchingStripeDetails(false);
+      setIsStripeLoaded(true);
 
       return paymentId;
     };
 
+    console.log("called");
+
     initializePaymentSheet();
 
-  }, [checkout, checkout.discountedTotal, checkout.promotionApplied, checkout.total, event.id, userId]);
+  }, [checkout, checkout.discountedTotal, checkout.promotionApplied, checkout.total, event.id, setIsStripeLoaded, userId]);
 
   return (
     <div className="w-full md:max-w-2xl mx-auto h-full">
@@ -97,7 +106,9 @@ export default function CheckoutForm({ checkout, event, setCheckoutPreviousButto
               <div className="content" />
             </Spin> :
             <Elements stripe={stripePromise} options={options}>
-              <PaymentForm checkout={checkout} setCheckoutPreviousButtonClicked={setCheckoutPreviousButtonClicked} />
+              <PaymentForm
+                completePurchaseClicked={completePurchaseClicked}
+                setCompletePurchaseClicked={setCompletePurchaseClicked} />
             </Elements>
         }
       </div>

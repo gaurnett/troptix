@@ -11,6 +11,8 @@ import { MdLocationOn } from "react-icons/md";
 import { format } from 'date-fns';
 import { IoTicket } from "react-icons/io5";
 import TicketModal from "./ticket-modal";
+import TicketDrawer from "./ticket-drawer";
+import { Elements } from "@stripe/react-stripe-js";
 const { Paragraph } = Typography;
 
 export default function EventDetailPage() {
@@ -22,6 +24,20 @@ export default function EventDetailPage() {
   const [isFetchingEvent, setIsFetchingEvent] = useState(true);
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [showLocationPin, setShowLocationPin] = useState(false);
+  const [width, setWidth] = useState<number>(window.innerWidth);
+
+  function handleWindowSizeChange() {
+    setWidth(window.innerWidth);
+  }
+
+  useEffect(() => {
+    window.addEventListener('resize', handleWindowSizeChange);
+    return () => {
+      window.removeEventListener('resize', handleWindowSizeChange);
+    }
+  }, []);
+
+  const isMobile = width <= 768;
 
   useEffect(() => {
     async function fetchEvent() {
@@ -70,11 +86,16 @@ export default function EventDetailPage() {
               backgroundSize: 'cover',
               WebkitBackgroundSize: 'cover',
             }}>
-            <TicketModal event={event} isTicketModalOpen={isTicketModalOpen} setIsTicketModalOpen={setIsTicketModalOpen} handleCancel={handleCancel} />
-            <div className="w-full h-full flex justify-center items-center backdrop-blur-3xl">
-              <div className={`max-w-4xl mx-auto p-4 sm:p-8`}>
+            {
+              isMobile ?
+                <TicketDrawer event={event} isTicketModalOpen={isTicketModalOpen} setIsTicketModalOpen={setIsTicketModalOpen} handleCancel={handleCancel} />
+                :
+                <TicketModal event={event} isTicketModalOpen={isTicketModalOpen} setIsTicketModalOpen={setIsTicketModalOpen} handleCancel={handleCancel} />
+            }
+            <div className="w-full md:min-h-screen flex backdrop-blur-3xl">
+              <div className={`max-w-5xl mx-auto p-4 sm:p-8`}>
                 <div className="md:flex mt-32">
-                  <aside className="md:h-screen md:sticky md:top-0 mb-8 ">
+                  <aside className="md:sticky md:top-0 mb-8 ">
                     <Image
                       height={500}
                       width={500}
@@ -90,10 +111,10 @@ export default function EventDetailPage() {
                       Buy Tickets
                     </Button>
                   </aside>
-                  <div className="w-full md:ml-8">
-                    <div>
+                  <div className="w-full md:ml-8 bg-white bg-opacity-80 p-6 rounded-lg">
+                    <div className="mb-8">
                       <h1
-                        className="text-5xl md:text-5xl font-extrabold leading-tighter tracking-tighter mb-4"
+                        className="text-5xl md:text-5xl font-bold leading-tighter tracking-tighter mb-8"
                         data-aos="zoom-y-out">
                         {event.name}
                       </h1>
@@ -106,17 +127,20 @@ export default function EventDetailPage() {
                       <h2 className="text-xl font-bold leading-tighter tracking-tighter mt-4" data-aos="zoom-y-out">About</h2>
                       <div className="">Starts: {getDateFormatter(new Date(event.startDate), new Date(event.startTime))}</div>
                       <div className="">Ends: {getDateFormatter(new Date(event.endDate), new Date(event.endTime))}</div>
-                      <Paragraph className="mt-2" ellipsis={{ rows: 2, expandable: true, symbol: 'see more details' }}>
+                    </div>
+
+                    <div>
+                      <h2 className="text-xl font-bold leading-tighter tracking-tighter mt-4" data-aos="zoom-y-out">Description</h2>
+                      <Paragraph className="mt-2 text-justify" ellipsis={{ rows: 2, expandable: true, symbol: 'see more details' }}>
                         {event.description}
                       </Paragraph>
-                      <div></div>
                     </div>
 
                     <div>
                       <h2 className="text-xl font-bold leading-tighter tracking-tighter mt-4" data-aos="zoom-y-out">Venue</h2>
                       <div className="text-3xl font-extrabold">{event.venue}</div>
                       <div className="text-xl ">{event.address}</div>
-                      <div style={{ height: 300 }} className="w-full h-150 mt-2">
+                      {/* <div style={{ height: 300 }} className="w-full h-150 mt-2">
                         <GoogleMapReact
                           bootstrapURLKeys={{ key: googleMapsKey }}
                           defaultCenter={{
@@ -131,12 +155,12 @@ export default function EventDetailPage() {
                           }
                           }
                         >
-                          {/* {
+                          {
                             showLocationPin && (<div>hello</div>)
-                          } */}
-                          {/* <MdLocationOn className="text-4xl" /> */}
+                          }
+                          <MdLocationOn className="text-4xl" />
                         </GoogleMapReact>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>

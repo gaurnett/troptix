@@ -11,7 +11,7 @@ import {
 } from '@ant-design/icons';
 import { CustomInput } from '@/components/ui/input';
 
-export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
+export default function TicketsCheckoutForm({ checkout, event, setCheckout, orderSummary, setOrderSummary }) {
   const { token } = theme.useToken();
 
   const [messageApi, contextHolder] = message.useMessage();
@@ -180,6 +180,20 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
     var checkoutTotal = checkout.total;
     var checkoutSubtotal = checkout.subtotal;
     var checkoutFees = checkout.fees;
+
+    const name = ticket.name;
+    if (orderSummary.has(name)) {
+      const quantity = orderSummary.get(name) - 1;
+      if (quantity === 0) {
+        orderSummary.delete(name);
+      } else {
+        orderSummary.set(name, quantity);
+      }
+    } else {
+      orderSummary.set(name, 1);
+    }
+    setOrderSummary(orderSummary);
+
     const updatedTickets = checkout.tickets.map((item, i) => {
       if (index === i && item.quantitySelected > 0) {
         checkoutSubtotal -= ticket.price;
@@ -226,6 +240,16 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
     var currentTotal = checkout.total;
     var subtotal = checkout.subtotal;
     var fees = checkout.fees;
+
+    const name = ticket.name;
+    if (orderSummary.has(name)) {
+      const ticketSummary = orderSummary.get(name) + 1;
+      orderSummary.set(name, ticketSummary);
+    } else {
+      orderSummary.set(name, 1);
+    }
+    setOrderSummary(orderSummary)
+
     const updatedTickets = checkout.tickets.map((item, i) => {
       if (index === i && item.quantitySelected < item.maxPurchasePerUser) {
         subtotal += ticket.price;
@@ -273,7 +297,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
       {contextHolder}
       <div>
         <div className="mb-4">
-          <div className="w-full px-3">
+          <div className="w-full">
             <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={"promotionCode"}>Promotion Code</label>
           </div>
           <div className="flex w-full">
