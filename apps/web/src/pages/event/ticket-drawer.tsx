@@ -141,20 +141,16 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
           <Drawer
             title="Ticket Checkout"
             closable={true}
-            placement='bottom'
             open={isTicketModalOpen}
             onClose={closeModal}
             width={900}
-            height={window.innerHeight}
           >
             <Drawer
               title="Order Summary"
               closable={true}
-              placement='bottom'
               open={summaryDrawerOpen}
               onClose={closeSummary}
               width={900}
-              height={window.innerHeight}
             >
               <div className='mb-4 md:mt-4 md:mb-8 my-auto w-full'>
                 {
