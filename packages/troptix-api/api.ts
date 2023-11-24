@@ -1,4 +1,4 @@
-export const prodUrl = "https://troptix-two.vercel.app";
+export const prodUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
 
 export class TropTixResponse {
   response: any;
