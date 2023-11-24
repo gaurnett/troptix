@@ -10,7 +10,7 @@ export type GetEventsRequestType = {
   requestType: keyof typeof RequestType;
   id?: string;
 };
-export const prodUrl = "https://troptix-git-dev-flowersgaurnett-gmailcom.vercel.app";
+export const prodUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
 
 export async function eventFetcher({
   requestType,
