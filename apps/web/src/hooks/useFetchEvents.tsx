@@ -16,10 +16,14 @@ export async function eventFetcher({
   requestType,
   id,
 }: GetEventsRequestType): Promise<any> {
+
+  let url = prodUrl + `/api/events?getEventsType=${requestType}`;
+
   if (requestType !== RequestType.GET_EVENTS_ALL && !id) {
     throw new Error("The appropriate ID is missing");
+  } else {
+    url += `&id=${id}`
   }
-  let url = prodUrl + `/api/events?getEventsType=${requestType}&id=${id}`;
 
   return await fetch(url, {
     method: "GET",
