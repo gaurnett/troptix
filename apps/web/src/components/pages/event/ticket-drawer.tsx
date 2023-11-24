@@ -256,7 +256,7 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
                 <div className=''>{steps[current].content}</div>
               </div>
               <footer className='border-t'>
-                <div className='flex mt-2'>
+                <div className='flex mt-4'>
                   <div className='text-xl mr-2'>
                     {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)}
                   </div>
@@ -264,7 +264,7 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
                     <Button onClick={() => setSummaryDrawerOpen(true)} type='text' className='text-blue-500'>Order Summary</Button>
                   </div>
                 </div>
-                <div className='flex flex-end content-end items-end self-end mt-2'>
+                <div className='flex flex-end content-end items-end self-end mt-4'>
                   {current === 0 && (
                     <Button
                       type="primary"
