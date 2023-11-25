@@ -14,10 +14,8 @@ import { List, Spin, Image } from "antd";
 import { useFetchAllEvents } from "@/hooks/useFetchEvents";
 
 export default function ManageEventsPage() {
-  const router = useRouter();
   const { user } = useContext(TropTixContext);
   const userId = user === null || user === undefined ? null : user.id;
-  const [isFetchingEvents, setIsFetchingEvents] = useState(true);
 
   console.log(process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL);
 
@@ -37,44 +35,59 @@ export default function ManageEventsPage() {
         {!isPending ? (
           <div className="container mx-auto p-4">
             <div className="flex flex-wrap -mx-2">
-              {
-                events.length === 0 ?
-                  <>
-                    <div className="text-center" style={{ alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%" }}>
-                      <Image
-                        preview={false}
-                        width={75}
-                        height={75}
-                        className="w-full mx-auto justify-center content-center items-center"
-                        style={{ objectFit: 'contain' }}
-                        src={"/icons/empty-events.png"}
-                        alt={"mobile wallet image"} />
-                      <div className="mt-4 font-bold text-xl">There are no events nearby</div>
+              {events.length === 0 ? (
+                <>
+                  <div
+                    className="text-center"
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: "100%",
+                      width: "100%",
+                    }}
+                  >
+                    <Image
+                      preview={false}
+                      width={75}
+                      height={75}
+                      className="w-full mx-auto justify-center content-center items-center"
+                      style={{ objectFit: "contain" }}
+                      src={"/icons/empty-events.png"}
+                      alt={"mobile wallet image"}
+                    />
+                    <div className="mt-4 font-bold text-xl">
+                      There are no events nearby
                     </div>
-                  </>
-                  :
-                  <>
-                    {events.map((event) => (
-                      <div
-                        key={event.id}
-                        className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4">
-                        <Link href={{ pathname: "/event", query: { eventId: event.id } }}>
-                          <EventCard
-                            eventName={event.name}
-                            image={
-                              event.imageUrl ??
-                              "https://placehold.co/400x400?text=Add+Event+Flyer"
-                            }
-                            date={new Date(event.startDate).toDateString()}
-                            location={event.address}
-                            price={"$0"}
-                          />
-                        </Link>
-                      </div>
-                    ))}
-                  </>
-              }
-
+                  </div>
+                </>
+              ) : (
+                <>
+                  {events.map((event) => (
+                    <div
+                      key={event.id}
+                      className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4"
+                    >
+                      <Link
+                        href={{
+                          pathname: "/event",
+                          query: { eventId: event.id },
+                        }}
+                      >
+                        <EventCard
+                          eventName={event.name}
+                          image={
+                            event.imageUrl ??
+                            "https://placehold.co/400x400?text=Add+Event+Flyer"
+                          }
+                          date={new Date(event.startDate).toDateString()}
+                          location={event.address}
+                          price={"$0"}
+                        />
+                      </Link>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
           </div>
         ) : (

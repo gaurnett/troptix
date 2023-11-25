@@ -1,122 +1,100 @@
-import EventCard from "@/components/EventCard";
-import { CustomInput } from "@/components/ui/input";
 import { message, Button, Tabs, Spin } from "antd";
 import type { TabsProps } from "antd";
 import { useRouter } from "next/router";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import TicketsPage from "@/components/admin/manage-event/tickets";
-import { useCallback, useEffect, useState } from "react";
-import { Event, getEventsFromRequest } from "troptix-models";
-import {
-  TropTixResponse,
-  getEvents,
-  saveEvent,
-  GetEventsRequest,
-  GetEventsType,
-} from "troptix-api";
+import { useEffect, useState } from "react";
+import { saveEvent } from "troptix-api";
 import BasicInfoPage from "@/components/admin/manage-event/basic-info";
 import DetailsPage from "@/components/admin/manage-event/details";
-import OrderSummaryPage from "@/components/admin/manage-event/order-summary";
 import PromotionCodesPage from "@/components/admin/manage-event/promotions-codes";
 import UserDelegationPage from "@/components/admin/manage-event/user-delegation";
 import OrdersPage from "@/components/admin/manage-event/orders";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { useFetchEventsById, RequestType } from "@/hooks/useFetchEvents";
+import { useCreateEvent, useEditEvent } from "@/hooks/usePostEvent";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function ManageEventPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
-  const eventId = router.query.eventId;
+  const eventId = router.query.eventId as string;
   const [isFetchingEvent, setIsFetchingEvent] = useState(true);
-  const [event, setEvent] = useState<any>();
+  const [eventForm, setEventForm] = useState<any>();
   const [eventName, setEventName] = useState("");
   const [publishButtonClicked, setPublishButtonClicked] = useState(false);
 
+  const queryClient = useQueryClient();
+  const mutation = useEditEvent();
+
+  const {
+    isPending,
+    isError,
+    data: event,
+    error,
+  } = useFetchEventsById({
+    requestType: RequestType.GET_EVENTS_BY_ID,
+    id: eventId,
+  });
+
+  // Update local state with fetched data
   useEffect(() => {
-    async function fetchEvents() {
-      try {
-        const getEventsRequest: any = {
-          getEventsType: GetEventsType.GET_EVENTS_BY_ID,
-          eventId: eventId,
-        };
-        const response = await getEvents(getEventsRequest);
-
-        if (response !== undefined && response.length !== 0) {
-          setEvent(response);
-          setEventName(response.name);
-        }
-      } catch (error) {}
-
-      setIsFetchingEvent(false);
+    if (event) {
+      setEventForm(event);
     }
+  }, [event]);
 
-    fetchEvents();
-  }, [eventId]);
-
-  useEffect(() => {
-    async function updateEventPublishedState() {
-      if (event !== undefined && publishButtonClicked) {
-        const successMessage = event.isDraft
-          ? "Successfully unpublished event."
-          : "Successfully published event.";
-        const response = await saveEvent(event, true);
-
-        if (
-          response === null ||
-          response === undefined ||
-          response.error !== null
-        ) {
-          messageApi.open({
-            type: "error",
-            content: "Failed to update event, please try again.",
-          });
-          setPublishButtonClicked(false);
-          return;
-        }
-
+  function updateEvent(e) {
+    mutation.mutate(e, {
+      onSuccess: () => {
         messageApi.open({
           type: "success",
-          content: successMessage,
+          content: "Successfully updated event.",
         });
-        console.log(event.isDraft);
-      }
-      setPublishButtonClicked(false);
-    }
+        queryClient.invalidateQueries({
+          queryKey: [RequestType.GET_EVENTS_BY_ID, eventId],
+        });
+      },
+      onError: () => {
+        messageApi.open({
+          type: "error",
+          content: "Failed to update event, please try again.",
+        });
+      },
+    });
+  }
 
-    updateEventPublishedState();
-  }, [event, messageApi, publishButtonClicked]);
+  function publishEvent() {
+    const e = {
+      ...event,
+      ["isDraft"]: !event.isDraft,
+    };
+
+    mutation.mutate(e, {
+      onSuccess: () => {
+        messageApi.open({
+          type: "success",
+          content: e.isDraft
+            ? "Successfully unpublished event."
+            : "Successfully published event.",
+        });
+        queryClient.invalidateQueries({
+          queryKey: [RequestType.GET_EVENTS_BY_ID, eventId],
+        });
+      },
+      onError: () => {
+        messageApi.open({
+          type: "error",
+          content: "Failed to update event, please try again.",
+        });
+      },
+    });
+  }
 
   function onChange(key: string) {}
 
   function goBack() {
     router.back();
-  }
-
-  async function publishEvent() {
-    setEvent((previousEvent: any) => ({
-      ...previousEvent,
-      ["isDraft"]: !previousEvent.isDraft,
-    }));
-    setPublishButtonClicked(true);
-  }
-
-  async function updateEvent(successMessage = "Successfully updated event.") {
-    const response = await saveEvent(event, true);
-
-    if (
-      response === null ||
-      response === undefined ||
-      response.error !== null
-    ) {
-      messageApi.open({
-        type: "error",
-        content: "Failed to update event, please try again.",
-      });
-      return;
-    }
-
-    messageApi.open({
-      type: "success",
-      content: successMessage,
-    });
   }
 
   const items: TabsProps["items"] = [
@@ -130,8 +108,8 @@ export default function ManageEventPage() {
       label: "Basic Info",
       children: (
         <BasicInfoPage
-          event={event}
-          setEvent={setEvent}
+          event={eventForm}
+          setEvent={setEventForm}
           updateEvent={updateEvent}
         />
       ),
@@ -141,8 +119,8 @@ export default function ManageEventPage() {
       label: "Details",
       children: (
         <DetailsPage
-          event={event}
-          setEvent={setEvent}
+          event={eventForm}
+          setEvent={setEventForm}
           updateEvent={updateEvent}
         />
       ),
@@ -167,7 +145,7 @@ export default function ManageEventPage() {
   return (
     <div className="w-full md:max-w-2xl mx-auto">
       {contextHolder}
-      {!isFetchingEvent ? (
+      {!isPending ? (
         <div className="mx-4">
           <h1
             className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
@@ -208,9 +186,10 @@ export default function ManageEventPage() {
           </div>
         </div>
       ) : (
-        <Spin className="mt-16" tip="Fetching Event" size="large">
-          <div className="content" />
-        </Spin>
+        // <Spin className="mt-16" tip="Fetching Event" size="large">
+        //   <div className="content" />
+        // </Spin>
+        <LoadingSpinner>Fetching Event</LoadingSpinner>
       )}
     </div>
   );
