@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import WebNavigator from "@/components/WebNavigator";
 import "@/styles/globals.css";
@@ -18,11 +18,14 @@ function App({ Component, pageProps, router }: AppProps) {
       </Head>
 
       <QueryClientProvider client={queryClient}>
-
-        <WebNavigator pageProps={pageProps} Component={Component} router={router} />
+        <WebNavigator
+          pageProps={pageProps}
+          Component={Component}
+          router={router}
+        />
       </QueryClientProvider>
     </>
   );
 }
 
-export default withRouter(App); 
+export default withRouter(App);

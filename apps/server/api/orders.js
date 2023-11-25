@@ -1,6 +1,6 @@
 import prisma from "../prisma/prisma";
 import { getPrismaCreateOrderQuery } from "../lib/eventHelper";
-import { getBuffer, updateSuccessfulOrder } from "../lib/orderHelper";
+import { getBuffer, updateSuccessfulOrder, updateTicketTypeQuantitySold } from "../lib/orderHelper";
 import { sendEmailToUser } from "../lib/emailHelper";
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -216,7 +216,40 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
       },
     });
 
-    const mailResponse = await sendEmailToUser(order, response);
+    const orderMap = new Map();
+    order.tickets.forEach(ticket => {
+      const ticketId = ticket.ticketType.id;
+      if (orderMap.has(ticketId)) {
+        const order = orderMap.get(ticketId);
+        orderMap.set(ticketId, {
+          ...order,
+          ticketQuantity: order.ticketQuantity + 1,
+          ticketTotalPaid: order.ticketTotalPaid + ticket.total,
+        });
+      } else {
+        orderMap.set(ticketId, {
+          ticketQuantity: 1,
+          ticketName: ticket.ticketType.name,
+          ticketTotalPaid: ticket.total
+        });
+      }
+    });
+
+    console.log(orderMap);
+
+    for (let [key, value] of orderMap) {
+      console.log(key);
+      console.log(value);
+      const updatedTicket = await prisma.ticketTypes.update({
+        where: {
+          id: key,
+        },
+        data: updateTicketTypeQuantitySold(value.ticketQuantity),
+      });
+      console.log(updatedTicket);
+    }
+
+    const mailResponse = await sendEmailToUser(order, orderMap);
 
     console.log("mail response: " + JSON.stringify(mailResponse));
 

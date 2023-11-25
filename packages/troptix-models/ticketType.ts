@@ -21,6 +21,7 @@ export class TicketType {
   description: string = "";
   maxPurchasePerUser: number = 0;
   quantity: number = 0;
+  quantitySold: number = 0;
 
   // Sale Date Details
   saleStartDate: Date;

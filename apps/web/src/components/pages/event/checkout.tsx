@@ -9,7 +9,7 @@ import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import PaymentForm from './payment-form';
-const stripeKey = process.env.NEXT_PUBLIC_STRIPE_KEY
+const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 const stripePromise = loadStripe(stripeKey ? stripeKey : "");
 
 export default function CheckoutForm({
