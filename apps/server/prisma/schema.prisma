@@ -193,6 +193,7 @@ model TicketTypes {
   description        String
   maxPurchasePerUser Int
   quantity           Int
+  quantitySold       Int?   @default(0)
 
   // Sale Date Details
   saleStartDate DateTime

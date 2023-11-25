@@ -1,12 +1,9 @@
 import { getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 import { sendEmailToUser } from "../lib/emailHelper";
+import { updateTicketTypeQuantitySold } from "../lib/orderHelper";
 
 export default async function handler(request, response) {
-  const order = {
-    total: 155,
-    userId: undefined
-  };
 
-  const email = await sendEmailToUser(order, response);
+  return response.status(200).json({ message: "Hello World" });
 }
