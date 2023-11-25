@@ -113,26 +113,7 @@ async function gethtmltopdf(response) {
   }
 };
 
-export async function sendEmailToUser(order, response) {
-  const orderMap = new Map();
-
-  order.tickets.forEach(ticket => {
-    const ticketId = ticket.ticketType.id;
-    if (orderMap.has(ticketId)) {
-      const order = orderMap.get(ticketId);
-      orderMap.set(ticketId, {
-        ...order,
-        ticketQuantity: order.ticketQuantity + 1,
-        ticketTotalPaid: order.ticketTotalPaid + ticket.total,
-      })
-    } else {
-      orderMap.set(ticketId, {
-        ticketQuantity: 1,
-        ticketName: ticket.ticketType.name,
-        ticketTotalPaid: ticket.total
-      })
-    }
-  });
+export async function sendEmailToUser(order, orderMap) {
 
   const templateData = {
     id: order.id,

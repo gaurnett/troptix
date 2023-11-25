@@ -34,3 +34,15 @@ export function updateSuccessfulOrder(paymentMethod) {
 
   return orderUpdate;
 }
+
+export function updateTicketTypeQuantitySold(quantitySold) {
+  let ticketTypeUpdate: Prisma.TicketTypesUpdateInput;
+
+  ticketTypeUpdate = {
+    quantitySold: {
+      increment: quantitySold
+    },
+  }
+
+  return ticketTypeUpdate;
+}
