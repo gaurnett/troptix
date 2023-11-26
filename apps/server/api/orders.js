@@ -221,7 +221,7 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
   try {
     await prisma.orders.update({
       where: {
-        id: id,
+        stripePaymentId: id,
       },
       data: updateSuccessfulOrder(paymentMethod),
       include: {
@@ -231,7 +231,7 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
 
     const order = await prisma.orders.findUnique({
       where: {
-        id: id,
+        stripePaymentId: id,
       },
       include: {
         tickets: {
@@ -264,6 +264,8 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
 
     console.log(orderMap);
 
+    const mailResponse = await sendEmailToUser(order, orderMap);
+
     for (let [key, value] of orderMap) {
       console.log(key);
       console.log(value);
@@ -275,8 +277,6 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
       });
       console.log(updatedTicket);
     }
-
-    const mailResponse = await sendEmailToUser(order, orderMap);
 
     console.log("mail response: " + JSON.stringify(mailResponse));
 
