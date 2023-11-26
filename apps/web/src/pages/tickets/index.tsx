@@ -10,6 +10,7 @@ import {
 } from "react-icons/md";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import JsPDF from 'jspdf';
+import Link from "next/link";
 
 export default function TicketsPage() {
   const router = useRouter();
@@ -107,7 +108,7 @@ export default function TicketsPage() {
               {renderTicketRow("Event Venue", event.venue)}
               {renderTicketRow("Event Address", event.address)}
               <Divider style={{ height: "16px" }} dashed={true} plain>Order Details</Divider>
-              {renderTicketRow("Order number", `#${String(order.id).toUpperCase().substring(3)}`)}
+              {renderTicketRow("Order number", `#${String(order.id).toUpperCase()}`)}
               {renderTicketRow("Event Summary", event.summary)}
               {renderTicketRow("Event Organizer", event.organizer)}
               <div className="mb-4">
@@ -140,7 +141,10 @@ export default function TicketsPage() {
             </h1>
             <div className='flex w-full md:max-w-lg md:mx-auto my-6 mx-auto justify-center'>
               <Button onClick={saveToPdf} className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Save PDF</Button>
-              <Button className="ml-4 px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">View event details</Button>
+              <Link target="_blank" href={{ pathname: "/event", query: { eventId: order.event.id } }}>
+                <Button className="ml-4 px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">View event details</Button>
+
+              </Link>
             </div>
             <div className="w-full md:max-w-lg mx-auto">
               <div className="mx-auto w-full h-full">

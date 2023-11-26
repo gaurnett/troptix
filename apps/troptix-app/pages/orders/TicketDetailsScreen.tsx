@@ -88,7 +88,7 @@ export default function TicketDetailsScreen({ route }) {
               Order Number
             </Text>
             <Text style={[styles.itemBody]} $textDefault>
-              {String(ticket.orderId).substring(3).toUpperCase()}
+              {String(ticket.orderId).toUpperCase()}
             </Text>
           </View>
 
