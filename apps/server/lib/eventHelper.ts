@@ -84,6 +84,7 @@ export function getPrismaCreateOrderQuery(order) {
 
   orderInput = {
     id: order.id,
+    stripePaymentId: order.stripePaymentId,
     stripeCustomerId: order.stripeCustomerId,
     total: order.total,
     fees: order.fees,

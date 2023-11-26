@@ -97,6 +97,7 @@ enum OrderStatus {
 model Orders {
   id               String      @id @default(uuid())
   stripeCustomerId String?
+  stripePaymentId  String?     @unique
   createdAt        DateTime?   @default(now())
   updatedAt        DateTime?   @updatedAt
   total            Float
