@@ -60,6 +60,7 @@ enum TicketStatus {
 model Tickets {
   id        String       @id @default(uuid())
   createdAt DateTime     @default(now())
+  updatedAt DateTime?    @updatedAt
   status    TicketStatus @default(NOT_AVAILABLE)
   fees      Float?
   subtotal  Float?
@@ -133,9 +134,9 @@ model Events {
 
   // Date and Time Details
   startDate DateTime
-  startTime DateTime
+  startTime DateTime?
   endDate   DateTime
-  endTime   DateTime
+  endTime   DateTime?
 
   // Location Details
   venue       String?
@@ -197,9 +198,9 @@ model TicketTypes {
 
   // Sale Date Details
   saleStartDate DateTime
-  saleStartTime DateTime
+  saleStartTime DateTime?
   saleEndDate   DateTime
-  saleEndTime   DateTime
+  saleEndTime   DateTime?
 
   // Price Details
   price         Float
