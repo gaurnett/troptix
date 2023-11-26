@@ -10,6 +10,7 @@ import SalesChart from "./sales-chart";
 import QuantityChart from "./quantity-chart";
 import OrderSummaryPage from "./order-summary";
 import OrderListPage from "./order-list";
+import OrderCompListPage from "./order-comp-list";
 
 export default function OrdersPage() {
   const router = useRouter();
@@ -57,6 +58,11 @@ export default function OrdersPage() {
       key: 'order-list',
       label: 'Order List',
       children: <OrderListPage orders={orders} />,
+    },
+    {
+      key: 'order-comp-list',
+      label: 'Complementary Tickets',
+      children: <OrderCompListPage orders={orders} />,
     },
   ];
 

@@ -30,14 +30,6 @@ export default function AddEventStarterPage({ event, setEvent }) {
     }));
   }
 
-  function sameDate(startDate: Date, endDate: Date) {
-    return (
-      startDate.getDate() === endDate.getDate() &&
-      startDate.getMonth() === endDate.getMonth() &&
-      startDate.getFullYear() === endDate.getFullYear()
-    );
-  }
-
   async function updateDate(name, value) {
     if (value === null) {
       return;
@@ -45,42 +37,31 @@ export default function AddEventStarterPage({ event, setEvent }) {
 
     const startDate = new Date(event.startDate);
     const endDate = new Date(event.endDate);
-    const startTime = new Date(event.startTime);
-    let endTime = new Date(event.endTime);
-    const startTimeMinutes = startTime.getHours() * 60 + startTime.getMinutes();
-    const endTimeMinutes = endTime.getHours() * 60 + endTime.getMinutes();
 
-    if (name === "startTime" || name === "endTime") {
-      if (sameDate(startDate, endDate) && endTimeMinutes < startTimeMinutes) {
-        messageApi.open({
-          type: "error",
-          content: "End time cannot be before start time",
-        });
-        return;
+    if (name === "startDate") {
+      if (value.toDate().getTime() > endDate.getTime()) {
+        const newEndDate = value.toDate();
+        newEndDate.setHours(newEndDate.getHours() + 4);
+
+        setEvent((previousEvent) => ({
+          ...previousEvent,
+          ["endDate"]: newEndDate,
+        }));
       }
+    }
+
+    if (name === "endDate" && value.toDate().getTime() < startDate.getTime()) {
+      messageApi.open({
+        type: "error",
+        content: "End time cannot be before start time",
+      });
+      return;
     }
 
     setEvent((previousEvent) => ({
       ...previousEvent,
       [name]: value.toDate(),
     }));
-
-    if (name === "startDate") {
-      setEvent((previousEvent) => ({
-        ...previousEvent,
-        ["endDate"]: value.toDate(),
-      }));
-    } else if (name === "endDate") {
-      if (
-        sameDate(startDate, value.toDate()) &&
-        endTimeMinutes < startTimeMinutes
-      ) {
-        setEvent((previousEvent) => ({
-          ...previousEvent,
-          ["endTime"]: startTime,
-        }));
-      }
-    }
   }
 
   function getValueOrDefault(value: any, defaultValue: any) {
@@ -286,12 +267,12 @@ export default function AddEventStarterPage({ event, setEvent }) {
           </div>
           <div className="mb-4 md:ml-4 w-full">
             <CustomTimeField
-              value={event.startTime}
-              name={"startTime"}
+              value={event.startDate}
+              name={"startDate"}
               id={"startTime"}
               label={"Start Time *"}
               placeholder={"Start Time"}
-              handleChange={(value: any) => updateDate("startTime", value)}
+              handleChange={(value: any) => updateDate("startDate", value)}
               required={true}
             />
           </div>
@@ -312,12 +293,12 @@ export default function AddEventStarterPage({ event, setEvent }) {
           </div>
           <div className="mb-4 md:ml-4 w-full">
             <CustomTimeField
-              value={event.endTime}
-              name={"endTime"}
+              value={event.endDate}
+              name={"endDate"}
               id={"endTime"}
               label={"End Time *"}
               placeholder={"End Time"}
-              handleChange={(value: any) => updateDate("endTime", value)}
+              handleChange={(value: any) => updateDate("endDate", value)}
               required={true}
             />
           </div>

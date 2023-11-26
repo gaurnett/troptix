@@ -1,4 +1,5 @@
 import uuid from 'react-native-uuid';
+import { generateId } from './idHelper';
 
 export enum DelegatedAccess {
   OWNER = 'OWNER',
@@ -15,7 +16,7 @@ export class DelegatedUser {
   delegatedAccess: DelegatedAccess;
 
   constructor(eventId: string) {
-    this.id = String(uuid.v4());
+    this.id = generateId();
     this.eventId = eventId
   }
 }

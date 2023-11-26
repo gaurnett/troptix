@@ -44,8 +44,8 @@ export default function EventDetailPage() {
     id: eventId,
   });
 
-  function getDateFormatter(date, time) {
-    return `${format(date, "MMM dd, yyyy")} @ ${format(time, "hh:mm a")}`;
+  function getDateFormatter(date) {
+    return `${format(date, "MMM dd, yyyy")} @ ${format(date, "hh:mm a")}`;
   }
 
   const handleCancel = () => {
@@ -69,10 +69,9 @@ export default function EventDetailPage() {
       ) : (
         <div
           style={{
-            backgroundImage: `url("${
-              event.imageUrl ??
+            backgroundImage: `url("${event.imageUrl ??
               "https://placehold.co/400x400?text=Add+Event+Flyer"
-            }")`,
+              }")`,
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
             WebkitBackgroundSize: "cover",
@@ -127,8 +126,7 @@ export default function EventDetailPage() {
                     <div className="text-xl font-extrabold">{event.venue}</div>
                     <div className="text-xl text-blue-500">
                       {getDateFormatter(
-                        new Date(event.startDate),
-                        new Date(event.startTime)
+                        new Date(event.startDate)
                       )}
                     </div>
                     <div className="text-xl">{event.organizer}</div>
@@ -144,15 +142,13 @@ export default function EventDetailPage() {
                     <div className="">
                       Starts:{" "}
                       {getDateFormatter(
-                        new Date(event.startDate),
-                        new Date(event.startTime)
+                        new Date(event.startDate)
                       )}
                     </div>
                     <div className="">
                       Ends:{" "}
                       {getDateFormatter(
-                        new Date(event.endDate),
-                        new Date(event.endTime)
+                        new Date(event.endDate)
                       )}
                     </div>
                   </div>

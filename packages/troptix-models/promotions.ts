@@ -1,4 +1,5 @@
 import uuid from 'react-native-uuid';
+import { generateId } from './idHelper';
 
 export enum PromotionType {
   PERCENTAGE = 'PERCENTAGE',
@@ -16,7 +17,7 @@ export class Promotion {
   eventId: string;
 
   constructor(eventId: string) {
-    this.id = String(uuid.v4());
+    this.id = generateId();
     this.eventId = eventId
     this.promotionType = PromotionType.PERCENTAGE
   }

@@ -14,6 +14,13 @@ export default function TicketForm({ selectedTicket, setSelectedTicket, saveTick
     }))
   }
 
+  function updateDate(name, value) {
+    setSelectedTicket((previousTicket) => ({
+      ...previousTicket,
+      [name]: value.toDate(),
+    }));
+  }
+
   function handleNumberChange(name, value) {
     setSelectedTicket(previousTicket => ({
       ...previousTicket,
@@ -48,18 +55,46 @@ export default function TicketForm({ selectedTicket, setSelectedTicket, saveTick
         <h2 className="text-xl md:text-xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Sale Date & Time</h2>
         <div className="md:flex md:justify-between">
           <div className="mb-4 md:mr-4 w-full">
-            <CustomDateField value={selectedTicket.saleStartDate} name={"saleStartDate"} id={"saleStartDate"} label={"Sale start date"} placeholder={"Start Date"} handleChange={handleChange} required={true} />
+            <CustomDateField
+              value={selectedTicket.saleStartDate}
+              name={"saleStartDate"}
+              id={"saleStartDate"}
+              label={"Sale start date"}
+              placeholder={"Start Date"}
+              handleChange={(value) => updateDate("saleStartDate", value)}
+              required={true} />
           </div>
           <div className="mb-4 md:ml-4 w-full">
-            <CustomTimeField value={selectedTicket.saleStartTime} name={"saleStartTime"} id={"saleStartTime"} label={"Sale start time"} placeholder={"Start Time"} handleChange={handleChange} required={true} />
+            <CustomTimeField
+              value={selectedTicket.saleStartDate}
+              name={"saleStartDate"}
+              id={"saleStartTime"}
+              label={"Sale start time"}
+              placeholder={"Start Time"}
+              handleChange={(value) => updateDate("saleStartDate", value)}
+              required={true} />
           </div>
         </div>
         <div className="md:flex md:justify-between">
           <div className="mb-4 md:mr-4 w-full">
-            <CustomDateField value={selectedTicket.saleEndDate} name={"saleEndDate"} id={"saleEndDate"} label={"Sale end date"} placeholder={"End Date"} handleChange={handleChange} required={true} />
+            <CustomDateField
+              value={selectedTicket.saleEndDate}
+              name={"saleEndDate"}
+              id={"saleEndDate"}
+              label={"Sale end date"}
+              placeholder={"End Date"}
+              handleChange={(value) => updateDate("saleEndDate", value)}
+              required={true} />
           </div>
           <div className="mb-4 md:ml-4 w-full">
-            <CustomTimeField value={selectedTicket.saleEndTime} name={"saleEndTime"} id={"saleEndTime"} label={"Sale end time"} placeholder={"End Time"} handleChange={handleChange} required={true} />
+            <CustomTimeField
+              value={selectedTicket.saleEndDate}
+              name={"saleEndDate"}
+              id={"saleEndTime"}
+              label={"Sale end time"}
+              placeholder={"End Time"}
+              handleChange={(value) => updateDate("saleEndDate", value)}
+              required={true} />
           </div>
         </div>
         <h2 className="text-xl md:text-xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Pricing & Availability</h2>
