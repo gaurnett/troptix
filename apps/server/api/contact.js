@@ -9,7 +9,7 @@ export default async function handler(request, response) {
 
   switch (method) {
     case "POST":
-      return postContact(body, response);
+      return postContact(body.contact, response);
     case "GET":
     case "PUT":
       break;

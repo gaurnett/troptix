@@ -2,11 +2,11 @@ import { ContactUsForm } from "./types/Contact";
 import { prodUrl } from "./useFetchEvents";
 import { useMutation } from "@tanstack/react-query";
 
-export enum RequestType {
+export enum PostContactRequestType {
   CONTACT_US = "CONTACT_US",
 }
 export type PostContactRequest = {
-  requestType: keyof typeof RequestType;
+  requestType: keyof typeof PostContactRequestType;
   contactUsForm?: ContactUsForm;
 };
 
