@@ -25,13 +25,13 @@ export default function OrderListPage({ orders }) {
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const searchText = event.target.value;
     setSearchValue(searchText);
-
     filterList(searchText);
   }
 
   function doesStringInclude(string1: string, string2: string) {
     return string1.toLowerCase().includes(string2.toLowerCase());
   }
+
   function filterList(value: string) {
     if (value === "" || value === undefined) {
       setOrderList(orders);

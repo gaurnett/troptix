@@ -94,6 +94,9 @@ export default function TicketCompForm({ event, ticketTypes }) {
       type: 'success',
       content: 'Successfully sent complementary ticket.',
     });
+
+    setComplementaryOrder(new ComplementaryOrder(event));
+    setSelectedTicket(undefined);
   }
 
   return (
