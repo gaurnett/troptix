@@ -30,20 +30,6 @@ export default function EventCard({ event }) {
 
   return (
     <div className="">
-      {/* <div className="">
-        <div className="rounded-md">
-          <Image
-            height={500}
-            width={500}
-            src={
-              event.imageUrl ??
-              "https://placehold.co/600x600.png?text=Add+Event+Flyer"
-            }
-            alt={event.name}
-            className="max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg"
-          />
-        </div>
-      </div> */}
       <div
         className="relative rounded-md"
         style={{
@@ -54,7 +40,7 @@ export default function EventCard({ event }) {
           backgroundSize: "cover",
           WebkitBackgroundSize: "cover",
           backgroundPosition: "center",
-          height: 350
+          height: 300,
         }}>
         <div className="py-2 px-4 bg-white bg-opacity-90 absolute inset-x-0 bottom-0">
           <div className="font-bold text-xl">{event.name}</div>

@@ -24,7 +24,14 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
       if (status === "done") {
         const rcFile = info.file.originFileObj as RcFile;
 
-        const uploadTask = uploadFlyerToFirebase(info.file.name, rcFile);
+        const uploadTask = uploadFlyerToFirebase(event.id, info.file.name, rcFile);
+        message
+          .open({
+            key: 'update-flyer-loading',
+            type: 'loading',
+            content: 'Uploading Flyer..',
+            duration: 0,
+          });
 
         uploadTask.on(
           "state_changed",
@@ -34,6 +41,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
             );
           },
           (err) => {
+            message.destroy('update-flyer-loading');
             message.error(`${info.file.name} file upload failed.`);
           },
           () => {
@@ -42,6 +50,8 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
                 ...previousEvent,
                 ["imageUrl"]: url,
               }));
+
+              message.destroy('update-flyer-loading');
               message.success(`${info.file.name} file uploaded successfully.`);
             });
           }
@@ -50,7 +60,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    onDrop(e) {},
+    onDrop(e) { },
   };
 
   return (
@@ -68,6 +78,33 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
         >
           Description & Photo
         </h2>
+
+        <div className="flex flex-wrap -mx-3 mb-8">
+          <div className="w-full px-3">
+            <label className="block text-gray-800 text-sm font-medium mb-1">
+              Event Flyer
+            </label>
+
+            {event.imageUrl ? (
+              <div className="my-4 mx-auto ">
+                <Image
+                  width={200}
+                  height={200}
+                  style={{ objectFit: "cover" }}
+                  src={event.imageUrl}
+                  alt={`${event.name} event flyer`}
+                />
+              </div>
+            ) : (
+              <></>
+            )}
+            <Upload {...props}>
+              <Button icon={<UploadOutlined />}>
+                Click to upload event flyer
+              </Button>
+            </Upload>
+          </div>
+        </div>
 
         <div className="flex flex-wrap -mx-3 mb-4">
           <div className="w-full px-3">
@@ -103,32 +140,6 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
           </div>
         </div>
 
-        <div className="flex flex-wrap -mx-3 mb-8">
-          <div className="w-full px-3">
-            <label className="block text-gray-800 text-sm font-medium mb-1">
-              Event Flyer
-            </label>
-
-            {event.imageUrl ? (
-              <div className="my-4 mx-auto ">
-                <Image
-                  width={200}
-                  height={200}
-                  style={{ objectFit: "cover" }}
-                  src={event.imageUrl}
-                  alt={`${event.name} event flyer`}
-                />
-              </div>
-            ) : (
-              <></>
-            )}
-            <Upload {...props}>
-              <Button icon={<UploadOutlined />}>
-                Click to upload event flyer
-              </Button>
-            </Upload>
-          </div>
-        </div>
         <div>
           <Button
             onClick={() => {

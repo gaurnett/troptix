@@ -82,6 +82,10 @@
     {
       "source": "/api/promotions/:eventId",
       "destination": "./api/promotions.js"
+    },
+    {
+      "source": "/api/contact",
+      "destination": "./api/contact.js"
     }
   ]
 }

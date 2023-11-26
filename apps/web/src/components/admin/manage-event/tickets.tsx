@@ -43,8 +43,17 @@ export default function TicketsPage({ event }) {
   }, [eventId]);
 
   async function saveTicket() {
+    messageApi
+      .open({
+        key: 'update-ticket-loading',
+        type: 'loading',
+        content: 'Updating Ticket..',
+        duration: 0,
+      });
+
     const response = await saveTicketType(selectedTicket, selectedIndex !== -1);
 
+    messageApi.destroy('update-ticket-loading');
     if (response === null || response === undefined || response.error !== null) {
       messageApi.open({
         type: 'error',

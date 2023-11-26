@@ -182,7 +182,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
 
   function updateCost(ticket, reduce = false) {
     var ticketSubtotal = ticket.price;
-    var ticketFees = ticket.price * .1;
+    var ticketFees = ticket.ticketingFees === "PASS_TICKET_FEES" ? ticket.price * .05 : 0;
     var ticketTotal = ticketFees + ticketSubtotal;
 
     const updatedTickets = checkout.tickets;
@@ -190,7 +190,11 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
       const checkoutTicket = checkout.tickets.get(ticket.id);
       const quantitySelected = checkoutTicket.quantitySelected
       checkoutTicket.quantitySelected = reduce ? quantitySelected - 1 : quantitySelected + 1;
-      updatedTickets.set(ticket.id, checkoutTicket);
+      if (checkoutTicket.quantitySelected === 0) {
+        updatedTickets.delete(ticket.id);
+      } else {
+        updatedTickets.set(ticket.id, checkoutTicket);
+      }
     } else {
       const checkoutTicket = new CheckoutTicket(ticket);
       checkoutTicket.quantitySelected = 1;

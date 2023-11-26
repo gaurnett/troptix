@@ -100,6 +100,9 @@ export default function AdminMobileMenu() {
 
           <ul className="px-5 py-2">
             <li>
+              <Link onClick={closeMobileMenu} href="/admin/manage-account" className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}> Account</Link>
+            </li>
+            <li>
               <Link onClick={closeMobileMenu} href="/admin/manage-events" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Manage Events</Link>
             </li>
             <li>

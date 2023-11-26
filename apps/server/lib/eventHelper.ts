@@ -1,4 +1,21 @@
 import { PrismaClient, Prisma, TicketStatus, OrderStatus, TicketType } from '@prisma/client';
+import prisma from "../prisma/prisma";
+
+const prismaClient = prisma as PrismaClient;
+
+export async function getAllEventsQuery() {
+  return prismaClient.events.findMany({
+    include: {
+      ticketTypes: true,
+    },
+    where: {
+      isDraft: false,
+      startDate: {
+        gte: new Date()
+      }
+    }
+  });
+}
 
 export function getPrismaTicketTypeQuery(ticket) {
   let ticketInput: Prisma.TicketTypesUpdateInput;

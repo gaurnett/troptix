@@ -1,18 +1,19 @@
 import EventCard from "@/components/EventCard";
 import { EventType } from "@/types/Event";
 import { useRouter } from "next/navigation";
-import { Button, Collapse, Divider } from "antd";
+import { Button, Collapse, Divider, message } from "antd";
 import { CustomInput, CustomTextArea } from "@/components/ui/input";
 import { useState } from "react";
-
-interface ContactForm {
-  name: string;
-  email: string;
-  message: string;
-}
+import { useQueryClient } from "@tanstack/react-query";
+import { PostContactRequest, PostContactRequestType, useCreateContact } from "@/hooks/usePostContact";
+import { ContactUsForm } from "@/hooks/types/Contact";
 
 export default function ContactFormPage() {
-  const [contactForm, setContactForm] = useState<ContactForm>({
+  const [messageApi, contextHolder] = message.useMessage();
+  const queryClient = useQueryClient();
+  const mutation = useCreateContact();
+
+  const [contactForm, setContactForm] = useState<ContactUsForm>({
     name: "",
     email: "",
     message: "",
@@ -25,8 +26,49 @@ export default function ContactFormPage() {
     }));
   }
 
+  function sendContactForm() {
+
+    messageApi
+      .open({
+        key: 'send-message-loading',
+        type: 'loading',
+        content: 'Sending Message..',
+        duration: 0,
+      });
+
+    const postContactRequest: PostContactRequest = {
+      requestType: "CONTACT_US",
+      contactUsForm: contactForm
+    }
+    console.log(JSON.stringify(postContactRequest));
+
+    mutation.mutate(postContactRequest, {
+      onSuccess: () => {
+        messageApi.destroy('send-message-loading');
+        messageApi.open({
+          type: "success",
+          content: "Successfully sent message.",
+        });
+        setContactForm({
+          name: "",
+          email: "",
+          message: "",
+        });
+      },
+      onError: (error) => {
+        console.log(error);
+        messageApi.destroy('send-message-loading');
+        messageApi.open({
+          type: "error",
+          content: "Failed to send message event, please try again.",
+        });
+      },
+    });
+  }
+
   return (
     <section className="relative pb-16">
+      {contextHolder}
       {/* Section background (needs .relative class on parent and next sibling elements) */}
       <div
         className="absolute inset-0 bg-gray-100 pointer-events-none"
@@ -89,6 +131,7 @@ export default function ContactFormPage() {
           <div className="flex flex-wrap -mx-3 mb-4 mt-4">
             <div className="px-3">
               <Button
+                onClick={sendContactForm}
                 type="primary"
                 className="px-8 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
               >

@@ -17,7 +17,10 @@ export default async function handler(request, response) {
 
   const msg = {
     to: 'flowersgaurnett@gmail.com',
-    from: 'flowersgaurnett@gmail.com',
+    from: {
+      email: 'flowersgaurnett@gmail.com',
+      name: 'TropTix',
+    },
     subject: 'TropTix Confirmation',
     templateId: 'd-925a204fa5b7431db20d7fe93e8d7ec0',
     dynamicTemplateData: templateData,

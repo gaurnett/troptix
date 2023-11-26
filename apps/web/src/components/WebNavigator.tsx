@@ -10,6 +10,9 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../config";
 import { User, setUserFromResponse } from "troptix-models";
 import { useRouter } from "next/router";
+import { app } from "../config";
+import { getRemoteConfig } from "firebase/remote-config";
+import { getValue, fetchAndActivate } from "firebase/remote-config";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,10 +28,13 @@ export const useTropTixContext = () => useContext(TropTixContext);
 
 export default function WebNavigator({ Component, pageProps }: AppProps) {
   const pathname = usePathname();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [showHeader, setShowHeader] = useState(true);
   const router = useRouter();
+  // const remoteConfig = getRemoteConfig(app);
+  // const organizerList = getValue(remoteConfig, "TROPTIX_ORGANIZER_ALLOW_LIST");
+  // console.log(organizerList);
 
   useEffect(() => {
     if (
@@ -45,12 +51,47 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
     ) {
       router.push("/auth/signup");
     }
+
+    if (
+      (pathname.includes("admin")) &&
+      !loading &&
+      user && !user.isOrganizer
+    ) {
+      router.push("/");
+    }
   }, [loading, pathname, router, user]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    async function isUserAnOrganizer(userId: string) {
+      let isOrganizer = false;
+
+      if (typeof window !== 'undefined') {
+        const remoteConfig = getRemoteConfig(app);
+        remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
+
+        isOrganizer = await fetchAndActivate(remoteConfig)
+          .then(() => {
+            const organizerList = getValue(remoteConfig, "TROPTIX_ORGANIZER_ALLOW_LIST");
+            const organizers = Array.from(JSON.parse(organizerList.asString()));
+            if (organizers.includes(userId)) {
+              return true;
+            }
+
+            return false;
+          })
+          .catch((err) => {
+            console.log(err);
+            return false;
+          });
+      }
+
+      return isOrganizer;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         let currentUser = setUserFromResponse(null, user);
+        currentUser.isOrganizer = await isUserAnOrganizer(currentUser.id);
         setUser(currentUser);
         setLoading(false);
       } else {
@@ -84,27 +125,27 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
             className={`${inter.variable} font-inter antialiased bg-white text-gray-900 tracking-tight`}
           >
             <div className="flex flex-col min-h-screen overflow-hidden supports-[overflow:clip]:overflow-clip">
-              {!pathname.includes("admin") ? (
+              {!pathname.includes("admin") ?
                 <div>
                   {showHeader ? <Header /> : <></>}
                   <div className="min-h-screen flex-grow border-x">
                     <Component {...pageProps} />
                   </div>
                 </div>
-              ) : (
+                :
                 <div>
-                  {user === null ? (
+                  {user === null ?
                     <></>
-                  ) : (
+                    :
                     <>
                       <AdminHeader />
                       <div className="min-h-screen flex-grow mt-32">
                         <Component {...pageProps} />
                       </div>
                     </>
-                  )}
+                  }
                 </div>
-              )}
+              }
             </div>
           </div>
         </div>
