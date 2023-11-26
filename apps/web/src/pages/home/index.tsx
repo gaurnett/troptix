@@ -9,7 +9,7 @@ export default function LandingPage() {
   return (
     <main>
       <LandingHero />
-      <CurrentEvents />
+      {/* <CurrentEvents /> */}
       <Features />
       <Testimonials />
       <Newsletter />

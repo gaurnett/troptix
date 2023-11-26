@@ -1,48 +1,75 @@
-import { Image } from "antd";
+import { Typography } from "antd";
+import Image from "next/image";
 import React from "react";
+const { Paragraph } = Typography;
 
-type EventCardProps = {
-  image: string;
-  eventName: string;
-  date: string;
-  location: string;
-  price: string | number;
-};
+function getFormattedCurrency(price) {
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
 
-const EventCard: React.FC<EventCardProps> = ({
-  image,
-  eventName,
-  date,
-  location,
-  price,
-}) => {
+  return formatter.format(price);
+}
+
+export default function EventCard({ event }) {
+  let lowest = Number.MAX_VALUE;
+  let priceString = "";
+  if (!event.ticketTypes || event.ticketTypes.length === 0) {
+    priceString = "No tickets available";
+  } else {
+    event.ticketTypes.forEach((ticket) => {
+      const price = ticket.price;
+      if (price < lowest) {
+        lowest = price;
+      }
+    });
+
+    priceString = "From " + getFormattedCurrency(lowest);
+  }
+
   return (
-    <div className=" rounded-md flex flex-col overflow-hidden shadow-lg hover:shadow-xl ">
-      <div>
-        <Image
-          preview={false}
-          width={"100%"}
-          height={"100%"}
-          className="w-auto h-72"
-          style={{ objectFit: "cover" }}
-          src={image}
-          alt={eventName}
-        />
-      </div>
-      <div className="px-6 py-4">
-        <div className="font-bold text-xl mb-2">{eventName}</div>
-        <p className="text-gray-700 text-base">
-          <strong>Date:</strong> {date}
-        </p>
-        <p className="text-gray-700 text-base">
-          <strong>Location:</strong> {location}
-        </p>
-        <p className="text-gray-700 text-base">
-          <strong>Price:</strong> ${price}
-        </p>
+    <div className="">
+      {/* <div className="">
+        <div className="rounded-md">
+          <Image
+            height={500}
+            width={500}
+            src={
+              event.imageUrl ??
+              "https://placehold.co/600x600.png?text=Add+Event+Flyer"
+            }
+            alt={event.name}
+            className="max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg"
+          />
+        </div>
+      </div> */}
+      <div
+        className="relative rounded-md"
+        style={{
+          backgroundImage: `url("${event.imageUrl ??
+            "https://placehold.co/400x400?text=Add+Event+Flyer"
+            }")`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          WebkitBackgroundSize: "cover",
+          backgroundPosition: "center",
+          height: 350
+        }}>
+        <div className="py-2 px-4 bg-white bg-opacity-90 absolute inset-x-0 bottom-0">
+          <div className="font-bold text-xl">{event.name}</div>
+          <p className="text-blue-500 text-base">
+            {new Date(event.startDate).toDateString()}
+          </p>
+          <p className="text-green-700 text-base">
+            {priceString}
+          </p>
+          <p style={{ textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap" }} className="text-gray-700 text-base text-ellipsis">
+            {event.address}
+          </p>
+        </div>
       </div>
     </div>
+
   );
 };
-
-export default EventCard;

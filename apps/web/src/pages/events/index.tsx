@@ -11,7 +11,7 @@ export default function ManageEventsPage() {
   const events = data as any[];
 
   return (
-    <div className="w-full mt-32 mx-auto">
+    <div className="mt-32 w-full md:max-w-5xl mx-auto">
       <div className="mx-4">
         <h1
           className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
@@ -51,30 +51,25 @@ export default function ManageEventsPage() {
                 </>
               ) : (
                 <>
-                  {events.map((event) => (
-                    <div
-                      key={event.id}
-                      className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4"
-                    >
-                      <Link
-                        href={{
-                          pathname: "/event",
-                          query: { eventId: event.id },
-                        }}
+                  {events.map((event) => {
+                    return (
+                      <div
+                        key={event.id}
+                        className="w-full sm:w-1/2 md:w-1/3 lg:w-1/3 px-2 mb-4"
                       >
-                        <EventCard
-                          eventName={event.name}
-                          image={
-                            event.imageUrl ??
-                            "https://placehold.co/400x400?text=Add+Event+Flyer"
-                          }
-                          date={new Date(event.startDate).toDateString()}
-                          location={event.address}
-                          price={"$0"}
-                        />
-                      </Link>
-                    </div>
-                  ))}
+                        <Link
+                          href={{
+                            pathname: "/event",
+                            query: { eventId: event.id },
+                          }}
+                        >
+                          <EventCard
+                            event={event}
+                          />
+                        </Link>
+                      </div>
+                    )
+                  })}
                 </>
               )}
             </div>
