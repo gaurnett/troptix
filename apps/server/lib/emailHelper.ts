@@ -133,8 +133,29 @@ export async function sendEmailToUser(order, orderMap) {
   const msg = {
     to: order.email,
     from: 'flowersgaurnett@gmail.com',
-    subject: 'Sending with SendGrid is Fun',
+    subject: 'TropTix Confirmation',
     templateId: 'd-658d88a06f0b443ca36d12d5e47e9275',
+    dynamicTemplateData: templateData,
+  };
+
+  return await sgMail.send(msg);
+}
+
+export async function sendComplementaryTicketEmailToUser(order, orderMap) {
+
+  const templateData = {
+    id: order.id,
+    eventTitle: order.event.name,
+    orderNumber: String(order.id),
+    orderDate: new Date(order.createdAt).toLocaleDateString(),
+    orders: Array.from(orderMap.values())
+  }
+
+  const msg = {
+    to: order.email,
+    from: 'flowersgaurnett@gmail.com',
+    subject: 'TropTix Confirmation',
+    templateId: 'd-925a204fa5b7431db20d7fe93e8d7ec0',
     dynamicTemplateData: templateData,
   };
 

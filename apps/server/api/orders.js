@@ -1,7 +1,7 @@
 import prisma from "../prisma/prisma";
 import { getPrismaCreateComplementaryOrderQuery, getPrismaCreateOrderQuery } from "../lib/eventHelper";
 import { getBuffer, updateSuccessfulOrder, updateTicketTypeQuantitySold } from "../lib/orderHelper";
-import { sendEmailToUser } from "../lib/emailHelper";
+import { sendComplementaryTicketEmailToUser, sendEmailToUser } from "../lib/emailHelper";
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
@@ -151,12 +151,35 @@ async function createComplementaryOrder(body, response) {
   }
 
   try {
-    const event = await prisma.orders.create({
+    await prisma.orders.create({
       data: getPrismaCreateComplementaryOrderQuery(order),
       include: {
         tickets: true,
       }
     });
+
+    const orderMap = new Map();
+    order.tickets.forEach(ticket => {
+      const ticketId = ticket.ticketType.id;
+      if (orderMap.has(ticketId)) {
+        const order = orderMap.get(ticketId);
+        orderMap.set(ticketId, {
+          ...order,
+          ticketQuantity: order.ticketQuantity + 1,
+          ticketTotalPaid: order.ticketTotalPaid + ticket.total,
+        });
+      } else {
+        orderMap.set(ticketId, {
+          ticketQuantity: 1,
+          ticketName: ticket.ticketType.name,
+          ticketTotalPaid: ticket.total
+        });
+      }
+    });
+
+    console.log(orderMap);
+
+    const mailResponse = await sendComplementaryTicketEmailToUser(order, orderMap);
 
     console.log("Added complementary order");
 
