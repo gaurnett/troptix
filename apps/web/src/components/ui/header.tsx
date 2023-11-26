@@ -34,15 +34,9 @@ export default function Header() {
     await auth.signOut();
   }
 
-  const items: MenuProps['items'] = [
-    {
-      key: '1',
-      label: (
-        <Link rel="noopener noreferrer" href="/admin">
-          Admin Portal
-        </Link>
-      ),
-    },
+  let items: MenuProps['items'];
+
+  const userItems = [
     {
       key: '2',
       label: (
@@ -58,8 +52,25 @@ export default function Header() {
           Sign Out
         </a>
       ),
-    },
-  ];
+    }];
+
+  if (user.isOrganizer) {
+    items = [
+      {
+        key: '1',
+        label: (
+          <Link rel="noopener noreferrer" href="/admin">
+            Admin Portal
+          </Link>
+        ),
+      },
+      ...userItems
+    ];
+  } else {
+    items = [
+      ...userItems
+    ];
+  }
 
   return (
     <header className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${!top ? 'bg-white backdrop-blur-sm shadow-lg' : ''}`}>

@@ -45,8 +45,17 @@ export default function ManageEventPage() {
   }, [event]);
 
   function updateEvent(e) {
+    messageApi
+      .open({
+        key: 'update-event-loading',
+        type: 'loading',
+        content: 'Updating Event..',
+        duration: 0,
+      });
+
     mutation.mutate(e, {
       onSuccess: () => {
+        messageApi.destroy('update-event-loading');
         messageApi.open({
           type: "success",
           content: "Successfully updated event.",
@@ -56,6 +65,7 @@ export default function ManageEventPage() {
         });
       },
       onError: () => {
+        messageApi.destroy('update-event-loading');
         messageApi.open({
           type: "error",
           content: "Failed to update event, please try again.",

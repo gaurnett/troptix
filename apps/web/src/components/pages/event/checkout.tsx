@@ -24,11 +24,18 @@ export default function CheckoutForm({
   const userId = user === null || user === undefined ? undefined : user.id;
   const [fetchingStripeDetails, setFetchingStripeDetails] = useState(true);
   const [options, setOptions] = useState<any>();
+  const [orderId, setOrderId] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
+    function handleComplete() {
+      router.push({ pathname: "/order-confirmation", query: { orderId: orderId } })
+    }
+
     async function fetchPaymentSheetParams() {
       const charge = new Charge();
-      charge.total = checkout.promotionApplied ? checkout.discountedTotal * 100 : checkout.total * 100;
+      charge.total = checkout.promotionApplied
+        ? Math.trunc(checkout.discountedTotal * 100) : Math.trunc(checkout.total * 100);
       charge.userId = userId;
 
       const postOrdersRequest = {
@@ -56,18 +63,18 @@ export default function CheckoutForm({
 
       if (paymentId === undefined || paymentId === null || paymentId === "") {
         message.error("There was a problem with your request, please try again later");
-        // setCheckoutPreviousButtonClicked();
         return;
       }
 
       setOptions({
         clientSecret: clientSecret,
+        onComplete: handleComplete,
         // Fully customizable with appearance API.
         appearance: {/*...*/ },
       })
 
       const order = new Order(checkout, paymentId, event.id, userId, customerId);
-      console.log(order);
+      setOrderId(order.id);
 
       try {
         const postOrdersRequest = {
@@ -88,7 +95,7 @@ export default function CheckoutForm({
 
     initializePaymentSheet();
 
-  }, [checkout, checkout.discountedTotal, checkout.promotionApplied, checkout.total, event.id, setIsStripeLoaded, userId]);
+  }, [checkout, checkout.discountedTotal, checkout.promotionApplied, checkout.total, event.id, router, setIsStripeLoaded, userId]);
 
   return (
     <div className="w-full md:max-w-2xl mx-auto h-full">
@@ -100,6 +107,7 @@ export default function CheckoutForm({
             </Spin> :
             <Elements stripe={stripePromise} options={options}>
               <PaymentForm
+                orderId={orderId}
                 completePurchaseClicked={completePurchaseClicked}
                 setCompletePurchaseClicked={setCompletePurchaseClicked} />
             </Elements>

@@ -15,6 +15,7 @@ export class User {
   email: string;
   stripeId: string;
   role: Role;
+  isOrganizer: boolean = false;
   telephoneNumber: string;
   billingAddress1: string;
   billingAddress2: string;

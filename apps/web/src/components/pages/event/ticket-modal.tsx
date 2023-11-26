@@ -29,6 +29,7 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
   const [fetchingItems, setFetchingItems] = useState(true);
   const [isStripeLoaded, setIsStripeLoaded] = useState(false);
   const [canShowMessage, setCanShowMessage] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     if (isTicketModalOpen) {
@@ -78,7 +79,6 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
   }
 
   async function next() {
-    console.log(checkout);
     if (current === 0) {
       if (checkout.total === 0) {
         if (canShowMessage) {
