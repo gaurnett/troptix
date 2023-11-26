@@ -1,5 +1,5 @@
 import prisma from "../prisma/prisma";
-import { getPrismaCreateOrderQuery } from "../lib/eventHelper";
+import { getPrismaCreateComplementaryOrderQuery, getPrismaCreateOrderQuery } from "../lib/eventHelper";
 import { getBuffer, updateSuccessfulOrder, updateTicketTypeQuantitySold } from "../lib/orderHelper";
 import { sendEmailToUser } from "../lib/emailHelper";
 
@@ -152,7 +152,7 @@ async function createComplementaryOrder(body, response) {
 
   try {
     const event = await prisma.orders.create({
-      data: getPrismaCreateOrderQuery(order),
+      data: getPrismaCreateComplementaryOrderQuery(order),
       include: {
         tickets: true,
       }
