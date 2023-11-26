@@ -128,7 +128,8 @@ export default function ManageEventPage() {
     {
       key: "tickets",
       label: "Tickets",
-      children: <TicketsPage />,
+      children: <TicketsPage
+        event={eventForm} />,
     },
     {
       key: "promotion-codes",

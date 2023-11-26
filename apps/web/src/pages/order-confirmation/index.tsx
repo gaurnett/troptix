@@ -16,7 +16,8 @@ const { Text } = Typography;
 interface DataType {
   key: string;
   name: string;
-  price: number;
+  quantity: number;
+  total: number;
   fee: number;
   subtotal: number;
 }
@@ -27,7 +28,8 @@ export default function OrderConfirmationPage() {
   const orderId = router.query.orderId;
   const { user } = useContext(TropTixContext);
   const [isFetchingOrders, setIsFetchingOrders] = useState(true);
-  const [order, setOrder] = useState<any>({});
+  const [order, setOrder] = useState<any>();
+  const [data, setData] = useState<DataType[]>([]);
 
   useEffect(() => {
     async function fetchOrders() {
@@ -50,48 +52,58 @@ export default function OrderConfirmationPage() {
     fetchOrders();
   }, [orderId]);
 
+  useEffect(() => {
+    if (!order) return;
+    const orderMap = new Map<string, any>();
+    order.tickets.forEach(ticket => {
+      const ticketId = ticket.ticketType.id;
+      if (orderMap.has(ticketId)) {
+        const orderRow = orderMap.get(ticketId);
+        orderMap.set(ticketId, {
+          ...orderRow,
+          quantity: orderRow.quantity + 1,
+          total: orderRow.total + ticket.total,
+          fee: orderRow.fee + ticket.fees,
+          subtotal: orderRow.subtotal + ticket.subtotal,
+        });
+      } else {
+        orderMap.set(ticketId, {
+          key: ticket.id,
+          name: ticket.ticketType.name,
+          quantity: 1,
+          total: ticket.total,
+          fee: ticket.fees,
+          subtotal: ticket.subtotal,
+        });
+      }
+    });
+
+    setData(Array.from(orderMap.values()));
+  }, [order])
+
   const columns: ColumnsType<DataType> = [
     {
       title: 'Ticket Name',
       dataIndex: 'name',
     },
     {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+    },
+    {
       title: 'Price',
-      dataIndex: 'price',
+      dataIndex: 'subtotal',
     },
     {
       title: 'Fee',
       dataIndex: 'fee',
     },
     {
-      title: 'Subtotal',
-      dataIndex: 'subtotal',
+      title: 'Total',
+      dataIndex: 'total',
     },
   ];
 
-  const data: DataType[] = [
-    {
-      key: '1',
-      name: 'Early Bird',
-      price: 150,
-      fee: 15,
-      subtotal: 165,
-    },
-    {
-      key: '2',
-      name: 'General Admission',
-      price: 300,
-      fee: 30,
-      subtotal: 330,
-    },
-    {
-      key: '3',
-      name: 'All Inclusive VIP',
-      price: 1500,
-      fee: 150,
-      subtotal: 1650,
-    },
-  ];
 
   function getDateFormatted(date, time) {
     return format(new Date(date), 'MMM dd, yyyy') + ", " + format(new Date(time), 'hh:mm a');
@@ -120,8 +132,8 @@ export default function OrderConfirmationPage() {
               </div>
               <div className="w-full text-right my-auto">
                 <div className="text-sm md:text-md font-bold">Order #{String(orderId).toUpperCase()}</div>
-                <div className="text-sm md:text-md font-bold">Gaurnett Flowers</div>
-                <div className="text-sm md:text-md font-bold">Sunday, November 12, 2023</div>
+                <div className="text-sm md:text-md font-bold">{order.name}</div>
+                <div className="text-sm md:text-md font-bold">{new Date(order.createdAt).toDateString()}</div>
               </div>
             </div>
             <div className="mx-4 text-center text-4xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">{order.event.name}</span></div>
@@ -150,26 +162,18 @@ export default function OrderConfirmationPage() {
               <div className="mx-auto">
                 <div className="flex justify-center mt-8 mx-auto w-full">
                   <div className="text-center">
-                    <Image
-                      preview={false}
-                      width={50}
-                      height={50}
-                      className="w-full mx-auto justify-center content-center items-center"
-                      style={{ objectFit: 'contain' }}
-                      src={"/icons/wallet.png"}
-                      alt={"mobile wallet image"} />
-                    <div>Add to mobile wallet</div>
-                  </div>
-                  <div className="text-center ml-16">
-                    <Image
-                      preview={false}
-                      width={50}
-                      height={50}
-                      className="w-auto"
-                      style={{ objectFit: 'contain' }}
-                      src={"/icons/tickets.png"}
-                      alt={"tickets image"} />
-                    <div>View your tickets</div>
+                    <Link target="_blank" href={{ pathname: '/tickets', query: { orderId: orderId } }}>
+                      <Image
+                        preview={false}
+                        width={50}
+                        height={50}
+                        className="w-auto"
+                        style={{ objectFit: 'contain' }}
+                        src={"/icons/tickets.png"}
+                        alt={"tickets image"} />
+                      <div>View your tickets</div>
+                    </Link>
+
                   </div>
                 </div>
               </div>
@@ -185,22 +189,27 @@ export default function OrderConfirmationPage() {
                       pagination={false}
                       bordered
                       summary={(pageData) => {
-                        let totalPrice = 0;
+                        let totalSubtotal = 0;
                         let totalFees = 0;
                         let total = 0
+                        let totalQuantity = 0
 
-                        pageData.forEach(({ price, fee }) => {
-                          totalPrice += price;
+                        pageData.forEach(({ quantity, subtotal, fee }) => {
+                          totalQuantity += quantity;
+                          totalSubtotal += subtotal;
                           totalFees += fee;
-                          total += price + fee;
                         });
+                        total = totalSubtotal + totalFees;
 
                         return (
                           <>
                             <Table.Summary.Row>
                               <Table.Summary.Cell className="font-bold" index={0}>Total</Table.Summary.Cell>
                               <Table.Summary.Cell className="font-bold" index={1}>
-                                <Text>{totalPrice}</Text>
+                                <Text>{totalQuantity}</Text>
+                              </Table.Summary.Cell>
+                              <Table.Summary.Cell className="font-bold" index={1}>
+                                <Text>{totalSubtotal}</Text>
                               </Table.Summary.Cell>
                               <Table.Summary.Cell className="font-bold" index={2}>
                                 <Text>{totalFees}</Text>
@@ -222,13 +231,12 @@ export default function OrderConfirmationPage() {
               <div className="md:flex md:justify-between">
                 <div className="mb-4 md:mr-4 w-full">
                   <p className="block text-gray-800 text-bold font-bold">Billing Details</p>
-                  <p className="block text-gray-800 text-base font-base">Gaurnett Flowers</p>
-                  <p className="block font-light">309 Gold Street</p>
-                  <p className="block font-light">APT 8E</p>
-                  <p className="block font-light">Brooklyn, NY, 11201</p>
-                  <p className="block font-light">United States</p>
-                  <p className="block text-gray-800 text-base font-base mt-4">Phone number: 786-657-4159</p>
-                  <p className="block text-gray-800 text-base font-base">Email: flowersgaurnett@gmail.com</p>
+                  <p className="block text-gray-800 text-base font-base">{order.name}</p>
+                  <p className="block font-light">{order.billingAddress1}</p>
+                  <p className="block font-light">{order.billingAddress2}</p>
+                  <p className="block font-light">{order.billingCity}, {order.billingState}, {order.billingZip}</p>
+                  <p className="block font-light">{order.billingCountry}</p>
+                  <p className="block text-gray-800 text-base font-base">Email: {order.email}</p>
 
                 </div>
               </div>

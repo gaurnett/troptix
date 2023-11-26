@@ -19,7 +19,7 @@ const inter = Inter({
 
 export const TropTixContext = createContext({
   user: new User(),
-  setUser: (user: any) => {},
+  setUser: (user: any) => { },
 });
 export const useTropTixContext = () => useContext(TropTixContext);
 
@@ -67,13 +67,13 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
       value={
         user === undefined || user === null
           ? {
-              user: undefined,
-              setUser: (user: any) => {},
-            }
+            user: undefined,
+            setUser: (user: any) => { },
+          }
           : {
-              user: user,
-              setUser: setUser,
-            }
+            user: user,
+            setUser: setUser,
+          }
       }
     >
       {loading ? (

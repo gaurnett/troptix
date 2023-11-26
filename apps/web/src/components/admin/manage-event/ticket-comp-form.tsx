@@ -5,10 +5,10 @@ import { useEffect, useState } from "react";
 import { Checkout, TicketFeeStructure, ComplementaryOrder, ComplementaryTicket } from 'troptix-models';
 import { postOrders, PostOrdersType, PostOrdersRequest } from 'troptix-api';
 
-export default function TicketCompForm({ eventId, ticketTypes }) {
+export default function TicketCompForm({ event, ticketTypes }) {
 
   const [messageApi, contextHolder] = message.useMessage();
-  const [complementaryOrder, setComplementaryOrder] = useState<any>(new ComplementaryOrder(eventId));
+  const [complementaryOrder, setComplementaryOrder] = useState<any>(new ComplementaryOrder(event));
   const [ticketTypeOptions, setTicketTypeOptions] = useState<Map<string, any>>(new Map());
   const [selectedTicket, setSelectedTicket] = useState<any>();
   const [canShowMessage, setCanShowMessage] = useState(true);
@@ -16,9 +16,9 @@ export default function TicketCompForm({ eventId, ticketTypes }) {
   const compTicketIdSuffix = "-comp-ticket";
   useEffect(() => {
     const tempTickets: Map<string, any> = new Map();
-    tempTickets.set(eventId + compTicketIdSuffix, {
+    tempTickets.set(event.id + compTicketIdSuffix, {
       label: generalTicket,
-      value: eventId + compTicketIdSuffix
+      value: event.id + compTicketIdSuffix
     })
 
     if (
@@ -38,7 +38,7 @@ export default function TicketCompForm({ eventId, ticketTypes }) {
 
     setTicketTypeOptions(tempTickets);
 
-  }, [eventId, ticketTypes])
+  }, [event, ticketTypes])
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setComplementaryOrder(previousTicket => ({
@@ -73,8 +73,8 @@ export default function TicketCompForm({ eventId, ticketTypes }) {
     }
 
     console.log(JSON.stringify(complementaryOrder));
+    // return;
 
-    return;
     const postOrdersRequest = {
       type: PostOrdersType.POST_ORDERS_CREATE_COMPLEMENTARY_ORDER,
       complementaryOrder: complementaryOrder
@@ -94,6 +94,9 @@ export default function TicketCompForm({ eventId, ticketTypes }) {
       type: 'success',
       content: 'Successfully sent complementary ticket.',
     });
+
+    setComplementaryOrder(new ComplementaryOrder(event));
+    setSelectedTicket(undefined);
   }
 
   return (

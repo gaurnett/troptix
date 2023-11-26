@@ -25,13 +25,13 @@ export default function OrderListPage({ orders }) {
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const searchText = event.target.value;
     setSearchValue(searchText);
-
     filterList(searchText);
   }
 
   function doesStringInclude(string1: string, string2: string) {
     return string1.toLowerCase().includes(string2.toLowerCase());
   }
+
   function filterList(value: string) {
     if (value === "" || value === undefined) {
       setOrderList(orders);
@@ -75,8 +75,8 @@ export default function OrderListPage({ orders }) {
                     <div className="flex">
                       <div className="my-auto">
                         <div>{String(order.id).toUpperCase()}</div>
-                        <div>{order.user.name}</div>
-                        <div>{order.user.email}</div>
+                        <div>{order.user ? order.user?.name : order.name}</div>
+                        <div>{order.user ? order.user.email : order.email}</div>
                       </div>
                     </div>
                   </div>
