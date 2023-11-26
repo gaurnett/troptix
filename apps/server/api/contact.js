@@ -1,35 +1,25 @@
 import { sendContactUsForm } from "../lib/emailHelper";
 
 export default async function handler(request, response) {
-  const body = {
-    requestType: 'CONTACT_US',
-    contactUsForm: {
-      name: "Gaurnett",
-      email: "flowersgaurnett@gmail.com",
-      message: "Hello World"
-    }
-  };
+  const { body, method } = request;
 
-  postContact(body, response);
-  // const { body, method } = request;
+  if (method === undefined) {
+    return response.status(500).json({ error: 'No method found for contact endpoint' });
+  }
 
-  // if (method === undefined) {
-  //   return response.status(500).json({ error: 'No method found for contact endpoint' });
-  // }
-
-  // switch (method) {
-  //   case "POST":
-  //     return postContact(body, response);
-  //   case "GET":
-  //   case "PUT":
-  //     break;
-  //   case "DELETE":
-  //     break;
-  //   case "OPTIONS":
-  //     return response.status(200).end();
-  //   default:
-  //     return response.status(500).json({ error: 'No contact type set' });
-  // }
+  switch (method) {
+    case "POST":
+      return postContact(body, response);
+    case "GET":
+    case "PUT":
+      break;
+    case "DELETE":
+      break;
+    case "OPTIONS":
+      return response.status(200).end();
+    default:
+      return response.status(500).json({ error: 'No contact type set' });
+  }
 }
 
 function postContact(body, response) {
