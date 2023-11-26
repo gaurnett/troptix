@@ -182,7 +182,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
 
   function updateCost(ticket, reduce = false) {
     var ticketSubtotal = ticket.price;
-    var ticketFees = ticket.ticketingFees === "PASS_TICKET_FEES" ? ticket.price * .1 : 0;
+    var ticketFees = ticket.ticketingFees === "PASS_TICKET_FEES" ? ticket.price * .05 : 0;
     var ticketTotal = ticketFees + ticketSubtotal;
 
     const updatedTickets = checkout.tickets;

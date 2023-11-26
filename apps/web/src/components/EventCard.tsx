@@ -40,7 +40,7 @@ export default function EventCard({ event }) {
           backgroundSize: "cover",
           WebkitBackgroundSize: "cover",
           backgroundPosition: "center",
-          height: 300
+          height: 300,
         }}>
         <div className="py-2 px-4 bg-white bg-opacity-90 absolute inset-x-0 bottom-0">
           <div className="font-bold text-xl">{event.name}</div>

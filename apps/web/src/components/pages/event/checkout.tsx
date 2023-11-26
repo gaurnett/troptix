@@ -26,11 +26,10 @@ export default function CheckoutForm({
   const [options, setOptions] = useState<any>();
   const [orderId, setOrderId] = useState("");
   const router = useRouter();
+  const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
-    function handleComplete() {
-      router.push({ pathname: "/order-confirmation", query: { orderId: orderId } })
-    }
+    const handleComplete = () => setIsComplete(true);
 
     async function fetchPaymentSheetParams() {
       const charge = new Charge();
@@ -66,14 +65,14 @@ export default function CheckoutForm({
         return;
       }
 
+      const order = new Order(checkout, paymentId, event.id, userId, customerId);
+
       setOptions({
         clientSecret: clientSecret,
         onComplete: handleComplete,
-        // Fully customizable with appearance API.
         appearance: {/*...*/ },
       })
 
-      const order = new Order(checkout, paymentId, event.id, userId, customerId);
       setOrderId(order.id);
 
       try {
@@ -95,7 +94,14 @@ export default function CheckoutForm({
 
     initializePaymentSheet();
 
-  }, [checkout, checkout.discountedTotal, checkout.promotionApplied, checkout.total, event.id, router, setIsStripeLoaded, userId]);
+  }, [checkout, event.id, setIsStripeLoaded, userId]);
+
+  useEffect(() => {
+    if (isComplete) {
+      console.log("Completed");
+      router.push({ pathname: "/order-confirmation", query: { orderId: orderId } })
+    }
+  }, [isComplete, orderId, router]);
 
   return (
     <div className="w-full md:max-w-2xl mx-auto h-full">

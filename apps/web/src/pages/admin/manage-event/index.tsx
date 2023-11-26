@@ -23,6 +23,7 @@ export default function ManageEventPage() {
   const [eventForm, setEventForm] = useState<any>();
   const [eventName, setEventName] = useState("");
   const [publishButtonClicked, setPublishButtonClicked] = useState(false);
+  const [activeKey, setActiveKey] = useState("orders");
 
   const queryClient = useQueryClient();
   const mutation = useEditEvent();
@@ -75,6 +76,15 @@ export default function ManageEventPage() {
   }
 
   function publishEvent() {
+    if (!event.imageUrl) {
+      messageApi.open({
+        type: "error",
+        content: "Add an event flyer before publishing.",
+      });
+      setActiveKey("details");
+      return;
+    }
+
     const e = {
       ...event,
       ["isDraft"]: !event.isDraft,
@@ -101,7 +111,9 @@ export default function ManageEventPage() {
     });
   }
 
-  function onChange(key: string) { }
+  function onChange(key: string) {
+    setActiveKey(key);
+  }
 
   function goBack() {
     router.back();
@@ -191,7 +203,7 @@ export default function ManageEventPage() {
               </div>
 
               <div className="float-right w-full">
-                <Tabs defaultActiveKey="0" items={items} onChange={onChange} />
+                <Tabs defaultActiveKey="0" activeKey={activeKey} items={items} onChange={onChange} />
               </div>
             </div>
           </div>
