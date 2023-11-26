@@ -6,6 +6,7 @@ import { Button, Drawer, List, Popconfirm, Spin, message } from "antd";
 import { useRouter } from "next/router";
 import { TicketType } from "troptix-models";
 import { GetTicketTypesType, GetTicketTypesRequest, getTicketTypes, saveTicketType } from 'troptix-api';
+import TicketCompForm from "./ticket-comp-form";
 
 export default function TicketsPage() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function TicketsPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [show, setShow] = useState(false);
   const [open, setOpen] = useState(false);
+  const [compTicketModalOpen, setCompTicketModalOpen] = useState(false);
   const [ticketTypes, setTicketTypes] = useState<any[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<any>();
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -88,10 +90,14 @@ export default function TicketsPage() {
     setOpen(false);
   };
 
+  const closeCompTicketTypeDrawer = () => {
+    setCompTicketModalOpen(false);
+  };
+
   return (
-    <div className="">
+    <div>
       {contextHolder}
-      <div className="w-full md:max-w-md mr-8">
+      <div className="w-full md:max-w-2xl mr-8">
         {
           isFetchingTicketTypes ?
             <Spin className="mt-16" tip="Fetching Tickets" size="large">
@@ -100,32 +106,38 @@ export default function TicketsPage() {
             <div>
               <h2 className="text-2xl md:text-3xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Ticket Details</h2>
 
-              <Button onClick={() => showDrawer(new TicketType(eventId), -1)} type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Add Ticket</Button>
+              <div className="flex mb-18">
+                <Button onClick={() => showDrawer(new TicketType(eventId), -1)} type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Add Ticket</Button>
+                <Button onClick={() => setCompTicketModalOpen(true)} className="px-6 py-5 ml-4 mb-4 shadow-md items-center justify-center font-medium inline-flex">Create Complementary Ticket</Button>
+              </div>
 
-              <List
-                className="demo-loadmore-list"
-                itemLayout="horizontal"
-                dataSource={ticketTypes}
-                renderItem={(item, index) => (
-                  <List.Item
-                    actions={[
-                      <Button onClick={() => showDrawer(item, index)} key="edit">Edit</Button>,
-                      <Popconfirm
-                        key="delete"
-                        title="Delete this ticket"
-                        description="Are you sure to delete this ticket?"
-                        className="time-picker-button"
-                        onConfirm={() => deleteTicket(index)}
-                        okText="Yes"
-                        cancelText="No"
-                      >
-                        <Button danger>Delete</Button>
-                      </Popconfirm>]}
-                  >
-                    <div>{item.name}</div>
-                  </List.Item>
-                )}
-              />
+              <div>
+                <List
+                  className="demo-loadmore-list"
+                  itemLayout="horizontal"
+                  dataSource={ticketTypes}
+                  renderItem={(item, index) => (
+                    <List.Item
+                      actions={[
+                        <Button onClick={() => showDrawer(item, index)} key="edit">Edit</Button>,
+                        <Popconfirm
+                          key="delete"
+                          title="Delete this ticket"
+                          description="Are you sure to delete this ticket?"
+                          className="time-picker-button"
+                          onConfirm={() => deleteTicket(index)}
+                          okText="Yes"
+                          cancelText="No"
+                        >
+                          <Button danger>Delete</Button>
+                        </Popconfirm>]}
+                    >
+                      <div>{item.name}</div>
+                    </List.Item>
+                  )}
+                />
+              </div>
+
             </div>
         }
 
@@ -133,6 +145,10 @@ export default function TicketsPage() {
 
       <Drawer width={500} title="Add Ticket" placement="right" onClose={onClose} open={open}>
         <TicketForm selectedTicket={selectedTicket} setSelectedTicket={setSelectedTicket} saveTicket={saveTicket} />
+      </Drawer>
+
+      <Drawer width={500} title="Generate Complementary Ticket" placement="right" onClose={closeCompTicketTypeDrawer} open={compTicketModalOpen}>
+        <TicketCompForm eventId={eventId} ticketTypes={ticketTypes} />
       </Drawer>
 
     </div>

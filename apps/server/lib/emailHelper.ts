@@ -125,7 +125,7 @@ export async function sendEmailToUser(order, orderMap) {
     cardType: order.cardType,
     cardLast4: order.cardLast4,
     ticketsPurchased: order.tickets.length,
-    orderNumber: String(order.id).slice(3),
+    orderNumber: String(order.id),
     orderDate: new Date(order.createdAt).toLocaleDateString(),
     orders: Array.from(orderMap.values())
   }

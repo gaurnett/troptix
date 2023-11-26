@@ -1,4 +1,5 @@
 import uuid from 'react-native-uuid';
+import { generateId } from './idHelper';
 
 enum Role {
   PATRON,
@@ -42,7 +43,7 @@ export class SocialMediaAccount {
   link: string;
 
   constructor(userId: string) {
-    this.id = String(uuid.v4());
+    this.id = generateId();
     this.userId = userId;
   }
 }

@@ -234,6 +234,27 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
     updateCost(ticket, false);
   }
 
+  function getTicketStateMessage(ticket) {
+    let quantityRemaining = ticket.quantity;
+
+    if (new Date().getTime() < new Date(ticket.saleStartDate).getTime()) {
+      return "Sale starts " + format(new Date(ticket.saleStartDate), 'MMM dd, yyyy, hh:mm a')
+    }
+
+    if (new Date().getTime() > new Date(ticket.saleEndDate).getTime()) {
+      return "Sale ended"
+    }
+
+    if (ticket.quantitySold !== null && ticket.quantitySold !== undefined) {
+      quantityRemaining = ticket.quantity - ticket.quantitySold;
+      if (quantityRemaining === 0) {
+        return "Sold Out";
+      }
+    }
+
+    return undefined;
+  }
+
   return (
     <div className="w-full">
       {contextHolder}
@@ -260,6 +281,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
             if (checkout.tickets && checkout.tickets.has(ticket.id)) {
               checkoutTicket = checkout.tickets.get(ticket.id);
             }
+            let ticketState = getTicketStateMessage(ticket);
 
             return (
               <List.Item
@@ -272,25 +294,36 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
                     <div className="my-auto">
                       <div
                         className='flex h-16'>
-                        <div className='grow my-auto'>{ticket.name}</div>
-                        <div className='flex my-auto justify-end items-end'>
-                          <div className='flex'>
-                            <Button
-                              onClick={() => reduceCost(ticket, index)}
-                              className='bg-blue-500 rounded'
-                              disabled={!checkoutTicket || checkoutTicket.quantitySelected === 0}
-                              icon={<MinusOutlined className='text-white items-center justify-center' />}>
-                            </Button>
-                            <div
-                              className='mx-4'
-                              style={{ fontSize: 20 }}>
-                              {!checkoutTicket ? 0 : checkoutTicket.quantitySelected}
-                            </div>
-                            <Button
-                              onClick={() => increaseCost(ticket, index)}
-                              className='bg-blue-500 rounded'
-                              icon={<PlusOutlined className='text-white items-center justify-center' />}>
-                            </Button>
+                        <div className='w-4/5 my-auto'>{ticket.name}</div>
+                        <div className='w-1/5 flex my-auto justify-center items-center'>
+                          <div>
+                            {
+                              ticketState !== undefined ?
+                                <div
+                                  className='text-center text-md font-bold'>
+                                  {ticketState}
+                                </div>
+                                :
+                                <div className='flex'>
+                                  <Button
+                                    onClick={() => reduceCost(ticket, index)}
+                                    className='bg-blue-500 rounded'
+                                    disabled={!checkoutTicket || checkoutTicket.quantitySelected === 0}
+                                    icon={<MinusOutlined className='text-white items-center justify-center' />}>
+                                  </Button>
+                                  <div
+                                    className='mx-4'
+                                    style={{ fontSize: 20 }}>
+                                    {!checkoutTicket ? 0 : checkoutTicket.quantitySelected}
+                                  </div>
+                                  <Button
+                                    onClick={() => increaseCost(ticket, index)}
+                                    className='bg-blue-500 rounded'
+                                    icon={<PlusOutlined className='text-white items-center justify-center' />}>
+                                  </Button>
+                                </div>
+                            }
+
                           </div>
                         </div>
                       </div>

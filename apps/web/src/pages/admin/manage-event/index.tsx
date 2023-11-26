@@ -91,7 +91,7 @@ export default function ManageEventPage() {
     });
   }
 
-  function onChange(key: string) {}
+  function onChange(key: string) { }
 
   function goBack() {
     router.back();

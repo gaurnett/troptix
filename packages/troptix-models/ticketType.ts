@@ -1,5 +1,6 @@
 import { Event } from "./event";
 import uuid from 'react-native-uuid';
+import { generateId } from "./idHelper";
 
 export enum TicketFeeStructure {
   // Fees to be included in the ticket price you set.
@@ -25,30 +26,24 @@ export class TicketType {
 
   // Sale Date Details
   saleStartDate: Date;
-  saleStartTime: Date;
   saleEndDate: Date;
-  saleEndTime: Date;
 
   // Price Details
   price: number = 0;
   ticketingFees: TicketFeeStructure;
 
   constructor(eventId: string) {
-    this.id = String(uuid.v4());
+    this.id = generateId();
     this.eventId = eventId;
 
     // Start date construction
     this.saleStartDate = new Date();
-    this.saleStartDate.setHours(0, 0, 0, 0);
-    this.saleStartTime = new Date();
-    this.saleStartTime.setMinutes(0);
+    this.saleStartDate.setMinutes(0, 0, 0);
 
     // End date construction
     this.saleEndDate = new Date();
     this.saleEndDate.setHours(this.saleEndDate.getHours() + 4);
-    this.saleEndTime = new Date(this.saleEndDate);
-    this.saleEndDate.setHours(0, 0, 0, 0);
-    this.saleEndTime.setMinutes(0);
+    this.saleEndDate.setMinutes(0, 0, 0);
 
     this.ticketingFees = TicketFeeStructure.PASS_TICKET_FEES;
   }
