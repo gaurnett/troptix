@@ -54,7 +54,7 @@ export default function Header() {
       ),
     }];
 
-  if (user.isOrganizer) {
+  if (user && user.isOrganizer) {
     items = [
       {
         key: '1',

@@ -33,7 +33,7 @@ export default function MobileMenu() {
       ),
     }];
 
-  if (user.isOrganizer) {
+  if (user && user.isOrganizer) {
     items = [
       {
         key: '1',
