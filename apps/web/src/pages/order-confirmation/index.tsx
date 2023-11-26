@@ -119,7 +119,7 @@ export default function OrderConfirmationPage() {
                 <Image src={"/logos/logo_v1.png"} width={75} height={75} alt='troptix-logo' />
               </div>
               <div className="w-full text-right my-auto">
-                <div className="text-sm md:text-md font-bold">Order #{String(orderId).toUpperCase().slice(3)}</div>
+                <div className="text-sm md:text-md font-bold">Order #{String(orderId).toUpperCase()}</div>
                 <div className="text-sm md:text-md font-bold">Gaurnett Flowers</div>
                 <div className="text-sm md:text-md font-bold">Sunday, November 12, 2023</div>
               </div>

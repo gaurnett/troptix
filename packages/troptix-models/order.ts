@@ -1,9 +1,10 @@
 import { CheckoutTicket, Ticket, createTicket } from "./ticket";
 import { Event } from "./event";
-import uuid from 'react-native-uuid';
+import { generateId } from "./idHelper";
 
 export class Order {
   id: string;
+  stripePaymentId: string;
   stripeCustomerId: string;
   eventId: string;
   total: number;
@@ -23,8 +24,9 @@ export class Order {
 
   constructor(checkout: Checkout, paymentId: string, eventId: string, userId: string, stripeCustomerId: string) {
 
-    this.id = paymentId;
+    this.id = generateId();
     this.stripeCustomerId = stripeCustomerId;
+    this.stripePaymentId = paymentId;
     this.total = checkout.total;
     this.subtotal = checkout.subtotal;
     this.fees = checkout.fees
@@ -115,6 +117,31 @@ export class Checkout {
   constructor(user: any) {
     this.name = user?.name;
     this.email = user?.email;
+  }
+}
+
+export class ComplementaryOrder {
+  id: string;
+  eventId: string;
+  name: string;
+  email: string;
+  total: number = 0;
+  tickets: ComplementaryTicket[] = [];
+
+  constructor(eventId) {
+    this.id = generateId();
+    this.eventId = eventId;
+  }
+}
+
+export class ComplementaryTicket {
+  id: string;
+  ticketTypeId: string;
+  eventId: string;
+  name: string;
+
+  constructor() {
+    this.id = generateId();
   }
 }
 

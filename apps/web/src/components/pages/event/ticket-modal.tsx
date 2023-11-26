@@ -28,6 +28,7 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
   const [fetchingCheckout, setFetchingCheckout] = useState(true);
   const [fetchingItems, setFetchingItems] = useState(true);
   const [isStripeLoaded, setIsStripeLoaded] = useState(false);
+  const [canShowMessage, setCanShowMessage] = useState(true);
 
   useEffect(() => {
     if (isTicketModalOpen) {
@@ -80,7 +81,11 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
     console.log(checkout);
     if (current === 0) {
       if (checkout.total === 0) {
-        message.warning("Please select a ticket quantity");
+        if (canShowMessage) {
+          setCanShowMessage(false);
+          message.warning("Please select a ticket quantity")
+            .then(() => setCanShowMessage(true));
+        }
         return;
       }
     }
@@ -92,7 +97,10 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
         || checkUndefinedOrNull(checkout.billingCity)
         || checkUndefinedOrNull(checkout.billingCountry)
         || checkUndefinedOrNull(checkout.billingState)) {
-        message.warning("Please fill in required fields");
+        if (canShowMessage) {
+          setCanShowMessage(false);
+          message.warning("Please fill in required fields");
+        }
         return;
       }
     }

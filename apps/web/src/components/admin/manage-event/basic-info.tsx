@@ -6,10 +6,10 @@ import {
 import Link from "next/link";
 import { useMemo, useRef, useState } from "react";
 import Autocomplete from "react-google-autocomplete";
-import { Button, DatePicker, DatePickerProps, Drawer, Form } from "antd";
+import { Button, message, Form } from "antd";
 
 export default function BasicInfoPage({ event, setEvent, updateEvent }) {
-  const placesLibrary = ["places"];
+  const [messageApi, contextHolder] = message.useMessage();
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setEvent((previousEvent) => ({
@@ -19,6 +19,33 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
   }
 
   function updateDate(name, value) {
+    if (value === null) {
+      return;
+    }
+
+    const startDate = new Date(event.startDate);
+    const endDate = new Date(event.endDate);
+
+    if (name === "startDate") {
+      if (value.toDate().getTime() > endDate.getTime()) {
+        const newEndDate = value.toDate();
+        newEndDate.setHours(newEndDate.getHours() + 4);
+
+        setEvent((previousEvent) => ({
+          ...previousEvent,
+          ["endDate"]: newEndDate,
+        }));
+      }
+    }
+
+    if (name === "endDate" && value.toDate().getTime() < startDate.getTime()) {
+      messageApi.open({
+        type: "error",
+        content: "End time cannot be before start time",
+      });
+      return;
+    }
+
     setEvent((previousEvent) => ({
       ...previousEvent,
       [name]: value.toDate(),
@@ -67,6 +94,7 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
 
   return (
     <div className="w-full md:max-w-md mr-8">
+      {contextHolder}
       <Form className="" name="basic" onFinish={() => updateEvent(event)}>
         <h2
           className="text-2xl md:text-3xl font-extrabold leading-tighter tracking-tighter mb-4"
@@ -159,12 +187,12 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
           </div>
           <div className="mb-4 md:ml-4 w-full">
             <CustomTimeField
-              value={event.startTime}
-              name={"startTime"}
+              value={event.startDate}
+              name={"startDate"}
               id={"startTime"}
               label={"Start Time"}
               placeholder={"Start Time"}
-              handleChange={(value) => updateDate("startTime", value)}
+              handleChange={(value) => updateDate("startDate", value)}
               required={true}
             />
           </div>
@@ -183,12 +211,12 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
           </div>
           <div className="mb-4 md:ml-4 w-full">
             <CustomTimeField
-              value={event.endTime}
-              name={"endTime"}
+              value={event.endDate}
+              name={"endDate"}
               id={"endTime"}
               label={"End Time"}
               placeholder={"End Time"}
-              handleChange={(value) => updateDate("endTime", value)}
+              handleChange={(value) => updateDate("endDate", value)}
               required={true}
             />
           </div>

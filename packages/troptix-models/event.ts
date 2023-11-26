@@ -1,3 +1,4 @@
+import { generateId } from "./idHelper";
 import { TicketType } from "./ticketType";
 import uuid from 'react-native-uuid';
 
@@ -16,9 +17,7 @@ export class Event {
 
   // Date and Time Details
   startDate: Date;
-  startTime: Date;
   endDate: Date;
-  endTime: Date;
 
   // Location Details
   venue: string
@@ -32,19 +31,17 @@ export class Event {
   ticketTypes: TicketType[];
 
   constructor(organizerUserId: string = "") {
-    this.id = String(uuid.v4());
+    this.id = generateId();
     this.organizerUserId = organizerUserId;
 
     // Start date construction
     this.startDate = new Date();
-    this.startTime = new Date();
-    this.startTime.setMinutes(0);
+    this.startDate.setMinutes(0, 0, 0);
 
     // End date construction
     this.endDate = new Date();
     this.endDate.setHours(this.endDate.getHours() + 4);
-    this.endTime = this.endDate;
-    this.endTime.setMinutes(0);
+    this.endDate.setMinutes(0, 0, 0);
 
     // Ticket construction
     this.ticketTypes = new Array();

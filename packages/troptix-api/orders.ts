@@ -1,5 +1,5 @@
 import { TropTixResponse, prodUrl } from "./api";
-import { Order, Charge } from "../troptix-models";
+import { Order, Charge, ComplementaryOrder } from "../troptix-models";
 
 export enum GetOrdersType {
   GET_ORDERS_FOR_USER = 'GET_ORDERS_FOR_USER',
@@ -17,12 +17,14 @@ export interface GetOrdersRequest {
 export enum PostOrdersType {
   POST_ORDERS_CREATE_CHARGE = 'POST_ORDERS_CREATE_CHARGE',
   POST_ORDERS_CREATE_ORDER = 'POST_ORDERS_CREATE_ORDER',
+  POST_ORDERS_CREATE_COMPLEMENTARY_ORDER = 'POST_ORDERS_CREATE_COMPLEMENTARY_ORDER',
 }
 
 export interface PostOrdersRequest {
   type: PostOrdersRequest;
   order?: Order;
   charge?: Charge;
+  complementaryOrder?: ComplementaryOrder;
 }
 
 export async function getOrders(request: GetOrdersRequest): Promise<TropTixResponse> {
