@@ -7,8 +7,8 @@ sgMail.setApiKey(process.env.RESEND_DYNAMIC_TEMPLATE_API);
 
 export async function sendContactUsForm(contact) {
   const msg = {
-    to: 'flowersgaurnett@gmail.com',
-    from: 'flowersgaurnett@gmail.com',
+    to: 'info@usetroptix.com',
+    from: 'info@usetroptix.com',
     subject: `Contact Us: ${contact.message}`,
     text: contact.message,
     html: `<div>Email: ${contact.email}</div><div>Message: ${contact.message}</div>`,
@@ -36,7 +36,7 @@ export async function sendEmailToUser(order, orderMap) {
 
   const msg = {
     to: order.email,
-    from: 'flowersgaurnett@gmail.com',
+    from: 'info@usetroptix.com',
     subject: 'TropTix Confirmation',
     templateId: 'd-658d88a06f0b443ca36d12d5e47e9275',
     dynamicTemplateData: templateData,
@@ -57,7 +57,7 @@ export async function sendComplementaryTicketEmailToUser(order, orderMap) {
 
   const msg = {
     to: order.email,
-    from: 'flowersgaurnett@gmail.com',
+    from: 'info@usetroptix.com',
     subject: 'TropTix Confirmation',
     templateId: 'd-925a204fa5b7431db20d7fe93e8d7ec0',
     dynamicTemplateData: templateData,
