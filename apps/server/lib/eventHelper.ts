@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, Prisma, TicketStatus, OrderStatus, TicketType } from '@prisma/client';
 
 export function getPrismaTicketTypeQuery(ticket) {
   let ticketInput: Prisma.TicketTypesUpdateInput;
@@ -97,6 +97,55 @@ export function getPrismaCreateOrderQuery(order) {
     billingCountry: order.billingCountry,
     billingZip: order.billingZip,
     billingState: order.billingState,
+    event: {
+      connect: {
+        id: order.eventId
+      }
+    },
+    tickets: {
+      createMany: {
+        data: orderTickets,
+      },
+    },
+  }
+
+  if (order.userId !== undefined) {
+    orderInput = {
+      ...orderInput,
+      user: {
+        connect: {
+          id: order.userId
+        }
+      },
+    }
+  }
+
+  return orderInput;
+}
+
+export function getPrismaCreateComplementaryOrderQuery(order) {
+  let orderInput: Prisma.OrdersCreateInput;
+  let orderTickets: Prisma.TicketsCreateManyOrderInput[] = [];
+
+  for (const ticket of order.tickets) {
+    orderTickets.push({
+      id: ticket.id,
+      eventId: order.eventId,
+      ticketTypeId: ticket.ticketTypeId,
+      status: TicketStatus.AVAILABLE,
+      ticketsType: TicketType.COMPLEMENTARY,
+      total: 0,
+      fees: 0,
+      subtotal: 0
+    })
+  }
+
+  orderInput = {
+    id: order.id,
+    status: OrderStatus.COMPLETED,
+    total: order.total,
+    name: order.name,
+    email: order.email,
     event: {
       connect: {
         id: order.eventId

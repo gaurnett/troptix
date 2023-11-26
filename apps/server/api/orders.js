@@ -46,6 +46,8 @@ async function postOrders(request, response) {
       return createCharge(body, response);
     case 'POST_ORDERS_CREATE_ORDER':
       return createOrder(body, response);
+    case 'POST_ORDERS_CREATE_COMPLEMENTARY_ORDER':
+      return createComplementaryOrder(body, response);
     case 'payment_intent.succeeded':
       return stripePaymentIntentSucceeded(body, headers, request, response);
     default:
@@ -137,6 +139,31 @@ async function createOrder(body, response) {
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error adding order' });
+  }
+
+}
+
+async function createComplementaryOrder(body, response) {
+  const order = body.complementaryOrder;
+
+  if (order === undefined) {
+    return response.status(500).json({ error: 'No order found in create order request' });
+  }
+
+  try {
+    const event = await prisma.orders.create({
+      data: getPrismaCreateOrderQuery(order),
+      include: {
+        tickets: true,
+      }
+    });
+
+    console.log("Added complementary order");
+
+    return response.status(200).json({ error: null, message: "Successfully added order" });
+  } catch (e) {
+    console.error('Request error', e);
+    return response.status(500).json({ error: 'Error adding complementary order' });
   }
 
 }
