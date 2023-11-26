@@ -75,8 +75,8 @@ export default function OrderListPage({ orders }) {
                     <div className="flex">
                       <div className="my-auto">
                         <div>{String(order.id).toUpperCase()}</div>
-                        <div>{order.user.name}</div>
-                        <div>{order.user.email}</div>
+                        <div>{order.user ? order.user?.name : order.name}</div>
+                        <div>{order.user ? order.user.email : order.email}</div>
                       </div>
                     </div>
                   </div>

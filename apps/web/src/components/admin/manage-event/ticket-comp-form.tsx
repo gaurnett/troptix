@@ -74,7 +74,6 @@ export default function TicketCompForm({ eventId, ticketTypes }) {
 
     console.log(JSON.stringify(complementaryOrder));
 
-    return;
     const postOrdersRequest = {
       type: PostOrdersType.POST_ORDERS_CREATE_COMPLEMENTARY_ORDER,
       complementaryOrder: complementaryOrder

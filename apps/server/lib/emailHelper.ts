@@ -145,9 +145,9 @@ export async function sendComplementaryTicketEmailToUser(order, orderMap) {
 
   const templateData = {
     id: order.id,
-    eventTitle: order.event.name,
-    orderNumber: String(order.id),
-    orderDate: new Date(order.createdAt).toLocaleDateString(),
+    eventTitle: order.eventName,
+    orderNumber: order.id,
+    orderDate: new Date().toLocaleDateString(),
     orders: Array.from(orderMap.values())
   }
 
