@@ -1,28 +1,25 @@
 "use client";
 
-import { Inter } from 'next/font/google'
+import { Inter } from "next/font/google";
 import type { AppProps } from "next/app";
 import { usePathname } from "next/navigation";
 import Header from "./ui/header";
-import AdminHeader from './ui/admin-header';
-import { createContext, useContext, useEffect, useState } from 'react';
-import {
-  onAuthStateChanged,
-} from "firebase/auth";
-import { auth } from '../config';
-import { getUsers, GetUsersType } from 'troptix-api';
-import { User, setUserFromResponse } from 'troptix-models';
-import { useRouter } from 'next/router';
+import AdminHeader from "./ui/admin-header";
+import { createContext, useContext, useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../config";
+import { User, setUserFromResponse } from "troptix-models";
+import { useRouter } from "next/router";
 
 const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap'
-})
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
 
 export const TropTixContext = createContext({
   user: new User(),
-  setUser: (user: any) => { }
+  setUser: (user: any) => { },
 });
 export const useTropTixContext = () => useContext(TropTixContext);
 
@@ -34,13 +31,18 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   useEffect(() => {
-    if (pathname.includes("order-confirmation")
-      || pathname.includes("tickets")) {
+    if (
+      pathname.includes("order-confirmation") ||
+      pathname.includes("tickets")
+    ) {
       setShowHeader(false);
     }
 
     if (
-      (pathname.includes("admin") || pathname.includes("account")) && !loading && !user) {
+      (pathname.includes("admin") || pathname.includes("account")) &&
+      !loading &&
+      !user
+    ) {
       router.push("/auth/signup");
     }
   }, [loading, pathname, router, user]);
@@ -63,49 +65,50 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
   return (
     <TropTixContext.Provider
       value={
-        (user === undefined || user === null) ?
-          {
+        user === undefined || user === null
+          ? {
             user: undefined,
-            setUser: (user: any) => { }
-          } :
-          {
+            setUser: (user: any) => { },
+          }
+          : {
             user: user,
-            setUser: setUser
-          }}>
-      {
-        loading ? <></> :
-          <div className="mx-auto">
-            <div className={`${inter.variable} font-inter antialiased bg-white text-gray-900 tracking-tight`}>
-              <div className="flex flex-col min-h-screen overflow-hidden supports-[overflow:clip]:overflow-clip">
-                {
-                  !pathname.includes("admin") ?
-                    <div>
-                      {
-                        showHeader ? <Header /> : <></>
-                      }
-                      <div className="min-h-screen flex-grow border-x">
+            setUser: setUser,
+          }
+      }
+    >
+      {loading ? (
+        <></>
+      ) : (
+        <div className="mx-auto ">
+          <div
+            className={`${inter.variable} font-inter antialiased bg-white text-gray-900 tracking-tight`}
+          >
+            <div className="flex flex-col min-h-screen overflow-hidden supports-[overflow:clip]:overflow-clip">
+              {!pathname.includes("admin") ? (
+                <div>
+                  {showHeader ? <Header /> : <></>}
+                  <div className="min-h-screen flex-grow border-x">
+                    <Component {...pageProps} />
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {user === null ? (
+                    <></>
+                  ) : (
+                    <>
+                      <AdminHeader />
+                      <div className="min-h-screen flex-grow mt-32">
                         <Component {...pageProps} />
                       </div>
-                    </div> :
-                    <div>
-                      {
-                        user === null ?
-                          <></> :
-                          <>
-                            <AdminHeader />
-                            <div className="min-h-screen flex-grow mt-32">
-                              <Component {...pageProps} />
-                            </div>
-                          </>
-                      }
-                    </div>
-                }
-              </div>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
-      }
-
+        </div>
+      )}
     </TropTixContext.Provider>
-
   );
 }

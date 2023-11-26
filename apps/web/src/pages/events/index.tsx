@@ -1,25 +1,14 @@
 import EventCard from "@/components/EventCard";
-import { useRouter } from "next/router";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { Event, getEventsFromRequest } from "troptix-models";
-import {
-  TropTixResponse,
-  getEvents,
-  GetEventsRequest,
-  GetEventsType,
-} from "troptix-api";
-import { TropTixContext } from "@/components/WebNavigator";
+
 import Link from "next/link";
 import { List, Spin, Image } from "antd";
 import { useFetchAllEvents } from "@/hooks/useFetchEvents";
 
 export default function ManageEventsPage() {
-  const { user } = useContext(TropTixContext);
-  const userId = user === null || user === undefined ? null : user.id;
-
   console.log(process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL);
 
-  const { isPending, isError, data: events, error } = useFetchAllEvents();
+  const { isPending, isError, data, error } = useFetchAllEvents();
+  const events = data as any[];
 
   return (
     <div className="mt-32 w-full md:max-w-5xl mx-auto">
