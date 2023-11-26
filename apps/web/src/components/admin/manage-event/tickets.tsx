@@ -8,7 +8,7 @@ import { TicketType } from "troptix-models";
 import { GetTicketTypesType, GetTicketTypesRequest, getTicketTypes, saveTicketType } from 'troptix-api';
 import TicketCompForm from "./ticket-comp-form";
 
-export default function TicketsPage() {
+export default function TicketsPage({ event }) {
   const router = useRouter();
   const eventId = router.query.eventId;
 
@@ -148,7 +148,7 @@ export default function TicketsPage() {
       </Drawer>
 
       <Drawer width={500} title="Generate Complementary Ticket" placement="right" onClose={closeCompTicketTypeDrawer} open={compTicketModalOpen}>
-        <TicketCompForm eventId={eventId} ticketTypes={ticketTypes} />
+        <TicketCompForm ticketTypes={ticketTypes} event={event} />
       </Drawer>
 
     </div>

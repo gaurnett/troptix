@@ -123,14 +123,16 @@ export class Checkout {
 export class ComplementaryOrder {
   id: string;
   eventId: string;
+  eventName: string;
   name: string;
   email: string;
   total: number = 0;
   tickets: ComplementaryTicket[] = [];
 
-  constructor(eventId) {
+  constructor(event) {
     this.id = generateId();
-    this.eventId = eventId;
+    this.eventId = event.id;
+    this.eventName = event.name;
   }
 }
 
