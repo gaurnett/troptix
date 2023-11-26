@@ -57,21 +57,29 @@ enum TicketStatus {
   NOT_AVAILABLE
 }
 
-model Tickets {
-  id        String       @id @default(uuid())
-  createdAt DateTime     @default(now())
-  status    TicketStatus @default(NOT_AVAILABLE)
-  fees      Float?
-  subtotal  Float?
-  total     Float?
+enum TicketType {
+  FREE
+  PAID
+  COMPLEMENTARY
+}
 
-  event        Events      @relation(fields: [eventId], references: [id])
+model Tickets {
+  id          String       @id @default(uuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime?    @updatedAt
+  status      TicketStatus @default(NOT_AVAILABLE)
+  ticketsType TicketType?  @default(PAID)
+  fees        Float?
+  subtotal    Float?
+  total       Float?
+
+  event        Events       @relation(fields: [eventId], references: [id])
   eventId      String
-  order        Orders      @relation(fields: [orderId], references: [id])
+  order        Orders       @relation(fields: [orderId], references: [id])
   orderId      String
-  ticketType   TicketTypes @relation(fields: [ticketTypeId], references: [id])
-  ticketTypeId String
-  user         Users?      @relation(fields: [userId], references: [id])
+  ticketType   TicketTypes? @relation(fields: [ticketTypeId], references: [id])
+  ticketTypeId String?
+  user         Users?       @relation(fields: [userId], references: [id])
   userId       String?
 
   @@index([eventId])
@@ -92,8 +100,8 @@ model Orders {
   createdAt        DateTime?   @default(now())
   updatedAt        DateTime?   @updatedAt
   total            Float
-  subtotal         Float
-  fees             Float
+  subtotal         Float?
+  fees             Float?
   name             String?
   email            String?
   cardType         String?
@@ -133,9 +141,9 @@ model Events {
 
   // Date and Time Details
   startDate DateTime
-  startTime DateTime
+  startTime DateTime?
   endDate   DateTime
-  endTime   DateTime
+  endTime   DateTime?
 
   // Location Details
   venue       String?
@@ -184,9 +192,10 @@ enum TicketFeeStructure {
 }
 
 model TicketTypes {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String      @id @default(uuid())
+  ticketType TicketType? @default(PAID)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 
   // Ticket Details
   name               String
@@ -197,9 +206,9 @@ model TicketTypes {
 
   // Sale Date Details
   saleStartDate DateTime
-  saleStartTime DateTime
+  saleStartTime DateTime?
   saleEndDate   DateTime
-  saleEndTime   DateTime
+  saleEndTime   DateTime?
 
   // Price Details
   price         Float
