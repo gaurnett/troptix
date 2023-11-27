@@ -70,7 +70,10 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
     listType: "picture",
     maxCount: 1,
     headers: {
-      authorization: 'authorization-text',
+      "authorization": "authorization-text",
+      "Access-Control-Allow-Methods": "POST",
+      "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+      'Content-Type': 'multipart/form-data',
     },
     async onChange(info) {
       const { status } = info.file;
