@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import Logo from './logo'
 
 export default function Footer() {
@@ -20,13 +21,13 @@ export default function Footer() {
             <h6 className="text-gray-800 font-medium mb-2">Contact</h6>
             <ul className="text-sm">
               <li className="mb-2">
-                <a href="/contact" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Contact Us</a>
+                <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Contact Us</Link>
               </li>
               <li className="mb-2">
-                <a href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Privacy Policy</a>
+                <Link href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Privacy Policy</Link>
               </li>
               <li className="mb-2">
-                <a href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Terms and Conditions</a>
+                <Link href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Terms and Conditions</Link>
               </li>
             </ul>
           </div>
@@ -36,10 +37,10 @@ export default function Footer() {
             <h6 className="text-gray-800 font-medium mb-2">Events</h6>
             <ul className="text-sm">
               <li className="mb-2">
-                <a href="/events" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Explore Events</a>
+                <Link href="/events" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Explore Events</Link>
               </li>
               <li className="mb-2">
-                <a href="/contact" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Support Center</a>
+                <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Support Center</Link>
               </li>
             </ul>
           </div>
@@ -49,10 +50,10 @@ export default function Footer() {
             <h6 className="text-gray-800 font-medium mb-2">Company</h6>
             <ul className="text-sm">
               <li className="mb-2">
-                <a href="/" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Home</a>
+                <Link href="/" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Home</Link>
               </li>
               <li className="mb-2">
-                <a href="/about" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">About us</a>
+                <Link href="/about" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">About us</Link>
               </li>
               {/* <li className="mb-2">
                 <a href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Pricing</a>
