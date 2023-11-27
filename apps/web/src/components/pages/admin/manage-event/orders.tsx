@@ -1,24 +1,17 @@
-import { CustomInput, CustomTextArea } from "@/components/ui/input";
-import { Card, Col, List, Progress, Row, Spin, Statistic, Tabs, TabsProps } from "antd";
-import Link from "next/link";
+import { Spinner } from "@/components/ui/spinner";
+import { Tabs, TabsProps } from "antd";
 import { useRouter } from "next/router";
-import { useEffect, useState, PureComponent } from "react";
-import { TropTixResponse, getOrders, GetOrdersType, GetOrdersRequest } from 'troptix-api';
-import { Event, OrderSummary } from "troptix-models";
-import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
-import SalesChart from "./sales-chart";
-import QuantityChart from "./quantity-chart";
-import OrderSummaryPage from "./order-summary";
-import OrderListPage from "./order-list";
+import { useEffect, useState } from "react";
+import { GetOrdersType, getOrders } from 'troptix-api';
 import OrderCompListPage from "./order-comp-list";
+import OrderListPage from "./order-list";
+import OrderSummaryPage from "./order-summary";
 
 export default function OrdersPage() {
   const router = useRouter();
   const eventId = router.query.eventId;
-  const [orderSummary, setOrderSummary] = useState<any>(new OrderSummary([]));
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [orders, setOrders] = useState([]);
-  const [ticketsSold, setTicketsSold] = useState(0);
 
   useEffect(() => {
     async function fetchOrderSummary() {
@@ -70,9 +63,10 @@ export default function OrdersPage() {
     <div className="w-full md:max-w-2xl mr-8">
       {
         isFetchingEvents ?
-          <Spin className="mt-16" tip="Fetching Order Summary" size="large">
-            <div className="content" />
-          </Spin> :
+          <div className="mt-4">
+            <Spinner text={"Fetching Order Summary"} />
+          </div>
+          :
           <div>
             <div className="float-right w-full">
               <Tabs defaultActiveKey="0" items={items} />

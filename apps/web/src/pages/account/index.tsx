@@ -1,31 +1,18 @@
-import EventCard from "@/components/EventCard";
-import { useRouter } from "next/router";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { SocialMediaAccount, SocialMediaAccountType } from "troptix-models";
-import { TropTixContext } from "@/components/WebNavigator";
-import Link from "next/link";
-import {
-  List,
-  Spin,
-  Image,
-  Form,
-  Button,
-  Popconfirm,
-  Drawer,
-  message,
-} from "antd";
 import { CustomInput } from "@/components/ui/input";
-import { updateProfile } from "firebase/auth";
-import { auth } from "../../config";
 import { useFetchUser, useUpdateUser } from "@/hooks/useUser";
+import {
+  Button,
+  Form,
+  Spin,
+  message
+} from "antd";
+import { updateProfile } from "firebase/auth";
+import { useEffect, useState } from "react";
+import { auth } from "../../config";
 
 export default function AccountPage() {
   const [messageApi, contextHolder] = message.useMessage();
-  const [socialMediaAccounts, setSocialMediaAccounts] = useState<any[]>([]);
   const [adminUser, setAdminUser] = useState<any>();
-  const [socialMediaAccount, setSocialMediaAccount] = useState<any>();
-  const [socialMediaAccountIndex, setSocialMediaAccountIndex] = useState(0);
-  const [socialMediaAccountOpen, setSocialMediaAccountOpen] = useState(false);
 
   const { user, isPending, isError } = useFetchUser();
   const updateUser = useUpdateUser();
@@ -35,24 +22,6 @@ export default function AccountPage() {
       setAdminUser(user);
     }
   }, [user]);
-
-  function showDrawer(ticket: any, index: number) {
-    setSocialMediaAccount(ticket);
-    setSocialMediaAccountIndex(index);
-    setSocialMediaAccountOpen(true);
-  }
-
-  function deleteAccount() {
-    setSocialMediaAccounts(
-      socialMediaAccounts.filter(
-        (account) => account.id !== socialMediaAccount.id
-      )
-    );
-  }
-
-  function onClose() {
-    setSocialMediaAccountOpen(false);
-  }
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setAdminUser((previousUser) => ({
@@ -87,22 +56,6 @@ export default function AccountPage() {
   }
 
   const onFinishFailed = (errorInfo: any) => { };
-
-  function transformAccountType(accountType: string) {
-    switch (accountType) {
-      case SocialMediaAccountType.FACEBOOK:
-        return "Facebook";
-      case SocialMediaAccountType.INSTAGRAM:
-        return "Instagram";
-        break;
-      case SocialMediaAccountType.TIKTOK:
-        return "TikTok";
-      case SocialMediaAccountType.TWITTER:
-        return "Twitter";
-      default:
-        return "Social Media Account";
-    }
-  }
 
   return (
     <div className="w-full md:max-w-2xl mx-auto mt-32">

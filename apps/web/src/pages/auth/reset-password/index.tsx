@@ -6,10 +6,8 @@ export const metadata = {
 }
 
 import { TropTixContext } from '@/components/WebNavigator';
-import { CustomInput } from '@/components/ui/input';
 import { resetPassword } from '@/firebase/auth';
 import { Button, Form, message } from 'antd';
-import Link from 'next/link'
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 

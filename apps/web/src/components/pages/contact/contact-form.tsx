@@ -1,16 +1,11 @@
-import EventCard from "@/components/EventCard";
-import { EventType } from "@/types/Event";
-import { useRouter } from "next/navigation";
-import { Button, Collapse, Divider, message } from "antd";
 import { CustomInput, CustomTextArea } from "@/components/ui/input";
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { PostContactRequest, PostContactRequestType, useCreateContact } from "@/hooks/usePostContact";
 import { ContactUsForm } from "@/hooks/types/Contact";
+import { PostContactRequest, useCreateContact } from "@/hooks/usePostContact";
+import { Button, message } from "antd";
+import { useState } from "react";
 
 export default function ContactFormPage() {
   const [messageApi, contextHolder] = message.useMessage();
-  const queryClient = useQueryClient();
   const mutation = useCreateContact();
 
   const [contactForm, setContactForm] = useState<ContactUsForm>({
@@ -40,7 +35,6 @@ export default function ContactFormPage() {
       requestType: "CONTACT_US",
       contactUsForm: contactForm
     }
-    console.log(JSON.stringify(postContactRequest));
 
     mutation.mutate(postContactRequest, {
       onSuccess: () => {
@@ -56,7 +50,6 @@ export default function ContactFormPage() {
         });
       },
       onError: (error) => {
-        console.log(error);
         messageApi.destroy('send-message-loading');
         messageApi.open({
           type: "error",

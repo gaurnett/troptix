@@ -1,19 +1,19 @@
 "use client";
 
-import { Inter } from "next/font/google";
-import type { AppProps } from "next/app";
-import { usePathname } from "next/navigation";
-import Header from "./ui/header";
-import AdminHeader from "./ui/admin-header";
-import { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../config";
-import { User, setUserFromResponse } from "troptix-models";
-import { useRouter } from "next/router";
-import { app } from "../config";
-import { getRemoteConfig } from "firebase/remote-config";
-import { getValue, fetchAndActivate } from "firebase/remote-config";
+import { LoadingOutlined } from '@ant-design/icons';
 import { Analytics } from '@vercel/analytics/react';
+import { Spin } from "antd";
+import { onAuthStateChanged } from "firebase/auth";
+import { fetchAndActivate, getRemoteConfig, getValue } from "firebase/remote-config";
+import type { AppProps } from "next/app";
+import { Inter } from "next/font/google";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/router";
+import { createContext, useContext, useEffect, useState } from "react";
+import { User, setUserFromResponse } from "troptix-models";
+import { app, auth } from "../config";
+import AdminHeader from "./ui/admin-header";
+import Header from "./ui/header";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,17 +31,9 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [showHeader, setShowHeader] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    if (
-      pathname.includes("order-confirmation") ||
-      pathname.includes("tickets")
-    ) {
-      setShowHeader(false);
-    }
-
     if (
       (pathname.includes("admin") || pathname.includes("account")) &&
       !loading &&
@@ -78,7 +70,6 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
             return false;
           })
           .catch((err) => {
-            console.log(err);
             return false;
           });
       }
@@ -116,18 +107,20 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
       }
     >
       {loading ? (
-        <></>
+        <>
+          <Spin className="flex h-screen items-center justify-center" indicator={<LoadingOutlined style={{ fontSize: 84 }} spin />} />
+        </>
       ) : (
         <div className="mx-auto ">
           <div
             className={`${inter.variable} font-inter antialiased bg-white text-gray-900 tracking-tight`}
           >
-            <div className="flex flex-col min-h-screen overflow-hidden supports-[overflow:clip]:overflow-clip">
+            <div className="flex flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
               <Analytics />
               {!pathname.includes("admin") ?
                 <div>
-                  {showHeader ? <Header /> : <></>}
-                  <div className="min-h-screen flex-grow border-x">
+                  <Header />
+                  <div className="flex-grow border-x">
                     <Component {...pageProps} />
                   </div>
                 </div>
@@ -138,7 +131,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
                     :
                     <>
                       <AdminHeader />
-                      <div className="min-h-screen flex-grow mt-32">
+                      <div className="flex-grow mt-32">
                         <Component {...pageProps} />
                       </div>
                     </>

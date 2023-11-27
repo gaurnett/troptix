@@ -1,11 +1,9 @@
-import { CustomInput, CustomTextArea } from "@/components/ui/input";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { TicketType } from 'troptix-models';
-import { Button, Drawer, List, Popconfirm, Spin, message } from "antd";
-import { Event, Promotion, PromotionType } from "troptix-models";
-import { GetPromotionsType, GetPromotionsRequest, getPromotions, addPromotion } from 'troptix-api';
+import { Spinner } from "@/components/ui/spinner";
+import { Button, Drawer, List, Popconfirm, message } from "antd";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { GetPromotionsType, addPromotion, getPromotions } from 'troptix-api';
+import { Promotion } from "troptix-models";
 import PromotionCodeForm from "./promotion-code-form";
 
 export default function PromotionCodesPage() {
@@ -15,7 +13,6 @@ export default function PromotionCodesPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [promotions, setPromotions] = useState<any[]>([]);
   const [isFetchingPromotions, setIsFetchingPromotions] = useState(true);
-  const [show, setShow] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedPromotion, setSelectedPromotion] = useState<any>();
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -93,9 +90,10 @@ export default function PromotionCodesPage() {
       <div className="w-full md:max-w-md mr-8">
         {
           isFetchingPromotions ?
-            <Spin className="mt-16" tip="Fetching Promotions" size="large">
-              <div className="content" />
-            </Spin> :
+            <div className="mt-4">
+              <Spinner text={"Fetching Promotions"} />
+            </div>
+            :
             <div>
               <h2 className="text-2xl md:text-3xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Promotion Codes</h2>
 

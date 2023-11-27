@@ -1,22 +1,10 @@
-import { CustomInput, CustomTextArea } from "@/components/ui/input";
-import { Card, Col, List, Progress, Row, Spin, Statistic } from "antd";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect, useState, PureComponent } from "react";
-import { TropTixResponse, getOrders, GetOrdersType, GetOrdersRequest } from 'troptix-api';
-import { Event, OrderSummary } from "troptix-models";
-import { ArrowDownOutlined, ArrowUpOutlined } from '@ant-design/icons';
-import SalesChart from "./sales-chart";
+import { Card, List, Progress, Spin, Statistic } from "antd";
+import { useEffect, useState } from "react";
+import { OrderSummary } from "troptix-models";
 import QuantityChart from "./quantity-chart";
-
-const tickets = [{
-  quantity: 100,
-  total: 200
-}]
+import SalesChart from "./sales-chart";
 
 export default function OrderSummaryPage({ orders }) {
-  const router = useRouter();
-  const eventId = router.query.eventId;
   const [orderSummary, setOrderSummary] = useState<any>(new OrderSummary([]));
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [ticketsSold, setTicketsSold] = useState(0);

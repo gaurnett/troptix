@@ -1,16 +1,4 @@
-import { Typography } from "antd";
-import Image from "next/image";
-import React from "react";
-const { Paragraph } = Typography;
-
-function getFormattedCurrency(price) {
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  });
-
-  return formatter.format(price);
-}
+import { getFormattedCurrency } from "@/lib/utils";
 
 export default function EventCard({ event }) {
   let lowest = Number.MAX_VALUE;

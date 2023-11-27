@@ -1,9 +1,6 @@
-import { CustomDateField, CustomInput, CustomNumberInput, CustomTextArea, CustomTimeField } from "@/components/ui/input";
+import { CustomInput, CustomNumberInput } from "@/components/ui/input";
 import { Button, Form, Select } from "antd";
-import Link from "next/link";
-import { useState } from "react";
-import { TicketType, PromotionType } from 'troptix-models';
-import { IoMdClose } from "react-icons/io";
+import { PromotionType } from 'troptix-models';
 
 export default function PromotionCodeForm({ selectedPromotion, setSelectedPromotion, savePromotion }) {
 

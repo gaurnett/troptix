@@ -1,16 +1,11 @@
-import { TropTixContext } from "@/components/WebNavigator";
-import { Avatar, Button, Card, Typography, List, QRCode, Spin, Image, Table } from "antd";
-import { useRouter } from "next/router";
-import { useContext, useEffect, useRef, useState } from 'react';
-import { TicketSummary, TicketsSummary, getOrders, Ticket, getTicketsForUser, GetOrdersType, GetOrdersRequest } from 'troptix-api';
-import { format } from 'date-fns';
-import {
-  MdOutlineKeyboardArrowLeft,
-  MdOutlineKeyboardArrowRight,
-} from "react-icons/md";
-import { IoMdArrowRoundBack } from "react-icons/io";
-import Link from "next/link";
+import { Spinner } from "@/components/ui/spinner";
+import { Image, Table, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
+import { format } from 'date-fns';
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useState } from 'react';
+import { GetOrdersType, getOrders } from 'troptix-api';
 
 const { Text } = Typography;
 interface DataType {
@@ -24,9 +19,7 @@ interface DataType {
 
 export default function OrderConfirmationPage() {
   const router = useRouter();
-  const carouselRef = useRef<any>();
   const orderId = router.query.orderId;
-  const { user } = useContext(TropTixContext);
   const [isFetchingOrders, setIsFetchingOrders] = useState(true);
   const [order, setOrder] = useState<any>();
   const [data, setData] = useState<DataType[]>([]);
@@ -118,12 +111,11 @@ export default function OrderConfirmationPage() {
   }
 
   return (
-    <div className="md:mt-8 md:mb-8 w-full md:max-w-3xl mx-auto">
+    <div className="mt-32 md:mb-8 w-full md:max-w-3xl mx-auto">
       {
         isFetchingOrders ?
-          <Spin className="mt-16" tip="Fetching Order" size="large">
-            <div className="content" />
-          </Spin> :
+          <Spinner text={"Fetching Order"} />
+          :
           <div>
             {order === null || order === undefined ?
               <>
@@ -154,7 +146,7 @@ export default function OrderConfirmationPage() {
               <div className="border px-4">
                 <div className='flex w-full md:max-w-2xl md:mx-auto my-6'>
                   <div>
-                    <Image src={"/logos/logo_v1.png"} width={75} height={75} alt='troptix-logo' />
+                    {/* <Image src={"/logos/logo_v1.png"} width={75} height={75} alt='troptix-logo' /> */}
                   </div>
                   <div className="w-full text-right my-auto">
                     <div className="text-sm md:text-md font-bold">Order #{String(orderId).toUpperCase()}</div>

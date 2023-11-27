@@ -47,7 +47,6 @@ export function useFetchAllEvents() {
     queryFn: () => eventFetcher({ requestType: RequestType.GET_EVENTS_ALL }),
     initialData: () => {
       const events = queryClient.getQueryData([RequestType.GET_EVENTS_ALL]);
-      console.log(events);
       return events;
     },
   });

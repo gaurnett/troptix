@@ -1,22 +1,20 @@
-import { TropTixContext } from "@/components/WebNavigator";
-import { Avatar, Button, Card, Carousel, Divider, List, QRCode, Spin } from "antd";
-import { useRouter } from "next/router";
-import { useContext, useEffect, useRef, useState } from 'react';
-import { TicketSummary, TicketsSummary, getOrders, Ticket, getTicketsForUser, GetOrdersType, GetOrdersRequest } from 'troptix-api';
+import { Spinner } from "@/components/ui/spinner";
+import { Button, Carousel, Divider, QRCode } from "antd";
 import { format } from 'date-fns';
+import JsPDF from 'jspdf';
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from 'react';
 import {
   MdOutlineKeyboardArrowLeft,
   MdOutlineKeyboardArrowRight,
 } from "react-icons/md";
-import { IoMdArrowRoundBack } from "react-icons/io";
-import JsPDF from 'jspdf';
-import Link from "next/link";
+import { GetOrdersType, getOrders } from 'troptix-api';
 
 export default function TicketsPage() {
   const router = useRouter();
   const carouselRef = useRef<any>();
   const orderId = router.query.orderId;
-  const { user } = useContext(TropTixContext);
   const [isFetchingOrders, setIsFetchingOrders] = useState(true);
   const [order, setOrder] = useState<any>();
 
@@ -47,10 +45,6 @@ export default function TicketsPage() {
 
   function goBack() {
     carouselRef.current.prev();
-  }
-
-  function goToOrders() {
-    router.back();
   }
 
   function getDateFormatted(date, time) {
@@ -129,12 +123,11 @@ export default function TicketsPage() {
   }
 
   return (
-    <div className="mt-8 mb-8 w-full md:max-w-3xl mx-auto">
+    <div className="mt-32 mb-8 w-full md:max-w-3xl mx-auto">
       {
         isFetchingOrders ?
-          <Spin className="mt-16" tip="Fetching Tickets" size="large">
-            <div className="content" />
-          </Spin> :
+          <Spinner text={"Fetching Tickets"} />
+          :
           <div>
             <h1 className="mx-4 text-center text-4xl md:text-4xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">{order.event.name}</span>

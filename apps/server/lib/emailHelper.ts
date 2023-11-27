@@ -9,7 +9,7 @@ export async function sendContactUsForm(contact) {
   const msg = {
     to: 'info@usetroptix.com',
     from: 'info@usetroptix.com',
-    subject: `Contact Us: ${contact.message}`,
+    subject: `Contact Us Form Submission`,
     text: contact.message,
     html: `<div>Email: ${contact.email}</div><div>Message: ${contact.message}</div>`,
   };

@@ -1,11 +1,9 @@
-import { CustomInput, CustomTextArea } from "@/components/ui/input";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Button, Drawer, List, Popconfirm, Spin, message } from "antd";
-import { DelegatedUser, DelegatedAccess } from "troptix-models";
-import { getDelegatedUsers, addDelegatedUser } from 'troptix-api';
+import { Spinner } from "@/components/ui/spinner";
+import { Button, Drawer, List, Popconfirm, message } from "antd";
 import { useRouter } from "next/router";
-import PromotionCodeForm from "./promotion-code-form";
+import { useEffect, useState } from "react";
+import { addDelegatedUser, getDelegatedUsers } from 'troptix-api';
+import { DelegatedUser } from "troptix-models";
 import UserDelegationForm from "./user-delegation-form";
 
 export default function UserDelegationPage() {
@@ -15,7 +13,6 @@ export default function UserDelegationPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [delegatedUsers, setDelegatedUsers] = useState<any[]>([]);
   const [isFetchingUsers, setIsFetchingUsers] = useState(true);
-  const [show, setShow] = useState(false);
   const [open, setOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>();
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -90,9 +87,10 @@ export default function UserDelegationPage() {
       <div className="w-full md:max-w-md mr-8">
         {
           isFetchingUsers ?
-            <Spin className="mt-16" tip="Fetching Users" size="large">
-              <div className="content" />
-            </Spin> :
+            <div className="mt-4">
+              <Spinner text={"Fetching Users"} />
+            </div>
+            :
             <div>
               <h2 className="text-2xl md:text-3xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Users</h2>
 

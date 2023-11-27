@@ -1,24 +1,19 @@
-import { Button, Spin, Typography } from "antd";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { getEvents, GetEventsType } from "troptix-api";
-import { MdLocationOn } from "react-icons/md";
-import { format } from "date-fns";
-import { IoTicket } from "react-icons/io5";
-import { Elements } from "@stripe/react-stripe-js";
 import TicketDrawer from "@/components/pages/event/ticket-drawer";
 import TicketModal from "@/components/pages/event/ticket-modal";
 import { RequestType, useFetchEventsById } from "@/hooks/useFetchEvents";
+import { Button, Spin, Typography } from "antd";
+import { format } from "date-fns";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { IoTicket } from "react-icons/io5";
 const { Paragraph } = Typography;
 
 export default function EventDetailPage() {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const router = useRouter();
   const eventId = router.query.eventId as string;
-  const [isFetchingEvent, setIsFetchingEvent] = useState(true);
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
-  const [showLocationPin, setShowLocationPin] = useState(false);
   const [width, setWidth] = useState<number>(window.innerWidth);
 
   function handleWindowSizeChange() {
@@ -191,7 +186,6 @@ export default function EventDetailPage() {
                           defaultZoom={14}
                           yesIWantToUseGoogleMapApiInternals
                           onGoogleApiLoaded={({ map, maps }) => {
-                            console.log("Loaded");
                             setShowLocationPin(true)
                           }
                           }

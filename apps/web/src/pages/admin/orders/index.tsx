@@ -1,15 +1,12 @@
 
-import EventCard from '@/components/EventCard';
-import { useRouter } from 'next/router';
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { Event, getEventsFromRequest } from 'troptix-models';
-import { TropTixResponse, getEvents, GetEventsRequest, GetEventsType } from 'troptix-api';
 import { TropTixContext } from '@/components/WebNavigator';
+import { Image, List, Spin } from 'antd';
 import Link from 'next/link';
-import { List, Spin, Image } from 'antd';
+import { useContext, useEffect, useState } from 'react';
+import { GetEventsType, getEvents } from 'troptix-api';
+import { getEventsFromRequest } from 'troptix-models';
 
 export default function OrdersPage() {
-  const router = useRouter();
   const { user } = useContext(TropTixContext);
   const userId = user === null || user === undefined ? null : user.id;
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
