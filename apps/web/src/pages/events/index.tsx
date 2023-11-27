@@ -1,8 +1,9 @@
 import EventCard from "@/components/EventCard";
 
 import Footer from "@/components/ui/footer";
+import { Spinner } from "@/components/ui/spinner";
 import { useFetchAllEvents } from "@/hooks/useFetchEvents";
-import { Image, Spin } from "antd";
+import { Image } from "antd";
 import Link from "next/link";
 
 export default function ManageEventsPage() {
@@ -54,13 +55,13 @@ export default function ManageEventsPage() {
                     {events.map((event) => {
                       return (
                         <div
-                          key={event.id}
+                          key={event?.id}
                           className="w-full sm:w-1/2 md:w-1/3 lg:w-1/3 px-2 mb-4"
                         >
                           <Link
                             href={{
                               pathname: "/event",
-                              query: { eventId: event.id },
+                              query: { eventId: event?.id },
                             }}
                           >
                             <EventCard
@@ -75,9 +76,9 @@ export default function ManageEventsPage() {
               </div>
             </div>
           ) : (
-            <Spin className="mt-16" tip="Fetching Events" size="large">
-              <div className="content" />
-            </Spin>
+            <div className="container mx-auto py-16">
+              <Spinner text={"Fetching Events"} />
+            </div>
           )}
         </div>
       </div>

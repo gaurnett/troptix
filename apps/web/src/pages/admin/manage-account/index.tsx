@@ -1,6 +1,7 @@
 import SocialMedia from "@/components/pages/admin/manage-account/social-media";
+import { Spinner } from "@/components/ui/spinner";
 import { useFetchUser } from "@/hooks/useUser";
-import { Spin, Tabs, TabsProps, message } from "antd";
+import { Tabs, TabsProps, message } from "antd";
 import { useEffect, useState } from "react";
 import AccountDetails from "../../../components/pages/admin/manage-account/account-detail";
 
@@ -50,9 +51,9 @@ export default function ManageAccountPage() {
             <Tabs defaultActiveKey="0" items={items} />
           </div>
         ) : (
-          <Spin className="mt-16" tip="Fetching User" size="large">
-            <div className="content" />
-          </Spin>
+          <div className="mt-8">
+            <Spinner text={"Fetching User"} />
+          </div>
         )}
       </div>
     </div>
