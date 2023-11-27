@@ -21,6 +21,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
     maxCount: 1,
     async onChange(info) {
       const { status } = info.file;
+      console.log("Status: " + status);
       if (status === "done") {
         const rcFile = info.file.originFileObj as RcFile;
 
@@ -39,12 +40,15 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
             const percent = Math.round(
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100
             );
+            console.log("Percentage: " + percent);
           },
           (err) => {
+            console.log("Storage Error: " + JSON.stringify(err));
             message.destroy('update-flyer-loading');
             message.error(`${info.file.name} file upload failed.`);
           },
           () => {
+            console.log("Get download URL");
             getDownloadURL(uploadTask.snapshot.ref).then((url) => {
               setEvent((previousEvent) => ({
                 ...previousEvent,
@@ -57,10 +61,13 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
           }
         );
       } else if (status === "error") {
+        console.log("Error Type: " + JSON.stringify(info))
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    onDrop(e) { },
+    onDrop(e) {
+      console.log("Drop: " + JSON.stringify(e))
+    },
   };
 
   return (
