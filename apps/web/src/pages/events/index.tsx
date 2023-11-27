@@ -5,8 +5,6 @@ import { List, Spin, Image } from "antd";
 import { useFetchAllEvents } from "@/hooks/useFetchEvents";
 
 export default function ManageEventsPage() {
-  console.log(process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL);
-
   const { isPending, isError, data, error } = useFetchAllEvents();
   const events = data as any[];
 

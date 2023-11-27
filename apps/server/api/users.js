@@ -1,4 +1,4 @@
-import { getPrismaUpdateSocialMediaQuery, getPrismaUpdateUserQuery } from "../lib/userHelper";
+import { getPrismaCreateUserQuery, getPrismaUpdateSocialMediaQuery, getPrismaUpdateUserQuery } from "../lib/userHelper";
 import prisma from "../prisma/prisma";
 
 export default async function handler(request, response) {
@@ -33,7 +33,7 @@ async function addUser(body, response) {
 
   try {
     const user = await prisma.users.create({
-      data: body.user,
+      data: getPrismaCreateUserQuery(body.user),
     });
     return response.status(200).json({ error: null, message: "Successfully added user" });
   } catch (e) {
