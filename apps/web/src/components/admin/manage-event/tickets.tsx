@@ -117,7 +117,7 @@ export default function TicketsPage({ event }) {
 
               <div className="flex mb-18">
                 <Button onClick={() => showDrawer(new TicketType(eventId), -1)} type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Add Ticket</Button>
-                <Button onClick={() => setCompTicketModalOpen(true)} className="px-6 py-5 ml-4 mb-4 shadow-md items-center justify-center font-medium inline-flex">Create Complementary Ticket</Button>
+                <Button onClick={() => setCompTicketModalOpen(true)} className="px-6 py-5 ml-4 mb-4 shadow-md items-center justify-center font-medium inline-flex">Send Complementary Ticket</Button>
               </div>
 
               <div>
