@@ -1,77 +1,25 @@
-import _ from 'lodash';
-import { message, Button, Spin, Modal, List, Steps, theme, Input, Typography } from 'antd';
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { Event, getEventsFromRequest, Checkout, Order, CheckoutTicket } from 'troptix-models';
-import { GetPromotionsType, getPromotions } from 'troptix-api';
+import { Button, Input, List, Typography, message } from 'antd';
 import { format } from 'date-fns';
+import { useState } from 'react';
+import { GetPromotionsType, getPromotions } from 'troptix-api';
+import { CheckoutTicket } from 'troptix-models';
 
 import {
-  PlusOutlined,
-  MinusOutlined
+  MinusOutlined,
+  PlusOutlined
 } from '@ant-design/icons';
-import { CustomInput } from '@/components/ui/input';
 const { Paragraph } = Typography;
 
 export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
-  const { token } = theme.useToken();
-
-  const [messageApi, contextHolder] = message.useMessage();
-  const router = useRouter();
-  const [isFetchingEvent, setIsFetchingEvent] = useState(true);
-  const [eventName, setEventName] = useState("");
-  const [publishButtonClicked, setPublishButtonClicked] = useState(false);
-
   const [promotionCode, setPromotionCode] = useState<any>();
   const [promotion, setPromotion] = useState<any>();
   const [promotionApplied, setPromotionApplied] = useState(false);
-  const [open, setOpen] = useState(false);
-
-  const [current, setCurrent] = useState(0);
-  const steps = [
-    {
-      title: 'Ticket Details',
-      content: 'First-content',
-    },
-    {
-      title: 'Checkout',
-      content: 'Second-content',
-    },
-  ];
-
-  const contentStyle: React.CSSProperties = {
-    lineHeight: '260px',
-    textAlign: 'center',
-    color: token.colorTextTertiary,
-    backgroundColor: token.colorFillAlter,
-    borderRadius: token.borderRadiusLG,
-    border: `1px dashed ${token.colorBorder}`,
-    marginTop: 16,
-  };
-
-  const items = steps.map((item) => ({ key: item.title, title: item.title }));
-
-  const next = () => {
-    setCurrent(current + 1);
-  };
-
-  const prev = () => {
-    setCurrent(current - 1);
-  };
 
   function getDateFormatter(date, time) {
     return `${format(new Date(date), 'MMM dd, yyyy')} @ ${format(new Date(time), 'hh:mm a')}`;
   };
 
   async function applyPromotion() {
-    // setPromotion({
-    //   promotionType: 'PERCENTAGE',
-    //   value: 15
-    // });
-    // setPromotionApplied(true);
-    // message.success("Promotion code applied");
-    // return;
-
     if (promotionCode === undefined) {
       message.error("Promotion code is empty");
       return;
@@ -119,9 +67,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
       } else {
         message.error("There was a problem applying promotion code.");
       }
-      console.log("[TicketCheckoutScreen applyPromotion] response: " + response);
     } catch (error) {
-      console.log("[TicketCheckoutScreen applyPromotion] error: " + error);
     }
   }
 
@@ -261,7 +207,6 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
 
   return (
     <div className="w-full">
-      {contextHolder}
       <div>
         <div className="mb-4">
           <div className="w-full">
@@ -302,10 +247,10 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
                         <div className='md:w-1/5 flex my-auto justify-center items-center'>
                           <div>
                             {
-                              ticketState === undefined ?
+                              ticketState !== undefined ?
                                 <div
                                   className='text-center text-md font-bold'>
-                                  {`Sale starts ${format(new Date(ticket.saleStartDate), 'MMM/dd/yyyy hh:mm a')}`}
+                                  {ticketState}
                                 </div>
                                 :
                                 <div className='flex'>

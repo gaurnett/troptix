@@ -1,28 +1,24 @@
-import { message, Button, Tabs, Spin } from "antd";
-import type { TabsProps } from "antd";
-import { useRouter } from "next/router";
-import { IoMdArrowRoundBack } from "react-icons/io";
-import TicketsPage from "@/components/admin/manage-event/tickets";
-import { useEffect, useState } from "react";
-import { saveEvent } from "troptix-api";
-import BasicInfoPage from "@/components/admin/manage-event/basic-info";
-import DetailsPage from "@/components/admin/manage-event/details";
-import PromotionCodesPage from "@/components/admin/manage-event/promotions-codes";
-import UserDelegationPage from "@/components/admin/manage-event/user-delegation";
-import OrdersPage from "@/components/admin/manage-event/orders";
+import BasicInfoPage from "@/components/pages/admin/manage-event/basic-info";
+import DetailsPage from "@/components/pages/admin/manage-event/details";
+import OrdersPage from "@/components/pages/admin/manage-event/orders";
+import PromotionCodesPage from "@/components/pages/admin/manage-event/promotions-codes";
+import TicketsPage from "@/components/pages/admin/manage-event/tickets";
+import UserDelegationPage from "@/components/pages/admin/manage-event/user-delegation";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { useFetchEventsById, RequestType } from "@/hooks/useFetchEvents";
-import { useCreateEvent, useEditEvent } from "@/hooks/usePostEvent";
+import { RequestType, useFetchEventsById } from "@/hooks/useFetchEvents";
+import { useEditEvent } from "@/hooks/usePostEvent";
 import { useQueryClient } from "@tanstack/react-query";
+import type { TabsProps } from "antd";
+import { Button, Tabs, message } from "antd";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 export default function ManageEventPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const eventId = router.query.eventId as string;
-  const [isFetchingEvent, setIsFetchingEvent] = useState(true);
   const [eventForm, setEventForm] = useState<any>();
-  const [eventName, setEventName] = useState("");
-  const [publishButtonClicked, setPublishButtonClicked] = useState(false);
   const [activeKey, setActiveKey] = useState("orders");
 
   const queryClient = useQueryClient();
@@ -175,7 +171,7 @@ export default function ManageEventPage() {
             data-aos="zoom-y-out"
           >
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">
-              {eventName}
+              {event.name}
             </span>
           </h1>
 

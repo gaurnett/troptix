@@ -1,9 +1,7 @@
-import _ from 'lodash';
+import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { message } from 'antd';
-import { useContext, useEffect } from 'react';
-import { TropTixContext } from '@/components/WebNavigator';
-import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 export default function PaymentForm({
   orderId,
@@ -13,8 +11,6 @@ export default function PaymentForm({
   const elements = useElements();
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
-
-  console.log(orderId);
 
   useEffect(() => {
     async function completeStripePurchase() {
@@ -41,7 +37,6 @@ export default function PaymentForm({
       messageApi.destroy('process-payment-loading');
       if (error) {
         messageApi.error("There was an error processing your payment.")
-        console.log(error);
       } else {
         messageApi.open({
           type: "success",

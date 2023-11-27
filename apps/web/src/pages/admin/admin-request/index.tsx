@@ -1,8 +1,6 @@
-import { useContext, useEffect, useState } from "react";
-import { TropTixContext } from "@/components/WebNavigator";
-import { Spin, message, Tabs, TabsProps, Image } from "antd";
-import { getUsers, GetUsersType } from "troptix-api";
 import { useFetchUser } from "@/hooks/useUser";
+import { message } from "antd";
+import { useEffect, useState } from "react";
 
 export default function ManageAccountPage() {
   const [messageApi, contextHolder] = message.useMessage();

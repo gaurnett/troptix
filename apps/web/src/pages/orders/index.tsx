@@ -1,24 +1,29 @@
 import { TropTixContext } from "@/components/WebNavigator";
-import { Avatar, List, Spin, Image, Button } from "antd";
+import { Spinner } from "@/components/ui/spinner";
+import { Button, Image, List } from "antd";
 import Link from "next/link";
 import { useContext, useEffect, useState } from 'react';
-import { TicketSummary, TicketsSummary, getOrders, Ticket, getTicketsForUser, GetOrdersType, GetOrdersRequest } from 'troptix-api';
-
-const data = Array.from({ length: 5 }).map((_, i) => ({
-  href: 'https://ant.design',
-  title: `ant design part ${i}`,
-  avatar: `https://xsgames.co/randomusers/avatar.php?g=pixel&key=${i}`,
-  description:
-    'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-  content:
-    'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-}));
+import { GetOrdersType, getOrders } from 'troptix-api';
 
 export default function TicketsPage() {
   const { user } = useContext(TropTixContext);
   const userId = user === null || user === undefined ? null : user.id;
   const [isFetchingOrders, setIsFetchingOrders] = useState(true);
   const [orders, setOrders] = useState<any>([]);
+  const [width, setWidth] = useState<number>(window.innerWidth);
+
+  function handleWindowSizeChange() {
+    setWidth(window.innerWidth);
+  }
+
+  useEffect(() => {
+    window.addEventListener("resize", handleWindowSizeChange);
+    return () => {
+      window.removeEventListener("resize", handleWindowSizeChange);
+    };
+  }, []);
+
+  const isMobile = width <= 768;
 
   useEffect(() => {
     async function fetchOrders() {
@@ -52,9 +57,8 @@ export default function TicketsPage() {
 
       {
         isFetchingOrders ?
-          <Spin className="mt-16" tip="Fetching Tickets" size="large">
-            <div className="content" />
-          </Spin> :
+          <div className="mt-8"><Spinner text={"Fetching Tickets"} /></div>
+          :
           <div>
             <List
               itemLayout="horizontal"
@@ -63,15 +67,14 @@ export default function TicketsPage() {
               renderItem={(order: any) => (
                 <List.Item
                   actions={[
-                    <Link key="receipt" target="_blank" rel="noopener noreferrer" href={{ pathname: "/order-confirmation", query: { orderId: order.id } }}>
-                      <Button>Receipt</Button>
-                    </Link>,
-                    <Link key="tickets" target="_blank" rel="noopener noreferrer" href={{ pathname: "/tickets", query: { orderId: order.id } }}>
-                      <Button className="bg-blue-600 hover:bg-blue-700" type="primary">Tickets</Button>
-                    </Link>
-
+                    // <Link key="receipt" target="_blank" rel="noopener noreferrer" href={{ pathname: "/order-confirmation", query: { orderId: order.id } }}>
+                    //   <Button>Receipt</Button>
+                    // </Link>,
+                    // <Link key="tickets" target="_blank" rel="noopener noreferrer" href={{ pathname: "/tickets", query: { orderId: order.id } }}>
+                    //   <Button className="bg-blue-600 hover:bg-blue-700" type="primary">Tickets</Button>
+                    // </Link>
                   ]}>
-                  <div key={order.id} >
+                  <div className="w-full" key={order.id} >
                     <div className="flex">
                       <div>
                         <Image
@@ -83,13 +86,33 @@ export default function TicketsPage() {
                           src={order.event.imageUrl}
                           alt={"event flyer image"} />
                       </div>
-                      <div className="ml-4 my-auto">
+                      <div className="ml-4 my-auto grow w-full ">
                         <div>{order.event.name}</div>
                         <div>{order.event.address}</div>
                         <div>{new Date(order.event.startDate).toDateString()}</div>
-
                       </div>
+                      {
+                        isMobile ? <></> :
+                          <div className="flex my-auto items-end justify-end">
+                            <Link className="mr-4" key="receipt" target="_blank" rel="noopener noreferrer" href={{ pathname: "/order-confirmation", query: { orderId: order.id } }}>
+                              <Button>Receipt</Button>
+                            </Link>
+                            <Link key="tickets" target="_blank" rel="noopener noreferrer" href={{ pathname: "/tickets", query: { orderId: order.id } }}>
+                              <Button className="bg-blue-600 hover:bg-blue-700" type="primary">Tickets</Button>
+                            </Link>
+                          </div>
+                      }
+
                     </div>
+                    <div className="flex visible md:hidden mt-2">
+                      <Link className="mr-4" key="receipt" target="_blank" rel="noopener noreferrer" href={{ pathname: "/order-confirmation", query: { orderId: order.id } }}>
+                        <Button>Receipt</Button>
+                      </Link>
+                      <Link key="tickets" target="_blank" rel="noopener noreferrer" href={{ pathname: "/tickets", query: { orderId: order.id } }}>
+                        <Button className="bg-blue-600 hover:bg-blue-700" type="primary">Tickets</Button>
+                      </Link>
+                    </div>
+
                   </div>
                 </List.Item>
 

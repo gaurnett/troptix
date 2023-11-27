@@ -1,9 +1,7 @@
-import { CustomDateField, CustomInput, CustomNumberInput, CustomTextArea, CustomTimeField } from "@/components/ui/input";
+import { CustomInput } from "@/components/ui/input";
 import { Button, Select } from "antd";
-import Link from "next/link";
 import { useState } from "react";
 import { SocialMediaAccountType } from 'troptix-models';
-import { IoMdClose } from "react-icons/io";
 
 export default function SocialMediaForm({ selectedAccount, setSelectedAccount, saveSocialMediaAccount, onClose }) {
   const [accountLinkPlaceholder, setAccountLinkPlaceholder] = useState("https://www.instagram.com/...");

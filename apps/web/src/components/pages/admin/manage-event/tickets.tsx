@@ -1,19 +1,19 @@
-import { CustomInput, CustomTextArea } from "@/components/ui/input";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import TicketForm from "./ticket-form";
-import { Button, Drawer, List, Popconfirm, Spin, message } from "antd";
+import { Spinner } from "@/components/ui/spinner";
+import { getFormattedCurrency } from "@/lib/utils";
+import { Button, Drawer, List, Popconfirm, Typography, message } from "antd";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { GetTicketTypesType, getTicketTypes, saveTicketType } from 'troptix-api';
 import { TicketType } from "troptix-models";
-import { GetTicketTypesType, GetTicketTypesRequest, getTicketTypes, saveTicketType } from 'troptix-api';
 import TicketCompForm from "./ticket-comp-form";
+import TicketForm from "./ticket-form";
+const { Paragraph } = Typography;
 
 export default function TicketsPage({ event }) {
   const router = useRouter();
   const eventId = router.query.eventId;
 
   const [messageApi, contextHolder] = message.useMessage();
-  const [show, setShow] = useState(false);
   const [open, setOpen] = useState(false);
   const [compTicketModalOpen, setCompTicketModalOpen] = useState(false);
   const [ticketTypes, setTicketTypes] = useState<any[]>([]);
@@ -109,9 +109,10 @@ export default function TicketsPage({ event }) {
       <div className="w-full md:max-w-2xl mr-8">
         {
           isFetchingTicketTypes ?
-            <Spin className="mt-16" tip="Fetching Tickets" size="large">
-              <div className="content" />
-            </Spin> :
+            <div className="mt-4">
+              <Spinner text={"Fetching Tickets"} />
+            </div>
+            :
             <div>
               <h2 className="text-2xl md:text-3xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Ticket Details</h2>
 
@@ -141,7 +142,10 @@ export default function TicketsPage({ event }) {
                           <Button danger>Delete</Button>
                         </Popconfirm>]}
                     >
-                      <div>{item.name}</div>
+                      <div>
+                        <p>{item.name}</p>
+                        <div className="text-green-700">{getFormattedCurrency(item.price)}</div>
+                      </div>
                     </List.Item>
                   )}
                 />

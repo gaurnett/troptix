@@ -1,6 +1,6 @@
 import Footer from "@/components/ui/footer";
-import ContactHero from "./contact-hero";
-import ContactFormPage from "./contact-form";
+import ContactFormPage from "../../components/pages/contact/contact-form";
+import ContactHero from "@/components/pages/contact/contact-hero";
 
 export default function ContactPage() {
   return (

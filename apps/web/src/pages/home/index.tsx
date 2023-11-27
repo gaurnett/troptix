@@ -1,18 +1,15 @@
+import Features from "@/components/pages/home/features";
+import LandingHero from "@/components/pages/home/hero";
+import Testimonials from "@/components/pages/home/testimonials";
 import Footer from "@/components/ui/footer";
-import LandingHero from "@/components/home/hero";
-import CurrentEvents from "@/components/home/current-events";
-import Features from "@/components/home/features";
-import Testimonials from "@/components/home/testimonials";
-import Newsletter from "@/components/home/newsletter";
 
 export default function LandingPage() {
   return (
     <main>
       <LandingHero />
-      {/* <CurrentEvents /> */}
       <Features />
       <Testimonials />
-      <Newsletter />
+      {/* <Newsletter /> */}
       <Footer />
     </main>
   );

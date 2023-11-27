@@ -1,16 +1,10 @@
-import _ from 'lodash';
-import { message, theme, Form } from 'antd';
-import { useContext } from 'react';
-import { TropTixContext } from '@/components/WebNavigator';
+import { Form, message } from 'antd';
 
 import { CustomInput } from '@/components/ui/input';
 
 export default function BillingForm({ checkout, setCheckout }) {
-  const { token } = theme.useToken();
 
   const [messageApi, contextHolder] = message.useMessage();
-  const { user } = useContext(TropTixContext);
-  const userId = user === null || user === undefined ? null : user.id;
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setCheckout((prevState) => ({

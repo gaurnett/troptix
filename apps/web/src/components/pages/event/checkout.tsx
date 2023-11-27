@@ -1,13 +1,11 @@
-import _ from 'lodash';
-import { message, Button, Spin, Modal, List, Steps, theme, Form } from 'antd';
+import { TropTixContext } from '@/components/WebNavigator';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import { Spin, message } from 'antd';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
-import { Event, getEventsFromRequest, Checkout, Order, Charge } from 'troptix-models';
-import { postOrders, PostOrdersType, PostOrdersRequest, getEvents, saveEvent, GetEventsRequest, GetEventsType } from 'troptix-api';
-import { TropTixContext } from '@/components/WebNavigator';
-import { useStripe, useElements, PaymentElement } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
+import { PostOrdersType, postOrders } from 'troptix-api';
+import { Charge, Order } from 'troptix-models';
 import PaymentForm from './payment-form';
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 const stripePromise = loadStripe(stripeKey ? stripeKey : "");
@@ -19,7 +17,6 @@ export default function CheckoutForm({
   setCompletePurchaseClicked,
   setIsStripeLoaded }) {
 
-  const [contextHolder] = message.useMessage();
   const { user } = useContext(TropTixContext);
   const userId = user === null || user === undefined ? undefined : user.id;
   const [fetchingStripeDetails, setFetchingStripeDetails] = useState(true);
@@ -82,7 +79,6 @@ export default function CheckoutForm({
         }
         await postOrders(postOrdersRequest);
       } catch (error) {
-        console.log("[openStripePayment] create order error: " + error);
         return;
       }
 
@@ -98,7 +94,6 @@ export default function CheckoutForm({
 
   useEffect(() => {
     if (isComplete) {
-      console.log("Completed");
       router.push({ pathname: "/order-confirmation", query: { orderId: orderId } })
     }
   }, [isComplete, orderId, router]);

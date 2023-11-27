@@ -1,9 +1,8 @@
-import { CustomDateField, CustomInput, CustomNumberInput, CustomTextArea, CustomTimeField } from "@/components/ui/input";
+import { CustomInput } from "@/components/ui/input";
 import { Button, Form, Select, message } from "antd";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Checkout, TicketFeeStructure, ComplementaryOrder, ComplementaryTicket } from 'troptix-models';
-import { postOrders, PostOrdersType, PostOrdersRequest } from 'troptix-api';
+import { PostOrdersType, postOrders } from 'troptix-api';
+import { ComplementaryOrder, ComplementaryTicket } from 'troptix-models';
 
 export default function TicketCompForm({ event, ticketTypes }) {
 
@@ -71,9 +70,6 @@ export default function TicketCompForm({ event, ticketTypes }) {
       }
       return;
     }
-
-    console.log(JSON.stringify(complementaryOrder));
-    // return;
 
     const postOrdersRequest = {
       type: PostOrdersType.POST_ORDERS_CREATE_COMPLEMENTARY_ORDER,

@@ -1,10 +1,8 @@
 import { Button, Input, List } from "antd";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function OrderCompListPage({ orders }) {
-  const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const filteredOrders = orders.filter(order => {
     const tickets = order.tickets;

@@ -1,20 +1,13 @@
-import _ from 'lodash';
-import { message, Button, Spin, Modal, List, Steps, theme, Table, Image } from 'antd';
-import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
-import { Event, getEventsFromRequest, Checkout, Order, Charge } from 'troptix-models';
-import { postOrders, PostOrdersType, PostOrdersRequest, getEvents, saveEvent, GetEventsRequest, GetEventsType } from 'troptix-api';
-import CheckoutForms from './tickets-checkout-forms';
 import { TropTixContext } from '@/components/WebNavigator';
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
-import BillingForm from './billing-form';
-import TicketsCheckoutForm from './tickets-checkout-forms';
-import CheckoutForm from './checkout';
-import { FaCartShopping } from "react-icons/fa6";
 import {
   ShoppingCartOutlined
 } from '@ant-design/icons';
+import { Button, Image, List, Modal, Steps, message } from 'antd';
+import { useContext, useEffect, useState } from 'react';
+import { Checkout } from 'troptix-models';
+import BillingForm from './billing-form';
+import CheckoutForm from './checkout';
+import TicketsCheckoutForm from './tickets-checkout-forms';
 
 export default function TicketModal({ event, isTicketModalOpen, setIsTicketModalOpen, handleCancel }) {
   const { user } = useContext(TropTixContext);
@@ -24,12 +17,9 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
 
   const [current, setCurrent] = useState(0);
   const [steps, setSteps] = useState<any>([]);
-  const [items, setItems] = useState<any>();
   const [fetchingCheckout, setFetchingCheckout] = useState(true);
-  const [fetchingItems, setFetchingItems] = useState(true);
   const [isStripeLoaded, setIsStripeLoaded] = useState(false);
   const [canShowMessage, setCanShowMessage] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
     if (isTicketModalOpen) {
@@ -61,10 +51,6 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
       },
     ])
   }, [checkout, event, completePurchaseClicked]);
-
-  useEffect(() => {
-    setItems(steps.map((item) => ({ key: item.title, title: item.title })));
-  }, [steps]);
 
   useEffect(() => {
     if (checkoutPreviousButtonClicked) {

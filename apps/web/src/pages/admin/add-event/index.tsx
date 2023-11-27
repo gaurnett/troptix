@@ -1,7 +1,7 @@
 import { Event } from "troptix-models";
 import { useContext, useState } from "react";
 import { TropTixContext } from "@/components/WebNavigator";
-import AddEventStarterPage from "./add-event-starter";
+import AddEventFormPage from "@/components/pages/admin/add-event/add-event-form";
 
 export default function AddEventPage() {
   const { user } = useContext(TropTixContext);
@@ -17,7 +17,7 @@ export default function AddEventPage() {
           Add Event
         </span>
       </h1>
-      <AddEventStarterPage event={event} setEvent={setEvent} />
+      <AddEventFormPage event={event} setEvent={setEvent} />
     </div>
   );
 }
