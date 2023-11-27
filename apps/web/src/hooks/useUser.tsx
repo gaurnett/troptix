@@ -92,7 +92,7 @@ export async function addUser(user: User) {
       throw new Error("Failed to add user");
     }
 
-    const json = await response.text();
+    const json = await response.json();
     return json;
   } catch (error) {
     console.error("Error adding user:", error);
