@@ -1,61 +1,12 @@
-import { CustomInput, CustomTextArea } from "@/components/ui/input";
+import { CustomTextArea } from "@/components/ui/input";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { message, Upload, Image, Button, Form } from "antd";
 import { RcFile } from "antd/es/upload";
 import { uploadFlyerToFirebase } from "@/firebase/storage";
 import { getDownloadURL } from "firebase/storage";
-import { useState } from "react";
 
 export default function DetailsPage({ event, setEvent, updateEvent }) {
-  const [file, setFile] = useState<any>();
-
-  // Handles input change event and updates state
-  function handleUploadChange(event) {
-    setFile(event.target.files[0]);
-  }
-
-  function handleUpload() {
-    if (!file) {
-      alert("Please choose a file first!");
-      return;
-    }
-    const uploadTask = uploadFlyerToFirebase(event.id, file.name, file);
-    message
-      .open({
-        key: 'update-flyer-loading',
-        type: 'loading',
-        content: 'Uploading Flyer..',
-        duration: 0,
-      });
-
-    uploadTask.on(
-      "state_changed",
-      (snapshot) => {
-        const percent = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        console.log("Percentage: " + percent);
-      },
-      (err) => {
-        console.log("Storage Error: " + JSON.stringify(err));
-        message.destroy('update-flyer-loading');
-        message.error(`${file.name} file upload failed.`);
-      },
-      () => {
-        console.log("Get download URL");
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          setEvent((previousEvent) => ({
-            ...previousEvent,
-            ["imageUrl"]: url,
-          }));
-
-          message.destroy('update-flyer-loading');
-          message.success(`${file.name} file uploaded successfully.`);
-        });
-      }
-    );
-  }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setEvent((previousEvent) => ({
@@ -70,15 +21,8 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
     listType: "picture",
     maxCount: 1,
     action: '/api/noop',
-    // headers: {
-    //   "authorization": "authorization-text",
-    //   "Access-Control-Allow-Methods": "POST",
-    //   "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
-    //   'Content-Type': 'multipart/form-data',
-    // },
     async onChange(info) {
       const { status } = info.file;
-      console.log("Status: " + status);
       if (status === "done") {
         const rcFile = info.file.originFileObj as RcFile;
 
@@ -97,15 +41,12 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
             const percent = Math.round(
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100
             );
-            console.log("Percentage: " + percent);
           },
           (err) => {
-            console.log("Storage Error: " + JSON.stringify(err));
             message.destroy('update-flyer-loading');
             message.error(`${info.file.name} file upload failed.`);
           },
           () => {
-            console.log("Get download URL");
             getDownloadURL(uploadTask.snapshot.ref).then((url) => {
               setEvent((previousEvent) => ({
                 ...previousEvent,
@@ -118,12 +59,10 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
           }
         );
       } else if (status === "error") {
-        console.log("Error Type: " + JSON.stringify(info))
         message.error(`${info.file.name} file upload failed.`);
       }
     },
     onDrop(e) {
-      console.log("Drop: " + JSON.stringify(e))
     },
   };
 
@@ -167,9 +106,6 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
                 Click to upload event flyer
               </Button>
             </Upload>
-            <label>File</label>
-            <input id="file" type="file" onChange={handleUploadChange} />
-            <button onClick={handleUpload}>Upload</button>
           </div>
         </div>
 
