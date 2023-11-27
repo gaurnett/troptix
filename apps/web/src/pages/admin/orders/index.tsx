@@ -1,6 +1,7 @@
 
 import { TropTixContext } from '@/components/WebNavigator';
-import { Image, List, Spin } from 'antd';
+import { Spinner } from '@/components/ui/spinner';
+import { Image, List } from 'antd';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import { GetEventsType, getEvents } from 'troptix-api';
@@ -74,9 +75,10 @@ export default function OrdersPage() {
             />
           </div>
           :
-          <Spin className="mt-16" tip="Fetching Events" size="large">
-            <div className="content" />
-          </Spin>}
+          <div className="mt-8">
+            <Spinner text={"Fetching Events"} />
+          </div>
+        }
       </div>
 
     </div>

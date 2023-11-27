@@ -1,7 +1,8 @@
 import { TropTixContext } from '@/components/WebNavigator';
+import { Spinner } from '@/components/ui/spinner';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { Spin, message } from 'antd';
+import { message } from 'antd';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { PostOrdersType, postOrders } from 'troptix-api';
@@ -99,13 +100,14 @@ export default function CheckoutForm({
   }, [isComplete, orderId, router]);
 
   return (
-    <div className="w-full md:max-w-2xl mx-auto h-full">
+    <div className="w-full md:max-w-2xl mx-auto h-full overflow-x-hidden overflow-y-auto	">
       <div className='flex flex-col h-full'>
         {
           fetchingStripeDetails ?
-            <Spin className="mt-32" tip="Initializing Card Details" size="large">
-              <div className="content" />
-            </Spin> :
+            <div className="mt-32">
+              <Spinner text={"Initializing Card Detail"} />
+            </div>
+            :
             <Elements stripe={stripePromise} options={options}>
               <PaymentForm
                 orderId={orderId}

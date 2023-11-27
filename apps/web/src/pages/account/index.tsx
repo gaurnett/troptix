@@ -1,9 +1,9 @@
 import { CustomInput } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { useFetchUser, useUpdateUser } from "@/hooks/useUser";
 import {
   Button,
   Form,
-  Spin,
   message
 } from "antd";
 import { updateProfile } from "firebase/auth";
@@ -220,9 +220,9 @@ export default function AccountPage() {
             </div>
           </Form>
         ) : (
-          <Spin className="mt-16" tip="Fetching User" size="large">
-            <div className="content" />
-          </Spin>
+          <div className="mt-8">
+            <Spinner text={"Fetching User"} />
+          </div>
         )}
       </div>
     </div>

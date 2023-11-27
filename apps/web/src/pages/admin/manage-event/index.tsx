@@ -4,7 +4,7 @@ import OrdersPage from "@/components/pages/admin/manage-event/orders";
 import PromotionCodesPage from "@/components/pages/admin/manage-event/promotions-codes";
 import TicketsPage from "@/components/pages/admin/manage-event/tickets";
 import UserDelegationPage from "@/components/pages/admin/manage-event/user-delegation";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { Spinner } from "@/components/ui/spinner";
 import { RequestType, useFetchEventsById } from "@/hooks/useFetchEvents";
 import { useEditEvent } from "@/hooks/usePostEvent";
 import { useQueryClient } from "@tanstack/react-query";
@@ -205,10 +205,9 @@ export default function ManageEventPage() {
           </div>
         </div>
       ) : (
-        // <Spin className="mt-16" tip="Fetching Event" size="large">
-        //   <div className="content" />
-        // </Spin>
-        <LoadingSpinner>Fetching Event</LoadingSpinner>
+        <div className="mt-8">
+          <Spinner text={"Fetching Event"} />
+        </div>
       )}
     </div>
   );

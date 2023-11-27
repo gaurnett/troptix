@@ -1,4 +1,5 @@
-import { Card, List, Progress, Spin, Statistic } from "antd";
+import { Spinner } from "@/components/ui/spinner";
+import { Card, List, Progress, Statistic } from "antd";
 import { useEffect, useState } from "react";
 import { OrderSummary } from "troptix-models";
 import QuantityChart from "./quantity-chart";
@@ -61,9 +62,10 @@ export default function OrderSummaryPage({ orders }) {
     <div className="w-full mr-8">
       {
         isFetchingEvents ?
-          <Spin className="mt-16" tip="Fetching Order Summary" size="large">
-            <div className="content" />
-          </Spin> :
+          <div className="container mx-auto p-4">
+            <Spinner text={"Fetching Order Summary"} />
+          </div>
+          :
           <div>
             <div className="md:flex">
               <div className="w-full mb-4 md:mr-4">

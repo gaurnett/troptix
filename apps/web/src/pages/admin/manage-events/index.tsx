@@ -1,8 +1,9 @@
-import { useContext } from "react";
 import { TropTixContext } from "@/components/WebNavigator";
-import Link from "next/link";
-import { List, Spin, Image } from "antd";
+import { Spinner } from "@/components/ui/spinner";
 import { RequestType, useFetchEventsById } from "@/hooks/useFetchEvents";
+import { Image, List } from "antd";
+import Link from "next/link";
+import { useContext } from "react";
 
 export default function ManageEventsPage() {
   const { user } = useContext(TropTixContext);
@@ -70,9 +71,9 @@ export default function ManageEventsPage() {
             />
           </div>
         ) : (
-          <Spin className="mt-16" tip="Fetching Events" size="large">
-            <div className="content" />
-          </Spin>
+          <div className="mt-8">
+            <Spinner text={"Fetching Events"} />
+          </div>
         )}
       </div>
     </div>

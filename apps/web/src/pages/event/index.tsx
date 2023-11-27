@@ -1,7 +1,8 @@
 import TicketDrawer from "@/components/pages/event/ticket-drawer";
 import TicketModal from "@/components/pages/event/ticket-modal";
+import { Spinner } from "@/components/ui/spinner";
 import { RequestType, useFetchEventsById } from "@/hooks/useFetchEvents";
-import { Button, Spin, Typography } from "antd";
+import { Button, Typography } from "antd";
 import { format } from "date-fns";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -54,12 +55,8 @@ export default function EventDetailPage() {
   return (
     <>
       {isPending ? (
-        <div className="">
-          <div className={`max-w-4xl mx-auto p-4 sm:p-8`}>
-            <Spin className="mt-32" tip="Fetching Event" size="large">
-              <div className="content" />
-            </Spin>
-          </div>
+        <div className="mt-32">
+          <Spinner text={"Fetching Event"} />
         </div>
       ) : (
         <div
