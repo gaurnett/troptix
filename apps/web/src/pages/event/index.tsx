@@ -139,13 +139,13 @@ export default function EventDetailPage() {
                     >
                       About
                     </h2>
-                    <div className="">
+                    <div className="text-base">
                       Starts:{" "}
                       {getDateFormatter(
                         new Date(event.startDate)
                       )}
                     </div>
-                    <div className="">
+                    <div className="text-base">
                       Ends:{" "}
                       {getDateFormatter(
                         new Date(event.endDate)
@@ -161,7 +161,7 @@ export default function EventDetailPage() {
                       Description
                     </h2>
                     <Paragraph
-                      className="mt-2 text-justify"
+                      className="mt-2 text-justify text-base"
                       ellipsis={{
                         rows: 2,
                         expandable: true,
@@ -179,8 +179,8 @@ export default function EventDetailPage() {
                     >
                       Venue
                     </h2>
-                    <div className="text-3xl font-extrabold">{event.venue}</div>
-                    <div className="text-xl ">{event.address}</div>
+                    <div className="text-base">{event.venue}</div>
+                    <div className="text-base">{event.address}</div>
                     {/* <div style={{ height: 300 }} className="w-full h-150 mt-2">
                         <GoogleMapReact
                           bootstrapURLKeys={{ key: googleMapsKey }}
