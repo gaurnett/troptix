@@ -69,12 +69,13 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
     multiple: false,
     listType: "picture",
     maxCount: 1,
-    headers: {
-      "authorization": "authorization-text",
-      "Access-Control-Allow-Methods": "POST",
-      "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
-      'Content-Type': 'multipart/form-data',
-    },
+    action: '/api/noop',
+    // headers: {
+    //   "authorization": "authorization-text",
+    //   "Access-Control-Allow-Methods": "POST",
+    //   "Access-Control-Allow-Headers": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+    //   'Content-Type': 'multipart/form-data',
+    // },
     async onChange(info) {
       const { status } = info.file;
       console.log("Status: " + status);
