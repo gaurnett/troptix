@@ -38,6 +38,7 @@ export function getPrismaCreateUserQuery(account) {
   let user: Prisma.UsersCreateInput;
 
   user = {
+    id: account.id,
     name: account.name,
     email: account.email
   }

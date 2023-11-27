@@ -86,7 +86,7 @@ export default function AccountPage() {
     });
   }
 
-  const onFinishFailed = (errorInfo: any) => {};
+  const onFinishFailed = (errorInfo: any) => { };
 
   function transformAccountType(accountType: string) {
     switch (accountType) {
