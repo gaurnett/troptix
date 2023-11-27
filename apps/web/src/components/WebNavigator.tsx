@@ -13,6 +13,7 @@ import { useRouter } from "next/router";
 import { app } from "../config";
 import { getRemoteConfig } from "firebase/remote-config";
 import { getValue, fetchAndActivate } from "firebase/remote-config";
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,9 +33,6 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
   const [loading, setLoading] = useState(true);
   const [showHeader, setShowHeader] = useState(true);
   const router = useRouter();
-  // const remoteConfig = getRemoteConfig(app);
-  // const organizerList = getValue(remoteConfig, "TROPTIX_ORGANIZER_ALLOW_LIST");
-  // console.log(organizerList);
 
   useEffect(() => {
     if (
@@ -125,6 +123,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
             className={`${inter.variable} font-inter antialiased bg-white text-gray-900 tracking-tight`}
           >
             <div className="flex flex-col min-h-screen overflow-hidden supports-[overflow:clip]:overflow-clip">
+              <Analytics />
               {!pathname.includes("admin") ?
                 <div>
                   {showHeader ? <Header /> : <></>}

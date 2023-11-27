@@ -96,7 +96,8 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
       if (checkout.total === 0) {
         if (canShowMessage) {
           setCanShowMessage(false);
-          message.warning("Please select a ticket quantity");
+          message.warning("Please select a ticket quantity")
+            .then(() => setCanShowMessage(true));
         }
         return;
       }
@@ -111,7 +112,8 @@ export default function TicketDrawer({ event, isTicketModalOpen, setIsTicketModa
         || checkUndefinedOrNull(checkout.billingState)) {
         if (canShowMessage) {
           setCanShowMessage(false);
-          message.warning("Please fill in required fields");
+          message.warning("Please fill in required fields")
+            .then(() => setCanShowMessage(true));
         }
         return;
       }

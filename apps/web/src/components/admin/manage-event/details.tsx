@@ -1,4 +1,4 @@
-import { CustomInput, CustomTextArea } from "@/components/ui/input";
+import { CustomTextArea } from "@/components/ui/input";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { message, Upload, Image, Button, Form } from "antd";
@@ -7,6 +7,7 @@ import { uploadFlyerToFirebase } from "@/firebase/storage";
 import { getDownloadURL } from "firebase/storage";
 
 export default function DetailsPage({ event, setEvent, updateEvent }) {
+
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setEvent((previousEvent) => ({
       ...previousEvent,
@@ -19,6 +20,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
     multiple: false,
     listType: "picture",
     maxCount: 1,
+    action: '/api/noop',
     async onChange(info) {
       const { status } = info.file;
       if (status === "done") {
@@ -60,7 +62,8 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    onDrop(e) { },
+    onDrop(e) {
+    },
   };
 
   return (

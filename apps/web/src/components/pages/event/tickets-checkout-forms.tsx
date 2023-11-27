@@ -167,7 +167,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   }
 
   function getFormattedFeesCurrency(price) {
-    price = price * .1;
+    price = price * .05;
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -298,14 +298,14 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
                     <div className="my-auto">
                       <div
                         className='flex h-16'>
-                        <div className='w-4/5 my-auto'>{ticket.name}</div>
-                        <div className='w-1/5 flex my-auto justify-center items-center'>
+                        <div className='md:w-4/5 grow my-auto'>{ticket.name}</div>
+                        <div className='md:w-1/5 flex my-auto justify-center items-center'>
                           <div>
                             {
-                              ticketState !== undefined ?
+                              ticketState === undefined ?
                                 <div
                                   className='text-center text-md font-bold'>
-                                  {ticketState}
+                                  {`Sale starts ${format(new Date(ticket.saleStartDate), 'MMM/dd/yyyy hh:mm a')}`}
                                 </div>
                                 :
                                 <div className='flex'>
@@ -350,7 +350,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
                             :
                             <div className='text-base font-bold'>{getFormattedCurrency(ticket.price)}</div>
                         }
-                        <div className='my-auto text-gray-500'>&nbsp;+ {getFormattedFeesCurrency(ticket.price)} fees</div>
+                        <div className='my-auto text-gray-500'>&nbsp;+ {ticket.ticketingFees === "PASS_TICKET_FEES" ? getFormattedFeesCurrency(ticket.price) : getFormattedCurrency(0)} fees</div>
                       </div>
                       <div className='text-sm'>Sale ends: {getDateFormatter(ticket.saleEndDate, ticket.saleEndTime)}</div>
                       <div>

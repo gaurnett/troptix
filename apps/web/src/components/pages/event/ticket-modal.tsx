@@ -99,7 +99,8 @@ export default function TicketModal({ event, isTicketModalOpen, setIsTicketModal
         || checkUndefinedOrNull(checkout.billingState)) {
         if (canShowMessage) {
           setCanShowMessage(false);
-          message.warning("Please fill in required fields");
+          message.warning("Please fill in required fields")
+            .then(() => setCanShowMessage(true));
         }
         return;
       }
