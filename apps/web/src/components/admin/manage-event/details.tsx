@@ -69,6 +69,9 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
     multiple: false,
     listType: "picture",
     maxCount: 1,
+    headers: {
+      authorization: 'authorization-text',
+    },
     async onChange(info) {
       const { status } = info.file;
       console.log("Status: " + status);
