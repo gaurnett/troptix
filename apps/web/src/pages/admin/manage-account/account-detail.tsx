@@ -9,9 +9,9 @@ export default function AccountDetails({ adminUser, setAdminUser }) {
     }));
   }
 
-  async function onFinish(values: any) {}
+  async function onFinish(values: any) { }
 
-  const onFinishFailed = (errorInfo: any) => {};
+  const onFinishFailed = (errorInfo: any) => { };
 
   return (
     <div className="w-full md:max-w-2xl mx-auto">
@@ -35,6 +35,7 @@ export default function AccountDetails({ adminUser, setAdminUser }) {
             <div className="w-full px-3">
               <CustomInput
                 value={adminUser.email}
+                disabled={true}
                 name={"organizer"}
                 id={"organizer"}
                 label={"Email"}

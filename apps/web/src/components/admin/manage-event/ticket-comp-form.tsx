@@ -118,7 +118,7 @@ export default function TicketCompForm({ event, ticketTypes }) {
           </div>
         </div>
         <div className="flex flex-wrap mb-4">
-          <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={"ticketingFees"}>Fee Structure</label>
+          <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={"ticketingFees"}>Ticket Type</label>
           <Select
             className="sm:w-screen w-full h-12 text-gray-800"
             id="ticketingFees"

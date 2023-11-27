@@ -1,6 +1,6 @@
 import { SignUpFields } from "@/pages/auth/signup";
 import { auth } from "../config";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from "firebase/auth";
+import { fetchSignInMethodsForEmail, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from "firebase/auth";
 import { addUser } from 'troptix-api';
 import { User } from 'troptix-models';
 import { NextRouter } from "next/router";
@@ -61,11 +61,16 @@ export async function signInWithGoogle() {
     result = await signInWithPopup(auth, new GoogleAuthProvider())
       .then(async (result) => {
         const userResult = result.user;
-        const user = new User();
-        user.id = userResult.uid
-        user.name = userResult.displayName;
-        user.email = userResult.email;
-        await addUser(user);
+        const userEmail = userResult.email ? userResult.email : "";
+        const methods = await fetchSignInMethodsForEmail(auth, userEmail);
+
+        if (methods.length === 0) {
+          const user = new User();
+          user.id = userResult.uid
+          user.name = userResult.displayName;
+          user.email = userResult.email;
+          await addUser(user);
+        }
       });
   } catch (e) {
     error = e;
