@@ -33,3 +33,14 @@ export function getPrismaUpdateUserQuery(account) {
 
   return user;
 }
+
+export function getPrismaCreateUserQuery(account) {
+  let user: Prisma.UsersCreateInput;
+
+  user = {
+    name: account.name,
+    email: account.email
+  }
+
+  return user;
+}
