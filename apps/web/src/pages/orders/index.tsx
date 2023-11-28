@@ -11,20 +11,24 @@ export default function TicketsPage() {
   const userId = user === null || user === undefined ? null : user.id;
   const [isFetchingOrders, setIsFetchingOrders] = useState(true);
   const [orders, setOrders] = useState<any>([]);
-  const [width, setWidth] = useState<number>(window.innerWidth);
-
-  function handleWindowSizeChange() {
-    setWidth(window.innerWidth);
-  }
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' && window.innerWidth < 768
+  );
 
   useEffect(() => {
-    window.addEventListener("resize", handleWindowSizeChange);
-    return () => {
-      window.removeEventListener("resize", handleWindowSizeChange);
-    };
-  }, []);
+    function handleResize() {
+      setIsMobile(window.innerWidth < 768);
+    }
 
-  const isMobile = width <= 768;
+    if (typeof window !== 'undefined') {
+      handleResize();
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isMobile]);
 
   useEffect(() => {
     async function fetchOrders() {
