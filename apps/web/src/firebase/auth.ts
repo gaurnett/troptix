@@ -1,9 +1,9 @@
 import { SignUpFields } from "@/pages/auth/signup";
-import { auth } from "../config";
-import { fetchSignInMethodsForEmail, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, sendEmailVerification, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from "firebase/auth";
+import { GoogleAuthProvider, createUserWithEmailAndPassword, getAdditionalUserInfo, sendEmailVerification, sendPasswordResetEmail, signInWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import { NextRouter } from "next/router";
 import { addUser } from 'troptix-api';
 import { User } from 'troptix-models';
-import { NextRouter } from "next/router";
+import { auth } from "../config";
 
 export async function signUpWithEmail(signUpFields: SignUpFields, router: NextRouter) {
   let result: any, error: any;
@@ -62,9 +62,9 @@ export async function signInWithGoogle() {
       .then(async (result) => {
         const userResult = result.user;
         const userEmail = userResult.email ? userResult.email : "";
-        const methods = await fetchSignInMethodsForEmail(auth, userEmail);
+        const additionalInfo = getAdditionalUserInfo(result);
 
-        if (methods.length === 0) {
+        if (additionalInfo?.isNewUser) {
           const user = new User();
           user.id = userResult.uid
           user.name = userResult.displayName;
