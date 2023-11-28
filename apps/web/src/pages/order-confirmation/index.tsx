@@ -36,9 +36,8 @@ export default function OrderConfirmationPage() {
           setOrder(response);
         }
       } catch (error) {
+        setIsFetchingOrders(false);
       }
-
-      setIsFetchingOrders(false);
     };
 
     fetchOrders();
@@ -71,6 +70,7 @@ export default function OrderConfirmationPage() {
     });
 
     setData(Array.from(orderMap.values()));
+    setIsFetchingOrders(false);
   }, [order])
 
   const columns: ColumnsType<DataType> = [
