@@ -3,8 +3,8 @@ import { getBuffer, updateSuccessfulOrder, updateTicketTypeQuantitySold } from "
 import prisma from "../prisma/prisma";
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-// const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
-const endpointSecret = 'whsec_570f36e545a3bc4d66bf9501ae42327ebb200303a4d9068d39bb7821e48b50ff';
+const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
+// const endpointSecret = 'whsec_570f36e545a3bc4d66bf9501ae42327ebb200303a4d9068d39bb7821e48b50ff';
 
 // stripe trigger payment_intent.succeeded
 // stripe listen --forward-to localhost:3001/api/stripe
