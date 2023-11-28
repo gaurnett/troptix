@@ -44,8 +44,8 @@ export default function ManageEventsPage() {
                       <div>
                         <Image
                           preview={false}
-                          width={75}
-                          height={75}
+                          width={110}
+                          height={110}
                           className="w-auto"
                           style={{ objectFit: "cover" }}
                           src={
@@ -57,10 +57,10 @@ export default function ManageEventsPage() {
                         />
                       </div>
                       <div className="ml-4 my-auto">
-                        <div>{event.name}</div>
-                        <div>{event.address}</div>
-                        <div>{new Date(event.startDate).toDateString()}</div>
-                        <div className="text-blue-500">
+                        <div className="font-bold text-xl">{event.name}</div>
+                        <div className="text-base">{event.address}</div>
+                        <div className="text-blue-500 text-base">{new Date(event.startDate).toDateString()}</div>
+                        <div className={`${event.isDraft ? "text-amber-900" : "text-green-600"} text-amber-900 text-base`}>
                           Status: {event.isDraft ? "Draft" : "Published"}
                         </div>
                       </div>
