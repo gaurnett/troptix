@@ -15,20 +15,24 @@ export default function EventDetailPage() {
   const router = useRouter();
   const eventId = router.query.eventId as string;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
-  const [width, setWidth] = useState<number>(window.innerWidth);
-
-  function handleWindowSizeChange() {
-    setWidth(window.innerWidth);
-  }
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' && window.innerWidth < 768
+  );
 
   useEffect(() => {
-    window.addEventListener("resize", handleWindowSizeChange);
-    return () => {
-      window.removeEventListener("resize", handleWindowSizeChange);
-    };
-  }, []);
+    function handleResize() {
+      setIsMobile(window.innerWidth < 768);
+    }
 
-  const isMobile = width <= 768;
+    if (typeof window !== 'undefined') {
+      handleResize();
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isMobile]);
 
   const {
     isPending,
@@ -61,7 +65,7 @@ export default function EventDetailPage() {
       ) : (
         <div
           style={{
-            backgroundImage: `url("${event.imageUrl ??
+            backgroundImage: `url("${event?.imageUrl ??
               "https://placehold.co/400x400?text=Add+Event+Flyer"
               }")`,
             backgroundRepeat: "no-repeat",
@@ -73,14 +77,12 @@ export default function EventDetailPage() {
             <TicketDrawer
               event={event}
               isTicketModalOpen={isTicketModalOpen}
-              setIsTicketModalOpen={setIsTicketModalOpen}
               handleCancel={handleCancel}
             />
           ) : (
             <TicketModal
               event={event}
               isTicketModalOpen={isTicketModalOpen}
-              setIsTicketModalOpen={setIsTicketModalOpen}
               handleCancel={handleCancel}
             />
           )}

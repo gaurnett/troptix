@@ -1,12 +1,11 @@
 import { TropTixContext } from "@/components/WebNavigator";
-import { useContext } from "react";
-import { Charge } from "./types/Charge";
-import { prodUrl } from "./useFetchEvents";
-import { useQuery } from "@tanstack/react-query";
-import { useMutation } from "@tanstack/react-query";
-import { Checkout } from "./types/Checkout";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { message } from "antd";
+import { useContext } from "react";
 import { Order } from "troptix-models";
+import { Charge } from "./types/Charge";
+import { Checkout } from "./types/Checkout";
+import { prodUrl } from "./useFetchEvents";
 
 export enum GetOrdersType {
   GET_ORDERS_FOR_USER = "GET_ORDERS_FOR_USER",
@@ -76,63 +75,36 @@ export async function getOrders({ getOrdersType, id }: GetOrdersRequest) {
   }
 }
 
-export function useFetchPaymentSheet() {
-  return useMutation({
-    mutationFn: postCharge,
-  });
-}
-
-async function postCharge({
-  checkout,
-  userId,
-}: {
-  checkout: Checkout;
-  userId: string;
-}) {
-  return await postOrders({
-    type: PostOrdersType.POST_ORDERS_CREATE_CHARGE,
-    charge: createCharge(checkout, userId),
-  });
-}
-
-export function useCreatePaymentSheet() {
+export function useCreateOrder() {
   return useMutation({
     mutationFn: async ({
       checkout,
       userId,
       eventId,
+      paymentId,
+      customerId
     }: {
       checkout: Checkout;
       userId: string;
       eventId: string;
+      paymentId: string;
+      customerId: string;
     }) => {
-      const chargeMutation = useFetchPaymentSheet();
-      const { paymentId, clientSecret, customerId } =
-        await chargeMutation.mutateAsync({
-          checkout,
-          userId,
-        });
       if (!paymentId) {
         message.error(
           "There was a problem with your request, please try again later"
         );
       }
 
-      postOrders({
+      const order = new Order(checkout, paymentId, eventId, userId, customerId);
+      await postOrders({
         type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
-        order: new Order(checkout, paymentId, eventId, userId, customerId),
+        order: order,
       });
-      return { paymentId, clientSecret };
+
+      return order.id;
     },
   });
-}
-
-function createCharge(checkout: Checkout, userId: string): Charge {
-  const total = checkout.promotionApplied
-    ? checkout.discountedTotal * 100
-    : checkout.total * 100;
-  const charge: Charge = { total, userId };
-  return charge;
 }
 
 export async function postOrders({ type, order, charge }: PostOrdersRequest) {

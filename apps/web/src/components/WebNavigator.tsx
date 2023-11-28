@@ -106,7 +106,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
           }
       }
     >
-      {loading ? (
+      {loading && (pathname === '/' || pathname === '/home') ? (
         <>
           <Spin className="flex h-screen items-center justify-center" indicator={<LoadingOutlined style={{ fontSize: 84 }} spin />} />
         </>

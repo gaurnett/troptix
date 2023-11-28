@@ -86,6 +86,10 @@
     {
       "source": "/api/contact",
       "destination": "./api/contact.js"
+    },
+    {
+      "source": "/api/stripe",
+      "destination": "./api/stripe.js"
     }
   ]
 }
