@@ -6,58 +6,59 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
 
         {/* Top area: Blocks */}
-        <div className="grid sm:grid-cols-11 gap-8 pb-8 md:py-12 border-t border-gray-200">
+        <div className='border-t border-gray-200'>
+          <div className="max-w-xl flex w-full mx-auto my-8 justify-items-center px-2">
 
-          {/* 1st block */}
-          <div className=" sm:col-span-12 lg:col-span-3">
+            {/* 1st block */}
+
+            {/* 2nd block */}
+            <div className="w-1/2">
+              <h6 className="text-gray-800 font-medium mb-2">Contact</h6>
+              <ul className="text-sm">
+                <li className="mb-2">
+                  <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Contact Us</Link>
+                </li>
+                <li className="mb-2">
+                  <Link href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Privacy Policy</Link>
+                </li>
+                <li className="mb-2">
+                  <Link href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Terms</Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* 3rd block */}
+            <div className="w-1/2">
+              <h6 className="text-gray-800 font-medium mb-2">Events</h6>
+              <ul className="text-sm">
+                <li className="mb-2">
+                  <Link href="/events" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Explore Events</Link>
+                </li>
+                <li className="mb-2">
+                  <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Support Center</Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* 4th block */}
+            <div className="sm:col-span-6 md:col-span-3 lg:col-span-2">
+              <h6 className="text-gray-800 font-medium mb-2">Company</h6>
+              <ul className="text-sm">
+                <li className="mb-2">
+                  <Link href="/" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Home</Link>
+                </li>
+                <li className="mb-2">
+                  <Link href="/about" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">About us</Link>
+                </li>
+                {/* <li className="mb-2">
+      <a href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Pricing</a>
+    </li> */}
+              </ul>
+            </div>
+
           </div>
-
-          {/* 2nd block */}
-          <div className="sm:col-span-6 md:col-span-3 lg:col-span-2">
-            <h6 className="text-gray-800 font-medium mb-2">Contact</h6>
-            <ul className="text-sm">
-              <li className="mb-2">
-                <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Contact Us</Link>
-              </li>
-              <li className="mb-2">
-                <Link href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Privacy Policy</Link>
-              </li>
-              <li className="mb-2">
-                <Link href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Terms and Conditions</Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* 3rd block */}
-          <div className="sm:col-span-6 md:col-span-3 lg:col-span-2">
-            <h6 className="text-gray-800 font-medium mb-2">Events</h6>
-            <ul className="text-sm">
-              <li className="mb-2">
-                <Link href="/events" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Explore Events</Link>
-              </li>
-              <li className="mb-2">
-                <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Support Center</Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* 4th block */}
-          <div className="sm:col-span-6 md:col-span-3 lg:col-span-2">
-            <h6 className="text-gray-800 font-medium mb-2">Company</h6>
-            <ul className="text-sm">
-              <li className="mb-2">
-                <Link href="/" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Home</Link>
-              </li>
-              <li className="mb-2">
-                <Link href="/about" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">About us</Link>
-              </li>
-              {/* <li className="mb-2">
-                <a href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Pricing</a>
-              </li> */}
-            </ul>
-          </div>
-
         </div>
+
 
         {/* Bottom area */}
         <div className="md:flex md:items-center md:justify-between py-4 md:py-8 border-t border-gray-200">
