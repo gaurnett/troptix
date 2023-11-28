@@ -10,11 +10,13 @@ const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
 // stripe listen --forward-to localhost:3001/api/stripe
 
 export default async function handler(request, response) {
-  const { method } = request;
+  const { body, method } = request;
 
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for stripe endpoint' });
   }
+
+  console.log(body);
 
   switch (method) {
     case "POST":
@@ -22,7 +24,7 @@ export default async function handler(request, response) {
     case "OPTIONS":
       return response.status(200).end();
     default:
-      break;
+      return response.status(500).json("No type set");
   }
 }
 
