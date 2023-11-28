@@ -113,7 +113,6 @@ async function createCharge(body, response) {
 async function stripePaymentIntentSucceeded(body, headers, request, response) {
   let event = body;
   if (endpointSecret) {
-    // Get the signature sent by Stripe
     const signature = headers['stripe-signature'];
     const buf = await getBuffer(request);
     try {
