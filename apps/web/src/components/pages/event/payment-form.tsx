@@ -1,5 +1,5 @@
 import { CustomInput } from '@/components/ui/input';
-import { AddressElement, PaymentElement, PaymentRequestButtonElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { message } from 'antd';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -14,29 +14,29 @@ export default function PaymentForm({
   const router = useRouter();
   const [paymentRequest, setPaymentRequest] = useState<any>(null);
 
-  useEffect(() => {
-    if (stripe) {
-      const pr = stripe.paymentRequest({
-        country: 'US',
-        currency: 'usd',
-        total: {
-          label: 'Demo total',
-          amount: 1099,
-        },
-        requestPayerName: true,
-        requestPayerEmail: true,
-      });
+  // useEffect(() => {
+  //   if (stripe) {
+  //     const pr = stripe.paymentRequest({
+  //       country: 'US',
+  //       currency: 'usd',
+  //       total: {
+  //         label: 'Demo total',
+  //         amount: 1099,
+  //       },
+  //       requestPayerName: true,
+  //       requestPayerEmail: true,
+  //     });
 
-      console.log("PR: " + JSON.stringify(pr));
-      // Check the availability of the Payment Request API.
-      pr.canMakePayment().then(result => {
-        console.log("Result: " + JSON.stringify(result));
-        if (result) {
-          setPaymentRequest(pr);
-        }
-      });
-    }
-  }, [stripe]);
+  //     console.log("PR: " + JSON.stringify(pr));
+  //     // Check the availability of the Payment Request API.
+  //     pr.canMakePayment().then(result => {
+  //       console.log("Result: " + JSON.stringify(result));
+  //       if (result) {
+  //         setPaymentRequest(pr);
+  //       }
+  //     });
+  //   }
+  // }, [stripe]);
 
   useEffect(() => {
     async function completeStripePurchase() {
@@ -102,7 +102,7 @@ export default function PaymentForm({
       </div>
       <AddressElement className='px-2' options={{ mode: 'billing' }} />
       <PaymentElement className='grow h-full overflow-hidden px-2' />
-      {paymentRequest && <PaymentRequestButtonElement options={{ paymentRequest }} />}
+      {/* {paymentRequest && <PaymentRequestButtonElement options={{ paymentRequest }} />} */}
     </div>
   );
 }
