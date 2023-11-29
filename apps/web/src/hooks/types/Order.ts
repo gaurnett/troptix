@@ -20,4 +20,5 @@ type Order = {
   billingState: string;
   billingCountry: string;
   tickets: Ticket[];
+  ticketsLink?: string;
 };

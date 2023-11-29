@@ -1,11 +1,10 @@
+import { format } from 'date-fns';
+import { Image } from 'expo-image';
 import _ from 'lodash';
-import { Carousel, Colors, Text, View } from "react-native-ui-lib";
 import { Platform, ScrollView, StyleSheet } from "react-native";
 import QRCode from 'react-native-qrcode-svg';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Image } from 'expo-image';
-import { format } from 'date-fns'
+import { Carousel, Colors, Text, View } from "react-native-ui-lib";
 
 export default function TicketDetailsScreen({ route }) {
   const { summary } = route.params;
@@ -37,7 +36,7 @@ export default function TicketDetailsScreen({ route }) {
               Name
             </Text>
             <Text style={[styles.itemBody]} $textDefault>
-              Gaurnett Flowers
+              {summary.name}
             </Text>
           </View>
 

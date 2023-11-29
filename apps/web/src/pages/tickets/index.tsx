@@ -1,6 +1,6 @@
 import { Spinner } from "@/components/ui/spinner";
 import { GetOrdersType, useFetchOrderById } from "@/hooks/useOrders";
-import { Button, Carousel, Divider, QRCode } from "antd";
+import { Button, Carousel, Divider, QRCode, Result } from "antd";
 import { format } from 'date-fns';
 import JsPDF from 'jspdf';
 import Link from "next/link";
@@ -80,7 +80,7 @@ export default function TicketsPage() {
               </Divider>
               <div className="mt-2 mb-2">
                 <label className="block text-base font-base text-blue-500">Name</label>
-                <p className="text-2xl font-bold">Gaurnett Flowers</p>
+                <p className="text-2xl font-bold">{order.name}</p>
               </div>
               {renderTicketRow("Event", event.name)}
               {renderTicketRow("Ticket", ticket.ticketType.name)}
@@ -115,6 +115,19 @@ export default function TicketsPage() {
       </div>
     )
   }
+
+  if (!order) {
+    return (
+      <Result
+        status="error"
+        title="No Order Found"
+        className="mt-32"
+        subTitle="No order found with that Order ID."
+      />
+    )
+  }
+
+  console.log("Orderrrr: " + order);
 
   return (
     <div className="mt-32 mb-8 w-full md:max-w-3xl mx-auto">
