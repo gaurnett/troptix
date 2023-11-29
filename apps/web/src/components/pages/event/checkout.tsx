@@ -28,7 +28,7 @@ export default function CheckoutForm({
             clientSecret: clientSecret,
             loader: 'always',
             appearance: {
-              theme: 'flat'
+              theme: 'stripe'
             },
           }
           }>

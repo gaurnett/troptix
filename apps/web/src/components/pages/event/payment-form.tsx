@@ -1,8 +1,7 @@
-import { CustomInput } from '@/components/ui/input';
-import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { message } from 'antd';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export default function PaymentForm({
   orderId,
@@ -12,31 +11,6 @@ export default function PaymentForm({
   const elements = useElements();
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
-  const [paymentRequest, setPaymentRequest] = useState<any>(null);
-
-  // useEffect(() => {
-  //   if (stripe) {
-  //     const pr = stripe.paymentRequest({
-  //       country: 'US',
-  //       currency: 'usd',
-  //       total: {
-  //         label: 'Demo total',
-  //         amount: 1099,
-  //       },
-  //       requestPayerName: true,
-  //       requestPayerEmail: true,
-  //     });
-
-  //     console.log("PR: " + JSON.stringify(pr));
-  //     // Check the availability of the Payment Request API.
-  //     pr.canMakePayment().then(result => {
-  //       console.log("Result: " + JSON.stringify(result));
-  //       if (result) {
-  //         setPaymentRequest(pr);
-  //       }
-  //     });
-  //   }
-  // }, [stripe]);
 
   useEffect(() => {
     async function completeStripePurchase() {
@@ -55,7 +29,6 @@ export default function PaymentForm({
         });
 
       const url = window.location.origin;
-      console.log("URL: " + url);
 
       const { error } = await stripe.confirmPayment({
         elements,
@@ -88,21 +61,10 @@ export default function PaymentForm({
 
   }, [completePurchaseClicked, elements, messageApi, orderId, router, setCompletePurchaseClicked, stripe])
 
-  if (paymentRequest) {
-    return
-  }
-
   return (
     <div className="h-full w-full md:max-w-2xl mx-auto mb-6">
       {contextHolder}
-      <div className="flex justify-between">
-        <div className="mb-4 mr-1 md:mr-4 w-full">
-          <CustomInput value={"he;;p"} name={"name"} id={"name"} label={"Name *"} type={"text"} placeholder={"John Doe"} handleChange={undefined} required={true} />
-        </div>
-      </div>
-      <AddressElement className='px-2' options={{ mode: 'billing' }} />
-      <PaymentElement className='grow h-full overflow-hidden px-2' />
-      {/* {paymentRequest && <PaymentRequestButtonElement options={{ paymentRequest }} />} */}
+      <PaymentElement className='grow h-full overflow-hidden' />
     </div>
   );
 }
