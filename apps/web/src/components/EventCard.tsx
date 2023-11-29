@@ -3,20 +3,24 @@ import { Divider, Image } from "antd";
 import { useEffect, useState } from "react";
 
 export default function EventCard({ event, showDivider = false }) {
-  const [width, setWidth] = useState<number>(window.innerWidth);
-
-  function handleWindowSizeChange() {
-    setWidth(window.innerWidth);
-  }
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' && window.innerWidth < 768
+  );
 
   useEffect(() => {
-    window.addEventListener("resize", handleWindowSizeChange);
-    return () => {
-      window.removeEventListener("resize", handleWindowSizeChange);
-    };
-  }, []);
+    function handleResize() {
+      setIsMobile(window.innerWidth < 768);
+    }
 
-  const isMobile = width <= 768;
+    if (typeof window !== 'undefined') {
+      handleResize();
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isMobile]);
 
   let lowest = Number.MAX_VALUE;
   let priceString = "";

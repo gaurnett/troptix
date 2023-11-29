@@ -80,7 +80,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         let currentUser = setUserFromResponse(null, user);
-        currentUser.isOrganizer = await isUserAnOrganizer(currentUser.id);
+        currentUser.isOrganizer = isUserAnOrganizer(currentUser.id);
         setUser(currentUser);
         setLoading(false);
       } else {
@@ -106,7 +106,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
           }
       }
     >
-      {loading ? (
+      {loading && (pathname === '/' || pathname === '/home') ? (
         <>
           <Spin className="flex h-screen items-center justify-center" indicator={<LoadingOutlined style={{ fontSize: 84 }} spin />} />
         </>

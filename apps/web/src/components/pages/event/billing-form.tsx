@@ -1,6 +1,9 @@
 import { Form, message } from 'antd';
 
 import { CustomInput } from '@/components/ui/input';
+import { loadStripe } from '@stripe/stripe-js';
+const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+const stripePromise = loadStripe(stripeKey ? stripeKey : "");
 
 export default function BillingForm({ checkout, setCheckout }) {
 
@@ -17,7 +20,6 @@ export default function BillingForm({ checkout, setCheckout }) {
 
   const onFinish = (values: any) => {
   };
-
   return (
     <div className="w-full">
       {contextHolder}

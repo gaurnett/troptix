@@ -28,10 +28,13 @@ export default function PaymentForm({
           duration: 0,
         });
 
+      const url = window.location.origin;
+
       const { error } = await stripe.confirmPayment({
-        //`Elements` instance that was used to create the Payment Element
         elements,
-        redirect: "if_required",
+        confirmParams: {
+          return_url: url + `/orders/order-confirmation?orderId=${orderId}`
+        }
       });
 
       messageApi.destroy('process-payment-loading');
@@ -42,9 +45,7 @@ export default function PaymentForm({
           type: "success",
           content: "Ticket purchase successful.",
           duration: 1.5
-        }).then(() => {
-          router.push({ pathname: "/order-confirmation", query: { orderId: orderId } })
-        });
+        })
 
         // Your customer will be redirected to your `return_url`. For some payment
         // methods like iDEAL, your customer will be redirected to an intermediate
@@ -61,9 +62,9 @@ export default function PaymentForm({
   }, [completePurchaseClicked, elements, messageApi, orderId, router, setCompletePurchaseClicked, stripe])
 
   return (
-    <div className="h-full w-full md:max-w-2xl mx-auto">
+    <div className="h-full w-full md:max-w-2xl mx-auto mb-6">
       {contextHolder}
-      <PaymentElement className='grow h-full' />
+      <PaymentElement className='grow h-full overflow-hidden' />
     </div>
   );
 }

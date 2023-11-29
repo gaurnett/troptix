@@ -9,7 +9,7 @@ import { TropTixContext } from '@/components/WebNavigator';
 import { CustomInput } from '@/components/ui/input';
 import { signInWithGoogle, signUpWithEmail } from '@/firebase/auth';
 import { Button, Form, message } from 'antd';
-import Link from 'next/link'
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 
@@ -32,7 +32,7 @@ export default function SignUpPage() {
 
   useEffect(() => {
     if (user !== undefined) {
-      router.push('/');
+      router.back();
     }
   }, [router, user]);
 
