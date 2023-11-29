@@ -97,6 +97,7 @@ export function useCreateOrder() {
       }
 
       const order = new Order(checkout, paymentId, eventId, userId, customerId);
+      console.log(order.ticketsLink)
       await postOrders({
         type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
         order: order,
