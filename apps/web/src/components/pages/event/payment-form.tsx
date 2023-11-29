@@ -64,7 +64,7 @@ export default function PaymentForm({
   return (
     <div className="h-full w-full md:max-w-2xl mx-auto mb-6">
       {contextHolder}
-      <PaymentElement className='grow h-full overflow-hidden' />
+      <PaymentElement className='grow h-full overflow-hidden p-2' />
     </div>
   );
 }
