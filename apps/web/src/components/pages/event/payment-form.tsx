@@ -29,7 +29,6 @@ export default function PaymentForm({
         });
 
       const url = window.location.origin;
-      console.log("URL: " + url);
 
       const { error } = await stripe.confirmPayment({
         elements,
@@ -63,9 +62,9 @@ export default function PaymentForm({
   }, [completePurchaseClicked, elements, messageApi, orderId, router, setCompletePurchaseClicked, stripe])
 
   return (
-    <div className="h-full w-full md:max-w-2xl mx-auto">
+    <div className="h-full w-full md:max-w-2xl mx-auto mb-6">
       {contextHolder}
-      <PaymentElement className='grow h-full' />
+      <PaymentElement className='grow h-full overflow-hidden' />
     </div>
   );
 }

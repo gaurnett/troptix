@@ -1,11 +1,11 @@
 "use client";
 
-import Link from 'next/link'
-import { useContext, useEffect, useState } from 'react'
-import { signInWithEmail, signInWithGoogle } from '@/firebase/auth';
 import { TropTixContext } from '@/components/WebNavigator';
+import { signInWithEmail, signInWithGoogle } from '@/firebase/auth';
+import { Button, Form, message } from 'antd';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Form, message, Button } from 'antd';
+import { useContext, useEffect, useState } from 'react';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -24,7 +24,7 @@ export default function SignInPage() {
 
   useEffect(() => {
     if (user !== undefined) {
-      router.push('/');
+      router.back();
     }
   }, [router, user]);
 

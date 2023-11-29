@@ -137,6 +137,7 @@ export default function TicketDrawer({ event, isTicketModalOpen, handleCancel })
         open={isTicketModalOpen}
         onClose={closeModal}
         width={900}
+        styles={{ body: { padding: "0" } }}
       >
         <Drawer
           title="Order Summary"
@@ -240,7 +241,7 @@ export default function TicketDrawer({ event, isTicketModalOpen, handleCancel })
         </Drawer>
 
         <div className="w-full h-full flex flex-col">
-          <div className='w-full sticky top-0 bg-white mx-auto mb-8'>
+          <div className='w-full sticky top-0 bg-white mx-auto mb-8 px-6 pt-6'>
             <Steps
               responsive={false}
               current={current} items={[
@@ -255,10 +256,10 @@ export default function TicketDrawer({ event, isTicketModalOpen, handleCancel })
                 }
               ]} />
           </div>
-          <div className='flex-1 overflow-y-auto'>
+          <div className='flex-1 overflow-y-auto px-4'>
             <div className=''>{checkoutSteps[current].content}</div>
           </div>
-          <footer className='border-t'>
+          <footer className='border-t px-6 pb-6'>
             <div className='flex mt-4'>
               <div className='text-xl mr-2'>
                 {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)}

@@ -26,7 +26,10 @@ export default function CheckoutForm({
           stripe={stripePromise}
           options={{
             clientSecret: clientSecret,
-            appearance: {/*...*/ },
+            loader: 'always',
+            appearance: {
+              theme: 'stripe'
+            },
           }
           }>
           <PaymentForm
