@@ -90,7 +90,6 @@ export default function TicketsPage() {
               {renderTicketRow("Event Address", event.address)}
               <Divider style={{ height: "16px" }} dashed={true} plain>Order Details</Divider>
               {renderTicketRow("Order number", `#${String(order.id).toUpperCase()}`)}
-              {renderTicketRow("Event Summary", event.summary)}
               {renderTicketRow("Event Organizer", event.organizer)}
               <div className="mb-4">
               </div>
