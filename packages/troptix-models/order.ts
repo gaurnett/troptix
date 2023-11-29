@@ -1,6 +1,5 @@
-import { CheckoutTicket, Ticket, createTicket } from "./ticket";
-import { Event } from "./event";
 import { generateId } from "./idHelper";
+import { CheckoutTicket, Ticket, createTicket } from "./ticket";
 
 export class Order {
   id: string;
@@ -21,6 +20,7 @@ export class Order {
   billingState: string;
   billingCountry: string;
   tickets: Ticket[];
+  ticketsLink: string;
 
   constructor(checkout: Checkout, paymentId: string, eventId: string, userId: string, stripeCustomerId: string) {
 
@@ -42,6 +42,7 @@ export class Order {
     this.billingZip = checkout.billingZip;
     this.billingState = checkout.billingState;
     this.billingCountry = checkout.billingCountry;
+    this.ticketsLink = window.location.origin + `/tickets?orderId=${this.id}`
 
     Array.from(checkout.tickets.keys()).forEach(checkoutItem => {
       const checkoutTicket = checkout.tickets.get(checkoutItem);

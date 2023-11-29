@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma, TicketStatus, OrderStatus, TicketType } from '@prisma/client';
+import { OrderStatus, Prisma, PrismaClient, TicketStatus, TicketType } from '@prisma/client';
 import prisma from "../prisma/prisma";
 
 const prismaClient = prisma as PrismaClient;
@@ -115,6 +115,7 @@ export function getPrismaCreateOrderQuery(order) {
     billingCountry: order.billingCountry,
     billingZip: order.billingZip,
     billingState: order.billingState,
+    ticketsLink: order.ticketsLink,
     event: {
       connect: {
         id: order.eventId

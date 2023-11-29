@@ -115,6 +115,7 @@ model Orders {
   billingZip       String?
   billingState     String?
   tickets          Tickets[]
+  ticketsLink      String?
   status           OrderStatus @default(PENDING)
 
   user    Users?  @relation(fields: [userId], references: [id])
