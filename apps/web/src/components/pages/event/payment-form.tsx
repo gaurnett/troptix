@@ -27,8 +27,10 @@ export default function PaymentForm({
         requestPayerEmail: true,
       });
 
+      console.log("PR: " + JSON.stringify(pr));
       // Check the availability of the Payment Request API.
       pr.canMakePayment().then(result => {
+        console.log("Result: " + JSON.stringify(result));
         if (result) {
           setPaymentRequest(pr);
         }
@@ -87,7 +89,7 @@ export default function PaymentForm({
   }, [completePurchaseClicked, elements, messageApi, orderId, router, setCompletePurchaseClicked, stripe])
 
   if (paymentRequest) {
-    return <PaymentRequestButtonElement options={{ paymentRequest }} />
+    return
   }
 
   return (
@@ -100,6 +102,7 @@ export default function PaymentForm({
       </div>
       <AddressElement className='px-2' options={{ mode: 'billing' }} />
       <PaymentElement className='grow h-full overflow-hidden px-2' />
+      {paymentRequest && <PaymentRequestButtonElement options={{ paymentRequest }} />}
     </div>
   );
 }
