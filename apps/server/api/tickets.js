@@ -51,7 +51,7 @@ async function updateName(body, response) {
     return response.status(200).json(data);
   } catch (e) {
     console.error('Request error', e);
-    return response.status(500).json({ error: 'Error fetching user' });
+    return response.status(500).json({ error: 'Error updating name' });
   }
 }
 
@@ -90,7 +90,7 @@ async function scanTicket(body, response) {
 }
 
 async function updateStatus(body, response) {
-  const id = body.id;
+  const ticket = body.ticket;
 
   try {
     const data = await prisma.tickets.update({
@@ -103,7 +103,7 @@ async function updateStatus(body, response) {
     return response.status(200).json(data);
   } catch (e) {
     console.error('Request error', e);
-    return response.status(500).json({ error: 'Error fetching user' });
+    return response.status(500).json({ error: 'Error updating status' });
   }
 }
 
