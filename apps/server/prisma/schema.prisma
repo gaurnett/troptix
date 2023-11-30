@@ -72,6 +72,9 @@ model Tickets {
   fees        Float?
   subtotal    Float?
   total       Float?
+  firstName   String?
+  lastName    String?
+  email       String?
 
   event        Events       @relation(fields: [eventId], references: [id])
   eventId      String
@@ -104,6 +107,8 @@ model Orders {
   subtotal         Float?
   fees             Float?
   name             String?
+  firstName        String?
+  lastName         String?
   email            String?
   cardType         String?
   cardLast4        String?
