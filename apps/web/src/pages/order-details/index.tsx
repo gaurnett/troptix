@@ -4,6 +4,7 @@ import { Ticket } from "@/hooks/types/Ticket";
 import { useFetchOrderById } from "@/hooks/useOrders";
 import { PostTicketRequest, PostTicketType, useCreateTicket } from "@/hooks/useTicket";
 import { getDateFormatter, getFormattedCurrency } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button, Drawer, List, Result, Typography, message } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -31,6 +32,7 @@ export default function OrderDetailsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const createTicket = useCreateTicket();
+  const queryClient = useQueryClient();
 
   const {
     isPending,
@@ -41,8 +43,7 @@ export default function OrderDetailsPage() {
     getOrdersType: GetOrdersType.GET_ORDER_BY_ID,
     id: orderId,
   });
-
-  console.log(order);
+  const tickets: any[] = order?.tickets;
 
   async function saveTicket() {
     messageApi
@@ -58,15 +59,27 @@ export default function OrderDetailsPage() {
       ticket: selectedTicket
     }
 
-    const response = await createTicket.mutateAsync({ request });
+    createTicket.mutate(request, {
+      onSuccess: (data) => {
+        console.log(data);
+      },
+      onError: (error) => {
+        messageApi.destroy('update-ticket-loading');
+        messageApi.open({
+          type: 'error',
+          content: 'Failed to save ticket, please try again.',
+        });
+        return;
+      }
+    })
 
     messageApi.destroy('update-ticket-loading');
     // if (response === null || response === undefined || response.error !== null) {
-    //   messageApi.open({
-    //     type: 'error',
-    //     content: 'Failed to save ticket, please try again.',
-    //   });
-    //   return;
+    // messageApi.open({
+    //   type: 'error',
+    //   content: 'Failed to save ticket, please try again.',
+    // });
+    // return;
     // }
 
     messageApi.open({
@@ -164,7 +177,7 @@ export default function OrderDetailsPage() {
               <List
                 className="demo-loadmore-list w-full grow m-0"
                 itemLayout="horizontal"
-                dataSource={order.tickets}
+                dataSource={tickets}
                 renderItem={(ticket: any, index) => (
                   <List.Item
                     actions={[

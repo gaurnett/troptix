@@ -42,11 +42,9 @@ export async function mutateTicket(request: PostTicketRequest): Promise<any> {
 
 export function useCreateTicket() {
   return useMutation({
-    mutationFn: ({
-      request,
-    }: {
-      request: PostTicketRequest;
-    }) => mutateTicket(request)
+    mutationFn: (
+      request: PostTicketRequest
+    ) => mutateTicket(request)
   });
 }
 
