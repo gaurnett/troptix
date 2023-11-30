@@ -96,6 +96,9 @@ export function getPrismaCreateOrderQuery(order) {
       fees: ticket.fees,
       subtotal: ticket.subtotal,
       total: ticket.total,
+      firstName: order.firstName,
+      lastName: order.lastName,
+      email: order.email
     })
   }
 
