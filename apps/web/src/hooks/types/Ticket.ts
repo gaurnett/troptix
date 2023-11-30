@@ -1,9 +1,22 @@
 import { generateId } from "@/lib/utils";
 import { Checkout, CheckoutTicket } from "./Checkout";
 
+export enum TicketStatus {
+  AVAILABLE = 'AVAILABLE',
+  NOT_AVAILABLE = 'NOT_AVAILABLE'
+}
+
+export enum TicketType {
+  FREE = 'FREE',
+  PAID = 'PAID',
+  COMPLEMENTARY = 'COMPLEMENTARY'
+}
+
 export type Ticket = {
   id?: string;
   ticketTypeId?: string;
+  ticketType?: TicketType;
+  status?: TicketStatus;
   eventId?: string;
   userId?: string;
   orderId?: string;

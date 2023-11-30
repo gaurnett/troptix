@@ -1,3 +1,5 @@
+import { TicketType } from "./Ticket";
+
 export interface Checkout {
   id: string;
   eventId: string;
@@ -71,4 +73,22 @@ export interface CheckoutTicket {
   fees: number;
   subtotal: number;
   total: number;
+  ticketType: TicketType;
+}
+
+export function initializeCheckoutTicket(ticket): CheckoutTicket {
+  const checkoutTicket: CheckoutTicket = {
+    id: "",
+    ticketTypeId: ticket.id,
+    eventId: ticket.eventId,
+    name: ticket.name,
+    description: ticket.description,
+    quantitySelected: 0,
+    fees: 0,
+    subtotal: 0,
+    total: 0,
+    ticketType: TicketType.PAID
+  }
+
+  return checkoutTicket;
 }

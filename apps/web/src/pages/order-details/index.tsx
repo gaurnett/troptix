@@ -61,7 +61,16 @@ export default function OrderDetailsPage() {
 
     createTicket.mutate(request, {
       onSuccess: (data) => {
-        console.log(data);
+        const oldData = tickets[selectedIndex];
+        tickets[selectedIndex] = {
+          ...oldData,
+          ...data,
+        }
+
+        queryClient.setQueryData(['order'], {
+          ...order,
+          ["tickets"]: tickets
+        });
       },
       onError: (error) => {
         messageApi.destroy('update-ticket-loading');
@@ -74,31 +83,10 @@ export default function OrderDetailsPage() {
     })
 
     messageApi.destroy('update-ticket-loading');
-    // if (response === null || response === undefined || response.error !== null) {
-    // messageApi.open({
-    //   type: 'error',
-    //   content: 'Failed to save ticket, please try again.',
-    // });
-    // return;
-    // }
-
     messageApi.open({
       type: 'success',
       content: 'Successfully saved ticket.',
     });
-
-    // if (selectedIndex === -1) {
-    //   setTicketTypes([...ticketTypes, selectedTicket])
-    // } else {
-    //   const updatedTickets = ticketTypes.map((ticketType, i) => {
-    //     if (ticketType.id === selectedTicket.id) {
-    //       return selectedTicket;
-    //     } else {
-    //       return ticketType;
-    //     }
-    //   });
-    //   setTicketTypes(updatedTickets);
-    // }
 
     setModalOpen(false);
   }

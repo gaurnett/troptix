@@ -5,7 +5,7 @@ import { Ticket } from "./types/Ticket";
 import { prodUrl } from "./useFetchEvents";
 
 export enum PostTicketType {
-  SCAN_TICKET = "SCAN_TICKET",
+  UPDATE_STATUS = "UPDATE_STATUS",
   UPDATE_NAME = "UPDATE_NAME",
 }
 

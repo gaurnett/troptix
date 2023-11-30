@@ -2,8 +2,8 @@ import { Button, Input, List, Typography, message } from 'antd';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { GetPromotionsType, getPromotions } from 'troptix-api';
-import { CheckoutTicket } from 'troptix-models';
 
+import { initializeCheckoutTicket } from '@/hooks/types/Checkout';
 import {
   MinusOutlined,
   PlusOutlined
@@ -142,7 +142,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
         updatedTickets.set(ticket.id, checkoutTicket);
       }
     } else {
-      const checkoutTicket = new CheckoutTicket(ticket);
+      const checkoutTicket = initializeCheckoutTicket(ticket);
       checkoutTicket.quantitySelected = 1;
       checkoutTicket.subtotal = ticketSubtotal;
       checkoutTicket.fees = ticketFees;
