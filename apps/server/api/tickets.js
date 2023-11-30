@@ -41,16 +41,14 @@ async function updateName(body, response) {
   const ticket = body.ticket;
 
   try {
-    await prisma.tickets.update({
+    const data = await prisma.tickets.update({
       where: {
         id: ticket.id,
       },
       data: getPrismaUpdateTicketQuery(ticket),
     });
 
-    return response.status(200).json({
-      message: "Successfully updated ticket",
-    });
+    return response.status(200).json(data);
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error fetching user' });
