@@ -51,7 +51,8 @@ export default function OrderGuestListPage({ orders }) {
     }
   }
 
-  function checkIn(guest: Ticket, index) {
+  function checkIn(guest: Ticket, index: number) {
+    console.log(guest);
     const updatedTicket = {
       ...guest,
       ["status"]: !guest?.status || guest?.status === TicketStatus.NOT_AVAILABLE ? TicketStatus.AVAILABLE : TicketStatus.NOT_AVAILABLE
@@ -71,11 +72,11 @@ export default function OrderGuestListPage({ orders }) {
 
     createTicket.mutate(request, {
       onSuccess: (data) => {
-        // const oldData = tickets[selectedIndex];
-        // tickets[selectedIndex] = {
-        //   ...oldData,
-        //   ...data,
-        // }
+        let oldData = guests[index];
+        oldData = {
+          ...guests[index],
+          ...data,
+        }
 
         // queryClient.setQueryData(['order'], {
         //   ...order,
