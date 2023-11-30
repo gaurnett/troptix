@@ -1,6 +1,7 @@
 "use client";
 
 import WebNavigator from "@/components/WebNavigator";
+import { MetaHead } from "@/components/utils/MetaHead";
 import "@/styles/globals.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppProps } from "next/app";
@@ -12,10 +13,12 @@ function App({ Component, pageProps, router }: AppProps) {
 
   return (
     <>
-      <Head>
-        <title>TropTix</title>
+      <MetaHead
+        title="Troptix"
+        description={"Troptix is a better way to get tickets"}
+      >
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
+      </MetaHead>
 
       <QueryClientProvider client={queryClient}>
         <WebNavigator
