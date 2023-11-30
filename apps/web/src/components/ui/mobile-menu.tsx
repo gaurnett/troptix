@@ -1,5 +1,6 @@
 'use client'
 
+import { DownOutlined } from '@ant-design/icons'
 import { Transition } from '@headlessui/react'
 import { Dropdown, MenuProps } from 'antd'
 import Link from 'next/link'
@@ -122,32 +123,29 @@ export default function MobileMenu() {
             <li>
               <Link onClick={closeMobileMenu} href="/events" className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Events</Link>
             </li>
-            <li>
-              <Link onClick={closeMobileMenu} href="/about" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</Link>
-            </li>
-            <li>
-              <Link onClick={closeMobileMenu} href="/contact" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</Link>
-            </li>
             {
               user &&
               <li>
                 <Link onClick={closeMobileMenu} href="/orders" className={`block py-2 pl-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Tickets</Link>
               </li>
             }
+            <li>
+              <Link onClick={closeMobileMenu} href="/about" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">About</Link>
+            </li>
+            <li>
+              <Link onClick={closeMobileMenu} href="/contact" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Contact</Link>
+            </li>
 
             {
               user === undefined || user === null || user.name === "" ?
                 <div>
                   <li>
-                    <Link href="/auth/signin" className="flex font-medium w-full text-gray-600 hover:text-gray-900 py-2 justify-center" onClick={() => setMobileNavOpen(false)}>Sign in</Link>
+                    <Link onClick={closeMobileMenu} href="/contact" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Log in</Link>
+
                   </li>
                   <li>
-                    <Link href="/auth/signup" className="btn-sm text-gray-200 bg-gray-900 hover:bg-gray-800 w-full my-2" onClick={() => setMobileNavOpen(false)}>
-                      <span>Sign up</span>
-                      <svg className="w-3 h-3 fill-current text-gray-400 shrink-0 ml-2 -mr-1" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z" fill="#999" fillRule="nonzero" />
-                      </svg>
-                    </Link>
+                    <Link onClick={closeMobileMenu} href="/contact" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Sign up</Link>
+
                   </li>
                 </div>
                 :
@@ -156,9 +154,10 @@ export default function MobileMenu() {
                     <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
                       <div style={{ fontSize: '16px' }}>
                         {
-                          user.name === null || user.name === undefined || user.name === "" ? user.email : `Hi ${user.name}`
+                          user.name === null || user.name === undefined || user.name === "" ? user.email : `${user.name}`
                         }
                       </div>
+                      <DownOutlined className='ml-1 text-xs my-auto' />
                     </a>
                   </Dropdown>
                 </li>

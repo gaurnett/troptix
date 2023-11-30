@@ -2,7 +2,8 @@ export interface Checkout {
   id: string;
   eventId: string;
   userId: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   total: number;
   subtotal: number;
@@ -21,12 +22,24 @@ export interface Checkout {
   tickets: Map<string, CheckoutTicket>;
 }
 
-export function initializeCheckout(user: any): Checkout {
+export function initializeCheckout(user: any, eventId: string): Checkout {
+  let firstName = "";
+  let lastName = "";
+  if (user?.name) {
+    const name = String(user.name).split(" ");
+    firstName = name[0];
+
+    if (name.length > 1) {
+      lastName = name[0];
+    }
+  }
+
   const checkout: Checkout = {
     id: "",
-    eventId: "",
+    eventId: eventId,
     userId: user?.id,
-    name: user?.name,
+    firstName: firstName,
+    lastName: lastName,
     email: user?.email,
     total: 0,
     subtotal: 0,

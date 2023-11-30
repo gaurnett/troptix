@@ -84,28 +84,18 @@ export default function OrderConfirmation() {
       <Result
         status="success"
         title="Ticket Purchase Successful!"
-        subTitle={`Order number: ${orderId}. Please check your email for an order confirmation within 5 minutes.`}
+        subTitle={`Order number: ${orderId}. Please check your email for an order confirmation within 5 minutes. View your order details below to see and update ticket names.`}
         extra={[
           <Link
-            href={{ pathname: "/order-confirmation", query: { orderId } }}
-            target="_blank"
-            key={"receipt"}>
-            <Button
-              className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
-              View Receipt
-            </Button>
-          </Link>,
-          <Link
-            href={{ pathname: "/tickets", query: { orderId } }}
+            href={{ pathname: "/order-details", query: { orderId } }}
             target="_blank"
             key={"tickets"}>
             <Button
               type='primary'
               className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
-              View Tickets
+              View Order Details & Tickets
             </Button>
           </Link>
-          ,
         ]}
       />
 

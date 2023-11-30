@@ -45,7 +45,7 @@ export default function TicketsPage() {
       return;
     } else {
       const report = new JsPDF('portrait', 'pt', 'letter');
-      report.html(element).then(() => {
+      report.html(element as HTMLElement).then(() => {
         report.output('dataurlnewwindow');
       });
     }
@@ -80,7 +80,7 @@ export default function TicketsPage() {
               </Divider>
               <div className="mt-2 mb-2">
                 <label className="block text-base font-base text-blue-500">Name</label>
-                <p className="text-2xl font-bold">{order.name}</p>
+                <p className="text-2xl font-bold">{ticket.firstName} {ticket.lastName}</p>
               </div>
               {renderTicketRow("Event", event.name)}
               {renderTicketRow("Ticket", ticket.ticketType.name)}
@@ -127,19 +127,16 @@ export default function TicketsPage() {
     )
   }
 
-  console.log("Orderrrr: " + order);
-
   return (
     <div className="mt-32 mb-8 w-full md:max-w-3xl mx-auto">
       <div>
-        <h1 className="mx-4 text-center text-4xl md:text-4xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">
+        <h1 className="mx-4 text-center text-4xl md:text-5xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">{order.event.name}</span>
         </h1>
         <div className='flex w-full md:max-w-lg md:mx-auto my-6 mx-auto justify-center'>
           <Button onClick={saveToPdf} className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Save PDF</Button>
           <Link target="_blank" href={{ pathname: "/event", query: { eventId: order.event.id } }}>
-            <Button className="ml-4 px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">View event details</Button>
-
+            <Button type="primary" className="bg-blue-600 hover:bg-blue-700 ml-4 px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">View event details</Button>
           </Link>
         </div>
         <div className="w-full md:max-w-lg mx-auto">

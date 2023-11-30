@@ -1,6 +1,7 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
 import { format } from "date-fns";
+import ShortUniqueId from 'short-unique-id';
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -17,4 +18,13 @@ export function getFormattedCurrency(price) {
   });
 
   return formatter.format(price);
+}
+
+export function generateId() {
+  const uid = new ShortUniqueId({
+    dictionary: 'alphanum_upper',
+    length: 12
+  });
+
+  return uid.rnd();
 }

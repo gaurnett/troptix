@@ -13,7 +13,7 @@ import TicketsCheckoutForm from './tickets-checkout-forms';
 
 export default function TicketModal({ event, isTicketModalOpen, handleCancel }) {
   const { user } = useContext(TropTixContext);
-  const [checkout, setCheckout] = useState<Checkout>(initializeCheckout(user));
+  const [checkout, setCheckout] = useState<Checkout>(initializeCheckout(user, event.id));
   const [checkoutPreviousButtonClicked, setCheckoutPreviousButtonClicked] = useState(false);
   const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);
   const [orderId, setOrderId] = useState("");
@@ -55,9 +55,9 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
 
   async function initializeStripeDetails() {
     const { paymentId, customerId, clientSecret } = await createPaymentIntent.mutateAsync({ checkout });
-    const orderId = await createOrder.mutateAsync({ checkout, userId: checkout.userId, eventId: event.id, paymentId, customerId });
+    const orderId = await createOrder.mutateAsync({ checkout, paymentId, customerId });
     setClientSecret(clientSecret);
-    setOrderId(orderId);
+    setOrderId(orderId as string);
   }
 
   async function next() {
@@ -73,7 +73,8 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
     }
 
     if (current === 1) {
-      if (!checkout.name
+      if (!checkout.firstName
+        || !checkout.lastName
         || !checkout.email
         || !checkout.billingAddress1
         || !checkout.billingCity
@@ -101,7 +102,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
   }
 
   function closeModal() {
-    setCheckout(initializeCheckout(user));
+    setCheckout(initializeCheckout(user, event.id));
     setCurrent(0);
     handleCancel();
   }
@@ -128,7 +129,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
         width={1080}
       >
         <div className="w-full">
-          <div style={{ maxHeight: 600 }} className='flex mt-6'>
+          <div style={{ maxHeight: 650 }} className='flex mt-6'>
             <div className='w-4/6 grow'>
               <div className='flex flex-col h-full px-12'>
                 <div className='w-3/4 md:mx-auto mb-6'>

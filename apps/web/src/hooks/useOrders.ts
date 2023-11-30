@@ -2,9 +2,9 @@ import { TropTixContext } from "@/components/WebNavigator";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { message } from "antd";
 import { useContext } from "react";
-import { Order } from "troptix-models";
 import { Charge } from "./types/Charge";
 import { Checkout } from "./types/Checkout";
+import { Order, createOrder } from "./types/Order";
 import { prodUrl } from "./useFetchEvents";
 
 export enum GetOrdersType {
@@ -79,14 +79,10 @@ export function useCreateOrder() {
   return useMutation({
     mutationFn: async ({
       checkout,
-      userId,
-      eventId,
       paymentId,
       customerId
     }: {
       checkout: Checkout;
-      userId: string;
-      eventId: string;
       paymentId: string;
       customerId: string;
     }) => {
@@ -96,8 +92,7 @@ export function useCreateOrder() {
         );
       }
 
-      const order = new Order(checkout, paymentId, eventId, userId, customerId);
-      console.log(order.ticketsLink)
+      const order = createOrder(checkout, paymentId, customerId);
       await postOrders({
         type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
         order: order,
