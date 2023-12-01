@@ -19,7 +19,9 @@ model Users {
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   email               String                @unique
-  name                String
+  name                String?
+  firstName           String?
+  lastName            String?
   stripeId            String?
   role                Role                  @default(PATRON)
   tickets             Tickets[]

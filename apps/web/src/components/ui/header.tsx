@@ -152,7 +152,7 @@ export default function Header() {
           <div className="max-w-screen-xl flex flex-wrap items-center justify-end">
             <nav className="hidden md:flex">
               <div className="flex md:order-2">
-                {user === undefined || user === null || user.name === "" ? (
+                {!user ? (
                   <ul className="flex grow justify-end flex-wrap items-center">
                     <li>
                       <Link
@@ -185,13 +185,7 @@ export default function Header() {
                   <ul className="flex justify-end">
                     <Dropdown className="cursor-pointer" menu={{ items }}>
                       <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
-                        <div style={{ fontSize: "16px" }}>
-                          {user.name === null ||
-                          user.name === undefined ||
-                          user.name === ""
-                            ? user.email
-                            : `Hi ${user.name}`}
-                        </div>
+                        <div style={{ fontSize: "16px" }}>{user.email}</div>
                       </a>
                     </Dropdown>
                   </ul>
