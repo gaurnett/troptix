@@ -53,7 +53,7 @@ export default function TicketCompForm({ event, ticketTypes }) {
     setSelectedTicket(value);
     const tickets = new Array();
     const complementaryTicket: ComplementaryTicket = {
-      ticketName: option.label,
+      name: option.label,
       firstName: complementaryOrder.firstName,
       lastName: complementaryOrder.lastName,
       email: complementaryOrder.email

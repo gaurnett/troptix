@@ -79,15 +79,20 @@ export type ComplementaryOrder = {
   lastName?: string;
   email?: string;
   total?: number;
+  ticketsLink?: string;
   tickets?: ComplementaryTicket[];
 }
 
 export function generateComplementaryOrder(event): ComplementaryOrder {
+  const id = generateId();
+  const url = window.location.origin + `/tickets?orderId=${id}`;
+
   const order: ComplementaryOrder = {
-    id: generateId(),
+    id: id,
     eventId: event.id,
-    eventName: event.eventName,
+    eventName: event.name,
     total: 0,
+    ticketsLink: url,
     tickets: []
   }
 
@@ -97,7 +102,7 @@ export function generateComplementaryOrder(event): ComplementaryOrder {
 export type ComplementaryTicket = {
   id?: string;
   ticketTypeId?: string;
-  ticketName: string;
+  name: string; // Name of ticket type
   eventId?: string;
   firstName?: string;
   lastName?: string;
