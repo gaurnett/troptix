@@ -137,7 +137,7 @@ export default function Header() {
             <nav className="hidden md:flex">
               <div className='flex md:order-2'>
                 {
-                  user === undefined || user === null || user.name === "" ?
+                  !user ?
                     <ul className="flex grow justify-end flex-wrap items-center">
                       <li>
                         <Link href="/auth/signin" className="">
@@ -155,9 +155,7 @@ export default function Header() {
                       <Dropdown className='cursor-pointer' menu={{ items }}>
                         <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
                           <div style={{ fontSize: '16px' }}>
-                            {
-                              !user?.name ? user.email : `${user.name}`
-                            }
+                            {user.email}
                           </div>
                           <DownOutlined className='ml-1 text-xs' />
                         </a>
