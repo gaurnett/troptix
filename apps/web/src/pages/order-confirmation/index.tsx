@@ -1,8 +1,9 @@
 import { Spinner } from "@/components/ui/spinner";
 import { useFetchOrderById } from "@/hooks/useOrders";
-import { Image, Result, Table, Typography } from "antd";
+import { Result, Table, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { format } from 'date-fns';
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from 'react';
@@ -161,7 +162,6 @@ export default function OrderConfirmationPage() {
               <div className="text-center">
                 <Link target="_blank" href={{ pathname: '/tickets', query: { orderId: orderId } }}>
                   <Image
-                    preview={false}
                     width={50}
                     height={50}
                     className="w-auto"

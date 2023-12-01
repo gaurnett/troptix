@@ -7,7 +7,7 @@ import {
   eventFetcher,
   useFetchAllEvents,
 } from "@/hooks/useFetchEvents";
-import { Image } from "antd";
+import Image from "next/image";
 import Link from "next/link";
 
 export async function getStaticProps() {
@@ -48,7 +48,6 @@ export default function ManageEventsPage(props) {
                       }}
                     >
                       <Image
-                        preview={false}
                         width={75}
                         height={75}
                         className="w-full mx-auto justify-center content-center items-center"

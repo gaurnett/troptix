@@ -1,7 +1,8 @@
 import { TropTixContext } from "@/components/WebNavigator";
 import { Spinner } from "@/components/ui/spinner";
 import { getDateFormatter } from "@/lib/utils";
-import { Button, Image, List } from "antd";
+import { Button, List } from "antd";
+import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState } from 'react';
 import { GetOrdersType, getOrders } from 'troptix-api';
@@ -85,7 +86,6 @@ export default function TicketsPage() {
                     <div className="flex">
                       <div>
                         <Image
-                          preview={false}
                           width={110}
                           height={110}
                           className="w-auto rounded"

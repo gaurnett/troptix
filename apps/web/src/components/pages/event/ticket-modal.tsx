@@ -5,7 +5,8 @@ import { useCreatePaymentIntent } from '@/hooks/usePostStripe';
 import {
   ShoppingCartOutlined
 } from '@ant-design/icons';
-import { Button, Image, List, Modal, Steps, message } from 'antd';
+import { Button, List, Modal, Steps, message } from 'antd';
+import Image from 'next/image';
 import { useContext, useEffect, useState } from 'react';
 import BillingForm from './billing-form';
 import CheckoutForm from './checkout';
