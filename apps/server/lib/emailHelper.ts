@@ -56,6 +56,7 @@ export async function sendComplementaryTicketEmailToUser(order, orderMap) {
     eventTitle: order.eventName,
     orderNumber: order.id,
     orderDate: new Date().toLocaleDateString(),
+    ticketsLink: order?.ticketsLink,
     orders: Array.from(orderMap.values())
   }
 
