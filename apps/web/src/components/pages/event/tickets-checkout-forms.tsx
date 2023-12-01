@@ -245,7 +245,6 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
           dataSource={event.ticketTypes}
           split={false}
           renderItem={(ticket: any, index: number) => {
-            console.log(JSON.stringify(ticket));
             let checkoutTicket: any
             if (checkout.tickets && checkout.tickets.has(ticket.id)) {
               checkoutTicket = checkout.tickets.get(ticket.id);
