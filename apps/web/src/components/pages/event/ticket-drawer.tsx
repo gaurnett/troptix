@@ -75,13 +75,13 @@ export default function TicketDrawer({ event, isTicketModalOpen, handleCancel })
           },
           onError: (error) => {
             messageApi.error("There was an error initializing your order");
-            setCurrent(current - 1);
+            setCurrent(1);
           }
         });
       },
       onError: (error) => {
         messageApi.error("There was an error initializing your order");
-        setCurrent(current - 1);
+        setCurrent(1);
       }
     });
   }

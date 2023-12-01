@@ -14,6 +14,7 @@ import TicketsCheckoutForm from './tickets-checkout-forms';
 
 export default function TicketModal({ event, isTicketModalOpen, handleCancel }) {
   const { user } = useContext(TropTixContext);
+  console.log(user);
   const [checkout, setCheckout] = useState<Checkout>(initializeCheckout(user, event.id));
   const [checkoutPreviousButtonClicked, setCheckoutPreviousButtonClicked] = useState(false);
   const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);
@@ -67,13 +68,13 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
           },
           onError: (error) => {
             messageApi.error("There was an error initializing your order");
-            setCurrent(current - 1);
+            setCurrent(1);
           }
         });
       },
       onError: (error) => {
         messageApi.error("There was an error initializing your order");
-        setCurrent(current - 1);
+        setCurrent(1);
       }
     });
 
@@ -149,7 +150,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
         width={1080}
       >
         <div className="w-full">
-          <div style={{ maxHeight: 650 }} className='flex mt-6'>
+          <div style={{ minHeight: 650, maxHeight: 650 }} className='flex mt-6'>
             <div className='w-4/6 grow'>
               <div className='flex flex-col h-full px-12'>
                 <div className='w-3/4 md:mx-auto mb-6'>
