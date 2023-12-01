@@ -1,7 +1,8 @@
 import { TropTixContext } from "@/components/WebNavigator";
 import { Spinner } from "@/components/ui/spinner";
 import { RequestType, useFetchEventsById } from "@/hooks/useFetchEvents";
-import { Image, List } from "antd";
+import { List } from "antd";
+import Image from "next/image";
 import Link from "next/link";
 import { useContext } from "react";
 
@@ -43,7 +44,6 @@ export default function ManageEventsPage() {
                     <div className="flex">
                       <div>
                         <Image
-                          preview={false}
                           width={110}
                           height={110}
                           className="w-auto"

@@ -1,5 +1,5 @@
 import { TicketStatus } from '@prisma/client';
-import { getPrismaUpdateTicketQuery } from '../lib/ticketHelper';
+import { getPrismaUpdateTicketQuery, getPrismaUpdateTicketStatusQuery } from '../lib/ticketHelper';
 import prisma from "../prisma/prisma";
 
 export default async function handler(request, response) {
@@ -28,8 +28,8 @@ export default async function handler(request, response) {
 
 async function putTicket(body, response) {
   switch (body.type) {
-    case "SCAN_TICKET":
-      return scanTicket(body, response);
+    case "UPDATE_STATUS":
+      return updateStatus(body, response);
     case "UPDATE_NAME":
       return updateName(body, response);
     default:
@@ -41,19 +41,17 @@ async function updateName(body, response) {
   const ticket = body.ticket;
 
   try {
-    await prisma.tickets.update({
+    const data = await prisma.tickets.update({
       where: {
         id: ticket.id,
       },
       data: getPrismaUpdateTicketQuery(ticket),
     });
 
-    return response.status(200).json({
-      message: "Successfully updated ticket",
-    });
+    return response.status(200).json(data);
   } catch (e) {
     console.error('Request error', e);
-    return response.status(500).json({ error: 'Error fetching user' });
+    return response.status(500).json({ error: 'Error updating name' });
   }
 }
 
@@ -88,6 +86,24 @@ async function scanTicket(body, response) {
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error fetching user' });
+  }
+}
+
+async function updateStatus(body, response) {
+  const ticket = body.ticket;
+
+  try {
+    const data = await prisma.tickets.update({
+      where: {
+        id: ticket.id,
+      },
+      data: getPrismaUpdateTicketStatusQuery(ticket),
+    });
+
+    return response.status(200).json(data);
+  } catch (e) {
+    console.error('Request error', e);
+    return response.status(500).json({ error: 'Error updating status' });
   }
 }
 

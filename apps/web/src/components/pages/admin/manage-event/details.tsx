@@ -1,9 +1,9 @@
 import { CustomTextArea } from "@/components/ui/input";
+import { uploadFlyerToFirebase } from "@/firebase/storage";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
-import { message, Upload, Image, Button, Form } from "antd";
+import { Button, Form, Image, Upload, message } from "antd";
 import { RcFile } from "antd/es/upload";
-import { uploadFlyerToFirebase } from "@/firebase/storage";
 import { getDownloadURL } from "firebase/storage";
 
 export default function DetailsPage({ event, setEvent, updateEvent }) {

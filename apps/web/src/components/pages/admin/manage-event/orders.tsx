@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { GetOrdersType, getOrders } from 'troptix-api';
 import OrderCompListPage from "./order-comp-list";
+import OrderGuestListPage from "./order-guest-list";
 import OrderListPage from "./order-list";
 import OrderSummaryPage from "./order-summary";
 
@@ -51,6 +52,11 @@ export default function OrdersPage() {
       key: 'order-list',
       label: 'Order List',
       children: <OrderListPage orders={orders} />,
+    },
+    {
+      key: 'order-guest-list',
+      label: 'Guest List',
+      children: <OrderGuestListPage orders={orders} />,
     },
     {
       key: 'order-comp-list',

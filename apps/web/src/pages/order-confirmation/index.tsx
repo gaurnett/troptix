@@ -1,8 +1,9 @@
 import { Spinner } from "@/components/ui/spinner";
 import { useFetchOrderById } from "@/hooks/useOrders";
-import { Image, Result, Table, Typography } from "antd";
+import { Result, Table, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { format } from 'date-fns';
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from 'react';
@@ -37,8 +38,11 @@ export default function OrderConfirmationPage() {
   useEffect(() => {
     if (!order) return;
     const orderMap = new Map<string, any>();
+    console.log(JSON.stringify(order.tickets));
     order.tickets.forEach(ticket => {
-      const ticketId = ticket.ticketType.id;
+      const ticketId = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.id;
+      const ticketName = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.name;
+
       if (orderMap.has(ticketId)) {
         const orderRow = orderMap.get(ticketId);
         orderMap.set(ticketId, {
@@ -51,7 +55,7 @@ export default function OrderConfirmationPage() {
       } else {
         orderMap.set(ticketId, {
           key: ticket.id,
-          name: ticket.ticketType.name,
+          name: ticketName,
           quantity: 1,
           total: ticket.total,
           fee: ticket.fees,
@@ -133,11 +137,11 @@ export default function OrderConfirmationPage() {
             <div className="text-sm md:text-md font-bold">{new Date(order.createdAt).toDateString()}</div>
           </div>
         </div>
-        <div className="mx-4 text-center text-4xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">{order.event.name}</span></div>
+        <div className="mx-4 text-center text-4xl font-extrabold leading-tighter tracking-tighter mb-8" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">{order.event.name}</span></div>
 
         <div className="w-full md:max-w-2xl mx-auto">
           <div className="md:flex">
-            <div className="w-full text-center">
+            <div className="w-full flex justify-center text-center">
               <Image
                 width={250}
                 height={250}
@@ -146,7 +150,7 @@ export default function OrderConfirmationPage() {
                 src={order.event.imageUrl}
                 alt={"event flyer image"} />
             </div>
-            <div className="w-full">
+            <div className="w-full md:ml-8 mt-8 md:mt-0">
               {renderTicketRow("Start Date", getDateFormatted(order.event.startDate, order.event.startTime))}
               {renderTicketRow("End Date", getDateFormatted(order.event.endDate, order.event.endTime))}
               {renderTicketRow("Event Venue", order.event.venue)}
@@ -158,17 +162,18 @@ export default function OrderConfirmationPage() {
         <div className="w-full md:max-w-2xl mx-auto mb-8">
           <div className="mx-auto">
             <div className="flex justify-center mt-8 mx-auto w-full">
-              <div className="text-center">
-                <Link target="_blank" href={{ pathname: '/tickets', query: { orderId: orderId } }}>
-                  <Image
-                    preview={false}
-                    width={50}
-                    height={50}
-                    className="w-auto"
-                    style={{ objectFit: 'contain' }}
-                    src={"/icons/tickets.png"}
-                    alt={"tickets image"} />
-                  <div>View your tickets</div>
+              <div className="text-center justify-center">
+                <Link className="mx-auto text-center" target="_blank" href={{ pathname: '/tickets', query: { orderId: orderId } }}>
+                  <div className="w-full flex justify-center text-center">
+                    <Image
+                      width={50}
+                      height={50}
+                      className="w-auto"
+                      style={{ objectFit: 'contain' }}
+                      src={"/icons/tickets.png"}
+                      alt={"tickets image"} />
+                  </div>
+                  <div className="mt-2">View your tickets</div>
                 </Link>
 
               </div>

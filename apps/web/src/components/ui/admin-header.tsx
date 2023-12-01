@@ -1,27 +1,27 @@
 'use client'
 
-import { useState, useEffect, useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
-import Link from 'next/link'
-import Image from 'next/image'
-import { useRouter } from 'next/router'
 import { Disclosure } from '@headlessui/react'
-import { GiHamburgerMenu } from "react-icons/gi";
 import { Dropdown, MenuProps } from 'antd'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { GiHamburgerMenu } from "react-icons/gi"
 
 import {
+  MdAdd,
+  MdOutlineEvent,
+  MdOutlineLogout,
   MdOutlineMoreHoriz,
   MdOutlineSettings,
-  MdOutlineLogout,
-  MdOutlineEvent,
-  MdAdd,
-} from "react-icons/md";
+} from "react-icons/md"
 
-import { AiOutlineHome } from "react-icons/ai";
 import { usePathname } from 'next/navigation'
-import AdminMobileMenu from './admin-mobile-menu'
+import { AiOutlineHome } from "react-icons/ai"
+import { auth } from '../../config'
 import { TropTixContext } from '../WebNavigator'
-import { auth } from '../../config';
+import AdminMobileMenu from './admin-mobile-menu'
 
 export default function AdminHeader() {
   const { user } = useContext(TropTixContext);
@@ -169,7 +169,7 @@ export default function AdminHeader() {
           </div>
 
           {
-            user === undefined || user === null
+            !user
               ? <></>
               :
               <div className="max-w-screen-xl flex flex-wrap items-center justify-end">
@@ -178,9 +178,7 @@ export default function AdminHeader() {
                     <Dropdown className='cursor-pointer' menu={{ items }}>
                       <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
                         <div style={{ fontSize: '16px' }}>
-                          {
-                            user.name === null || user.name === undefined || user.name === "" ? user.email : `Hi ${user.name}`
-                          }
+                          {user.email}
                         </div>
                       </a>
                     </Dropdown>

@@ -1,5 +1,6 @@
 "use client";
 
+import { TROPTIX_ORGANIZER_ALLOW_LIST } from '@/firebase/remoteConfig';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Analytics } from '@vercel/analytics/react';
 import { Spin } from "antd";
@@ -61,7 +62,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
 
         isOrganizer = await fetchAndActivate(remoteConfig)
           .then(() => {
-            const organizerList = getValue(remoteConfig, "TROPTIX_ORGANIZER_ALLOW_LIST");
+            const organizerList = getValue(remoteConfig, TROPTIX_ORGANIZER_ALLOW_LIST);
             const organizers = Array.from(JSON.parse(organizerList.asString()));
             if (organizers.includes(userId)) {
               return true;
@@ -80,7 +81,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         let currentUser = setUserFromResponse(null, user);
-        currentUser.isOrganizer = isUserAnOrganizer(currentUser.id);
+        currentUser.isOrganizer = await isUserAnOrganizer(currentUser.id);
         setUser(currentUser);
         setLoading(false);
       } else {

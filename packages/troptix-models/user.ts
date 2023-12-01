@@ -1,4 +1,3 @@
-import uuid from 'react-native-uuid';
 import { generateId } from './idHelper';
 
 enum Role {
@@ -12,6 +11,8 @@ export class User {
   updatedAt: Date;
 
   name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   stripeId: string;
   role: Role;

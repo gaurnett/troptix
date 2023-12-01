@@ -7,7 +7,7 @@ import {
   eventFetcher,
   useFetchAllEvents,
 } from "@/hooks/useFetchEvents";
-import { Image } from "antd";
+import Image from "next/image";
 import Link from "next/link";
 
 export async function getStaticProps() {
@@ -29,8 +29,8 @@ export default function ManageEventsPage(props) {
             className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
             data-aos="zoom-y-out"
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-400">
-              Current Events
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-400 px-4">
+              Events
             </span>
           </h1>
           {!isPending ? (
@@ -48,7 +48,6 @@ export default function ManageEventsPage(props) {
                       }}
                     >
                       <Image
-                        preview={false}
                         width={75}
                         height={75}
                         className="w-full mx-auto justify-center content-center items-center"

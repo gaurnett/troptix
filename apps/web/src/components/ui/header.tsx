@@ -2,13 +2,14 @@
 
 import { useContext, useEffect, useState } from "react";
 
-import { Dropdown, MenuProps } from "antd";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { auth } from "../../config";
-import { TropTixContext } from "../WebNavigator";
-import MobileMenu from "./mobile-menu";
+import { DownOutlined } from '@ant-design/icons';
+import { Button, Dropdown, MenuProps } from 'antd';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { auth } from '../../config';
+import { TropTixContext } from '../WebNavigator';
+import MobileMenu from './mobile-menu';
 
 export default function Header() {
   const [top, setTop] = useState<boolean>(true);
@@ -68,9 +69,8 @@ export default function Header() {
 
   return (
     <header
-      className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${
-        !top ? "bg-white backdrop-blur-sm shadow-lg" : ""
-      } ${pathname.includes("/event") ? "bg-white" : ""}`}
+      className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${!top ? "bg-white backdrop-blur-sm shadow-lg" : ""
+        } ${pathname.includes("/event") ? "bg-white" : ""}`}
     >
       <div className="max-w-6xl mx-auto px-5 sm:px-6">
         <div className="flex items-center justify-between h-24 md:h-28">
@@ -94,9 +94,8 @@ export default function Header() {
                 <li>
                   <Link
                     href="/"
-                    className={`${
-                      pathname === "/" ? "md:text-blue-700" : ""
-                    } block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
+                    className={`${pathname === "/" ? "md:text-blue-700" : ""
+                      } block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
                   >
                     Home
                   </Link>
@@ -104,98 +103,65 @@ export default function Header() {
                 <li>
                   <Link
                     href="/events"
-                    className={`${
-                      pathname === "/events" || pathname === "/event"
-                        ? "md:text-blue-700"
-                        : ""
-                    } block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
+                    className={`${pathname === "/events" || pathname === "/event"
+                      ? "md:text-blue-700"
+                      : ""
+                      } block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
                   >
                     Events
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    href="/about"
-                    className={`${
-                      pathname === "/about" ? "md:text-blue-700" : ""
-                    } block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
-                  >
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/contact"
-                    className={`${
-                      pathname === "/contact" ? "md:text-blue-700" : ""
-                    } block py-2 pl-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
-                  >
-                    Contact
-                  </Link>
-                </li>
-                {user && (
+                {
+                  user &&
                   <li>
                     <Link
                       href="/orders"
-                      className={`${
-                        pathname === "/orders" ? "md:text-blue-700" : ""
-                      } block py-2 pl-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
+                      className={`${pathname === "/orders" ? "md:text-blue-700" : ""
+                        } block py-2 pl-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
                     >
                       Tickets
                     </Link>
                   </li>
-                )}
+                }
+                <li>
+                  <Link href="/about" className={`${pathname === '/about' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>About</Link>
+                </li>
+                <li>
+                  <Link href="/contact" className={`${pathname === '/contact' ? 'md:text-blue-700' : ''} block py-2 pl-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Contact</Link>
+                </li>
               </ul>
             </div>
           </div>
 
           <div className="max-w-screen-xl flex flex-wrap items-center justify-end">
             <nav className="hidden md:flex">
-              <div className="flex md:order-2">
-                {user === undefined || user === null || user.name === "" ? (
-                  <ul className="flex grow justify-end flex-wrap items-center">
-                    <li>
-                      <Link
-                        href="/auth/signin"
-                        className="font-medium text-gray-600 hover:text-gray-900 px-5 py-3 flex items-center transition duration-150 ease-in-out"
-                      >
-                        Sign in
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/auth/signup"
-                        className="btn-sm text-gray-200 bg-gray-900 hover:bg-gray-800 ml-3"
-                      >
-                        <span>Sign up</span>
-                        <svg
-                          className="w-3 h-3 fill-current text-gray-400 shrink-0 ml-2 -mr-1"
-                          viewBox="0 0 12 12"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M11.707 5.293L7 .586 5.586 2l3 3H0v2h8.586l-3 3L7 11.414l4.707-4.707a1 1 0 000-1.414z"
-                            fillRule="nonzero"
-                          />
-                        </svg>
-                      </Link>
-                    </li>
-                  </ul>
-                ) : (
-                  <ul className="flex justify-end">
-                    <Dropdown className="cursor-pointer" menu={{ items }}>
-                      <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
-                        <div style={{ fontSize: "16px" }}>
-                          {user.name === null ||
-                          user.name === undefined ||
-                          user.name === ""
-                            ? user.email
-                            : `Hi ${user.name}`}
-                        </div>
-                      </a>
-                    </Dropdown>
-                  </ul>
-                )}
+              <div className='flex md:order-2'>
+                {
+                  !user ?
+                    <ul className="flex grow justify-end flex-wrap items-center">
+                      <li>
+                        <Link href="/auth/signin" className="">
+                          <Button className='font-semibold text-base' type='text'>Log in</Button>
+                        </Link>
+                      </li>
+                      <li>
+                        <Link href="/auth/signup" className="">
+                          <Button className='font-semibold text-base' type='text'>Sign up</Button>
+                        </Link>
+                      </li>
+                    </ul>
+                    :
+                    <ul className="flex justify-end">
+                      <Dropdown className='cursor-pointer' menu={{ items }}>
+                        <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
+                          <div style={{ fontSize: '16px' }}>
+                            {user.email}
+                          </div>
+                          <DownOutlined className='ml-1 text-xs' />
+                        </a>
+                      </Dropdown>
+                    </ul>
+                }
               </div>
             </nav>
           </div>
