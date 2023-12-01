@@ -1,6 +1,7 @@
 import { CustomInput } from "@/components/ui/input";
 import { ComplementaryOrder, ComplementaryTicket, generateComplementaryOrder } from "@/hooks/types/Order";
 import { useCreateComplementaryOrder } from "@/hooks/useOrders";
+import { generateId } from "@/lib/utils";
 import { Button, Form, Select, message } from "antd";
 import { useEffect, useState } from "react";
 import { PostOrdersType } from 'troptix-api';
@@ -53,6 +54,7 @@ export default function TicketCompForm({ event, ticketTypes }) {
     setSelectedTicket(value);
     const tickets = new Array();
     const complementaryTicket: ComplementaryTicket = {
+      id: generateId(),
       name: option.label,
       firstName: complementaryOrder.firstName,
       lastName: complementaryOrder.lastName,
@@ -111,7 +113,7 @@ export default function TicketCompForm({ event, ticketTypes }) {
       {contextHolder}
       <Form
         className=""
-        name="basic"
+        name="comp-form"
         onFinish={sendComplementaryTicket}>
         <h3 className="text-xl md:text-xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Ticket Details</h3>
         <div className="md:flex md:justify-between">

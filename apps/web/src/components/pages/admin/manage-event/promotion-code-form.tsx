@@ -28,7 +28,7 @@ export default function PromotionCodeForm({ selectedPromotion, setSelectedPromot
   return (
     <div className="md:max-w-md">
       <Form
-        name="basic"
+        name="promo-form"
         onFinish={savePromotion}>
         <h3 className="text-xl md:text-xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Promotion Details</h3>
         <div className="flex flex-wrap -mx-3 mb-4">

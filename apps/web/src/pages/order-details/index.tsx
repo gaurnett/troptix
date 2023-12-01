@@ -120,7 +120,6 @@ export default function OrderDetailsPage() {
     )
   }
 
-
   return (
     <div className="mt-32 md:mb-8 w-full md:max-w-4xl mx-auto">
       {contextHolder}
@@ -166,18 +165,23 @@ export default function OrderDetailsPage() {
                 className="demo-loadmore-list w-full grow m-0"
                 itemLayout="horizontal"
                 dataSource={tickets}
-                renderItem={(ticket: any, index) => (
-                  <List.Item
-                    actions={[
-                      <Button onClick={() => showDrawer(ticket, index)} key="edit">Edit</Button>]}>
-                    <div>
-                      <p className="text-base">{ticket.ticketType.name}</p>
-                      <p className="text-base">{ticket.firstName} {ticket.lastName}</p>
-                      <p className="text-base">{ticket.email}</p>
-                      <div className="text-base text-green-700">{getFormattedCurrency(ticket.ticketType.price)}</div>
-                    </div>
-                  </List.Item>
-                )}
+                renderItem={(ticket: any, index) => {
+                  const ticketName = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.name;
+                  const ticketPrice = ticket.ticketsType === "COMPLEMENTARY" ? 0 : ticket.ticketType.price;
+
+                  return (
+                    <List.Item
+                      actions={[
+                        <Button onClick={() => showDrawer(ticket, index)} key="edit">Edit</Button>]}>
+                      <div>
+                        <p className="text-base">{ticketName}</p>
+                        <p className="text-base">{ticket.firstName} {ticket.lastName}</p>
+                        <p className="text-base">{ticket.email}</p>
+                        <div className="text-base text-green-700">{getFormattedCurrency(ticketPrice)}</div>
+                      </div>
+                    </List.Item>
+                  )
+                }}
               />
             </div>
           </div>

@@ -37,6 +37,7 @@ export default function OrderConfirmationPage() {
   useEffect(() => {
     if (!order) return;
     const orderMap = new Map<string, any>();
+    console.log(JSON.stringify(order.tickets));
     order.tickets.forEach(ticket => {
       const ticketId = ticket.ticketType.id;
       if (orderMap.has(ticketId)) {

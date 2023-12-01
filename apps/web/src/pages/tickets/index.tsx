@@ -62,6 +62,8 @@ export default function TicketsPage() {
   }
 
   function renderTicket(ticket: any, event: any, index: number, count: number) {
+    const ticketName = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.name;
+
     return (
       <div className="" key={index}>
         <div className="mx-auto w-full h-full">
@@ -83,7 +85,7 @@ export default function TicketsPage() {
                 <p className="text-2xl font-bold">{ticket.firstName} {ticket.lastName}</p>
               </div>
               {renderTicketRow("Event", event.name)}
-              {renderTicketRow("Ticket", ticket.ticketType.name)}
+              {renderTicketRow("Ticket", ticketName)}
               {renderTicketRow("Start Date", getDateFormatted(event.startDate, event.startTime))}
               {renderTicketRow("End Date", getDateFormatted(event.endDate, event.endTime))}
               {renderTicketRow("Event Venue", event.venue)}
