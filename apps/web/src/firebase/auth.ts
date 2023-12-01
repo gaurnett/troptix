@@ -9,14 +9,12 @@ import {
   signInWithPopup,
   updateProfile,
 } from "firebase/auth";
-import { NextRouter } from "next/router";
 import { addUser } from "troptix-api";
 import { User } from "troptix-models";
 import { auth } from "../config";
 
 export async function signUpWithEmail(
   signUpFields: SignUpFields,
-  router: NextRouter
 ) {
   let result: any, error: any;
   const displayName = signUpFields.firstName + " " + signUpFields.lastName;
@@ -36,7 +34,6 @@ export async function signUpWithEmail(
       user.email = userResult.email;
       await addUser(user);
 
-      router.push("/");
       result.user.reload();
     });
   } catch (e) {

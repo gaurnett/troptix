@@ -76,7 +76,7 @@ export default function SignUpPage() {
       return;
     }
     sanitizeNames();
-    const { result, error } = await signUpWithEmail(signUpFields, router);
+    const { result, error } = await signUpWithEmail(signUpFields);
 
     if (error) {
       messageApi.open({
@@ -86,7 +86,7 @@ export default function SignUpPage() {
     }
   }
 
-  const onFinishFailed = (errorInfo: any) => {};
+  const onFinishFailed = (errorInfo: any) => { };
 
   return (
     <div>
