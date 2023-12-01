@@ -62,6 +62,10 @@ export async function postStripe({ type, charge }: PostStripeRequest): Promise<P
       body: JSON.stringify(request),
     });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
     const json = await response.json();
     return json;
   } catch (error) {

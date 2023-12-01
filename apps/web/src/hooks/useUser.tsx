@@ -1,8 +1,8 @@
-import { prodUrl } from "./useFetchEvents";
-import { SocialMediaAccount, User } from "./types/User";
+import { TropTixContext } from "@/components/WebNavigator";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
-import { TropTixContext } from "@/components/WebNavigator";
+import { SocialMediaAccount, User } from "./types/User";
+import { prodUrl } from "./useFetchEvents";
 
 export enum GetUsersType {
   GET_USERS_BY_ID = "GET_USERS_BY_ID",
@@ -57,6 +57,7 @@ export async function fetchUserById(userId: string) {
       method: "GET",
       cache: "no-cache",
     });
+
     if (!response.ok) {
       throw new Error("Failed to fetch users");
     }

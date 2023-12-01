@@ -68,6 +68,11 @@ export async function getOrders({ getOrdersType, id }: GetOrdersRequest) {
       method: "GET",
       cache: "no-cache",
     });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+
     const json = await response.json();
 
     return json;
@@ -116,7 +121,7 @@ export function useCreateComplementaryOrder() {
 export async function postOrders({ type, order, charge, complementaryOrder }: PostOrdersRequest) {
   try {
     let url = prodUrl + `/api/orders`;
-    const request = { type, order, charge };
+    const request = { type, order, charge, complementaryOrder };
 
     const response = await fetch(url, {
       method: "POST",
@@ -126,6 +131,11 @@ export async function postOrders({ type, order, charge, complementaryOrder }: Po
       },
       body: JSON.stringify(request),
     });
+
+    // if (!response.ok) {
+    //   throw new Error(`HTTP error! status: ${JSON.stringify(response)}`);
+    // }
+
     const json = await response.json();
 
     return json;
