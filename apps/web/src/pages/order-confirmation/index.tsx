@@ -173,7 +173,7 @@ export default function OrderConfirmationPage() {
                       src={"/icons/tickets.png"}
                       alt={"tickets image"} />
                   </div>
-                  <div>View your tickets</div>
+                  <div className="mt-2">View your tickets</div>
                 </Link>
 
               </div>
