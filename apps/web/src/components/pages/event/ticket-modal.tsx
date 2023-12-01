@@ -21,6 +21,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
   const [current, setCurrent] = useState(0);
   const [canShowMessage, setCanShowMessage] = useState(true);
   const [clientSecret, setClientSecret] = useState<any>();
+  const [messageApi, contextHolder] = message.useMessage();
   const createPaymentIntent = useCreatePaymentIntent();
   const createOrder = useCreateOrder();
 
@@ -54,10 +55,27 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
   }, [checkoutPreviousButtonClicked, current])
 
   async function initializeStripeDetails() {
-    const { paymentId, customerId, clientSecret } = await createPaymentIntent.mutateAsync({ checkout });
-    const orderId = await createOrder.mutateAsync({ checkout, paymentId, customerId });
-    setClientSecret(clientSecret);
-    setOrderId(orderId as string);
+    createPaymentIntent.mutate({ checkout }, {
+      onSuccess: (data) => {
+        const { paymentId, customerId, clientSecret } = data;
+
+        createOrder.mutate({ checkout, paymentId, customerId }, {
+          onSuccess: (data) => {
+            setClientSecret(clientSecret);
+            setOrderId(data as string);
+          },
+          onError: (error) => {
+            messageApi.error("There was an error initializing your order");
+            setCurrent(current - 1);
+          }
+        });
+      },
+      onError: (error) => {
+        messageApi.error("There was an error initializing your order");
+        setCurrent(current - 1);
+      }
+    });
+
   }
 
   async function next() {
@@ -118,6 +136,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
 
   return (
     <>
+      {contextHolder}
       <Modal
         title="Ticket Checkout"
         centered

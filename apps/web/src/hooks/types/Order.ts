@@ -70,3 +70,36 @@ export function createOrder(checkout: Checkout, paymentId: string, stripeCustome
 
   return order;
 }
+
+export type ComplementaryOrder = {
+  id?: string;
+  eventId?: string;
+  eventName?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  total?: number;
+  tickets?: ComplementaryTicket[];
+}
+
+export function generateComplementaryOrder(event): ComplementaryOrder {
+  const order: ComplementaryOrder = {
+    id: generateId(),
+    eventId: event.id,
+    eventName: event.eventName,
+    total: 0,
+    tickets: []
+  }
+
+  return order;
+}
+
+export type ComplementaryTicket = {
+  id?: string;
+  ticketTypeId?: string;
+  ticketName: string;
+  eventId?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+}

@@ -1,6 +1,5 @@
 import { Ticket, TicketStatus } from "@/hooks/types/Ticket";
 import { PostTicketRequest, PostTicketType, useCreateTicket } from "@/hooks/useTicket";
-import { useQueryClient } from "@tanstack/react-query";
 import { Button, Input, List, Popconfirm, message } from "antd";
 import { useEffect, useState } from "react";
 
@@ -9,7 +8,6 @@ export default function OrderGuestListPage({ orders }) {
   const [guests, setGuests] = useState<Ticket[]>([]);
   const [originalList, setOriginalList] = useState<Ticket[]>([])
   const createTicket = useCreateTicket();
-  const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
@@ -78,10 +76,20 @@ export default function OrderGuestListPage({ orders }) {
           ...data,
         }
 
-        // queryClient.setQueryData(['order'], {
-        //   ...order,
-        //   ["tickets"]: tickets
-        // });
+        const updatedGuests = guests.map((guest, i) => {
+          if (guest.id === oldData.id) {
+            return oldData;
+          } else {
+            return guest;
+          }
+        });
+
+        setGuests(updatedGuests);
+        messageApi.destroy('update-ticket-loading');
+        messageApi.open({
+          type: 'success',
+          content: 'Successfully saved ticket.',
+        });
       },
       onError: (error) => {
         messageApi.destroy('update-ticket-loading');
@@ -91,12 +99,6 @@ export default function OrderGuestListPage({ orders }) {
         });
         return;
       }
-    })
-
-    messageApi.destroy('update-ticket-loading');
-    messageApi.open({
-      type: 'success',
-      content: 'Successfully saved ticket.',
     });
   }
 
@@ -123,33 +125,46 @@ export default function OrderGuestListPage({ orders }) {
           pagination={{
             pageSize: 8,
           }}
-          renderItem={(guest: any, index: number) => (
-            <List.Item
-              actions={[
-                <Popconfirm
-                  key="check-in"
-                  title="Check in guest"
-                  description={`Are you sure you want to check in ${guest?.firstName} ${guest?.lastName}?`}
-                  className="time-picker-button"
-                  onConfirm={() => checkIn(guest, index)}
-                  okText="Yes"
-                  cancelText="No"
-                >
-                  <Button>Check In</Button>
-                </Popconfirm>
-              ]}>
-              <div key={guest.id} >
-                <div className="flex">
-                  <div className="my-auto">
-                    <div>{String(guest.id).toUpperCase()}</div>
-                    <div>{guest?.firstName} {guest?.lastName}</div>
-                    <div>{guest?.email}</div>
+          renderItem={(guest: Ticket, index: number) => {
+            let title = "Check in guest";
+            let description = `Are you sure you want to check in ${guest?.firstName} ${guest?.lastName}?`;
+            let buttonText = "Check In";
+
+            if (guest.status === TicketStatus.NOT_AVAILABLE) {
+              title = "Activate Ticket";
+              description = "Are you sure you want to activate this ticket?"
+              buttonText = "Activate Ticket"
+            }
+            return (
+              <List.Item
+                actions={[
+                  <Popconfirm
+                    key="check-in"
+                    title={title}
+                    description={description}
+                    className="time-picker-button"
+                    onConfirm={() => checkIn(guest, index)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button>{buttonText}</Button>
+                  </Popconfirm>
+                ]}>
+                <div key={guest.id} >
+                  <div className="flex">
+                    <div className="my-auto">
+                      <div>{String(guest.id).toUpperCase()}</div>
+                      <div className={`${guest.status === TicketStatus.NOT_AVAILABLE ? 'line-through' : ''}`}>
+                        <div>{guest?.firstName} {guest?.lastName}</div>
+                        <div>{guest?.email}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </List.Item>
+              </List.Item>
 
-          )}
+            )
+          }}
         />
       </div>
     </div>
