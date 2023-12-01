@@ -216,7 +216,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
 
     if (ticket.quantitySold !== null && ticket.quantitySold !== undefined) {
       quantityRemaining = ticket.quantity - ticket.quantitySold;
-      if (quantityRemaining === 0) {
+      if (quantityRemaining <= 0) {
         return "Sold Out";
       }
     }
@@ -288,7 +288,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
                                   <Button
                                     onClick={() => increaseCost(ticket, index)}
                                     className='bg-blue-500 rounded'
-                                    disabled={checkoutTicket && checkoutTicket.quantitySelected === ticket.maxPurchasePerUser}
+                                    disabled={checkoutTicket && checkoutTicket.quantitySelected === Math.min(ticket.quantity - ticket.quantitySold, ticket.maxPurchasePerUser)}
                                     icon={<PlusOutlined className='text-white items-center justify-center' />}>
                                   </Button>
                                 </div>

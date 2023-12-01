@@ -137,11 +137,11 @@ export default function OrderConfirmationPage() {
             <div className="text-sm md:text-md font-bold">{new Date(order.createdAt).toDateString()}</div>
           </div>
         </div>
-        <div className="mx-4 text-center text-4xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">{order.event.name}</span></div>
+        <div className="mx-4 text-center text-4xl font-extrabold leading-tighter tracking-tighter mb-8" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">{order.event.name}</span></div>
 
         <div className="w-full md:max-w-2xl mx-auto">
           <div className="md:flex">
-            <div className="w-full text-center">
+            <div className="w-full flex justify-center text-center">
               <Image
                 width={250}
                 height={250}
@@ -150,7 +150,7 @@ export default function OrderConfirmationPage() {
                 src={order.event.imageUrl}
                 alt={"event flyer image"} />
             </div>
-            <div className="w-full">
+            <div className="w-full md:ml-8 mt-8 md:mt-0">
               {renderTicketRow("Start Date", getDateFormatted(order.event.startDate, order.event.startTime))}
               {renderTicketRow("End Date", getDateFormatted(order.event.endDate, order.event.endTime))}
               {renderTicketRow("Event Venue", order.event.venue)}
@@ -162,15 +162,17 @@ export default function OrderConfirmationPage() {
         <div className="w-full md:max-w-2xl mx-auto mb-8">
           <div className="mx-auto">
             <div className="flex justify-center mt-8 mx-auto w-full">
-              <div className="text-center">
-                <Link target="_blank" href={{ pathname: '/tickets', query: { orderId: orderId } }}>
-                  <Image
-                    width={50}
-                    height={50}
-                    className="w-auto"
-                    style={{ objectFit: 'contain' }}
-                    src={"/icons/tickets.png"}
-                    alt={"tickets image"} />
+              <div className="text-center justify-center">
+                <Link className="mx-auto text-center" target="_blank" href={{ pathname: '/tickets', query: { orderId: orderId } }}>
+                  <div className="w-full flex justify-center text-center">
+                    <Image
+                      width={50}
+                      height={50}
+                      className="w-auto"
+                      style={{ objectFit: 'contain' }}
+                      src={"/icons/tickets.png"}
+                      alt={"tickets image"} />
+                  </div>
                   <div>View your tickets</div>
                 </Link>
 

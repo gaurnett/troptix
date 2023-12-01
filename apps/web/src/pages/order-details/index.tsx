@@ -150,7 +150,7 @@ export default function OrderDetailsPage() {
               </Link>
             </div>
             <div>
-              <Link target="_blank" href={{ pathname: "/tickets", query: { orderId: order.id } }}>
+              <Link target="_blank" href={{ pathname: "/order-confirmation", query: { orderId: order.id } }}>
                 <Button
                   className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex mt-4">
                   View Order Confirmation

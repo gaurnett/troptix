@@ -77,7 +77,7 @@ export default function TicketsPage() {
                   <Link href={{ pathname: "/order-details", query: { orderId: order.id } }}>
                     <div className="w-full" key={order.id} >
                       <div className="flex">
-                        <div>
+                        <div className="my-auto">
                           <Image
                             width={110}
                             height={110}
