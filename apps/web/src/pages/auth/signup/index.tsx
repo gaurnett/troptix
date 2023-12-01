@@ -106,7 +106,7 @@ export default function SignUpPage() {
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
               >
-                <div className="max-w-sm mx-auto">
+                <div className="max-w-md mx-auto">
                   <div>
                     <div className="flex flex-row -mx-3 mb-4">
                       <div className="w-full px-3">

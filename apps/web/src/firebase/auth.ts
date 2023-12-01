@@ -30,7 +30,8 @@ export async function signUpWithEmail(
       const userResult = result.user;
       const user = new User();
       user.id = userResult.uid;
-      user.name = displayName;
+      user.firstName = signUpFields.firstName;
+      user.lastName = signUpFields.lastName;
       user.email = userResult.email;
       await addUser(user);
 
@@ -80,7 +81,6 @@ export async function signInWithGoogle() {
         if (additionalInfo?.isNewUser) {
           const user = new User();
           user.id = userResult.uid;
-          user.name = userResult.displayName;
           user.email = userResult.email;
           await addUser(user);
         }
