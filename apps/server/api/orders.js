@@ -1,7 +1,7 @@
-import prisma from "../prisma/prisma";
+import { sendComplementaryTicketEmailToUser, sendEmailToUser } from "../lib/emailHelper";
 import { getPrismaCreateComplementaryOrderQuery, getPrismaCreateOrderQuery } from "../lib/eventHelper";
 import { getBuffer, updateSuccessfulOrder, updateTicketTypeQuantitySold } from "../lib/orderHelper";
-import { sendComplementaryTicketEmailToUser, sendEmailToUser } from "../lib/emailHelper";
+import prisma from "../prisma/prisma";
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
@@ -151,7 +151,7 @@ async function createComplementaryOrder(body, response) {
   }
 
   try {
-    await prisma.orders.create({
+    const order = await prisma.orders.create({
       data: getPrismaCreateComplementaryOrderQuery(order),
       include: {
         tickets: true,
@@ -182,7 +182,7 @@ async function createComplementaryOrder(body, response) {
 
     console.log("Added complementary order: " + order.id);
 
-    return response.status(200).json({ error: null, message: "Successfully added order" });
+    return response.status(200).json(order);
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error adding complementary order' });
