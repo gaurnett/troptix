@@ -89,7 +89,7 @@ export function getPrismaCreateOrderQuery(order) {
   let orderTickets: Prisma.TicketsCreateManyOrderInput[] = [];
 
   for (const ticket of order.tickets) {
-    orderTickets.push({
+    let ticketInput: Prisma.TicketsCreateManyOrderInput = {
       id: ticket.id,
       eventId: ticket.eventId,
       ticketTypeId: ticket.ticketTypeId,
@@ -100,8 +100,17 @@ export function getPrismaCreateOrderQuery(order) {
       total: ticket.total,
       firstName: order.firstName,
       lastName: order.lastName,
-      email: order.email
-    })
+      email: order.email,
+    }
+
+    if (order.userId) {
+      ticketInput = {
+        ...ticketInput,
+        userId: order.userId
+      }
+    }
+
+    orderTickets.push(ticketInput);
   }
 
   orderInput = {
@@ -162,15 +171,22 @@ export function getPrismaCreateComplementaryOrderQuery(order) {
       ticketsType: TicketType.COMPLEMENTARY,
       total: 0,
       fees: 0,
-      subtotal: 0
+      subtotal: 0,
+      firstName: order.firstName,
+      lastName: order.lastName,
+      email: order.email
     })
   }
 
   orderInput = {
     id: order.id,
     status: OrderStatus.COMPLETED,
-    total: order.total,
-    name: order.name,
+    total: 0,
+    subtotal: 0,
+    fees: 0,
+    firstName: order.firstName,
+    lastName: order.lastName,
+    ticketsLink: order.ticketsLink,
     email: order.email,
     event: {
       connect: {
