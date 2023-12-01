@@ -147,11 +147,11 @@ async function createComplementaryOrder(body, response) {
   const order = body.complementaryOrder;
 
   if (order === undefined) {
-    return response.status(500).json({ error: 'No order found in create order request' });
+    return response.status(500).json({ error: 'No order found in create complementary order request' });
   }
 
   try {
-    const order = await prisma.orders.create({
+    const prismaOrder = await prisma.orders.create({
       data: getPrismaCreateComplementaryOrderQuery(order),
       include: {
         tickets: true,
@@ -182,7 +182,7 @@ async function createComplementaryOrder(body, response) {
 
     console.log("Added complementary order: " + order.id);
 
-    return response.status(200).json(order);
+    return response.status(200).json(prismaOrder);
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error adding complementary order' });
