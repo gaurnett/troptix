@@ -293,7 +293,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
                           <div className='ml-4'>
                             <div className='ml-4'>
                               <div className='text-xl font-bold text-end'>
-                                {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)}
+                                {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)} USD
                               </div>
                             </div>
                           </div>

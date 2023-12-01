@@ -128,7 +128,7 @@ export default function EventDetailPage(props) {
       }
     });
 
-    priceString = "From " + getFormattedCurrency(lowest);
+    priceString = "From " + getFormattedCurrency(lowest) + " USD";
   }
 
   return (

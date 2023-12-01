@@ -39,7 +39,9 @@ export default function OrderConfirmationPage() {
     const orderMap = new Map<string, any>();
     console.log(JSON.stringify(order.tickets));
     order.tickets.forEach(ticket => {
-      const ticketId = ticket.ticketType.id;
+      const ticketId = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.id;
+      const ticketName = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.name;
+
       if (orderMap.has(ticketId)) {
         const orderRow = orderMap.get(ticketId);
         orderMap.set(ticketId, {
@@ -52,7 +54,7 @@ export default function OrderConfirmationPage() {
       } else {
         orderMap.set(ticketId, {
           key: ticket.id,
-          name: ticket.ticketType.name,
+          name: ticketName,
           quantity: 1,
           total: ticket.total,
           fee: ticket.fees,

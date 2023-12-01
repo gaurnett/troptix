@@ -34,7 +34,7 @@ export default function EventCard({ event, showDivider = false }) {
       }
     });
 
-    priceString = "From " + getFormattedCurrency(lowest);
+    priceString = "From " + getFormattedCurrency(lowest) + " USD";
   }
 
   function renderMobileCard() {

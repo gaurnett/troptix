@@ -14,6 +14,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   const [promotionCode, setPromotionCode] = useState<any>();
   const [promotion, setPromotion] = useState<any>();
   const [promotionApplied, setPromotionApplied] = useState(false);
+  const [canShowMessage, setCanShowMessage] = useState(true);
 
   function getDateFormatter(date, time) {
     return `${format(new Date(date), 'MMM dd, yyyy')} @ ${format(new Date(time), 'hh:mm a')}`;
@@ -21,12 +22,20 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
 
   async function applyPromotion() {
     if (promotionCode === undefined) {
-      message.error("Promotion code is empty");
+      if (canShowMessage) {
+        setCanShowMessage(false);
+        message.error("Promotion code is empty")
+          .then(() => setCanShowMessage(true));
+      }
       return;
     }
 
     if (promotionApplied && String(promotion.code).toUpperCase() === String(promotionCode).toUpperCase()) {
-      message.error("Promotion already applied");
+      if (canShowMessage) {
+        setCanShowMessage(false);
+        message.error("Promotion already applied")
+          .then(() => setCanShowMessage(true));
+      }
       return;
     }
 
@@ -112,8 +121,14 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
     return formatter.format(price);
   }
 
+  function calculateFees(price) {
+    const fee = price * 0.05;
+    const tax = fee * 0.15;
+    return fee + tax;
+  }
+
   function getFormattedFeesCurrency(price) {
-    price = price * .05;
+    price = calculateFees(price);
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -126,10 +141,15 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
     return formatter.format(price);
   }
 
+  function normalizePrice(price): number {
+    return Math.round(price * 100) / 100;
+  }
+
   function updateCost(ticket, reduce = false) {
-    var ticketSubtotal = ticket.price;
-    var ticketFees = ticket.ticketingFees === "PASS_TICKET_FEES" ? ticket.price * .05 : 0;
-    var ticketTotal = ticketFees + ticketSubtotal;
+    const price = normalizePrice(ticket.price)
+    var ticketSubtotal = price;
+    var ticketFees = ticket.ticketingFees === "PASS_TICKET_FEES" ? calculateFees(price) : 0;
+    var ticketTotal = normalizePrice(ticketFees + ticketSubtotal);
 
     const updatedTickets = checkout.tickets;
     if (checkout.tickets.has(ticket.id)) {
@@ -150,13 +170,12 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
       updatedTickets.set(ticket.id, checkoutTicket);
     }
 
-    var checkoutTotal = checkout.total;
-    var checkoutSubtotal = checkout.subtotal;
-    var checkoutFees = checkout.fees;
+    var checkoutSubtotal = normalizePrice(checkout.subtotal);
+    var checkoutFees = normalizePrice(checkout.fees);
 
     checkoutSubtotal = reduce ? checkoutSubtotal - ticketSubtotal : checkoutSubtotal + ticketSubtotal;
     checkoutFees = reduce ? checkoutFees - ticketFees : checkoutFees + ticketFees
-    checkoutTotal = checkoutSubtotal + checkoutFees;
+    var checkoutTotal = normalizePrice(checkoutSubtotal + checkoutFees);
 
     setCheckout(previousOrder => ({
       ...previousOrder,
@@ -226,6 +245,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
           dataSource={event.ticketTypes}
           split={false}
           renderItem={(ticket: any, index: number) => {
+            console.log(JSON.stringify(ticket));
             let checkoutTicket: any
             if (checkout.tickets && checkout.tickets.has(ticket.id)) {
               checkoutTicket = checkout.tickets.get(ticket.id);
@@ -268,6 +288,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
                                   <Button
                                     onClick={() => increaseCost(ticket, index)}
                                     className='bg-blue-500 rounded'
+                                    disabled={checkoutTicket && checkoutTicket.quantitySelected === ticket.maxPurchasePerUser}
                                     icon={<PlusOutlined className='text-white items-center justify-center' />}>
                                   </Button>
                                 </div>

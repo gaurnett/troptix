@@ -73,7 +73,10 @@ export class OrderSummary {
       this.fees = order.fees;
 
       for (const ticket of order.tickets) {
-        const ticketId = ticket.ticketTypeId;
+        const ticketName = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.name;
+        const ticketId = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.id;
+        const quantity = ticket.ticketsType === "COMPLEMENTARY" ? 0 : ticket.ticketType.quantity;
+
         if (this.ticketsSummary.has(ticketId)) {
           let summary = this.ticketsSummary.get(ticketId);
           if (summary && summary.quantitySold) {
@@ -82,8 +85,8 @@ export class OrderSummary {
           }
         } else {
           let summary: TicketSummary = {
-            name: ticket.ticketType.name,
-            quantity: ticket.ticketType.quantity,
+            name: ticketName,
+            quantity: quantity,
             quantitySold: 1
           }
 
