@@ -1,18 +1,22 @@
 import { CustomInput } from "@/components/ui/input";
+import { ComplementaryOrder, ComplementaryTicket, generateComplementaryOrder } from "@/hooks/types/Order";
+import { useCreateComplementaryOrder } from "@/hooks/useOrders";
+import { generateId } from "@/lib/utils";
 import { Button, Form, Select, message } from "antd";
 import { useEffect, useState } from "react";
-import { PostOrdersType, postOrders } from 'troptix-api';
-import { ComplementaryOrder, ComplementaryTicket } from 'troptix-models';
+import { PostOrdersType } from 'troptix-api';
 
 export default function TicketCompForm({ event, ticketTypes }) {
 
   const [messageApi, contextHolder] = message.useMessage();
-  const [complementaryOrder, setComplementaryOrder] = useState<any>(new ComplementaryOrder(event));
+  const [complementaryOrder, setComplementaryOrder] = useState<ComplementaryOrder>(generateComplementaryOrder(event));
   const [ticketTypeOptions, setTicketTypeOptions] = useState<Map<string, any>>(new Map());
   const [selectedTicket, setSelectedTicket] = useState<any>();
   const [canShowMessage, setCanShowMessage] = useState(true);
   const generalTicket = "General (Grants general entry)";
   const compTicketIdSuffix = "-comp-ticket";
+  const createOrder = useCreateComplementaryOrder();
+
   useEffect(() => {
     const tempTickets: Map<string, any> = new Map();
     tempTickets.set(event.id + compTicketIdSuffix, {
@@ -49,11 +53,18 @@ export default function TicketCompForm({ event, ticketTypes }) {
   function handleSelectChange(value: string, option: any) {
     setSelectedTicket(value);
     const tickets = new Array();
-    const complementaryTicket = new ComplementaryTicket();
-    complementaryTicket.name = option.label;
+    const complementaryTicket: ComplementaryTicket = {
+      id: generateId(),
+      name: option.label,
+      firstName: complementaryOrder.firstName,
+      lastName: complementaryOrder.lastName,
+      email: complementaryOrder.email
+    };
+
     if (!String(option.value).includes(compTicketIdSuffix)) {
       complementaryTicket.ticketTypeId = option.value
     }
+
     tickets.push(complementaryTicket);
     setComplementaryOrder(previousTicket => ({
       ...previousTicket,
@@ -61,7 +72,7 @@ export default function TicketCompForm({ event, ticketTypes }) {
     }))
   };
 
-  async function generateComplementaryTicket() {
+  async function sendComplementaryTicket() {
     if (!selectedTicket) {
       if (canShowMessage) {
         setCanShowMessage(false);
@@ -76,23 +87,25 @@ export default function TicketCompForm({ event, ticketTypes }) {
       complementaryOrder: complementaryOrder
     }
 
-    const response = await postOrders(postOrdersRequest);
+    createOrder.mutate(postOrdersRequest, {
+      onSuccess: (data) => {
+        console.log(data);
+        messageApi.open({
+          type: 'success',
+          content: 'Successfully sent complementary ticket.',
+        });
 
-    if (response === null || response === undefined || response.error !== null) {
-      messageApi.open({
-        type: 'error',
-        content: 'Failed to create complementary ticket, please try again.',
-      });
-      return;
-    }
-
-    messageApi.open({
-      type: 'success',
-      content: 'Successfully sent complementary ticket.',
-    });
-
-    setComplementaryOrder(new ComplementaryOrder(event));
-    setSelectedTicket(undefined);
+        setComplementaryOrder(generateComplementaryOrder(event));
+        setSelectedTicket(undefined);
+      },
+      onError: (error) => {
+        messageApi.open({
+          type: 'error',
+          content: 'Failed to create complementary ticket, please try again.',
+        });
+        return;
+      }
+    })
   }
 
   return (
@@ -100,12 +113,15 @@ export default function TicketCompForm({ event, ticketTypes }) {
       {contextHolder}
       <Form
         className=""
-        name="basic"
-        onFinish={generateComplementaryTicket}>
+        name="comp-form"
+        onFinish={sendComplementaryTicket}>
         <h3 className="text-xl md:text-xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Ticket Details</h3>
-        <div className="flex flex-wrap -mx-3 mb-4">
-          <div className="w-screen px-3">
-            <CustomInput value={complementaryOrder.name} name={"name"} id={"name"} label={"Name"} type={"text"} placeholder={"John Doe"} handleChange={handleChange} required={true} />
+        <div className="md:flex md:justify-between">
+          <div className="mb-4 md:mr-4 w-full">
+            <CustomInput value={complementaryOrder.firstName} name={"firstName"} id={"firstName"} label={"First Name"} type={"text"} placeholder={"John"} handleChange={handleChange} required={true} />
+          </div>
+          <div className="mb-4 md:ml-4 w-full">
+            <CustomInput value={complementaryOrder.lastName} name={"lastName"} id={"lastName"} label={"Last Name"} type={"text"} placeholder={"Doe"} handleChange={handleChange} required={true} />
           </div>
         </div>
         <div className="flex flex-wrap -mx-3 mb-4">

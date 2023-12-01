@@ -24,7 +24,7 @@ export default function AboutHero() {
 
           {/* Section header */}
           <div className="text-center pb-8">
-            <h1 className="text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Welcome to <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-amber-400">TropTix</span></h1>
+            <h1 className="text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Welcome to <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-amber-400 pr-4">TropTix</span></h1>
             <div className="max-w-3xl mx-auto">
               <p className="text-xl text-gray-600 mb-8" data-aos="zoom-y-out" data-aos-delay="150">TropTix&apos;s event management software is more than just a tool; it&apos;s a game-changer tailored to the unique needs of the Caribbean event landscape. Our software streamlines all facets of event planning, ensuring cost savings, enhanced communication, robust data protection, and maximized ROI. Distinct from other solutions, TropTix is designed with local event organizers in mind, offering features that resonate with the Caribbean market&apos;s nuances.</p>
               <div className="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center" data-aos="zoom-y-out" data-aos-delay="300">

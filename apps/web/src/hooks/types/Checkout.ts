@@ -1,8 +1,11 @@
+import { TicketType } from "./Ticket";
+
 export interface Checkout {
   id: string;
   eventId: string;
   userId: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   total: number;
   subtotal: number;
@@ -21,12 +24,24 @@ export interface Checkout {
   tickets: Map<string, CheckoutTicket>;
 }
 
-export function initializeCheckout(user: any): Checkout {
+export function initializeCheckout(user: any, eventId: string): Checkout {
+  let firstName = "";
+  let lastName = "";
+  if (user?.name) {
+    const name = String(user.name).split(" ");
+    firstName = name[0];
+
+    if (name.length > 1) {
+      lastName = name[0];
+    }
+  }
+
   const checkout: Checkout = {
     id: "",
-    eventId: "",
+    eventId: eventId,
     userId: user?.id,
-    name: user?.name,
+    firstName: firstName,
+    lastName: lastName,
     email: user?.email,
     total: 0,
     subtotal: 0,
@@ -58,4 +73,22 @@ export interface CheckoutTicket {
   fees: number;
   subtotal: number;
   total: number;
+  ticketType: TicketType;
+}
+
+export function initializeCheckoutTicket(ticket): CheckoutTicket {
+  const checkoutTicket: CheckoutTicket = {
+    id: "",
+    ticketTypeId: ticket.id,
+    eventId: ticket.eventId,
+    name: ticket.name,
+    description: ticket.description,
+    quantitySelected: 0,
+    fees: 0,
+    subtotal: 0,
+    total: 0,
+    ticketType: TicketType.PAID
+  }
+
+  return checkoutTicket;
 }

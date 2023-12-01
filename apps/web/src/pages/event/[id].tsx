@@ -1,3 +1,4 @@
+import { TropTixContext } from "@/components/WebNavigator";
 import TicketDrawer from "@/components/pages/event/ticket-drawer";
 import TicketModal from "@/components/pages/event/ticket-modal";
 import { Spinner } from "@/components/ui/spinner";
@@ -7,12 +8,13 @@ import {
   eventFetcher,
   useFetchEventsById,
 } from "@/hooks/useFetchEvents";
-import { Button, Typography } from "antd";
+import { getFormattedCurrency } from "@/lib/utils";
+import { Button, Modal, Result, Typography } from "antd";
 import { format } from "date-fns";
-import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IoTicket } from "react-icons/io5";
 const { Paragraph } = Typography;
 
@@ -49,8 +51,10 @@ export async function getStaticProps({ params }) {
 export default function EventDetailPage(props) {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const router = useRouter();
+  const { user } = useContext(TropTixContext)
   const eventId = router.query.eventId as string;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" && window.innerWidth < 768
   );
@@ -87,11 +91,20 @@ export default function EventDetailPage(props) {
     return `${format(date, "MMM dd, yyyy")} @ ${format(date, "hh:mm a")}`;
   }
 
+  function closeSignInModal() {
+    setIsSignInModalOpen(false);
+  }
+
   const handleCancel = () => {
     setIsTicketModalOpen(false);
   };
 
   function openModal() {
+    if (!user) {
+      setIsSignInModalOpen(true);
+      return;
+    }
+
     setIsTicketModalOpen(true);
   }
 
@@ -101,6 +114,21 @@ export default function EventDetailPage(props) {
         <Spinner text={"Fetching Event"} />
       </div>
     );
+  }
+
+  let lowest = Number.MAX_VALUE;
+  let priceString = "";
+  if (!event.ticketTypes || event.ticketTypes.length === 0) {
+    priceString = "No tickets available";
+  } else {
+    event.ticketTypes.forEach((ticket) => {
+      const price = ticket.price;
+      if (price < lowest) {
+        lowest = price;
+      }
+    });
+
+    priceString = "From " + getFormattedCurrency(lowest) + " USD";
   }
 
   return (
@@ -113,10 +141,9 @@ export default function EventDetailPage(props) {
       />
       <div
         style={{
-          backgroundImage: `url("${
-            event?.imageUrl ??
+          backgroundImage: `url("${event?.imageUrl ??
             "https://placehold.co/400x400?text=Add+Event+Flyer"
-          }")`,
+            }")`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           WebkitBackgroundSize: "cover",
@@ -135,6 +162,38 @@ export default function EventDetailPage(props) {
             handleCancel={handleCancel}
           />
         )}
+        <Modal
+          open={isSignInModalOpen}
+          title=""
+          centered
+          onCancel={closeSignInModal}
+          okButtonProps={{ hidden: true }}
+          cancelButtonProps={{ hidden: true }}
+        >
+          <Result
+            title="Please log in/sign up to buy tickets"
+            extra={[
+              <Link
+                href={{ pathname: "/auth/signin" }}
+                key={"tickets"}>
+                <Button
+                  className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  Log in
+                </Button>
+              </Link>,
+              <Link
+                href={{ pathname: "/auth/signup" }}
+                key={"tickets"}>
+                <Button
+                  type='primary'
+                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  Sign up
+                </Button>
+              </Link>
+            ]
+            }
+          />
+        </Modal>
         <div className="w-full md:min-h-screen flex backdrop-blur-3xl">
           <div className={`max-w-5xl mx-auto p-4 sm:p-8`}>
             <div className="md:flex mt-32">
@@ -149,14 +208,44 @@ export default function EventDetailPage(props) {
                   alt={event.name}
                   className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg"
                 />
-                <Button
-                  type="primary"
-                  onClick={openModal}
-                  className="w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
-                  icon={<IoTicket />}
-                >
-                  Buy Tickets
-                </Button>
+                {
+                  user ?
+                    <Button
+                      type="primary"
+                      onClick={openModal}
+                      className="w-full px-6 py-6 shadow-md items-center text-base bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
+                      icon={<IoTicket className='text-base' />}>
+                      Buy Tickets
+                    </Button>
+                    :
+                    <div className="w-5/6 md:w-full mx-auto bg-white bg-opacity-80 py-4 rounded-lg">
+                      <div className="text-center text-base font-extrabold">You must have a TropTix account to purchase tickets.</div>
+                      <div className="flex mx-auto text-center mt-4">
+                        <div className="w-full ml-4 mr-2">
+                          <Link
+                            className=""
+                            href={{ pathname: "/auth/signin" }}
+                            key={"tickets"}>
+                            <Button
+                              className="w-full p-5 shadow-md items-center justify-center font-medium inline-flex">
+                              Log in
+                            </Button>
+                          </Link>
+                        </div>
+                        <div className="w-full mr-4 ml-2">
+                          <Link
+                            href={{ pathname: "/auth/signup" }}
+                            key={"tickets"}>
+                            <Button
+                              type='primary'
+                              className="w-full bg-blue-600 hover:bg-blue-700 p-5 shadow-md items-center justify-center font-medium inline-flex">
+                              Sign up
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                }
               </aside>
               <div className="w-full md:ml-8 bg-white bg-opacity-80 p-6 rounded-lg">
                 <div className="mb-8">
@@ -166,11 +255,12 @@ export default function EventDetailPage(props) {
                   >
                     {event.name}
                   </h1>
-                  <div className="text-xl font-extrabold">{event.venue}</div>
+                  <div className="text-xl font-extrabold">{event.organizer}</div>
+                  <div className="text-xl">{event.venue}</div>
                   <div className="text-xl text-blue-500">
                     {getDateFormatter(new Date(event.startDate))}
                   </div>
-                  <div className="text-xl">{event.organizer}</div>
+                  <div className="text-xl text-green-600">{priceString}</div>
                 </div>
 
                 <div>

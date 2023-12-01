@@ -28,7 +28,7 @@ export default function UserDelegationForm({ selectedUser, setSelectedUser, save
   return (
     <div className="md:max-w-md">
       <Form
-        name="basic"
+        name="user-delegation-form"
         onFinish={saveUser}>
         <h3 className="text-xl md:text-xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Promotion Details</h3>
         <div className="flex flex-wrap -mx-3 mb-4">
