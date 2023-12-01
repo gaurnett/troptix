@@ -2,9 +2,9 @@ import { TropTixContext } from "@/components/WebNavigator";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { message } from "antd";
 import { useContext } from "react";
-import { Order } from "troptix-models";
 import { Charge } from "./types/Charge";
 import { Checkout } from "./types/Checkout";
+import { ComplementaryOrder, Order, createOrder } from "./types/Order";
 import { prodUrl } from "./useFetchEvents";
 
 export enum GetOrdersType {
@@ -21,12 +21,14 @@ export interface GetOrdersRequest {
 export enum PostOrdersType {
   POST_ORDERS_CREATE_CHARGE = "POST_ORDERS_CREATE_CHARGE",
   POST_ORDERS_CREATE_ORDER = "POST_ORDERS_CREATE_ORDER",
+  POST_ORDERS_CREATE_COMPLEMENTARY_ORDER = "POST_ORDERS_CREATE_COMPLEMENTARY_ORDER",
 }
 
 export interface PostOrdersRequest {
   type: keyof typeof PostOrdersType;
   order?: Order;
   charge?: Charge;
+  complementaryOrder?: ComplementaryOrder;
 }
 
 export function useFetchOrderById({
@@ -66,6 +68,11 @@ export async function getOrders({ getOrdersType, id }: GetOrdersRequest) {
       method: "GET",
       cache: "no-cache",
     });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok')
+    }
+
     const json = await response.json();
 
     return json;
@@ -79,14 +86,10 @@ export function useCreateOrder() {
   return useMutation({
     mutationFn: async ({
       checkout,
-      userId,
-      eventId,
       paymentId,
       customerId
     }: {
       checkout: Checkout;
-      userId: string;
-      eventId: string;
       paymentId: string;
       customerId: string;
     }) => {
@@ -96,8 +99,7 @@ export function useCreateOrder() {
         );
       }
 
-      const order = new Order(checkout, paymentId, eventId, userId, customerId);
-      console.log(order.ticketsLink)
+      const order = createOrder(checkout, paymentId, customerId);
       await postOrders({
         type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
         order: order,
@@ -108,10 +110,18 @@ export function useCreateOrder() {
   });
 }
 
-export async function postOrders({ type, order, charge }: PostOrdersRequest) {
+export function useCreateComplementaryOrder() {
+  return useMutation({
+    mutationFn: async (request: PostOrdersRequest) => {
+      return await postOrders(request);
+    },
+  });
+}
+
+export async function postOrders({ type, order, charge, complementaryOrder }: PostOrdersRequest) {
   try {
     let url = prodUrl + `/api/orders`;
-    const request = { type, order, charge };
+    const request = { type, order, charge, complementaryOrder };
 
     const response = await fetch(url, {
       method: "POST",
@@ -121,6 +131,11 @@ export async function postOrders({ type, order, charge }: PostOrdersRequest) {
       },
       body: JSON.stringify(request),
     });
+
+    // if (!response.ok) {
+    //   throw new Error(`HTTP error! status: ${JSON.stringify(response)}`);
+    // }
+
     const json = await response.json();
 
     return json;

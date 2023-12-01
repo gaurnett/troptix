@@ -13,8 +13,9 @@ import TicketsCheckoutForm from './tickets-checkout-forms';
 
 export default function TicketDrawer({ event, isTicketModalOpen, handleCancel }) {
   const { user } = useContext(TropTixContext);
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const [checkout, setCheckout] = useState<Checkout>(initializeCheckout(user));
+  const [checkout, setCheckout] = useState<Checkout>(initializeCheckout(user, event.id));
   const [checkoutPreviousButtonClicked, setCheckoutPreviousButtonClicked] = useState(false);
   const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);
 
@@ -63,10 +64,26 @@ export default function TicketDrawer({ event, isTicketModalOpen, handleCancel })
   }, [isTicketModalOpen]);
 
   async function initializeStripeDetails() {
-    const { paymentId, customerId, clientSecret } = await createPaymentIntent.mutateAsync({ checkout });
-    const orderId = await createOrder.mutateAsync({ checkout, userId: checkout.userId, eventId: event.id, paymentId, customerId });
-    setClientSecret(clientSecret);
-    setOrderId(orderId);
+    createPaymentIntent.mutate({ checkout }, {
+      onSuccess: (data) => {
+        const { paymentId, customerId, clientSecret } = data;
+
+        createOrder.mutate({ checkout, paymentId, customerId }, {
+          onSuccess: (data) => {
+            setClientSecret(clientSecret);
+            setOrderId(data as string);
+          },
+          onError: (error) => {
+            messageApi.error("There was an error initializing your order");
+            setCurrent(current - 1);
+          }
+        });
+      },
+      onError: (error) => {
+        messageApi.error("There was an error initializing your order");
+        setCurrent(current - 1);
+      }
+    });
   }
 
   async function next() {
@@ -82,7 +99,8 @@ export default function TicketDrawer({ event, isTicketModalOpen, handleCancel })
     }
 
     if (current === 1) {
-      if (!checkout.name
+      if (!checkout.firstName
+        || !checkout.lastName
         || !checkout.email
         || !checkout.billingAddress1
         || !checkout.billingCity
@@ -124,13 +142,14 @@ export default function TicketDrawer({ event, isTicketModalOpen, handleCancel })
   }
 
   function closeModal() {
-    setCheckout(initializeCheckout(user));
+    setCheckout(initializeCheckout(user, event.id));
     setCurrent(0);
     handleCancel()
   }
 
   return (
     <>
+      {contextHolder}
       <Drawer
         title="Ticket Checkout"
         closable={true}
@@ -218,7 +237,7 @@ export default function TicketDrawer({ event, isTicketModalOpen, handleCancel })
                         <div className='ml-4'>
                           <div className='ml-4'>
                             <div className='text-2xl font-bold'>
-                              {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)}
+                              {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)} USD
                             </div>
                           </div>
                         </div>

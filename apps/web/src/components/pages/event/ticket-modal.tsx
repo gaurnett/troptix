@@ -14,7 +14,7 @@ import TicketsCheckoutForm from './tickets-checkout-forms';
 
 export default function TicketModal({ event, isTicketModalOpen, handleCancel }) {
   const { user } = useContext(TropTixContext);
-  const [checkout, setCheckout] = useState<Checkout>(initializeCheckout(user));
+  const [checkout, setCheckout] = useState<Checkout>(initializeCheckout(user, event.id));
   const [checkoutPreviousButtonClicked, setCheckoutPreviousButtonClicked] = useState(false);
   const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);
   const [orderId, setOrderId] = useState("");
@@ -22,6 +22,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
   const [current, setCurrent] = useState(0);
   const [canShowMessage, setCanShowMessage] = useState(true);
   const [clientSecret, setClientSecret] = useState<any>();
+  const [messageApi, contextHolder] = message.useMessage();
   const createPaymentIntent = useCreatePaymentIntent();
   const createOrder = useCreateOrder();
 
@@ -55,10 +56,27 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
   }, [checkoutPreviousButtonClicked, current])
 
   async function initializeStripeDetails() {
-    const { paymentId, customerId, clientSecret } = await createPaymentIntent.mutateAsync({ checkout });
-    const orderId = await createOrder.mutateAsync({ checkout, userId: checkout.userId, eventId: event.id, paymentId, customerId });
-    setClientSecret(clientSecret);
-    setOrderId(orderId);
+    createPaymentIntent.mutate({ checkout }, {
+      onSuccess: (data) => {
+        const { paymentId, customerId, clientSecret } = data;
+
+        createOrder.mutate({ checkout, paymentId, customerId }, {
+          onSuccess: (data) => {
+            setClientSecret(clientSecret);
+            setOrderId(data as string);
+          },
+          onError: (error) => {
+            messageApi.error("There was an error initializing your order");
+            setCurrent(current - 1);
+          }
+        });
+      },
+      onError: (error) => {
+        messageApi.error("There was an error initializing your order");
+        setCurrent(current - 1);
+      }
+    });
+
   }
 
   async function next() {
@@ -74,7 +92,8 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
     }
 
     if (current === 1) {
-      if (!checkout.name
+      if (!checkout.firstName
+        || !checkout.lastName
         || !checkout.email
         || !checkout.billingAddress1
         || !checkout.billingCity
@@ -102,7 +121,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
   }
 
   function closeModal() {
-    setCheckout(initializeCheckout(user));
+    setCheckout(initializeCheckout(user, event.id));
     setCurrent(0);
     handleCancel();
   }
@@ -118,6 +137,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
 
   return (
     <>
+      {contextHolder}
       <Modal
         title="Ticket Checkout"
         centered
@@ -129,7 +149,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
         width={1080}
       >
         <div className="w-full">
-          <div style={{ maxHeight: 600 }} className='flex mt-6'>
+          <div style={{ maxHeight: 650 }} className='flex mt-6'>
             <div className='w-4/6 grow'>
               <div className='flex flex-col h-full px-12'>
                 <div className='w-3/4 md:mx-auto mb-6'>
@@ -274,7 +294,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
                           <div className='ml-4'>
                             <div className='ml-4'>
                               <div className='text-xl font-bold text-end'>
-                                {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)}
+                                {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)} USD
                               </div>
                             </div>
                           </div>

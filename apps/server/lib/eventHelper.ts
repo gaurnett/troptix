@@ -93,6 +93,8 @@ export function getPrismaCreateOrderQuery(order) {
       id: ticket.id,
       eventId: ticket.eventId,
       ticketTypeId: ticket.ticketTypeId,
+      status: TicketStatus.NOT_AVAILABLE,
+      ticketsType: TicketType.PAID,
       fees: ticket.fees,
       subtotal: ticket.subtotal,
       total: ticket.total,

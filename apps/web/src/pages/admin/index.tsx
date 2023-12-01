@@ -1,9 +1,9 @@
-import ManageAccountPage from "./manage-account";
+import ManageEventsPage from "./manage-events";
 
 export default function AdminPage({ children }) {
   return (
     <div>
-      <ManageAccountPage />
+      <ManageEventsPage />
     </div>
   );
 }
