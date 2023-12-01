@@ -32,7 +32,7 @@ export function initializeCheckout(user: any, eventId: string): Checkout {
     firstName = name[0];
 
     if (name.length > 1) {
-      lastName = name[0];
+      lastName = name[1];
     }
   }
 
