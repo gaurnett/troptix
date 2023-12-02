@@ -1,47 +1,36 @@
 import { TicketType } from "./Ticket";
 
 export interface Checkout {
-  id: string;
-  eventId: string;
-  userId: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  total: number;
-  subtotal: number;
-  fees: number;
-  discountedSubtotal: number;
-  discountedTotal: number;
-  discountedFees: number;
-  promotionApplied: boolean;
-  telephoneNumber: string;
-  billingAddress1: string;
-  billingAddress2: string;
-  billingCity: string;
-  billingZip: string;
-  billingState: string;
-  billingCountry: string;
+  id?: string;
+  eventId?: string;
+  userId?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  total?: number;
+  subtotal?: number;
+  fees?: number;
+  discountedSubtotal?: number;
+  discountedTotal?: number;
+  discountedFees?: number;
+  promotionApplied?: boolean;
+  telephoneNumber?: string;
+  billingAddress1?: string;
+  billingAddress2?: string;
+  billingCity?: string;
+  billingZip?: string;
+  billingState?: string;
+  billingCountry?: string;
   tickets: Map<string, CheckoutTicket>;
 }
 
 export function initializeCheckout(user: any, eventId: string): Checkout {
-  let firstName = "";
-  let lastName = "";
-  if (user?.name) {
-    const name = String(user.name).split(" ");
-    firstName = name[0];
-
-    if (name.length > 1) {
-      lastName = name[1];
-    }
-  }
-
   const checkout: Checkout = {
     id: "",
     eventId: eventId,
     userId: user?.id,
-    firstName: firstName,
-    lastName: lastName,
+    firstName: user?.firstName,
+    lastName: user?.lastName,
     email: user?.email,
     total: 0,
     subtotal: 0,
