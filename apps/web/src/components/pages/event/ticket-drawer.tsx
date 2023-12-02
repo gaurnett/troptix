@@ -86,21 +86,21 @@ export default function TicketDrawer({ event, isTicketModalOpen, handleCancel })
   }
 
   async function next() {
-    if (checkout.total === 0) {
-      if (canShowMessage) {
-        setCanShowMessage(false);
-        message.warning("Please select a ticket quantity")
-          .then(() => setCanShowMessage(true));
-      }
-      return;
-    }
-
     if (!checkout.firstName
       || !checkout.lastName
       || !checkout.email) {
       if (canShowMessage) {
         setCanShowMessage(false);
         message.warning("Please fill in contact information")
+          .then(() => setCanShowMessage(true));
+      }
+      return;
+    }
+
+    if (checkout.total === 0) {
+      if (canShowMessage) {
+        setCanShowMessage(false);
+        message.warning("Please select a ticket quantity")
           .then(() => setCanShowMessage(true));
       }
       return;
