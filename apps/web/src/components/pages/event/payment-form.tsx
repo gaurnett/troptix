@@ -39,7 +39,7 @@ export default function PaymentForm({
 
       messageApi.destroy('process-payment-loading');
       if (error) {
-        messageApi.error("There was an error processing your payment.")
+        messageApi.error(error.message);
       } else {
         messageApi.open({
           type: "success",
