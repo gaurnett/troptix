@@ -198,7 +198,7 @@ export default function ManageEventPage() {
                 </div>
               </div>
 
-              <div className="float-right w-full">
+              <div className="float-right w-full mb-8">
                 <Tabs defaultActiveKey="0" activeKey={activeKey} items={items} onChange={onChange} />
               </div>
             </div>
