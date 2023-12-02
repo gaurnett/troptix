@@ -1,4 +1,6 @@
 export type Charge = {
-  total: number;
+  total?: number;
   userId: string;
+  name?: string;
+  email?: string;
 };
