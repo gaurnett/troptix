@@ -3,11 +3,10 @@ import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
   getAdditionalUserInfo,
-  sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
-  updateProfile,
+  updateProfile
 } from "firebase/auth";
 import { addUser } from "troptix-api";
 import { User } from "troptix-models";
@@ -24,7 +23,6 @@ export async function signUpWithEmail(
       signUpFields.email,
       signUpFields.password
     ).then(async (result) => {
-      await sendEmailVerification(result.user);
       await updateProfile(result.user, { displayName });
 
       const userResult = result.user;
@@ -34,8 +32,6 @@ export async function signUpWithEmail(
       user.lastName = signUpFields.lastName;
       user.email = userResult.email;
       await addUser(user);
-
-      result.user.reload();
     });
   } catch (e) {
     error = e;
