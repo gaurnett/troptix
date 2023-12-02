@@ -1,7 +1,3 @@
-import { getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
-import prisma from "../prisma/prisma";
-import { sendEmailToUser } from "../lib/emailHelper";
-import { updateTicketTypeQuantitySold } from "../lib/orderHelper";
 const sgMail = require('@sendgrid/mail');
 
 sgMail.setApiKey(process.env.RESEND_DYNAMIC_TEMPLATE_API);

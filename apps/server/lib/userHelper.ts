@@ -21,7 +21,8 @@ export function getPrismaUpdateUserQuery(account) {
   let user: Prisma.UsersUpdateInput;
 
   user = {
-    name: account.name,
+    firstName: account.firstName,
+    lastName: account.lastName,
     telephoneNumber: account.telephoneNumber,
     billingAddress1: account.billingAddress1,
     billingAddress2: account.billingAddress2,

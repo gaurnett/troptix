@@ -1,5 +1,5 @@
-import { Form, Button } from "antd";
 import { CustomInput } from "@/components/ui/input";
+import { Button, Form } from "antd";
 
 export default function AccountDetails({ adminUser, setAdminUser }) {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -17,17 +17,27 @@ export default function AccountDetails({ adminUser, setAdminUser }) {
     <div className="w-full md:max-w-2xl mx-auto">
       <div>
         <Form name="basic" onFinish={onFinish} onFinishFailed={onFinishFailed}>
-          <div className="flex flex-wrap -mx-3 mb-4">
-            <div className="w-full px-3">
+          <div className="md:flex md:justify-between">
+            <div className="mb-4 md:mr-4 w-full">
               <CustomInput
-                value={adminUser.name}
-                name={"name"}
-                id={"name"}
-                label={"Name"}
+                value={adminUser.firstName}
+                name={"firstName"}
+                id={"firstName"}
+                label={"First Name"}
                 type={"text"}
-                placeholder={"John Doe"}
+                placeholder={"John"}
                 handleChange={handleChange}
-                required={true}
+              />
+            </div>
+            <div className="mb-4 md:ml-4 w-full">
+              <CustomInput
+                value={adminUser.lastName}
+                name={"lastName"}
+                id={"lastName"}
+                label={"Last Name"}
+                type={"text"}
+                placeholder={"Doe"}
+                handleChange={handleChange}
               />
             </div>
           </div>
