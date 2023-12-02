@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { useState } from 'react';
 import { GetPromotionsType, getPromotions } from 'troptix-api';
 
+import { CustomInput } from '@/components/ui/input';
 import { initializeCheckoutTicket } from '@/hooks/types/Checkout';
 import {
   MinusOutlined,
@@ -92,6 +93,12 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setCheckout((prevState) => ({
+      ...prevState, [event.target.name]: event.target.value
+    }));
+  }
+
+  function handlePromotionChange(event: React.ChangeEvent<HTMLInputElement>) {
     setPromotionCode(event.target.value);
   }
 
@@ -227,12 +234,30 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   return (
     <div className="w-full">
       <div>
+
+        <h2 className="text-xl font-bold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Contact Information</h2>
+        <div className="flex justify-between">
+          <div className="mb-4 mr-1 md:mr-4 w-full">
+            <CustomInput value={checkout.firstName} name={"firstName"} id={"firstName"} label={"First Name *"} type={"text"} placeholder={"John"} handleChange={handleChange} required={true} />
+          </div>
+          <div className="mb-4 ml-1 md:ml-4 w-full">
+            <CustomInput value={checkout.lastName} name={"lastName"} id={"lastName"} label={"Last Name *"} type={"text"} placeholder={"Doe"} handleChange={handleChange} required={true} />
+          </div>
+        </div>
+        <div className="flex justify-between">
+          <div className="mb-4 w-full">
+            <CustomInput value={checkout.email} name={"email"} id={"email"} label={"Email *"} type={"text"} placeholder={"johndoe@gmail.com"} handleChange={handleChange} required={true} />
+          </div>
+        </div>
+
+        <h2 className="text-xl font-bold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Tickets</h2>
+
         <div className="mb-4">
           <div className="w-full">
             <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={"promotionCode"}>Promotion Code</label>
           </div>
           <div className="flex w-full">
-            <Input onChange={handleChange} name={"promotionCode"} value={promotionCode} id={"promotionCode"} type={"text"} classNames={{ input: "form-input w-full text-gray-800" }} placeholder={"SAVE15"} />
+            <Input onChange={handlePromotionChange} name={"promotionCode"} value={promotionCode} id={"promotionCode"} type={"text"} classNames={{ input: "form-input w-full text-gray-800" }} placeholder={"SAVE15"} />
             <Button onClick={applyPromotion} className='my-auto ml-2' type='text'>
               Apply
             </Button>

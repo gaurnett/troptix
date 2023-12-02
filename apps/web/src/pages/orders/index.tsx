@@ -1,7 +1,7 @@
 import { TropTixContext } from "@/components/WebNavigator";
 import { Spinner } from "@/components/ui/spinner";
 import { getDateFormatter } from "@/lib/utils";
-import { List } from "antd";
+import { Divider } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { useContext, useEffect, useState } from 'react';
@@ -33,11 +33,6 @@ export default function TicketsPage() {
 
   useEffect(() => {
     async function fetchOrders() {
-      if (!userId) {
-        setIsFetchingOrders(false);
-        return;
-      }
-
       try {
         const getOrdersRequest: any = {
           getOrdersType: GetOrdersType.GET_ORDERS_FOR_USER,
@@ -57,52 +52,52 @@ export default function TicketsPage() {
     fetchOrders();
   }, [userId]);
 
+  if (!userId) {
+    return (<div className="mt-32"><Spinner text={"Fetching Tickets"} /></div>);
+  }
+
   return (
-    <div className="mt-32 w-full md:max-w-2xl mx-auto">
-      <h1 className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">
+    <div className="mt-32 w-full md:max-w-xl mx-auto">
+      <h1 className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-8" data-aos="zoom-y-out">
         <span className="bg-clip-text text-transparent bg-gradient-to-r from-rose-500 to-blue-400 px-4">Tickets</span>
       </h1>
-
-      {
-        isFetchingOrders ?
-          <div className="mt-8"><Spinner text={"Fetching Tickets"} /></div>
-          :
-          <div>
-            <List
-              itemLayout="horizontal"
-              size="large"
-              dataSource={orders}
-              renderItem={(order: any) => (
-                <List.Item>
-                  <Link href={{ pathname: "/order-details", query: { orderId: order.id } }}>
-                    <div className="w-full" key={order.id} >
-                      <div className="flex">
-                        <div className="my-auto">
-                          <Image
-                            width={110}
-                            height={110}
-                            className="w-auto rounded"
-                            style={{ objectFit: 'cover' }}
-                            src={order.event.imageUrl}
-                            alt={"event flyer image"} />
-                        </div>
-                        <div className="ml-4 my-auto grow w-full ">
-                          <div className="font-bold text-xl">{order.event.name}</div>
-                          <div className="text-base">{order.event.venue}</div>
-                          <p className="text-base text-clip overflow-hidden">{order.event.address}</p>
-                          <div className="text-base text-blue-500">{getDateFormatter(new Date(order.event.startDate))}</div>
-                        </div>
+      <div>
+        {
+          orders.map((order, index: any) => {
+            return (
+              <div
+                key={index}
+                className="w-full mb-4"
+              >
+                <Link key={index} href={{ pathname: "/order-details", query: { orderId: order.id } }}>
+                  <div className="w-full" key={order.id} >
+                    <div className="flex">
+                      <div className="my-auto">
+                        <Image
+                          width={110}
+                          height={110}
+                          className="w-auto rounded"
+                          style={{ objectFit: 'cover' }}
+                          src={order.event.imageUrl}
+                          alt={"event flyer image"} />
+                      </div>
+                      <div className="ml-4 my-auto grow w-full ">
+                        <div className="font-bold text-xl">{order.event.name}</div>
+                        <div className="text-base">{order.event.venue}</div>
+                        <p className="text-base text-clip overflow-hidden">{order.event.address}</p>
+                        <div className="text-base text-blue-500">{getDateFormatter(new Date(order.event.startDate))}</div>
                       </div>
                     </div>
-                  </Link>
-
-                </List.Item>
-
-              )}
-            />
-          </div>
-      }
-
+                  </div>
+                </Link>
+                <div className="px-6">
+                  <Divider dashed />
+                </div>
+              </div>
+            )
+          })
+        }
+      </div>
     </div>
   );
 }
