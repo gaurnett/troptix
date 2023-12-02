@@ -173,7 +173,7 @@ export default function OrderConfirmationPage() {
           <div className="mx-auto">
             <div className="flex justify-center mt-8 mx-auto w-full">
               <div className="text-center justify-center">
-                <Link className="mx-auto text-center" target="_blank" href={{ pathname: '/tickets', query: { orderId: orderId } }}>
+                <Link className="mx-auto text-center" href={{ pathname: '/tickets', query: { orderId: orderId } }}>
                   <div className="w-full flex justify-center text-center">
                     <Image
                       width={50}

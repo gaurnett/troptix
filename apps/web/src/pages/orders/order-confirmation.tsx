@@ -88,7 +88,6 @@ export default function OrderConfirmation() {
         extra={[
           <Link
             href={{ pathname: "/order-details", query: { orderId } }}
-            target="_blank"
             key={"tickets"}>
             <Button
               type='primary'

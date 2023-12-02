@@ -141,7 +141,7 @@ export default function OrderDetailsPage() {
             <div className="text-base">Event Information: {getDateFormatter(new Date(order.event.startDate))}</div>
             <div className="text-base">{order.event.venue}</div>
             <div>
-              <Link target="_blank" href={{ pathname: "/tickets", query: { orderId: order.id } }}>
+              <Link href={{ pathname: "/tickets", query: { orderId: order.id } }}>
                 <Button
                   type="primary"
                   className="w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex mt-4">
@@ -150,7 +150,7 @@ export default function OrderDetailsPage() {
               </Link>
             </div>
             <div>
-              <Link target="_blank" href={{ pathname: "/order-confirmation", query: { orderId: order.id } }}>
+              <Link href={{ pathname: "/order-confirmation", query: { orderId: order.id } }}>
                 <Button
                   className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex mt-4">
                   View Order Confirmation

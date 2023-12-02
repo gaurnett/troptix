@@ -136,8 +136,8 @@ export default function TicketsPage() {
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">{order.event.name}</span>
         </h1>
         <div className='flex w-full md:max-w-lg md:mx-auto my-6 mx-auto justify-center'>
-          <Button onClick={saveToPdf} className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Save PDF</Button>
-          <Link target="_blank" href={{ pathname: `/event/${order.event.id}` }}>
+          {/* <Button onClick={saveToPdf} className="px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">Save PDF</Button> */}
+          <Link href={{ pathname: `/event/${order.event.id}` }}>
             <Button type="primary" className="bg-blue-600 hover:bg-blue-700 ml-4 px-4 py-4 shadow-md items-center justify-center font-medium inline-flex">View event details</Button>
           </Link>
         </div>
