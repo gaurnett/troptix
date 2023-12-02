@@ -124,7 +124,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   function calculateFees(price) {
     const fee = price * 0.05;
     const tax = fee * 0.15;
-    return fee + tax;
+    return normalizePrice(fee + tax);
   }
 
   function getFormattedFeesCurrency(price) {
@@ -146,7 +146,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   }
 
   function updateCost(ticket, reduce = false) {
-    const price = normalizePrice(ticket.price)
+    const price = normalizePrice(ticket.price);
     var ticketSubtotal = price;
     var ticketFees = ticket.ticketingFees === "PASS_TICKET_FEES" ? calculateFees(price) : 0;
     var ticketTotal = normalizePrice(ticketFees + ticketSubtotal);
