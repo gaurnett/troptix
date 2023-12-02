@@ -51,7 +51,7 @@ export default function ManageEventsPage(props) {
                         width={75}
                         height={75}
                         className="w-full mx-auto justify-center content-center items-center"
-                        style={{ objectFit: "contain" }}
+                        style={{ objectFit: "contain", width: 75 }}
                         src={"/icons/empty-events.png"}
                         alt={"mobile wallet image"}
                       />
