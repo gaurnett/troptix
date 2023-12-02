@@ -106,6 +106,15 @@ export default function TicketDrawer({ event, isTicketModalOpen, handleCancel })
       return;
     }
 
+    if (!user || !user.id) {
+      if (canShowMessage) {
+        setCanShowMessage(false);
+        message.warning("There was an error initializing order. Please try again")
+          .then(() => setCanShowMessage(true));
+      }
+      return;
+    }
+
     initializeStripeDetails();
 
     setCurrent(current + 1);
