@@ -42,7 +42,7 @@ async function postOrders(request, response) {
       return createCharge(body, response);
     case 'payment_intent.succeeded':
       return stripePaymentIntentSucceeded(body, headers, request, response);
-    case 'payment_intent.failed':
+    case 'payment_intent.payment_failed':
       return stripePaymentIntentFailed(body, headers, request, response);
     default:
       return response.status(500).json({ error: 'No post order type set' });
