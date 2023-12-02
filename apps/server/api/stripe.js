@@ -224,11 +224,7 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
 
     console.log(orderMap);
 
-    const mailResponse = await sendEmailToUser(order, orderMap);
-
     for (let [key, value] of orderMap) {
-      console.log(key);
-      console.log(value);
       const updatedTicket = await prisma.ticketTypes.update({
         where: {
           id: key,
@@ -237,6 +233,8 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
       });
       console.log(updatedTicket);
     }
+
+    const mailResponse = await sendEmailToUser(order, orderMap);
 
     console.log("mail response: " + JSON.stringify(mailResponse));
 
