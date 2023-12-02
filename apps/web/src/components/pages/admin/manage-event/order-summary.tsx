@@ -40,17 +40,28 @@ export default function OrderSummaryPage({ orders }) {
   }
 
   function TicketSoldItem(summary) {
+    const isComplementary = summary.name === "Complementary";
     const percent = Math.trunc((summary.quantitySold / summary.quantity) * 100);
 
     return (
       <div className="flex">
         <div>
-          <Progress type="circle" size={80} percent={percent} />
+          {
+            isComplementary ?
+              <Progress type="circle" size={80} percent={summary.quantitySold} format={() => summary.quantitySold} />
+              :
+              <Progress type="circle" size={80} percent={percent} />
+          }
         </div>
         <div className="ml-4 flex justify-center items-center">
           <div>
-            <div>{summary.name}</div>
-            <div>{summary.quantitySold}/{summary.quantity}</div>
+            <div className="text-base">{summary.name}</div>
+            {
+              isComplementary ?
+                <div className="text-base">{summary.quantitySold} sent</div>
+                :
+                <div className="text-base">{summary.quantitySold}/{summary.quantity}</div>
+            }
           </div>
         </div>
 
