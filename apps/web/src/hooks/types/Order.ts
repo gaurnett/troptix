@@ -29,10 +29,10 @@ export type Order = {
   ticketsLink?: string;
 };
 
-export function createOrder(checkout: Checkout, paymentId: string, stripeCustomerId: string): Order {
+export function createOrder(checkout: Checkout, paymentId: string, stripeCustomerId: string, userId: string): Order {
   const id = generateId();
   const tickets: Ticket[] = [];
-  const url = window.location.origin + `/tickets?orderId=${id}`
+  const url = window.location.origin + `/tickets?orderId=${id}`;
 
   Array.from(checkout.tickets.keys()).forEach(checkoutItem => {
     const checkoutTicket = checkout.tickets.get(checkoutItem);
@@ -54,7 +54,7 @@ export function createOrder(checkout: Checkout, paymentId: string, stripeCustome
     fees: checkout.fees,
     tickets: tickets,
     ticketsLink: url,
-    userId: checkout.userId,
+    userId: userId,
     firstName: checkout.firstName,
     lastName: checkout.lastName,
     email: checkout.email,
