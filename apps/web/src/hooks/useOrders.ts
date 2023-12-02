@@ -87,11 +87,13 @@ export function useCreateOrder() {
     mutationFn: async ({
       checkout,
       paymentId,
-      customerId
+      customerId,
+      userId
     }: {
       checkout: Checkout;
       paymentId: string;
       customerId: string;
+      userId: string
     }) => {
       if (!paymentId) {
         message.error(
@@ -99,7 +101,7 @@ export function useCreateOrder() {
         );
       }
 
-      const order = createOrder(checkout, paymentId, customerId);
+      const order = createOrder(checkout, paymentId, customerId, userId);
       await postOrders({
         type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
         order: order,

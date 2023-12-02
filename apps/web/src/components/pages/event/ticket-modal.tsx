@@ -60,7 +60,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
       onSuccess: (data) => {
         const { paymentId, customerId, clientSecret } = data;
 
-        createOrder.mutate({ checkout, paymentId, customerId }, {
+        createOrder.mutate({ checkout, paymentId, customerId, userId: user.id }, {
           onSuccess: (data) => {
             setClientSecret(clientSecret);
             setOrderId(data as string);
@@ -196,11 +196,6 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
                   )}
                   {current === 2 && (
                     <div className='flex w-full'>
-                      <Button
-                        onClick={prev}
-                        className="mr-2 w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
-                        Previous
-                      </Button>
                       <Button
                         type="primary"
                         onClick={completeStripePayment}
