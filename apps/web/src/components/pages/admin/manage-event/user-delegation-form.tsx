@@ -2,7 +2,7 @@ import { CustomInput } from "@/components/ui/input";
 import { Button, Form, Select } from "antd";
 import { DelegatedAccess } from 'troptix-models';
 
-export default function UserDelegationForm({ selectedUser, setSelectedUser, saveUser }) {
+export default function UserDelegationForm({ onClose, selectedUser, setSelectedUser, saveUser }) {
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedUser(previousUser => ({
@@ -30,7 +30,7 @@ export default function UserDelegationForm({ selectedUser, setSelectedUser, save
       <Form
         name="user-delegation-form"
         onFinish={saveUser}>
-        <h3 className="text-xl md:text-xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Promotion Details</h3>
+        <h3 className="text-xl md:text-xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">User Details</h3>
         <div className="flex flex-wrap -mx-3 mb-4">
           <div className="w-screen px-3">
             <CustomInput value={selectedUser.email} name={"email"} id={"email"} label={"User Email"} type={"text"} placeholder={"johndoe@gmail.com"} handleChange={handleChange} required={true} />
@@ -55,7 +55,7 @@ export default function UserDelegationForm({ selectedUser, setSelectedUser, save
 
         <div className="flex flex-wrap -mx-3 mb-4 mt-4">
           <div className="px-3">
-            <Button className="px-8 py-6 shadow-md items-center justify-center font-medium inline-flex">Discard</Button>
+            <Button onClick={onClose} className="px-8 py-6 shadow-md items-center justify-center font-medium inline-flex">Discard</Button>
           </div>
           <div className="px-3">
             <Button htmlType="submit" type="primary" className="px-8 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save User</Button>

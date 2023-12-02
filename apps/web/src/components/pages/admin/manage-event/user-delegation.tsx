@@ -121,12 +121,11 @@ export default function UserDelegationPage() {
                 )}
               />
             </div>
-
         }
       </div>
 
-      <Drawer width={500} title="Add Promotion" placement="right" onClose={onClose} open={open}>
-        <UserDelegationForm selectedUser={selectedUser} setSelectedUser={setSelectedUser} saveUser={saveUser} />
+      <Drawer width={500} title="Add Delegated User" placement="right" onClose={onClose} open={open}>
+        <UserDelegationForm onClose={onClose} selectedUser={selectedUser} setSelectedUser={setSelectedUser} saveUser={saveUser} />
       </Drawer>
 
     </div>
