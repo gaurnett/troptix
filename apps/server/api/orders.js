@@ -373,6 +373,7 @@ async function getOrdersForEvent(response, id) {
     const user = await prisma.orders.findMany({
       where: {
         eventId: id,
+        status: 'COMPLETED'
       },
       include: {
         tickets: {
