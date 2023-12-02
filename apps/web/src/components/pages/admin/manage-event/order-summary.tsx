@@ -48,7 +48,7 @@ export default function OrderSummaryPage({ orders }) {
         <div>
           {
             isComplementary ?
-              <Progress type="circle" size={80} percent={summary.quantitySold} format={() => summary.quantitySold} />
+              <Progress type="circle" size={80} percent={100} format={() => summary.quantitySold} />
               :
               <Progress type="circle" size={80} percent={percent} />
           }
