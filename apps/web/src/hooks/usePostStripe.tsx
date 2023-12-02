@@ -36,7 +36,12 @@ function createCharge(checkout: Checkout): Charge {
     ? discount * 100
     : totalPrice * 100;
 
-  const charge: Charge = { total, userId: checkout.userId as string };
+  const charge: Charge = {
+    total,
+    userId: checkout.userId as string,
+    name: checkout?.firstName + " " + checkout?.lastName,
+    email: checkout.email
+  };
   return charge;
 }
 

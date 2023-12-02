@@ -1,6 +1,4 @@
-import React from "react";
 export function ErrorFallback({ error, resetErrorBoundary }) {
-  console.log(error);
   return (
     <section className="relative">
       <div

@@ -79,7 +79,6 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
   }
 
   async function next() {
-    console.log(checkout)
     if (!checkout.firstName
       || !checkout.lastName
       || !checkout.email) {

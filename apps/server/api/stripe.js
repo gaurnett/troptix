@@ -60,7 +60,10 @@ async function createCharge(body, response) {
     var customerId = "";
 
     if (charge.userId === undefined) {
-      const customer = await stripe.customers.create();
+      const customer = await stripe.customers.create({
+        name: charge?.name,
+        email: charge?.email
+      });
       customerId = customer.id;
     } else {
       const user = await prisma.users.findUnique({
@@ -69,8 +72,11 @@ async function createCharge(body, response) {
         },
       });
 
-      if (user.stripeId === null || user.stripeId === undefined || user.stripeId === "") {
-        const customer = await stripe.customers.create();
+      if (!user.stripeId) {
+        const customer = await stripe.customers.create({
+          name: charge?.name,
+          email: charge?.email
+        });
         await prisma.users.update({
           where: {
             id: charge.userId,
