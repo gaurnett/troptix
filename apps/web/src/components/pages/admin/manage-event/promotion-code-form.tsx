@@ -2,7 +2,7 @@ import { CustomInput, CustomNumberInput } from "@/components/ui/input";
 import { Button, Form, Select } from "antd";
 import { PromotionType } from 'troptix-models';
 
-export default function PromotionCodeForm({ selectedPromotion, setSelectedPromotion, savePromotion }) {
+export default function PromotionCodeForm({ onClose, selectedPromotion, setSelectedPromotion, savePromotion }) {
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedPromotion(previousPromotion => ({
@@ -38,7 +38,7 @@ export default function PromotionCodeForm({ selectedPromotion, setSelectedPromot
         </div>
         <div className="md:flex md:justify-between">
           <div className="mb-4 md:mr-4 w-full">
-            <CustomNumberInput value={selectedPromotion.value} name={"value"} id={"ticket-input-quantity"} label={"Promotion Value"} placeholder={"15"} handleChange={(value) => handleNumberChange("quantity", value)} required={true} />
+            <CustomNumberInput value={selectedPromotion.value} name={"value"} id={"ticket-input-quantity"} label={"Promotion Value"} placeholder={"15"} handleChange={(value) => handleNumberChange("value", value)} required={true} />
           </div>
           <div className="mb-4 md:ml-4 w-full">
             <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={"promotionType"}>Promotion Type</label>
@@ -58,7 +58,7 @@ export default function PromotionCodeForm({ selectedPromotion, setSelectedPromot
 
         <div className="flex flex-wrap -mx-3 mb-4 mt-4">
           <div className="px-3">
-            <Button className="px-8 py-6 shadow-md items-center justify-center font-medium inline-flex">Discard</Button>
+            <Button onClick={onClose} className="px-8 py-6 shadow-md items-center justify-center font-medium inline-flex">Discard</Button>
           </div>
           <div className="px-3">
             <Button htmlType="submit" type="primary" className="px-8 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Promotion</Button>

@@ -67,7 +67,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
   };
 
   return (
-    <div className="w-full h-screen md:max-w-md mr-8">
+    <div className="w-full md:max-w-md mr-8">
       <Form
         className=""
         name="basic"

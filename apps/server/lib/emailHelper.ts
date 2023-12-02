@@ -25,7 +25,7 @@ export async function sendEmailToUser(order, orderMap) {
     subtotal: order.subtotal,
     totalFees: order.fees,
     totalPrice: order.total,
-    username: order.name,
+    username: order.firstName + " " + order.lastName,
     cardType: order.cardType,
     cardLast4: order.cardLast4,
     ticketsPurchased: order.tickets.length,

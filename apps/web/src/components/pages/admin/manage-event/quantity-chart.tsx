@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
   BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
   Title,
   Tooltip,
-  Legend,
 } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
 import { format } from 'date-fns';
+import { useEffect, useState } from 'react';
+import { Bar } from 'react-chartjs-2';
 
 ChartJS.register(
   CategoryScale,
@@ -41,11 +41,15 @@ export default function QuantityChart({ orders }) {
   useEffect(() => {
     function mapOrdersToDateCount(orders: []) {
       let orderCounts = new Map<string, number>();
-      orders.forEach((order: any) => {
-        const date = format(new Date(order.createdAt), 'MMM dd');
-        const currentTicketCount = orderCounts.has(date) ? orderCounts.get(date) : 0;
-        orderCounts.set(date, currentTicketCount + order.tickets.length);
-      });
+      orders
+        .sort((a: any, b: any) => {
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        })
+        .forEach((order: any) => {
+          const date = format(new Date(order.createdAt), 'MMM dd');
+          const currentTicketCount = orderCounts.has(date) ? orderCounts.get(date) : 0;
+          orderCounts.set(date, currentTicketCount + order.tickets.length);
+        });
 
       setData({
         labels: Array.from(orderCounts.keys()),

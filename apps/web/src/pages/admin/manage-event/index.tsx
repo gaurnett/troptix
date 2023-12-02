@@ -193,12 +193,12 @@ export default function ManageEventPage() {
                     onClick={publishEvent}
                     className="px-4 py-4 shadow-md items-center font-medium inline-flex"
                   >
-                    {event.isDraft ? "Publish Event" : "Set to draft"}
+                    {event.isDraft ? "Publish Event" : "Unpublish"}
                   </Button>
                 </div>
               </div>
 
-              <div className="float-right w-full">
+              <div className="float-right w-full mb-8">
                 <Tabs defaultActiveKey="0" activeKey={activeKey} items={items} onChange={onChange} />
               </div>
             </div>

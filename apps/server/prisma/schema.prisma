@@ -141,7 +141,7 @@ model Events {
   isDraft   Boolean  @default(true)
 
   // Event Details
-  imageUrl        String?
+  imageUrl        String? @db.VarChar(2000)
   name            String
   description     String  @db.VarChar(2000)
   summary         String?

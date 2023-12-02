@@ -2,7 +2,7 @@ import { CustomDateField, CustomInput, CustomNumberInput, CustomTextArea, Custom
 import { Button, Form, Select } from "antd";
 import { TicketFeeStructure } from 'troptix-models';
 
-export default function TicketForm({ selectedTicket, setSelectedTicket, saveTicket }) {
+export default function TicketForm({ selectedTicket, setSelectedTicket, saveTicket, onClose }) {
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedTicket(previousTicket => ({
@@ -125,7 +125,7 @@ export default function TicketForm({ selectedTicket, setSelectedTicket, saveTick
 
         <div className="flex flex-wrap -mx-3 mb-4 mt-4">
           <div className="px-3">
-            <Button className="px-6 py-5 shadow-md items-center justify-center font-medium inline-flex">Discard</Button>
+            <Button onClick={onClose} className="px-6 py-5 shadow-md items-center justify-center font-medium inline-flex">Discard</Button>
           </div>
           <div className="px-3">
             <Button htmlType="submit" type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Save Ticket</Button>

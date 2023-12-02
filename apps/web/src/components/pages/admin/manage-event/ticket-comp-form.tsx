@@ -6,7 +6,7 @@ import { Button, Form, Select, message } from "antd";
 import { useEffect, useState } from "react";
 import { PostOrdersType } from 'troptix-api';
 
-export default function TicketCompForm({ event, ticketTypes }) {
+export default function TicketCompForm({ event, ticketTypes, onClose }) {
 
   const [messageApi, contextHolder] = message.useMessage();
   const [complementaryOrder, setComplementaryOrder] = useState<ComplementaryOrder>(generateComplementaryOrder(event));
@@ -89,7 +89,6 @@ export default function TicketCompForm({ event, ticketTypes }) {
 
     createOrder.mutate(postOrdersRequest, {
       onSuccess: (data) => {
-        console.log(data);
         messageApi.open({
           type: 'success',
           content: 'Successfully sent complementary ticket.',
@@ -143,7 +142,7 @@ export default function TicketCompForm({ event, ticketTypes }) {
         </div>
         <div className="flex flex-wrap -mx-3 mb-4 mt-4">
           <div className="px-3">
-            <Button className="px-6 py-5 shadow-md items-center justify-center font-medium inline-flex">Discard</Button>
+            <Button onClick={onClose} className="px-6 py-5 shadow-md items-center justify-center font-medium inline-flex">Discard</Button>
           </div>
           <div className="px-3">
             <Button htmlType="submit" type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Send Ticket</Button>

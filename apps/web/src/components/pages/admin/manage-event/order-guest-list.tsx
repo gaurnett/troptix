@@ -50,7 +50,6 @@ export default function OrderGuestListPage({ orders }) {
   }
 
   function checkIn(guest: Ticket, index: number) {
-    console.log(guest);
     const updatedTicket = {
       ...guest,
       ["status"]: !guest?.status || guest?.status === TicketStatus.NOT_AVAILABLE ? TicketStatus.AVAILABLE : TicketStatus.NOT_AVAILABLE

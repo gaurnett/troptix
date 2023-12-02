@@ -68,7 +68,7 @@ export default function SignUpPage() {
       });
       return;
     }
-    if (signUpFields.email !== confirmEmail) {
+    if (String(signUpFields.email).toLowerCase() !== String(confirmEmail).toLowerCase()) {
       messageApi.open({
         type: "error",
         content: "Emails do not match",

@@ -33,12 +33,13 @@ export default function AccountPage() {
   async function onFinish(values: any) {
     updateUser.mutate(adminUser, {
       onSuccess: async () => {
+        const name = adminUser.firstName + " " + adminUser.lastName;
         if (
-          adminUser.name !== auth.currentUser?.displayName &&
+          name !== auth.currentUser?.displayName &&
           auth.currentUser
         ) {
           await updateProfile(auth.currentUser, {
-            displayName: adminUser.name,
+            displayName: name,
           });
         }
         messageApi.open({

@@ -67,13 +67,13 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
           },
           onError: (error) => {
             messageApi.error("There was an error initializing your order");
-            setCurrent(current - 1);
+            setCurrent(1);
           }
         });
       },
       onError: (error) => {
         messageApi.error("There was an error initializing your order");
-        setCurrent(current - 1);
+        setCurrent(1);
       }
     });
 
@@ -149,7 +149,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
         width={1080}
       >
         <div className="w-full">
-          <div style={{ maxHeight: 650 }} className='flex mt-6'>
+          <div style={{ height: 650 }} className='flex mt-6'>
             <div className='w-4/6 grow'>
               <div className='flex flex-col h-full px-12'>
                 <div className='w-3/4 md:mx-auto mb-6'>
@@ -215,13 +215,16 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
             </div>
             <div className='w-2/6 ml-8 overflow-y-auto border-l pl-12 pr-6'>
               <div className='mx-auto text-center'>
-                <Image
-                  height={200}
-                  width={200}
-                  src={event?.imageUrl}
-                  alt={event.name}
-                  className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg"
-                />
+                <div className="text-center justify-center">
+                  <Image
+                    height={200}
+                    width={200}
+                    src={event?.imageUrl}
+                    alt={event.name}
+                    className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg mx-auto"
+                  />
+                </div>
+
               </div>
 
               <div>

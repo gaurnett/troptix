@@ -57,7 +57,12 @@ export function setUserFromResponse(response, firebaseUser): User {
   user.email = firebaseUser.email;
 
   if (firebaseUser.displayName !== null) {
-    user.name = firebaseUser.displayName;
+    const name = String(firebaseUser.displayName).split(" ");
+    user.firstName = name[0];
+
+    if (name.length > 1) {
+      user.lastName = name[1];
+    }
   }
 
   if (response !== null) {
