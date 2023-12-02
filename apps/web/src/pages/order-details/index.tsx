@@ -159,7 +159,7 @@ export default function OrderDetailsPage() {
             </div>
           </aside>
           <div className="mt-8 md:mt-0 md:ml-12 grow">
-            <h2 className="text-2xl font-bold leading-tighter tracking-tighter" data-aos="zoom-y-out">Tickets Details</h2>
+            <h2 className="text-2xl font-bold leading-tighter tracking-tighter" data-aos="zoom-y-out">Ticket Details</h2>
             <div>
               <List
                 className="demo-loadmore-list w-full grow m-0"
@@ -188,7 +188,7 @@ export default function OrderDetailsPage() {
         </div>
       </div>
       <Drawer width={500} title="Edit Ticket" placement="right" onClose={onClose} open={modalOpen}>
-        <EditTicketForm selectedTicket={selectedTicket} setSelectedTicket={setSelectedTicket} saveTicket={saveTicket} />
+        <EditTicketForm onClose={onClose} selectedTicket={selectedTicket} setSelectedTicket={setSelectedTicket} saveTicket={saveTicket} />
       </Drawer>
     </div>
   );
