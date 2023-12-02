@@ -1,5 +1,5 @@
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { message } from 'antd';
+import { message, notification } from 'antd';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
@@ -11,6 +11,15 @@ export default function PaymentForm({
   const elements = useElements();
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
+
+  function openNotification(message: string | undefined) {
+    notification.error({
+      message: `Payment Failed`,
+      description: message ? message : "Your card could not be authorized. Please try again, or contact your card issuer for further details.",
+      placement: 'bottom',
+      duration: 0
+    });
+  };
 
   useEffect(() => {
     async function completeStripePurchase() {
@@ -39,17 +48,13 @@ export default function PaymentForm({
 
       messageApi.destroy('process-payment-loading');
       if (error) {
-        messageApi.error(error.message);
+        openNotification(error.message);
       } else {
         messageApi.open({
           type: "success",
           content: "Ticket purchase successful.",
           duration: 1.5
-        })
-
-        // Your customer will be redirected to your `return_url`. For some payment
-        // methods like iDEAL, your customer will be redirected to an intermediate
-        // site first to authorize the payment, then redirected to the `return_url`.
+        });
       }
 
       setCompletePurchaseClicked(false);
