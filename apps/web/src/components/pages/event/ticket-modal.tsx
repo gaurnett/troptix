@@ -14,7 +14,6 @@ import TicketsCheckoutForm from './tickets-checkout-forms';
 
 export default function TicketModal({ event, isTicketModalOpen, handleCancel }) {
   const { user } = useContext(TropTixContext);
-  console.log(user);
   const [checkout, setCheckout] = useState<Checkout>(initializeCheckout(user, event.id));
   const [checkoutPreviousButtonClicked, setCheckoutPreviousButtonClicked] = useState(false);
   const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);

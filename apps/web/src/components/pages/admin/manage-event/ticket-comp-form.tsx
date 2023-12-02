@@ -89,7 +89,6 @@ export default function TicketCompForm({ event, ticketTypes }) {
 
     createOrder.mutate(postOrdersRequest, {
       onSuccess: (data) => {
-        console.log(data);
         messageApi.open({
           type: 'success',
           content: 'Successfully sent complementary ticket.',
