@@ -1,5 +1,6 @@
 import { Spinner } from "@/components/ui/spinner";
 import { useFetchOrderById } from "@/hooks/useOrders";
+import { getFormattedCurrency } from "@/lib/utils";
 import { Result, Table, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { format } from 'date-fns';
@@ -15,8 +16,11 @@ interface DataType {
   name: string;
   quantity: number;
   total: number;
+  formattedTotal: string;
   fee: number;
+  formattedFee: string;
   subtotal: number;
+  formattedSubtotal: string;
 }
 
 export default function OrderConfirmationPage() {
@@ -63,7 +67,14 @@ export default function OrderConfirmationPage() {
       }
     });
 
-    setData(Array.from(orderMap.values()));
+    setData(Array.from(orderMap.values()).map((value) => {
+      return {
+        ...value,
+        formattedTotal: getFormattedCurrency(value.total) + " USD",
+        formattedFee: getFormattedCurrency(value.fee),
+        formattedSubtotal: getFormattedCurrency(value.subtotal),
+      } as any
+    }));
     setIsFetchingOrders(false);
   }, [order])
 
@@ -78,15 +89,15 @@ export default function OrderConfirmationPage() {
     },
     {
       title: 'Price',
-      dataIndex: 'subtotal',
+      dataIndex: 'formattedSubtotal',
     },
     {
       title: 'Fee',
-      dataIndex: 'fee',
+      dataIndex: 'formattedFee',
     },
     {
       title: 'Total',
-      dataIndex: 'total',
+      dataIndex: 'formattedTotal',
     },
   ];
 
@@ -210,13 +221,13 @@ export default function OrderConfirmationPage() {
                             <Text>{totalQuantity}</Text>
                           </Table.Summary.Cell>
                           <Table.Summary.Cell className="font-bold" index={1}>
-                            <Text>{totalSubtotal}</Text>
+                            <Text>{getFormattedCurrency(totalSubtotal)}</Text>
                           </Table.Summary.Cell>
                           <Table.Summary.Cell className="font-bold" index={2}>
-                            <Text>{totalFees}</Text>
+                            <Text>{getFormattedCurrency(totalFees)}</Text>
                           </Table.Summary.Cell>
                           <Table.Summary.Cell className="font-bold" index={3}>
-                            <Text>{total}</Text>
+                            <Text>{getFormattedCurrency(total)} USD</Text>
                           </Table.Summary.Cell>
                         </Table.Summary.Row>
                       </>
@@ -231,14 +242,7 @@ export default function OrderConfirmationPage() {
         <div className="w-full md:max-w-2xl mx-auto">
           <div className="md:flex md:justify-between">
             <div className="mb-4 md:mr-4 w-full">
-              <p className="block text-gray-800 text-bold font-bold">Billing Details</p>
-              <p className="block text-gray-800 text-base font-base">{order.name}</p>
-              <p className="block font-light">{order.billingAddress1}</p>
-              <p className="block font-light">{order.billingAddress2}</p>
-              <p className="block font-light">{order.billingCity}, {order.billingState}, {order.billingZip}</p>
-              <p className="block font-light">{order.billingCountry}</p>
               <p className="block text-gray-800 text-base font-base">Email: {order.email}</p>
-
             </div>
           </div>
         </div>
