@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getDateFormatter(date: Date) {
-  return `${formatInTimeZone(date, 'America/New_York', "MMM dd, yyyy, h:mm a")} EST`;
+  return `${formatInTimeZone(date, 'America/New_York', "MMM dd, yyyy, h:mm a")}`;
 }
 
 export function getFormattedCurrency(price) {
