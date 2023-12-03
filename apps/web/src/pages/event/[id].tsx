@@ -8,9 +8,8 @@ import {
   eventFetcher,
   useFetchEventsById,
 } from "@/hooks/useFetchEvents";
-import { getFormattedCurrency } from "@/lib/utils";
+import { getDateFormatter, getFormattedCurrency } from "@/lib/utils";
 import { Button, Modal, Result, Typography } from "antd";
-import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -87,10 +86,6 @@ export default function EventDetailPage(props) {
     },
     props.event
   );
-
-  function getDateFormatter(date) {
-    return `${format(date, "MMM dd, yyyy")} @ ${format(date, "hh:mm a")}`;
-  }
 
   function closeSignInModal() {
     setIsSignInModalOpen(false);
