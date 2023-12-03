@@ -5,6 +5,7 @@ import { GetPromotionsType, getPromotions } from 'troptix-api';
 
 import { CustomInput } from '@/components/ui/input';
 import { initializeCheckoutTicket } from '@/hooks/types/Checkout';
+import { getDateFormatter } from '@/lib/utils';
 import {
   MinusOutlined,
   PlusOutlined
@@ -16,10 +17,6 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   const [promotion, setPromotion] = useState<any>();
   const [promotionApplied, setPromotionApplied] = useState(false);
   const [canShowMessage, setCanShowMessage] = useState(true);
-
-  function getDateFormatter(date, time) {
-    return `${format(new Date(date), 'MMM dd, yyyy')} @ ${format(new Date(time), 'hh:mm a')}`;
-  };
 
   async function applyPromotion() {
     if (promotionCode === undefined) {
@@ -342,7 +339,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
                         }
                         <div className='my-auto text-gray-500'>&nbsp;+ {ticket.ticketingFees === "PASS_TICKET_FEES" ? getFormattedFeesCurrency(ticket.price) : getFormattedCurrency(0)} fees</div>
                       </div>
-                      <div className='text-sm'>Sale ends: {getDateFormatter(ticket.saleEndDate, ticket.saleEndTime)}</div>
+                      <div className='text-sm'>Sale ends: {getDateFormatter(new Date(ticket.saleEndDate))}</div>
                       <div>
                         <Paragraph className="text-justify text-sm" ellipsis={{ rows: 2, expandable: true, symbol: 'see more details' }}>
                           {ticket.description}
