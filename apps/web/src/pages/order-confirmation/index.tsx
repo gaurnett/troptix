@@ -1,9 +1,8 @@
 import { Spinner } from "@/components/ui/spinner";
 import { useFetchOrderById } from "@/hooks/useOrders";
-import { getFormattedCurrency } from "@/lib/utils";
+import { getDateFormatter, getFormattedCurrency } from "@/lib/utils";
 import { Result, Table, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { format } from 'date-fns';
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -101,11 +100,6 @@ export default function OrderConfirmationPage() {
     },
   ];
 
-
-  function getDateFormatted(date, time) {
-    return format(new Date(date), 'MMM dd, yyyy') + ", " + format(new Date(time), 'hh:mm a');
-  }
-
   function renderTicketRow(label, value) {
     return (
       <div className="mt-2 mb-2">
@@ -161,8 +155,8 @@ export default function OrderConfirmationPage() {
                 alt={"event flyer image"} />
             </div>
             <div className="w-full md:ml-8 mt-8 md:mt-0">
-              {renderTicketRow("Start Date", getDateFormatted(order.event.startDate, order.event.startTime))}
-              {renderTicketRow("End Date", getDateFormatted(order.event.endDate, order.event.endTime))}
+              {renderTicketRow("Start Date", getDateFormatter(new Date(order.event.startDate)))}
+              {renderTicketRow("End Date", getDateFormatter(new Date(order.event.endDate)))}
               {renderTicketRow("Event Venue", order.event.venue)}
               {renderTicketRow("Event Address", order.event.address)}
             </div>

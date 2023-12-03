@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
-import { format } from "date-fns";
+import { formatInTimeZone } from 'date-fns-tz';
 import ShortUniqueId from 'short-unique-id';
 import { twMerge } from "tailwind-merge";
 
@@ -7,8 +7,8 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getDateFormatter(date) {
-  return `${format(date, "MMM dd, yyyy")} @ ${format(date, "hh:mm a")}`;
+export function getDateFormatter(date: Date) {
+  return `${formatInTimeZone(date, 'America/New_York', "MMM dd, yyyy, h:mm a")}`;
 }
 
 export function getFormattedCurrency(price) {

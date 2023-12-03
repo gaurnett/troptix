@@ -1,7 +1,7 @@
 import { Spinner } from "@/components/ui/spinner";
 import { GetOrdersType, useFetchOrderById } from "@/hooks/useOrders";
+import { getDateFormatter } from "@/lib/utils";
 import { Button, Carousel, Divider, QRCode, Result } from "antd";
-import { format } from 'date-fns';
 import JsPDF from 'jspdf';
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -32,10 +32,6 @@ export default function TicketsPage() {
 
   function goBack() {
     carouselRef.current.prev();
-  }
-
-  function getDateFormatted(date, time) {
-    return format(new Date(date), 'MMM dd, yyyy') + ", " + format(new Date(time), 'hh:mm a');
   }
 
   function saveToPdf() {
@@ -86,8 +82,8 @@ export default function TicketsPage() {
               </div>
               {renderTicketRow("Event", event.name)}
               {renderTicketRow("Ticket", ticketName)}
-              {renderTicketRow("Start Date", getDateFormatted(event.startDate, event.startTime))}
-              {renderTicketRow("End Date", getDateFormatted(event.endDate, event.endTime))}
+              {renderTicketRow("Start Date", getDateFormatter(new Date(event.startDate)))}
+              {renderTicketRow("End Date", getDateFormatter(new Date(event.endDate)))}
               {renderTicketRow("Event Venue", event.venue)}
               {renderTicketRow("Event Address", event.address)}
               <Divider style={{ height: "16px" }} dashed={true} plain>Order Details</Divider>
