@@ -39,25 +39,24 @@ export async function eventFetcher({
     });
 }
 
-export function useFetchAllEvents() {
-  const queryClient = useQueryClient();
-
+export function useFetchAllEvents(initialData?) {
   const { isPending, isError, data, error } = useQuery({
     queryKey: [RequestType.GET_EVENTS_ALL],
     queryFn: () => eventFetcher({ requestType: RequestType.GET_EVENTS_ALL }),
-    initialData: () => {
-      const events = queryClient.getQueryData([RequestType.GET_EVENTS_ALL]);
-      return events;
-    },
+    initialData: initialData,
   });
 
   return { isPending, isError, data, error };
 }
 
-export function useFetchEventsById({ requestType, id }: GetEventsRequestType) {
+export function useFetchEventsById(
+  { requestType, id }: GetEventsRequestType,
+  intialData?
+) {
   const { isPending, isError, data, error } = useQuery({
     queryKey: [requestType, id],
     queryFn: () => eventFetcher({ requestType, id }),
+    initialData: intialData,
   });
 
   return { isPending, isError, data, error };

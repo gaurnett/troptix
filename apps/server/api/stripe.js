@@ -42,6 +42,8 @@ async function postOrders(request, response) {
       return createCharge(body, response);
     case 'payment_intent.succeeded':
       return stripePaymentIntentSucceeded(body, headers, request, response);
+    case 'payment_intent.payment_failed':
+      return stripePaymentIntentFailed(body, headers, request, response);
     default:
       return response.status(500).json({ error: 'No post order type set' });
   }
@@ -58,7 +60,10 @@ async function createCharge(body, response) {
     var customerId = "";
 
     if (charge.userId === undefined) {
-      const customer = await stripe.customers.create();
+      const customer = await stripe.customers.create({
+        name: charge?.name,
+        email: charge?.email
+      });
       customerId = customer.id;
     } else {
       const user = await prisma.users.findUnique({
@@ -67,8 +72,11 @@ async function createCharge(body, response) {
         },
       });
 
-      if (user.stripeId === null || user.stripeId === undefined || user.stripeId === "") {
-        const customer = await stripe.customers.create();
+      if (!user.stripeId) {
+        const customer = await stripe.customers.create({
+          name: charge?.name,
+          email: charge?.email
+        });
         await prisma.users.update({
           where: {
             id: charge.userId,
@@ -110,6 +118,12 @@ async function createCharge(body, response) {
     console.log(error);
     return response.status(500).json({ error: error });
   }
+}
+
+async function stripePaymentIntentFailed(body, headers, request, response) {
+  console.log(body);
+
+  return response.status(200).json({ message: "Payment intent failed" });
 }
 
 async function stripePaymentIntentSucceeded(body, headers, request, response) {
@@ -186,6 +200,8 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
         event: true,
       },
     });
+
+    console.log(order);
 
     const orderMap = new Map();
     order.tickets.forEach(ticket => {

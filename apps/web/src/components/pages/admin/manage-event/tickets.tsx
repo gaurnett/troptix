@@ -157,11 +157,11 @@ export default function TicketsPage({ event }) {
       </div>
 
       <Drawer width={500} title="Add Ticket" placement="right" onClose={onClose} open={open}>
-        <TicketForm selectedTicket={selectedTicket} setSelectedTicket={setSelectedTicket} saveTicket={saveTicket} />
+        <TicketForm selectedTicket={selectedTicket} setSelectedTicket={setSelectedTicket} onClose={onClose} saveTicket={saveTicket} />
       </Drawer>
 
       <Drawer width={500} title="Generate Complementary Ticket" placement="right" onClose={closeCompTicketTypeDrawer} open={compTicketModalOpen}>
-        <TicketCompForm ticketTypes={ticketTypes} event={event} />
+        <TicketCompForm ticketTypes={ticketTypes} event={event} onClose={onClose} />
       </Drawer>
 
     </div>

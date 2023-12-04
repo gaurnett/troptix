@@ -30,10 +30,18 @@ export function useCreatePaymentIntent() {
 }
 
 function createCharge(checkout: Checkout): Charge {
+  const discount = checkout?.discountedTotal as number;
+  const totalPrice = checkout?.total as number;
   const total = checkout.promotionApplied
-    ? checkout.discountedTotal * 100
-    : checkout.total * 100;
-  const charge: Charge = { total, userId: checkout.userId };
+    ? discount * 100
+    : totalPrice * 100;
+
+  const charge: Charge = {
+    total,
+    userId: checkout.userId as string,
+    name: checkout?.firstName + " " + checkout?.lastName,
+    email: checkout.email
+  };
   return charge;
 }
 
@@ -61,6 +69,10 @@ export async function postStripe({ type, charge }: PostStripeRequest): Promise<P
       },
       body: JSON.stringify(request),
     });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
     const json = await response.json();
     return json;

@@ -1,27 +1,27 @@
 'use client'
 
-import { useState, useEffect, useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
-import Link from 'next/link'
-import Image from 'next/image'
-import { useRouter } from 'next/router'
 import { Disclosure } from '@headlessui/react'
-import { GiHamburgerMenu } from "react-icons/gi";
 import { Dropdown, MenuProps } from 'antd'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { GiHamburgerMenu } from "react-icons/gi"
 
 import {
+  MdAdd,
+  MdOutlineEvent,
+  MdOutlineLogout,
   MdOutlineMoreHoriz,
   MdOutlineSettings,
-  MdOutlineLogout,
-  MdOutlineEvent,
-  MdAdd,
-} from "react-icons/md";
+} from "react-icons/md"
 
-import { AiOutlineHome } from "react-icons/ai";
 import { usePathname } from 'next/navigation'
-import AdminMobileMenu from './admin-mobile-menu'
+import { AiOutlineHome } from "react-icons/ai"
+import { auth } from '../../config'
 import { TropTixContext } from '../WebNavigator'
-import { auth } from '../../config';
+import AdminMobileMenu from './admin-mobile-menu'
 
 export default function AdminHeader() {
   const { user } = useContext(TropTixContext);
@@ -156,10 +156,10 @@ export default function AdminHeader() {
             <div className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1" id="navbar-sticky">
               <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
                 <li>
-                  <Link href="/admin/manage-account" className={`${pathname === '/admin' || pathname === '/admin/manage-account' || pathname === '/admin/manage-account' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}> Account</Link>
+                  <Link href="/admin/manage-account" className={`${pathname === '/admin/manage-account' || pathname === '/admin/manage-account' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}> Account</Link>
                 </li>
                 <li>
-                  <Link href="/admin/manage-events" className={`${pathname === '/admin/manage-events' || pathname === '/admin/manage-event' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Manage Events</Link>
+                  <Link href="/admin/manage-events" className={`${pathname === '/admin' || pathname === '/admin/manage-events' || pathname === '/admin/manage-event' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Manage Events</Link>
                 </li>
                 <li>
                   <Link href="/admin/add-event" className={`${pathname === '/admin/add-event' ? 'md:text-blue-700' : ''} block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Add Event</Link>
@@ -169,7 +169,7 @@ export default function AdminHeader() {
           </div>
 
           {
-            user === undefined || user === null
+            !user
               ? <></>
               :
               <div className="max-w-screen-xl flex flex-wrap items-center justify-end">
@@ -178,9 +178,7 @@ export default function AdminHeader() {
                     <Dropdown className='cursor-pointer' menu={{ items }}>
                       <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
                         <div style={{ fontSize: '16px' }}>
-                          {
-                            user.name === null || user.name === undefined || user.name === "" ? user.email : `Hi ${user.name}`
-                          }
+                          {user.email}
                         </div>
                       </a>
                     </Dropdown>

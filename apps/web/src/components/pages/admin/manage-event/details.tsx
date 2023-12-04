@@ -1,9 +1,9 @@
 import { CustomTextArea } from "@/components/ui/input";
+import { uploadFlyerToFirebase } from "@/firebase/storage";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
-import { message, Upload, Image, Button, Form } from "antd";
+import { Button, Form, Image, Upload, message } from "antd";
 import { RcFile } from "antd/es/upload";
-import { uploadFlyerToFirebase } from "@/firebase/storage";
 import { getDownloadURL } from "firebase/storage";
 
 export default function DetailsPage({ event, setEvent, updateEvent }) {
@@ -67,7 +67,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
   };
 
   return (
-    <div className="w-full h-screen md:max-w-md mr-8">
+    <div className="w-full md:max-w-md mr-8">
       <Form
         className=""
         name="basic"

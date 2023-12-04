@@ -2,8 +2,9 @@ import { Button, Input, List, Typography, message } from 'antd';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { GetPromotionsType, getPromotions } from 'troptix-api';
-import { CheckoutTicket } from 'troptix-models';
 
+import { CustomInput } from '@/components/ui/input';
+import { initializeCheckoutTicket } from '@/hooks/types/Checkout';
 import {
   MinusOutlined,
   PlusOutlined
@@ -14,6 +15,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   const [promotionCode, setPromotionCode] = useState<any>();
   const [promotion, setPromotion] = useState<any>();
   const [promotionApplied, setPromotionApplied] = useState(false);
+  const [canShowMessage, setCanShowMessage] = useState(true);
 
   function getDateFormatter(date, time) {
     return `${format(new Date(date), 'MMM dd, yyyy')} @ ${format(new Date(time), 'hh:mm a')}`;
@@ -21,12 +23,20 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
 
   async function applyPromotion() {
     if (promotionCode === undefined) {
-      message.error("Promotion code is empty");
+      if (canShowMessage) {
+        setCanShowMessage(false);
+        message.error("Promotion code is empty")
+          .then(() => setCanShowMessage(true));
+      }
       return;
     }
 
     if (promotionApplied && String(promotion.code).toUpperCase() === String(promotionCode).toUpperCase()) {
-      message.error("Promotion already applied");
+      if (canShowMessage) {
+        setCanShowMessage(false);
+        message.error("Promotion already applied")
+          .then(() => setCanShowMessage(true));
+      }
       return;
     }
 
@@ -83,6 +93,12 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   }
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setCheckout((prevState) => ({
+      ...prevState, [event.target.name]: event.target.value
+    }));
+  }
+
+  function handlePromotionChange(event: React.ChangeEvent<HTMLInputElement>) {
     setPromotionCode(event.target.value);
   }
 
@@ -112,8 +128,14 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
     return formatter.format(price);
   }
 
+  function calculateFees(price) {
+    const fee = price * 0.05;
+    const tax = fee * 0.15;
+    return normalizePrice(fee + tax);
+  }
+
   function getFormattedFeesCurrency(price) {
-    price = price * .05;
+    price = calculateFees(price);
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
@@ -126,10 +148,15 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
     return formatter.format(price);
   }
 
+  function normalizePrice(price): number {
+    return Math.round(price * 100) / 100;
+  }
+
   function updateCost(ticket, reduce = false) {
-    var ticketSubtotal = ticket.price;
-    var ticketFees = ticket.ticketingFees === "PASS_TICKET_FEES" ? ticket.price * .05 : 0;
-    var ticketTotal = ticketFees + ticketSubtotal;
+    const price = normalizePrice(ticket.price);
+    var ticketSubtotal = price;
+    var ticketFees = ticket.ticketingFees === "PASS_TICKET_FEES" ? calculateFees(price) : 0;
+    var ticketTotal = normalizePrice(ticketFees + ticketSubtotal);
 
     const updatedTickets = checkout.tickets;
     if (checkout.tickets.has(ticket.id)) {
@@ -142,7 +169,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
         updatedTickets.set(ticket.id, checkoutTicket);
       }
     } else {
-      const checkoutTicket = new CheckoutTicket(ticket);
+      const checkoutTicket = initializeCheckoutTicket(ticket);
       checkoutTicket.quantitySelected = 1;
       checkoutTicket.subtotal = ticketSubtotal;
       checkoutTicket.fees = ticketFees;
@@ -150,13 +177,12 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
       updatedTickets.set(ticket.id, checkoutTicket);
     }
 
-    var checkoutTotal = checkout.total;
-    var checkoutSubtotal = checkout.subtotal;
-    var checkoutFees = checkout.fees;
+    var checkoutSubtotal = normalizePrice(checkout.subtotal);
+    var checkoutFees = normalizePrice(checkout.fees);
 
     checkoutSubtotal = reduce ? checkoutSubtotal - ticketSubtotal : checkoutSubtotal + ticketSubtotal;
     checkoutFees = reduce ? checkoutFees - ticketFees : checkoutFees + ticketFees
-    checkoutTotal = checkoutSubtotal + checkoutFees;
+    var checkoutTotal = normalizePrice(checkoutSubtotal + checkoutFees);
 
     setCheckout(previousOrder => ({
       ...previousOrder,
@@ -197,7 +223,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
 
     if (ticket.quantitySold !== null && ticket.quantitySold !== undefined) {
       quantityRemaining = ticket.quantity - ticket.quantitySold;
-      if (quantityRemaining === 0) {
+      if (quantityRemaining <= 0) {
         return "Sold Out";
       }
     }
@@ -208,12 +234,30 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   return (
     <div className="w-full">
       <div>
+
+        <h2 className="text-xl font-bold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Contact Information</h2>
+        <div className="flex justify-between">
+          <div className="mb-4 mr-1 md:mr-4 w-full">
+            <CustomInput value={checkout.firstName} name={"firstName"} id={"firstName"} label={"First Name *"} type={"text"} placeholder={"John"} handleChange={handleChange} required={true} />
+          </div>
+          <div className="mb-4 ml-1 md:ml-4 w-full">
+            <CustomInput value={checkout.lastName} name={"lastName"} id={"lastName"} label={"Last Name *"} type={"text"} placeholder={"Doe"} handleChange={handleChange} required={true} />
+          </div>
+        </div>
+        <div className="flex justify-between">
+          <div className="mb-4 w-full">
+            <CustomInput value={checkout.email} name={"email"} id={"email"} label={"Email *"} type={"text"} placeholder={"johndoe@gmail.com"} handleChange={handleChange} required={true} />
+          </div>
+        </div>
+
+        <h2 className="text-xl font-bold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Tickets</h2>
+
         <div className="mb-4">
           <div className="w-full">
             <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor={"promotionCode"}>Promotion Code</label>
           </div>
           <div className="flex w-full">
-            <Input onChange={handleChange} name={"promotionCode"} value={promotionCode} id={"promotionCode"} type={"text"} classNames={{ input: "form-input w-full text-gray-800" }} placeholder={"SAVE15"} />
+            <Input onChange={handlePromotionChange} name={"promotionCode"} value={promotionCode} id={"promotionCode"} type={"text"} classNames={{ input: "form-input w-full text-gray-800" }} placeholder={"SAVE15"} />
             <Button onClick={applyPromotion} className='my-auto ml-2' type='text'>
               Apply
             </Button>
@@ -268,6 +312,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
                                   <Button
                                     onClick={() => increaseCost(ticket, index)}
                                     className='bg-blue-500 rounded'
+                                    disabled={checkoutTicket && checkoutTicket.quantitySelected === Math.min(ticket.quantity - ticket.quantitySold, ticket.maxPurchasePerUser)}
                                     icon={<PlusOutlined className='text-white items-center justify-center' />}>
                                   </Button>
                                 </div>

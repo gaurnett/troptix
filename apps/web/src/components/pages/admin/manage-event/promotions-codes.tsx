@@ -129,7 +129,7 @@ export default function PromotionCodesPage() {
       </div>
 
       <Drawer width={500} title="Add Promotion" placement="right" onClose={onClose} open={open}>
-        <PromotionCodeForm selectedPromotion={selectedPromotion} setSelectedPromotion={setSelectedPromotion} savePromotion={savePromotion} />
+        <PromotionCodeForm onClose={onClose} selectedPromotion={selectedPromotion} setSelectedPromotion={setSelectedPromotion} savePromotion={savePromotion} />
       </Drawer>
 
     </div>

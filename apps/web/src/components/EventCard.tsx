@@ -1,5 +1,6 @@
 import { getFormattedCurrency } from "@/lib/utils";
-import { Divider, Image } from "antd";
+import { Divider } from "antd";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function EventCard({ event, showDivider = false }) {
@@ -34,7 +35,7 @@ export default function EventCard({ event, showDivider = false }) {
       }
     });
 
-    priceString = "From " + getFormattedCurrency(lowest);
+    priceString = "From " + getFormattedCurrency(lowest) + " USD";
   }
 
   function renderMobileCard() {
@@ -43,7 +44,6 @@ export default function EventCard({ event, showDivider = false }) {
         <div className="flex">
           <div>
             <Image
-              preview={false}
               width={110}
               height={110}
               className="w-auto rounded"

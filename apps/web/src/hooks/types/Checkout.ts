@@ -1,32 +1,36 @@
+import { TicketType } from "./Ticket";
+
 export interface Checkout {
-  id: string;
-  eventId: string;
-  userId: string;
-  name: string;
-  email: string;
-  total: number;
-  subtotal: number;
-  fees: number;
-  discountedSubtotal: number;
-  discountedTotal: number;
-  discountedFees: number;
-  promotionApplied: boolean;
-  telephoneNumber: string;
-  billingAddress1: string;
-  billingAddress2: string;
-  billingCity: string;
-  billingZip: string;
-  billingState: string;
-  billingCountry: string;
+  id?: string;
+  eventId?: string;
+  userId?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  total?: number;
+  subtotal?: number;
+  fees?: number;
+  discountedSubtotal?: number;
+  discountedTotal?: number;
+  discountedFees?: number;
+  promotionApplied?: boolean;
+  telephoneNumber?: string;
+  billingAddress1?: string;
+  billingAddress2?: string;
+  billingCity?: string;
+  billingZip?: string;
+  billingState?: string;
+  billingCountry?: string;
   tickets: Map<string, CheckoutTicket>;
 }
 
-export function initializeCheckout(user: any): Checkout {
+export function initializeCheckout(user: any, eventId: string): Checkout {
   const checkout: Checkout = {
     id: "",
-    eventId: "",
+    eventId: eventId,
     userId: user?.id,
-    name: user?.name,
+    firstName: user?.firstName,
+    lastName: user?.lastName,
     email: user?.email,
     total: 0,
     subtotal: 0,
@@ -58,4 +62,22 @@ export interface CheckoutTicket {
   fees: number;
   subtotal: number;
   total: number;
+  ticketType: TicketType;
+}
+
+export function initializeCheckoutTicket(ticket): CheckoutTicket {
+  const checkoutTicket: CheckoutTicket = {
+    id: "",
+    ticketTypeId: ticket.id,
+    eventId: ticket.eventId,
+    name: ticket.name,
+    description: ticket.description,
+    quantitySelected: 0,
+    fees: 0,
+    subtotal: 0,
+    total: 0,
+    ticketType: TicketType.PAID
+  }
+
+  return checkoutTicket;
 }

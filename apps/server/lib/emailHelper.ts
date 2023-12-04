@@ -25,7 +25,7 @@ export async function sendEmailToUser(order, orderMap) {
     subtotal: order.subtotal,
     totalFees: order.fees,
     totalPrice: order.total,
-    username: order.name,
+    username: order.firstName + " " + order.lastName,
     cardType: order.cardType,
     cardLast4: order.cardLast4,
     ticketsPurchased: order.tickets.length,
@@ -56,6 +56,7 @@ export async function sendComplementaryTicketEmailToUser(order, orderMap) {
     eventTitle: order.eventName,
     orderNumber: order.id,
     orderDate: new Date().toLocaleDateString(),
+    ticketsLink: order?.ticketsLink,
     orders: Array.from(orderMap.values())
   }
 

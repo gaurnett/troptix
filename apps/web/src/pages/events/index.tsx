@@ -2,12 +2,23 @@ import EventCard from "@/components/EventCard";
 
 import Footer from "@/components/ui/footer";
 import { Spinner } from "@/components/ui/spinner";
-import { useFetchAllEvents } from "@/hooks/useFetchEvents";
-import { Image } from "antd";
+import {
+  RequestType,
+  eventFetcher,
+  useFetchAllEvents,
+} from "@/hooks/useFetchEvents";
+import Image from "next/image";
 import Link from "next/link";
 
-export default function ManageEventsPage() {
-  const { isPending, isError, data, error } = useFetchAllEvents();
+export async function getStaticProps() {
+  const events = await eventFetcher({
+    requestType: RequestType.GET_EVENTS_ALL,
+  });
+  return { props: { events }, revalidate: 60 };
+}
+
+export default function ManageEventsPage(props) {
+  const { isPending, isError, data, error } = useFetchAllEvents(props.events);
   const events = data as any[];
 
   return (
@@ -18,8 +29,8 @@ export default function ManageEventsPage() {
             className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
             data-aos="zoom-y-out"
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-400">
-              Current Events
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-400 px-4">
+              Events
             </span>
           </h1>
           {!isPending ? (
@@ -37,11 +48,10 @@ export default function ManageEventsPage() {
                       }}
                     >
                       <Image
-                        preview={false}
                         width={75}
                         height={75}
                         className="w-full mx-auto justify-center content-center items-center"
-                        style={{ objectFit: "contain" }}
+                        style={{ objectFit: "contain", width: 75 }}
                         src={"/icons/empty-events.png"}
                         alt={"mobile wallet image"}
                       />
@@ -56,16 +66,16 @@ export default function ManageEventsPage() {
                       return (
                         <div
                           key={index}
-                          className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4">
-                          <Link
-                            href={{
-                              pathname: "/event",
-                              query: { eventId: event?.id },
-                            }}>
-                            <EventCard event={event} showDivider={index < events.length - 1} />
+                          className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4"
+                        >
+                          <Link href={`event/${event?.id}`}>
+                            <EventCard
+                              event={event}
+                              showDivider={index < events.length - 1}
+                            />
                           </Link>
                         </div>
-                      )
+                      );
                     })}
                   </>
                 )}

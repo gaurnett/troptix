@@ -5,15 +5,15 @@ import { useCreatePaymentIntent } from '@/hooks/usePostStripe';
 import {
   ShoppingCartOutlined
 } from '@ant-design/icons';
-import { Button, Image, List, Modal, Steps, message } from 'antd';
+import { Button, List, Modal, Steps, message } from 'antd';
+import Image from 'next/image';
 import { useContext, useEffect, useState } from 'react';
-import BillingForm from './billing-form';
 import CheckoutForm from './checkout';
 import TicketsCheckoutForm from './tickets-checkout-forms';
 
 export default function TicketModal({ event, isTicketModalOpen, handleCancel }) {
   const { user } = useContext(TropTixContext);
-  const [checkout, setCheckout] = useState<Checkout>(initializeCheckout(user));
+  const [checkout, setCheckout] = useState<Checkout>(initializeCheckout(user, event.id));
   const [checkoutPreviousButtonClicked, setCheckoutPreviousButtonClicked] = useState(false);
   const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);
   const [orderId, setOrderId] = useState("");
@@ -21,17 +21,18 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
   const [current, setCurrent] = useState(0);
   const [canShowMessage, setCanShowMessage] = useState(true);
   const [clientSecret, setClientSecret] = useState<any>();
+  const [messageApi, contextHolder] = message.useMessage();
   const createPaymentIntent = useCreatePaymentIntent();
   const createOrder = useCreateOrder();
 
+  useEffect(() => {
+    setCheckout(initializeCheckout(user, event.id));
+  }, [user, event.id]);
+
   const checkoutSteps = [
     {
-      title: 'Ticket',
+      title: 'Tickets',
       content: <TicketsCheckoutForm event={event} checkout={checkout} setCheckout={setCheckout} />,
-    },
-    {
-      title: 'Billing',
-      content: <BillingForm checkout={checkout} setCheckout={setCheckout} />
     },
     {
       title: 'Checkout',
@@ -54,40 +55,60 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
   }, [checkoutPreviousButtonClicked, current])
 
   async function initializeStripeDetails() {
-    const { paymentId, customerId, clientSecret } = await createPaymentIntent.mutateAsync({ checkout });
-    const orderId = await createOrder.mutateAsync({ checkout, userId: checkout.userId, eventId: event.id, paymentId, customerId });
-    setClientSecret(clientSecret);
-    setOrderId(orderId);
+    createPaymentIntent.mutate({ checkout }, {
+      onSuccess: (data) => {
+        const { paymentId, customerId, clientSecret } = data;
+
+        createOrder.mutate({ checkout, paymentId, customerId, userId: user.id }, {
+          onSuccess: (data) => {
+            setClientSecret(clientSecret);
+            setOrderId(data as string);
+          },
+          onError: (error) => {
+            messageApi.error("There was an error initializing your order");
+            setCurrent(1);
+          }
+        });
+      },
+      onError: (error) => {
+        messageApi.error("There was an error initializing your order");
+        setCurrent(1);
+      }
+    });
+
   }
 
   async function next() {
-    if (current === 0) {
-      if (checkout.total === 0) {
-        if (canShowMessage) {
-          setCanShowMessage(false);
-          message.warning("Please select a ticket quantity")
-            .then(() => setCanShowMessage(true));
-        }
-        return;
+    if (!checkout.firstName
+      || !checkout.lastName
+      || !checkout.email) {
+      if (canShowMessage) {
+        setCanShowMessage(false);
+        message.warning("Please fill in contact information")
+          .then(() => setCanShowMessage(true));
       }
+      return;
     }
 
-    if (current === 1) {
-      if (!checkout.name
-        || !checkout.email
-        || !checkout.billingAddress1
-        || !checkout.billingCity
-        || !checkout.billingCountry
-        || !checkout.billingState) {
-        if (canShowMessage) {
-          setCanShowMessage(false);
-          message.warning("Please fill in required fields")
-            .then(() => setCanShowMessage(true));
-        }
-        return;
+    if (checkout.total === 0) {
+      if (canShowMessage) {
+        setCanShowMessage(false);
+        message.warning("Please select a ticket quantity")
+          .then(() => setCanShowMessage(true));
       }
-      initializeStripeDetails();
+      return;
     }
+
+    if (!user || !user.id) {
+      if (canShowMessage) {
+        setCanShowMessage(false);
+        message.warning("There was an error initializing order. Please try again")
+          .then(() => setCanShowMessage(true));
+      }
+      return;
+    }
+
+    initializeStripeDetails();
 
     setCurrent(current + 1);
   };
@@ -101,7 +122,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
   }
 
   function closeModal() {
-    setCheckout(initializeCheckout(user));
+    setCheckout(initializeCheckout(user, event.id));
     setCurrent(0);
     handleCancel();
   }
@@ -115,8 +136,13 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
     return formatter.format(price);
   }
 
+  if (!user) {
+    return (<></>)
+  }
+
   return (
     <>
+      {contextHolder}
       <Modal
         title="Ticket Checkout"
         centered
@@ -128,16 +154,13 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
         width={1080}
       >
         <div className="w-full">
-          <div style={{ maxHeight: 600 }} className='flex mt-6'>
+          <div style={{ height: 650 }} className='flex mt-6'>
             <div className='w-4/6 grow'>
               <div className='flex flex-col h-full px-12'>
                 <div className='w-3/4 md:mx-auto mb-6'>
                   <Steps current={current} items={[
                     {
                       title: "Tickets"
-                    },
-                    {
-                      title: "Billing"
                     },
                     {
                       title: "Checkout"
@@ -161,26 +184,6 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
                   {current === 1 && (
                     <div className='flex w-full'>
                       <Button
-                        onClick={prev}
-                        className="mr-2 w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
-                        Previous
-                      </Button>
-                      <Button
-                        type="primary"
-                        onClick={next}
-                        className="ml-2 w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">
-                        Continue
-                      </Button>
-                    </div>
-                  )}
-                  {current === 2 && (
-                    <div className='flex w-full'>
-                      <Button
-                        onClick={prev}
-                        className="mr-2 w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
-                        Previous
-                      </Button>
-                      <Button
                         type="primary"
                         onClick={completeStripePayment}
                         disabled={!clientSecret}
@@ -194,13 +197,16 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
             </div>
             <div className='w-2/6 ml-8 overflow-y-auto border-l pl-12 pr-6'>
               <div className='mx-auto text-center'>
-                <Image
-                  height={200}
-                  width={200}
-                  src={event?.imageUrl}
-                  alt={event.name}
-                  className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg"
-                />
+                <div className="text-center justify-center">
+                  <Image
+                    height={200}
+                    width={200}
+                    src={event?.imageUrl}
+                    alt={event.name}
+                    className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg mx-auto"
+                  />
+                </div>
+
               </div>
 
               <div>
@@ -273,7 +279,7 @@ export default function TicketModal({ event, isTicketModalOpen, handleCancel }) 
                           <div className='ml-4'>
                             <div className='ml-4'>
                               <div className='text-xl font-bold text-end'>
-                                {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)}
+                                {getFormattedCurrency(checkout.promotionApplied ? checkout.discountedTotal : checkout.total)} USD
                               </div>
                             </div>
                           </div>

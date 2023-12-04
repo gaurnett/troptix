@@ -20,6 +20,7 @@ export default function BillingForm({ checkout, setCheckout }) {
 
   const onFinish = (values: any) => {
   };
+
   return (
     <div className="w-full">
       {contextHolder}
@@ -32,9 +33,14 @@ export default function BillingForm({ checkout, setCheckout }) {
 
           <div className="flex justify-between">
             <div className="mb-4 mr-1 md:mr-4 w-full">
-              <CustomInput value={checkout.name} name={"name"} id={"name"} label={"Name *"} type={"text"} placeholder={"John Doe"} handleChange={handleChange} required={true} />
+              <CustomInput value={checkout.firstName} name={"firstName"} id={"firstName"} label={"First Name *"} type={"text"} placeholder={"John"} handleChange={handleChange} required={true} />
             </div>
             <div className="mb-4 ml-1 md:ml-4 w-full">
+              <CustomInput value={checkout.lastName} name={"lastName"} id={"lastName"} label={"Last Name *"} type={"text"} placeholder={"Doe"} handleChange={handleChange} required={true} />
+            </div>
+          </div>
+          <div className="flex justify-between">
+            <div className="mb-4 w-full">
               <CustomInput value={checkout.email} name={"email"} id={"email"} label={"Email *"} type={"text"} placeholder={"johndoe@gmail.com"} handleChange={handleChange} required={true} />
             </div>
           </div>

@@ -1,7 +1,8 @@
 
 import { TropTixContext } from '@/components/WebNavigator';
 import { Spinner } from '@/components/ui/spinner';
-import { Image, List } from 'antd';
+import { List } from 'antd';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import { GetEventsType, getEvents } from 'troptix-api';
@@ -53,7 +54,6 @@ export default function OrdersPage() {
                     <div className="flex">
                       <div>
                         <Image
-                          preview={false}
                           width={75}
                           height={75}
                           className="w-auto"

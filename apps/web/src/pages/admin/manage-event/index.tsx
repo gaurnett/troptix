@@ -19,7 +19,7 @@ export default function ManageEventPage() {
   const router = useRouter();
   const eventId = router.query.eventId as string;
   const [eventForm, setEventForm] = useState<any>();
-  const [activeKey, setActiveKey] = useState("orders");
+  const [activeKey, setActiveKey] = useState("basic-info");
 
   const queryClient = useQueryClient();
   const mutation = useEditEvent();
@@ -117,11 +117,6 @@ export default function ManageEventPage() {
 
   const items: TabsProps["items"] = [
     {
-      key: "orders",
-      label: "Orders",
-      children: <OrdersPage />,
-    },
-    {
       key: "basic-info",
       label: "Basic Info",
       children: (
@@ -142,6 +137,11 @@ export default function ManageEventPage() {
           updateEvent={updateEvent}
         />
       ),
+    },
+    {
+      key: "orders",
+      label: "Orders",
+      children: <OrdersPage />,
     },
     {
       key: "tickets",
@@ -193,12 +193,12 @@ export default function ManageEventPage() {
                     onClick={publishEvent}
                     className="px-4 py-4 shadow-md items-center font-medium inline-flex"
                   >
-                    {event.isDraft ? "Publish Event" : "Set to draft"}
+                    {event.isDraft ? "Publish Event" : "Unpublish"}
                   </Button>
                 </div>
               </div>
 
-              <div className="float-right w-full">
+              <div className="float-right w-full mb-8">
                 <Tabs defaultActiveKey="0" activeKey={activeKey} items={items} onChange={onChange} />
               </div>
             </div>

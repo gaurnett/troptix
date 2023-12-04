@@ -90,6 +90,10 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
     }));
   }
 
+  if (!event) {
+    return (<></>)
+  }
+
   return (
     <div className="w-full md:max-w-md mr-8">
       {contextHolder}

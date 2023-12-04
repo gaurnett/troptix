@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@prisma/client";
 
 export function getPrismaUpdateSocialMediaQuery(account) {
   let socialMedia: Prisma.SocialMediaAccountsUpdateInput;
@@ -9,10 +9,10 @@ export function getPrismaUpdateSocialMediaQuery(account) {
     link: account.link,
     user: {
       connect: {
-        id: account.userId
-      }
-    }
-  }
+        id: account.userId,
+      },
+    },
+  };
 
   return socialMedia;
 }
@@ -21,7 +21,8 @@ export function getPrismaUpdateUserQuery(account) {
   let user: Prisma.UsersUpdateInput;
 
   user = {
-    name: account.name,
+    firstName: account.firstName,
+    lastName: account.lastName,
     telephoneNumber: account.telephoneNumber,
     billingAddress1: account.billingAddress1,
     billingAddress2: account.billingAddress2,
@@ -29,7 +30,7 @@ export function getPrismaUpdateUserQuery(account) {
     billingCountry: account.billingCountry,
     billingZip: account.billingZip,
     billingState: account.billingState,
-  }
+  };
 
   return user;
 }
@@ -39,9 +40,10 @@ export function getPrismaCreateUserQuery(account) {
 
   user = {
     id: account.id,
-    name: account.name,
-    email: account.email
-  }
+    firstName: account.firstName,
+    lastName: account.lastName,
+    email: account.email,
+  };
 
   return user;
 }

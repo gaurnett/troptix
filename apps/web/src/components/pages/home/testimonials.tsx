@@ -2,7 +2,8 @@ import { CustomInput, CustomTextArea } from "@/components/ui/input";
 import { ContactUsForm } from "@/hooks/types/Contact";
 import { PostContactRequest, useCreateContact } from "@/hooks/usePostContact";
 import { SmileOutlined } from '@ant-design/icons';
-import { Alert, Button, Image, Result, message } from "antd";
+import { Button, Result, message } from "antd";
+import Image from "next/image";
 import { useState } from "react";
 
 export default function Testimonials() {
@@ -82,19 +83,18 @@ export default function Testimonials() {
         <div className="pt-12 md:pt-20">
 
           {/* Section header */}
-          <div className="max-w-3xl mx-auto text-center">
+          <div className="max-w-3xl mx-auto text-center mb-8">
             <h2 className="h2 mb-4">TropTix is powered by industry leaders over the world</h2>
             {/* <p className="text-xl text-gray-600" data-aos="zoom-y-out">Arcu cursus vitae congue mauris rhoncus viverra nibh cras pulvinar mattis
               blandit libero cursus mattis.</p> */}
           </div>
 
           {/* Items */}
-          <div className="max-w-sm md:max-w-4xl mx-auto grid gap-2 grid-cols-4 md:grid-cols-4">
+          <div className="max-w-sm md:max-w-4xl mx-auto grid gap-2 grid-cols-2 md:grid-cols-3">
 
             {/* Item */}
-            <div className="flex items-center justify-center py-2 col-span-2 md:col-auto">
+            <div className="flex items-center justify-center py-2 md:col-span-1 md:col-auto">
               <Image
-                preview={false}
                 width={logoSize}
                 height={logoSize}
                 className="w-auto"
@@ -104,9 +104,8 @@ export default function Testimonials() {
             </div>
 
             {/* Item */}
-            <div className="flex items-center justify-center py-2 col-span-2 md:col-auto">
+            <div className="flex items-center justify-center py-2 md:col-span-1 md:col-auto">
               <Image
-                preview={false}
                 width={logoSize}
                 height={logoSize}
                 className="w-auto"
@@ -116,21 +115,8 @@ export default function Testimonials() {
             </div>
 
             {/* Item */}
-            <div className="flex items-center justify-center py-2 col-span-2 md:col-auto">
+            <div className="flex items-center justify-center py-2 mt-4 md:mt-0 col-span-2 md:col-span-1 md:col-auto">
               <Image
-                preview={false}
-                width={logoSize}
-                height={logoSize}
-                className="w-auto"
-                style={{ objectFit: 'contain' }}
-                src={"/logos/meta.png"}
-                alt={"meta logo"} />
-            </div>
-
-            {/* Item */}
-            <div className="flex items-center justify-center py-2 col-span-2 md:col-auto">
-              <Image
-                preview={false}
                 width={logoSize}
                 height={logoSize}
                 className="w-auto"
@@ -139,15 +125,6 @@ export default function Testimonials() {
                 alt={"microsoft logo"} />
             </div>
 
-          </div>
-
-          <div className="max-w-sm md:max-w-xl mx-auto mt-8">
-            <Alert
-              message="Informational Notes"
-              description="Exciting News! TropTix is Now in Beta Testing &#x2022; Your Feedback Matters!"
-              type="info"
-              showIcon
-            />
           </div>
 
           <div className="relative max-w-3xl md:mx-auto sm:px-6">

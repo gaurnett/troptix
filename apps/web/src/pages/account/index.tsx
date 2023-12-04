@@ -33,12 +33,13 @@ export default function AccountPage() {
   async function onFinish(values: any) {
     updateUser.mutate(adminUser, {
       onSuccess: async () => {
+        const name = adminUser.firstName + " " + adminUser.lastName;
         if (
-          adminUser.name !== auth.currentUser?.displayName &&
+          name !== auth.currentUser?.displayName &&
           auth.currentUser
         ) {
           await updateProfile(auth.currentUser, {
-            displayName: adminUser.name,
+            displayName: name,
           });
         }
         messageApi.open({
@@ -82,17 +83,28 @@ export default function AccountPage() {
             >
               Contact Information
             </h2>
-            <div className="flex flex-wrap -mx-3 mb-4">
-              <div className="w-full px-3">
+
+            <div className="md:flex md:justify-between">
+              <div className="mb-4 md:mr-4 w-full">
                 <CustomInput
-                  value={adminUser.name}
-                  name={"name"}
-                  id={"name"}
-                  label={"Name"}
+                  value={adminUser.firstName}
+                  name={"firstName"}
+                  id={"firstName"}
+                  label={"First Name"}
                   type={"text"}
-                  placeholder={"John Doe"}
+                  placeholder={"John"}
                   handleChange={handleChange}
-                  required={true}
+                />
+              </div>
+              <div className="mb-4 md:ml-4 w-full">
+                <CustomInput
+                  value={adminUser.lastName}
+                  name={"lastName"}
+                  id={"lastName"}
+                  label={"Last Name"}
+                  type={"text"}
+                  placeholder={"Doe"}
+                  handleChange={handleChange}
                 />
               </div>
             </div>
