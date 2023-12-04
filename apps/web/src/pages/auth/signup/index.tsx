@@ -225,7 +225,7 @@ export default function SignUpPage() {
                     </div>
                     <div className="text-sm text-gray-500 text-center mt-3">
                       By creating an account, you agree to the{" "}
-                      <Link className="underline" href="#0">
+                      <Link className="underline" href="/terms">
                         terms & conditions
                       </Link>
                       , and our{" "}

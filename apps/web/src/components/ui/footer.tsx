@@ -22,7 +22,7 @@ export default function Footer() {
                   <Link href="/privacypolicy" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Privacy Policy</Link>
                 </li>
                 <li className="mb-2">
-                  <Link href="#0" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Terms</Link>
+                  <Link href="/terms" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Terms</Link>
                 </li>
               </ul>
             </div>
