@@ -1,32 +1,10 @@
-import { getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
-import prisma from "../prisma/prisma";
-import { sendEmailToUser } from "../lib/emailHelper";
-import { updateTicketTypeQuantitySold } from "../lib/orderHelper";
+import { verifyUser } from "../lib/auth";
 const sgMail = require('@sendgrid/mail');
 
 sgMail.setApiKey(process.env.RESEND_DYNAMIC_TEMPLATE_API);
 export default async function handler(request, response) {
 
-  const templateData = {
-    // id: order.id,
-    // eventTitle: order.event.name,
-    // orderNumber: String(order.id),
-    // orderDate: new Date(order.createdAt).toLocaleDateString(),
-    // orders: Array.from(orderMap.values())
-  };
+  const id = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjNhM2JkODk4ZGE1MGE4OWViOWUxY2YwYjdhN2VmZTM1OTNkNDEwNjgiLCJ0eXAiOiJKV1QifQ.eyJuYW1lIjoiR2F1cm5ldHQgRmxvd2VycyIsInBpY3R1cmUiOiJodHRwczovL2xoMy5nb29nbGV1c2VyY29udGVudC5jb20vYS9BQ2c4b2NJc24yNzNZcUthRW54ME9iYjJ1WEU5RUNGalBOWHVveTdnWHpNMzBWR2dDVjRzPXM5Ni1jIiwiaXNzIjoiaHR0cHM6Ly9zZWN1cmV0b2tlbi5nb29nbGUuY29tL3Ryb3B0aXgiLCJhdWQiOiJ0cm9wdGl4IiwiYXV0aF90aW1lIjoxNzAxNjYyNzY5LCJ1c2VyX2lkIjoic1U2a0xPWkdZNmNieUV2dVBhVUFLalBzenpYMiIsInN1YiI6InNVNmtMT1pHWTZjYnlFdnVQYVVBS2pQc3p6WDIiLCJpYXQiOjE3MDE2NjI3NjksImV4cCI6MTcwMTY2NjM2OSwiZW1haWwiOiJmbG93ZXJzZ2F1cm5ldHRAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImZpcmViYXNlIjp7ImlkZW50aXRpZXMiOnsiZ29vZ2xlLmNvbSI6WyIxMTY4NTA2MzgxOTk5MjkwOTUxODAiXSwiZW1haWwiOlsiZmxvd2Vyc2dhdXJuZXR0QGdtYWlsLmNvbSJdfSwic2lnbl9pbl9wcm92aWRlciI6Imdvb2dsZS5jb20ifX0.aNDR6Q08vqFxv6w_Ok7kFQ7JJEoKYBg7uSW-DhueIU7F8LC-9TV55M4dXzvZ7aTV0fs4hH7DzPUxNCleglipRSaZf1K4_KisrFpRti-zev0EqyN16LBzcxv7zWK8CFuvpj94YBWlTH2rDU2nyjO73Y9orgUuATY56RzQN5FkggMbCdgstRuYSkOELiDTyLjhXwsjJTsiapacsjWGUZi2MrgXvvq0poz6WvW9gRg8uBVri4ImIamXEyAbfauq1WTcEGKwdowLuMx_c6V5GiuNkAxawj_1cD2k9xMCtYk3hZHzGrm9B3ZfRKm8Ne69w4z9hAG30F8Quja08ugty-QfYw";
 
-  const msg = {
-    to: 'flowersgaurnett@gmail.com',
-    from: {
-      email: 'flowersgaurnett@gmail.com',
-      name: 'TropTix',
-    },
-    subject: 'TropTix Confirmation',
-    templateId: 'd-925a204fa5b7431db20d7fe93e8d7ec0',
-    dynamicTemplateData: templateData,
-  };
-
-  await sgMail.send(msg);
-
-  return response.status(200).json({ message: "Hello World" });
+  return response.status(200).json(await verifyUser(id));
 }

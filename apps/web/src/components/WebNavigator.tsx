@@ -79,6 +79,13 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        user.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+          console.log(idToken);
+          // Send token to your backend via HTTPS
+          // ...
+        }).catch(function (error) {
+          // Handle error
+        });
         let currentUser = setUserFromResponse(null, user);
         currentUser.isOrganizer = isUserAnOrganizer(currentUser.id);
         setUser(currentUser);

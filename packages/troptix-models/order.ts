@@ -68,6 +68,7 @@ export class OrderSummary {
   ticketsSummary = new Map<string, TicketSummary>();
 
   constructor(orders) {
+    console.log(orders);
     for (const order of orders) {
       this.gross += order.subtotal;
       this.fees = order.fees;
