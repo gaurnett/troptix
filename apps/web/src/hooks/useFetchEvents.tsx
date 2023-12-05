@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export enum RequestType {
   GET_EVENTS_ALL = "GET_EVENTS_ALL",
@@ -6,9 +6,10 @@ export enum RequestType {
   GET_EVENTS_BY_ORGANIZER = "GET_EVENTS_BY_ORGANIZER",
   GET_EVENTS_SCANNABLE_BY_ORGANIZER = "GET_EVENTS_SCANNABLE_BY_ORGANIZER",
 }
-export type GetEventsRequestType = {
+export type GetEventsRequest = {
   requestType: keyof typeof RequestType;
   id?: string;
+  jwtToken?: string;
 };
 
 export const prodUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
@@ -16,17 +17,24 @@ export const prodUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
 export async function eventFetcher({
   requestType,
   id,
-}: GetEventsRequestType): Promise<any> {
+  jwtToken
+}: GetEventsRequest): Promise<any> {
+  console.log(jwtToken);
   let url = prodUrl + `/api/events?getEventsType=${requestType}`;
 
-  if (requestType !== RequestType.GET_EVENTS_ALL && !id) {
-    throw new Error("The appropriate ID is missing");
-  } else {
-    url += `&id=${id}`;
+  if (!jwtToken) {
+    throw new Error("Auth token is missing");
+  }
+
+  if (requestType === RequestType.GET_EVENTS_BY_ID) {
+    url += `&id=${id}`
   }
 
   return await fetch(url, {
     method: "GET",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`
+    }
   })
     .then(async (response) => {
       if (response.ok) {
@@ -35,7 +43,7 @@ export async function eventFetcher({
       }
     })
     .catch((error) => {
-      return error;
+      throw new Error(error);
     });
 }
 
@@ -50,13 +58,13 @@ export function useFetchAllEvents(initialData?) {
 }
 
 export function useFetchEventsById(
-  { requestType, id }: GetEventsRequestType,
-  intialData?
+  { requestType, id, jwtToken }: GetEventsRequest,
+  initialData?
 ) {
   const { isPending, isError, data, error } = useQuery({
     queryKey: [requestType, id],
-    queryFn: () => eventFetcher({ requestType, id }),
-    initialData: intialData,
+    queryFn: () => eventFetcher({ requestType, id, jwtToken }),
+    initialData: initialData,
   });
 
   return { isPending, isError, data, error };

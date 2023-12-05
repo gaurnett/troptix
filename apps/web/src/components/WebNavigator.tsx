@@ -1,6 +1,7 @@
 "use client";
 
 import { TROPTIX_ORGANIZER_ALLOW_LIST } from '@/firebase/remoteConfig';
+import { User, initializeUser } from '@/hooks/types/User';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Analytics } from '@vercel/analytics/react';
 import { Spin } from "antd";
@@ -11,7 +12,6 @@ import { Inter } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
-import { User, setUserFromResponse } from "troptix-models";
 import { app, auth } from "../config";
 import AdminHeader from "./ui/admin-header";
 import Header from "./ui/header";
@@ -22,15 +22,18 @@ const inter = Inter({
   display: "swap",
 });
 
+const user: User = {
+  id: ''
+}
 export const TropTixContext = createContext({
-  user: new User(),
-  setUser: (user: any) => { },
+  user: user,
 });
+
 export const useTropTixContext = () => useContext(TropTixContext);
 
 export default function WebNavigator({ Component, pageProps }: AppProps) {
   const pathname = usePathname();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -80,19 +83,18 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        user.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-          console.log(idToken);
-          // Send token to your backend via HTTPS
-          // ...
-        }).catch(function (error) {
-          // Handle error
-        });
-        let currentUser = setUserFromResponse(null, user);
-        currentUser.isOrganizer = await isUserAnOrganizer(currentUser.id);
+        let currentUser = initializeUser(user);
+        currentUser.isOrganizer = await isUserAnOrganizer(currentUser.id as string);
+        currentUser.jwtToken = await user.getIdToken(/* forceRefresh */ true)
+          .then(function (idToken) {
+            return idToken;
+          }).catch(function (error) {
+            return undefined;
+          });
         setUser(currentUser);
         setLoading(false);
       } else {
-        setUser(null);
+        setUser(undefined);
         setLoading(false);
       }
     });
@@ -102,17 +104,9 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
 
   return (
     <TropTixContext.Provider
-      value={
-        user === undefined || user === null
-          ? {
-            user: undefined,
-            setUser: (user: any) => { },
-          }
-          : {
-            user: user,
-            setUser: setUser,
-          }
-      }
+      value={{
+        user: user as User,
+      }}
     >
       {loading && (pathname === '/' || pathname === '/home') ? (
         <>

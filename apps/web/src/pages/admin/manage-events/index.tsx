@@ -8,12 +8,19 @@ import { useContext } from "react";
 
 export default function ManageEventsPage() {
   const { user } = useContext(TropTixContext);
-  const userId = user === null || user === undefined ? null : user.id;
+  const userId = !user ? null : user.id;
 
   const { isPending, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_BY_ORGANIZER,
-    id: userId,
+    id: userId as string,
+    jwtToken: user?.jwtToken
   });
+
+  if (isPending) {
+    return (<div className="mt-8">
+      <Spinner text={"Fetching Events"} />
+    </div>);
+  }
 
   return (
     <div className="w-full md:max-w-2xl mx-auto">
@@ -26,55 +33,49 @@ export default function ManageEventsPage() {
             Manage Events
           </span>
         </h1>
-        {!isPending ? (
-          <div className="gap-8 pb-16 mt-8">
-            <List
-              itemLayout="vertical"
-              size="large"
-              dataSource={data}
-              renderItem={(event: any) => (
-                <List.Item>
-                  <Link
-                    key={event.id}
-                    href={{
-                      pathname: "/admin/manage-event",
-                      query: { eventId: event.id },
-                    }}
-                  >
-                    <div className="flex">
-                      <div>
-                        <Image
-                          width={110}
-                          height={110}
-                          className="w-auto"
-                          style={{ objectFit: "cover" }}
-                          src={
-                            event.imageUrl !== null
-                              ? event.imageUrl
-                              : "https://placehold.co/400x400?text=Add+Event+Flyer"
-                          }
-                          alt={"event flyer image"}
-                        />
-                      </div>
-                      <div className="ml-4 my-auto">
-                        <div className="font-bold text-xl">{event.name}</div>
-                        <div className="text-base">{event.address}</div>
-                        <div className="text-blue-500 text-base">{new Date(event.startDate).toDateString()}</div>
-                        <div className={`${event.isDraft ? "text-amber-900" : "text-green-600"} text-amber-900 text-base`}>
-                          Status: {event.isDraft ? "Draft" : "Published"}
-                        </div>
+        <div className="gap-8 pb-16 mt-8">
+          <List
+            itemLayout="vertical"
+            size="large"
+            dataSource={data}
+            renderItem={(event: any) => (
+              <List.Item>
+                <Link
+                  key={event.id}
+                  href={{
+                    pathname: "/admin/manage-event",
+                    query: { eventId: event.id },
+                  }}
+                >
+                  <div className="flex">
+                    <div>
+                      <Image
+                        width={110}
+                        height={110}
+                        className="w-auto"
+                        style={{ objectFit: "cover", height: 150, width: 150 }}
+                        src={
+                          event.imageUrl !== null
+                            ? event.imageUrl
+                            : "https://placehold.co/400x400?text=Add+Event+Flyer"
+                        }
+                        alt={"event flyer image"}
+                      />
+                    </div>
+                    <div className="ml-4 my-auto">
+                      <div className="font-bold text-xl">{event.name}</div>
+                      <div className="text-base">{event.address}</div>
+                      <div className="text-blue-500 text-base">{new Date(event.startDate).toDateString()}</div>
+                      <div className={`${event.isDraft ? "text-amber-900" : "text-green-600"} text-amber-900 text-base`}>
+                        Status: {event.isDraft ? "Draft" : "Published"}
                       </div>
                     </div>
-                  </Link>
-                </List.Item>
-              )}
-            />
-          </div>
-        ) : (
-          <div className="mt-8">
-            <Spinner text={"Fetching Events"} />
-          </div>
-        )}
+                  </div>
+                </Link>
+              </List.Item>
+            )}
+          />
+        </div>
       </div>
     </div>
   );

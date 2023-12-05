@@ -1,3 +1,4 @@
+import { verifyUser } from "../lib/auth";
 import { sendComplementaryTicketEmailToUser, sendEmailToUser } from "../lib/emailHelper";
 import { getPrismaCreateComplementaryOrderQuery, getPrismaCreateOrderQuery } from "../lib/eventHelper";
 import { getBuffer, updateSuccessfulOrder, updateTicketTypeQuantitySold } from "../lib/orderHelper";
@@ -13,6 +14,8 @@ export default async function handler(request, response) {
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for users endpoint' });
   }
+
+  const userId = await verifyUser(request);
 
   switch (method) {
     case "POST":

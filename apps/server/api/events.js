@@ -1,8 +1,16 @@
+import { verifyJwt } from "../lib/auth";
 import { getAllEventsQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 
 export default async function handler(request, response) {
   const { body, method } = request;
+  console.log(method);
+
+  const verified = await verifyJwt(request);
+
+  if (!verified) {
+    return response.status(401).json({ error: 'Unauthorized' });
+  }
 
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for events endpoint' });
@@ -14,7 +22,7 @@ export default async function handler(request, response) {
     case "GET":
       const getEventType = request.query.getEventsType;
       const id = request.query.id;
-      return await getEvents(getEventType, id, response);
+      return await getEvents(getEventType, id, request, response);
     case "PUT":
       return await updateEvent(body, response);
     case "DELETE":
@@ -26,18 +34,18 @@ export default async function handler(request, response) {
   }
 }
 
-async function getEvents(getEventType, id, response) {
+async function getEvents(getEventType, id, request, response) {
   switch (String(getEventType)) {
     case 'GET_EVENTS_ALL': // GetEventsType.GET_EVENTS_ALL
       return getAllEvents(response);
     case 'GET_EVENTS_BY_ID': // GetEventsType.GET_EVENTS_BY_ID
       return getEventById(response, id);
     case 'GET_EVENTS_BY_ORGANIZER': // GetEventsType.GET_EVENTS_BY_ORGANIZER
-      return getEventsByOrganizerId(response, id);
+      return getEventsByOrganizerId(request, response);
     case 'GET_EVENTS_SCANNABLE_BY_ORGANIZER': // GetEventsType.GET_EVENTS_SCANNABLE_BY_ORGANIZER
       return getEventsScannableByOrganizerId(response, id);
     default:
-      return response.status(500).json({ error: 'No event type set' });
+      return response.status(200).end();
   }
 }
 
@@ -68,11 +76,11 @@ async function getEventById(response, id) {
   }
 }
 
-async function getEventsByOrganizerId(response, id) {
+async function getEventsByOrganizerId(request, response) {
   try {
     const events = await prisma.events.findMany({
       where: {
-        organizerUserId: id,
+        organizerUserId: userId,
       },
       include: {
         ticketTypes: true,

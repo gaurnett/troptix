@@ -28,3 +28,9 @@ export function generateId() {
 
   return uid.rnd();
 }
+
+export function generateJwtId() {
+  const uid = new ShortUniqueId({ length: 16 });
+
+  return uid.rnd();
+}

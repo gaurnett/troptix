@@ -8,9 +8,10 @@ import {
   eventFetcher,
   useFetchEventsById,
 } from "@/hooks/useFetchEvents";
-import { getFormattedCurrency } from "@/lib/utils";
+import { generateJwtId, getFormattedCurrency } from "@/lib/utils";
 import { Button, Modal, Result, Typography } from "antd";
 import { format } from "date-fns";
+import jwt from "jsonwebtoken";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -19,9 +20,14 @@ import { IoTicket } from "react-icons/io5";
 const { Paragraph } = Typography;
 
 export async function getStaticPaths() {
+  const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET;
+  const token = jwt.sign(generateJwtId(), jwtSecretKey as string);
+
+  console.log(token);
   // Call an external API endpoint to get posts
   const events = await eventFetcher({
     requestType: RequestType.GET_EVENTS_ALL,
+    jwtToken: token
   });
 
   // Get the paths we want to pre-render based on posts
@@ -36,23 +42,27 @@ export async function getStaticPaths() {
 
 // This also gets called at build time
 export async function getStaticProps({ params }) {
+  const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET;
+  const token = jwt.sign(generateJwtId(), jwtSecretKey as string);
+
   const { id } = params;
   const event = await eventFetcher({
     requestType: RequestType.GET_EVENTS_BY_ID,
     id: id,
+    jwtToken: token
   });
-  return {
-    props: {
-      event,
-    },
-    revalidate: 60,
-  };
+
+  if (!event) {
+    return { props: { events: {} }, revalidate: 60 };
+  }
+
+  return { props: { event }, revalidate: 60 };
 }
 
 export default function EventDetailPage(props) {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const router = useRouter();
-  const { user } = useContext(TropTixContext)
+  const { user } = useContext(TropTixContext);
   const eventId = router.query.eventId as string;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
