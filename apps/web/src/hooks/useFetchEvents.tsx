@@ -22,9 +22,9 @@ export async function eventFetcher({
   console.log(jwtToken);
   let url = prodUrl + `/api/events?getEventsType=${requestType}`;
 
-  if (!jwtToken) {
-    throw new Error("Auth token is missing");
-  }
+  // if (!jwtToken) {
+  //   throw new Error("Auth token is missing");
+  // }
 
   if (requestType === RequestType.GET_EVENTS_BY_ID) {
     url += `&id=${id}`
