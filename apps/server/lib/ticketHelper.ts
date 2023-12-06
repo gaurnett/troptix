@@ -1,4 +1,7 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
+import prisma from "../prisma/prisma";
+
+const prismaClient = prisma as PrismaClient;
 
 export function getPrismaUpdateTicketQuery(ticket) {
   let updatedTicket: Prisma.TicketsUpdateInput;
@@ -16,6 +19,20 @@ export function getPrismaUpdateTicketStatusQuery(ticket) {
 
   updatedTicket = {
     status: ticket.status,
+  }
+
+  return updatedTicket;
+}
+
+export function getPrismaUpdateTicketUserQuery(userId) {
+  let updatedTicket: Prisma.TicketsUpdateInput;
+
+  updatedTicket = {
+    user: {
+      connect: {
+        id: userId
+      }
+    },
   }
 
   return updatedTicket;

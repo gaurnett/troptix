@@ -1,4 +1,4 @@
-import { getAllEventsQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
+import { getAllEventsQuery, getEventByIdQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 
 export default async function handler(request, response) {
@@ -53,14 +53,7 @@ async function getAllEvents(response) {
 
 async function getEventById(response, id) {
   try {
-    const event = await prisma.events.findUnique({
-      where: {
-        id: id,
-      },
-      include: {
-        ticketTypes: true,
-      },
-    });
+    const event = await getEventByIdQuery(id);
     return response.status(200).json(event);
   } catch (e) {
     console.error('Request error', e);
