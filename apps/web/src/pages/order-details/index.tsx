@@ -1,3 +1,4 @@
+import { TropTixContext } from "@/components/WebNavigator";
 import EditTicketForm from "@/components/pages/order-details/edit-ticket-form";
 import { Spinner } from "@/components/ui/spinner";
 import { Ticket } from "@/hooks/types/Ticket";
@@ -8,7 +9,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Button, Drawer, List, Result, Typography, message } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { GetOrdersType } from 'troptix-api';
 
 const { Text } = Typography;
@@ -23,9 +24,8 @@ interface DataType {
 
 export default function OrderDetailsPage() {
   const router = useRouter();
+  const { user } = useContext(TropTixContext);
   const orderId = router.query.orderId as string;
-  const [isFetchingOrders, setIsFetchingOrders] = useState(true);
-  const [data, setData] = useState<DataType[]>([]);
 
   const [selectedTicket, setSelectedTicket] = useState<Ticket>();
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -42,6 +42,7 @@ export default function OrderDetailsPage() {
   } = useFetchOrderById({
     getOrdersType: GetOrdersType.GET_ORDER_BY_ID,
     id: orderId,
+    jwtToken: user.jwtToken
   });
   const tickets: any[] = order?.tickets;
 

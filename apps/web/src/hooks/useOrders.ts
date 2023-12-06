@@ -16,6 +16,7 @@ export enum GetOrdersType {
 export interface GetOrdersRequest {
   getOrdersType: keyof typeof GetOrdersType;
   id: string;
+  jwtToken?: string
 }
 
 export enum PostOrdersType {
@@ -29,43 +30,54 @@ export interface PostOrdersRequest {
   order?: Order;
   charge?: Charge;
   complementaryOrder?: ComplementaryOrder;
+  jwtToken?: string
 }
 
 export function useFetchOrderById({
   getOrdersType = GetOrdersType.GET_ORDER_BY_ID,
   id,
+  jwtToken
 }: GetOrdersRequest) {
   return useQuery({
     queryKey: ["order", getOrdersType, id],
-    queryFn: () => getOrders({ getOrdersType, id }),
+    queryFn: () => getOrders({ getOrdersType, id, jwtToken }),
   });
 }
 // fetch the events for the user logged in currently
 export function useFetchUserOrders() {
   const { user } = useContext(TropTixContext);
-  return useFetchOrderById({
-    getOrdersType: GetOrdersType.GET_ORDERS_FOR_USER,
-    id: user.id,
+  const getOrdersType = GetOrdersType.GET_ORDERS_FOR_USER;
+  const id = user.id;
+  const jwtToken = user.jwtToken;
+
+  return useQuery({
+    queryKey: ["order", getOrdersType, id],
+    queryFn: () => getOrders({ getOrdersType, id, jwtToken }),
   });
 }
 
 // fetch the events for a specific event currently
 export function useFetchEventOrders(eventId: string) {
-  return useFetchOrderById({
-    getOrdersType: GetOrdersType.GET_ORDERS_FOR_EVENT,
-    id: eventId,
+  const { user } = useContext(TropTixContext);
+  const getOrdersType = GetOrdersType.GET_ORDERS_FOR_EVENT;
+  const id = eventId;
+  const jwtToken = user.jwtToken;
+
+  return useQuery({
+    queryKey: ["order", getOrdersType, id],
+    queryFn: () => getOrders({ getOrdersType, id, jwtToken }),
   });
 }
 
-export async function getOrders({ getOrdersType, id }: GetOrdersRequest) {
+export async function getOrders({ getOrdersType, id, jwtToken }: GetOrdersRequest) {
   try {
-    if (!id) {
-      throw new Error("user id not defined");
-    }
     let url = prodUrl + `/api/orders?getOrdersType=${getOrdersType}&id=${id}`;
 
     const response = await fetch(url, {
       method: "GET",
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
       cache: "no-cache",
     });
 
@@ -88,12 +100,14 @@ export function useCreateOrder() {
       checkout,
       paymentId,
       customerId,
-      userId
+      userId,
+      jwtToken
     }: {
       checkout: Checkout;
       paymentId: string;
       customerId: string;
       userId: string
+      jwtToken: string
     }) => {
       if (!paymentId) {
         message.error(
@@ -105,6 +119,7 @@ export function useCreateOrder() {
       await postOrders({
         type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
         order: order,
+        jwtToken: jwtToken
       });
 
       return order.id;
@@ -120,7 +135,7 @@ export function useCreateComplementaryOrder() {
   });
 }
 
-export async function postOrders({ type, order, charge, complementaryOrder }: PostOrdersRequest) {
+export async function postOrders({ type, order, charge, complementaryOrder, jwtToken }: PostOrdersRequest) {
   try {
     let url = prodUrl + `/api/orders`;
     const request = { type, order, charge, complementaryOrder };
@@ -130,6 +145,7 @@ export async function postOrders({ type, order, charge, complementaryOrder }: Po
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${jwtToken}`,
       },
       body: JSON.stringify(request),
     });
