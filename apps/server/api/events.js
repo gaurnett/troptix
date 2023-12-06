@@ -1,4 +1,3 @@
-import { verifyJwt } from "../lib/auth";
 import { getAllEventsQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 
@@ -6,11 +5,11 @@ export default async function handler(request, response) {
   const { body, method } = request;
   console.log(method);
 
-  const verified = await verifyJwt(request);
+  // const verified = await verifyJwt(request);
 
-  if (!verified) {
-    return response.status(401).json({ error: 'Unauthorized' });
-  }
+  // if (!verified) {
+  //   return response.status(401).json({ error: 'Unauthorized' });
+  // }
 
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for events endpoint' });

@@ -7,18 +7,15 @@ import {
   eventFetcher,
   useFetchAllEvents,
 } from "@/hooks/useFetchEvents";
-import { generateJwtId } from "@/lib/utils";
-import jwt from "jsonwebtoken";
 import Image from "next/image";
 import Link from "next/link";
 
 export async function getStaticProps() {
-  const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET;
-  const token = jwt.sign(generateJwtId(), jwtSecretKey as string);
+  // const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET;
+  // const token = jwt.sign(generateJwtId(), jwtSecretKey as string);
 
   const events = await eventFetcher({
     requestType: RequestType.GET_EVENTS_ALL,
-    jwtToken: token
   });
 
   if (!events) {
