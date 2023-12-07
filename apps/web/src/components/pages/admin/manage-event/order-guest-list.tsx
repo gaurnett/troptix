@@ -2,6 +2,14 @@ import { Ticket, TicketStatus } from "@/hooks/types/Ticket";
 import { PostTicketRequest, PostTicketType, useCreateTicket } from "@/hooks/useTicket";
 import { Button, Input, List, Popconfirm, message } from "antd";
 import { useEffect, useState } from "react";
+import { CSVLink } from "react-csv";
+
+type GuestListRow = {
+  orderId: string;
+  ticketId: string;
+  name: string;
+  email: string;
+}
 
 export default function OrderGuestListPage({ orders }) {
   const [searchValue, setSearchValue] = useState("");
@@ -9,19 +17,37 @@ export default function OrderGuestListPage({ orders }) {
   const [originalList, setOriginalList] = useState<Ticket[]>([])
   const createTicket = useCreateTicket();
   const [messageApi, contextHolder] = message.useMessage();
+  const [csvData, setCsvData] = useState<any>([]);
+
+  const csvHeaders = [
+    { label: "Order ID", key: "orderId" },
+    { label: "Ticket ID", key: "ticketId" },
+    { label: "Name", key: "name" },
+    { label: "Email", key: "email" }
+  ]
 
   useEffect(() => {
     let guestList: Ticket[] = [];
+    let data: GuestListRow[] = []
 
     orders.forEach(order => {
       const tickets = order.tickets;
 
       tickets.forEach(ticket => {
         guestList.push(ticket);
+
+        const row: GuestListRow = {
+          orderId: ticket.orderId as string,
+          ticketId: ticket.id as string,
+          name: ticket.firstName + " " + ticket.lastName,
+          email: ticket.email as string
+        }
+        data.push(row);
       });
     });
 
     setGuests(guestList);
+    setCsvData(data);
     setOriginalList(guestList);
   }, [orders]);
 
@@ -109,6 +135,14 @@ export default function OrderGuestListPage({ orders }) {
           <div className="w-full px-3 font-bold">
             Create and send out complementary tickets by visiting the Tickets Tab.
           </div>
+        </div>
+
+        <div className="mb-4">
+          <Button>
+            <CSVLink filename={"guest-list.csv"} headers={csvHeaders} data={csvData}>
+              Export to CSV
+            </CSVLink>
+          </Button>
         </div>
 
         <div className="flex flex-wrap -mx-3 mb-4">
