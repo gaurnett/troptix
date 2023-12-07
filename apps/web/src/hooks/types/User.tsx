@@ -11,7 +11,7 @@ export type User = {
   stripeId?: string;
   role?: Role;
   isOrganizer?: boolean;
-  jwtToken: string;
+  jwtToken?: string;
   telephoneNumber?: string;
   billingAddress1?: string;
   billingAddress2?: string;
