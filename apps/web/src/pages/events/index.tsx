@@ -20,6 +20,7 @@ export async function getStaticProps() {
 export default function ManageEventsPage(props) {
   const { isPending, isError, data, error } = useFetchAllEvents(props.events);
   const events = data as any[];
+  console.log(events);
 
   return (
     <div className="flex min-h-screen flex-col">

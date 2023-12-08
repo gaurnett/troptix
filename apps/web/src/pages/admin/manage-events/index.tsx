@@ -8,7 +8,7 @@ import { useContext } from "react";
 
 export default function ManageEventsPage() {
   const { user } = useContext(TropTixContext);
-  const userId = user === null || user === undefined ? null : user.id;
+  const userId = !user ? undefined : user.id;
 
   const { isPending, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_BY_ORGANIZER,

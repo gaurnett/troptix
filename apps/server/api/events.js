@@ -4,6 +4,8 @@ import prisma from "../prisma/prisma";
 export default async function handler(request, response) {
   const { body, method } = request;
 
+  console.log(request.headers.authorization);
+
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for events endpoint' });
   }
