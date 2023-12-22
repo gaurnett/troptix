@@ -34,9 +34,7 @@ export async function signUpWithEmail(
         email: signUpFields.email
       };
 
-      useCreateUser(user);
-
-      await addUser(user);
+      const { isPending, isError, data, error } = await useCreateUser(user);
     });
   } catch (e) {
     error = e;

@@ -29,11 +29,7 @@ export async function eventFetcher({
     jwtToken = jwt.sign(generateJwtId(), jwtSecretKey as string);
   }
 
-  console.log(jwtToken);
-
-  if (requestType !== RequestType.GET_EVENTS_ALL && !id) {
-    throw new Error("The appropriate ID is missing");
-  } else {
+  if (requestType === RequestType.GET_EVENTS_BY_ID) {
     url += `&id=${id}`;
   }
 
@@ -65,12 +61,12 @@ export function useFetchAllEvents(initialData?) {
 }
 
 export function useFetchEventsById(
-  { requestType, id }: GetEventsRequestType,
+  { requestType, id, jwtToken }: GetEventsRequestType,
   intialData?
 ) {
   const { isPending, isError, data, error } = useQuery({
     queryKey: [requestType, id],
-    queryFn: () => eventFetcher({ requestType, id }),
+    queryFn: () => eventFetcher({ requestType, id, jwtToken }),
     initialData: intialData,
   });
 

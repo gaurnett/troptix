@@ -1,10 +1,9 @@
+import { verifyJwtToken, verifyUser } from "../lib/auth";
 import { getAllEventsQuery, getEventByIdQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 
 export default async function handler(request, response) {
   const { body, method } = request;
-
-  console.log(request.headers.authorization);
 
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for events endpoint' });
@@ -16,7 +15,7 @@ export default async function handler(request, response) {
     case "GET":
       const getEventType = request.query.getEventsType;
       const id = request.query.id;
-      return await getEvents(getEventType, id, response);
+      return await getEvents(getEventType, id, request, response);
     case "PUT":
       return await updateEvent(body, response);
     case "DELETE":
@@ -28,14 +27,14 @@ export default async function handler(request, response) {
   }
 }
 
-async function getEvents(getEventType, id, response) {
+async function getEvents(getEventType, id, request, response) {
   switch (String(getEventType)) {
     case 'GET_EVENTS_ALL': // GetEventsType.GET_EVENTS_ALL
-      return getAllEvents(response);
+      return getAllEvents(request, response);
     case 'GET_EVENTS_BY_ID': // GetEventsType.GET_EVENTS_BY_ID
-      return getEventById(response, id);
+      return getEventById(request, response, id);
     case 'GET_EVENTS_BY_ORGANIZER': // GetEventsType.GET_EVENTS_BY_ORGANIZER
-      return getEventsByOrganizerId(response, id);
+      return getEventsByOrganizerId(request, response);
     case 'GET_EVENTS_SCANNABLE_BY_ORGANIZER': // GetEventsType.GET_EVENTS_SCANNABLE_BY_ORGANIZER
       return getEventsScannableByOrganizerId(response, id);
     default:
@@ -43,7 +42,13 @@ async function getEvents(getEventType, id, response) {
   }
 }
 
-async function getAllEvents(response) {
+async function getAllEvents(request, response) {
+  const token = await verifyJwtToken(request);
+
+  if (!token) {
+    return response.status(401).json({ error: "User unauthorized" });
+  }
+
   try {
     const events = await getAllEventsQuery();
     return response.status(200).json(events);
@@ -53,7 +58,14 @@ async function getAllEvents(response) {
   }
 }
 
-async function getEventById(response, id) {
+async function getEventById(request, response, id) {
+  const token = await verifyJwtToken(request);
+  console.log(token);
+
+  if (!token) {
+    return response.status(401).json({ error: "User unauthorized" });
+  }
+
   try {
     const event = await getEventByIdQuery(id);
     return response.status(200).json(event);
@@ -63,11 +75,17 @@ async function getEventById(response, id) {
   }
 }
 
-async function getEventsByOrganizerId(response, id) {
+async function getEventsByOrganizerId(request, response) {
+  const userId = await verifyUser(request);
+
+  if (!userId) {
+    return response.status(401).json({ error: "Unauthorized" });
+  }
+
   try {
     const events = await prisma.events.findMany({
       where: {
-        organizerUserId: id,
+        organizerUserId: userId,
       },
       include: {
         ticketTypes: true,

@@ -14,6 +14,11 @@ export async function getStaticProps() {
   const events = await eventFetcher({
     requestType: RequestType.GET_EVENTS_ALL,
   });
+
+  if (!events) {
+    return { props: { events: [] }, revalidate: 60 };
+  }
+
   return { props: { events }, revalidate: 60 };
 }
 
