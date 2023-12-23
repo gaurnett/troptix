@@ -126,7 +126,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
   }
 
   function calculateFees(price) {
-    const fee = price * 0.05;
+    const fee = (price * 0.06) + 0.30;
     const tax = fee * 0.15;
     return normalizePrice(fee + tax);
   }
