@@ -7,6 +7,7 @@ export default function EventCard({ event, showDivider = false }) {
   const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' && window.innerWidth < 768
   );
+  const imageSize = 125;
 
   useEffect(() => {
     function handleResize() {
@@ -42,12 +43,12 @@ export default function EventCard({ event, showDivider = false }) {
     return (
       <div>
         <div className="flex">
-          <div>
+          <div style={{ width: imageSize, height: imageSize }}>
             <Image
-              width={110}
-              height={110}
+              width={imageSize}
+              height={imageSize}
               className="w-auto rounded"
-              style={{ objectFit: "cover", width: 125, height: 125 }}
+              style={{ objectFit: "cover", minWidth: imageSize, width: imageSize, height: imageSize, minHeight: imageSize }}
               src={
                 event.imageUrl !== null
                   ? event.imageUrl
