@@ -47,7 +47,7 @@ export default function EventCard({ event, showDivider = false }) {
               width={110}
               height={110}
               className="w-auto rounded"
-              style={{ objectFit: "cover" }}
+              style={{ objectFit: "cover", width: 125, height: 125 }}
               src={
                 event.imageUrl !== null
                   ? event.imageUrl
