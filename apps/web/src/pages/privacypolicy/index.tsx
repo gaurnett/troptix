@@ -16,7 +16,7 @@ export default function PrivacyPolicy() {
 
 function policy() {
   return (
-    <div className="text-base">
+    <div className="text-base mx-6">
       <br />
       <div>
         <strong>Last updated:  December 02, 2023</strong>
