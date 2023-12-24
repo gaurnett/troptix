@@ -27,30 +27,48 @@ enum SettingsType {
 }
 
 export default function SettingsScreen({ navigation }) {
-  const [user, setUser] = useContext(TropTixContext);
+  const { user } = useContext(TropTixContext);
 
   function signOut() {
     auth.signOut();
   }
 
   function handleSettingsClick(type: SettingsType) {
+    console.log(type);
     switch (type) {
       case SettingsType.TICKETS:
         navigation.navigate('TicketsScreen', {
           user: user
         })
+        break;
       case SettingsType.ORDERS:
-        setUser(prevUser => ({ ...prevUser, ["name"]: "Hello" }));
+        // setUser(prevUser => ({ ...prevUser, ["name"]: "Hello" }));
         break;
       case SettingsType.MANAGE_ACCOUNT:
         break;
       case SettingsType.SIGN_OUT:
-        signOut();
+        // signOut();
         break;
       case SettingsType.CONTACT_US:
+        navigation.navigate('WebViewScreen', {
+          url: "https://www.usetroptix.com/contact"
+        });
+        break;
       case SettingsType.SUGGEST_IMPROVEMENTS:
+        navigation.navigate('WebViewScreen', {
+          url: "https://www.usetroptix.com/contact"
+        });
+        break;
       case SettingsType.TERMS_OF_SERVICE:
+        navigation.navigate('WebViewScreen', {
+          url: "https://www.usetroptix.com/terms"
+        });
+        break;
       case SettingsType.PRIVACY:
+        navigation.navigate('WebViewScreen', {
+          url: "https://www.usetroptix.com/privacypolicy"
+        });
+        break;
       default:
         () => Alert.alert(`pressed on order #`)
     }
@@ -86,12 +104,11 @@ export default function SettingsScreen({ navigation }) {
       <View>
         <ScrollView style={{ height: '100%' }}>
           <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
-            <Text style={{ fontSize: 28, fontWeight: "500" }} marginL-10>Hi {user !== undefined ? user.name : ""}</Text>
-            <Text style={{ fontSize: 20, fontWeight: "200" }} marginL-10>{user !== undefined ? user.email : ""}</Text>
+            <Text style={{ fontSize: 20, fontWeight: "200" }} marginL-10>{user ? user.email : ""}</Text>
           </View>
 
           <View marginL-16>
-            <View>
+            {/* <View>
               <Text marginT-16 marginB-8 text40 $textDefault>
                 Events
               </Text>
@@ -101,7 +118,7 @@ export default function SettingsScreen({ navigation }) {
               <View>
                 {renderSettingsRow(SettingsType.ORDERS, "Orders", require('../assets/icons/order.png'), Colors.purple50)}
               </View>
-            </View>
+            </View> */}
 
             <View>
               <Text marginT-16 marginB-8 text40 $textDefault>

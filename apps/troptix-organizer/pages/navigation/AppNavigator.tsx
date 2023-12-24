@@ -12,6 +12,7 @@ import ScanEventsScreen from '../ScanEventsScreen';
 import SettingsScreen from '../SettingsScreen';
 import SignInScreen from '../SignInScreen';
 import SplashScreen from '../SplashScreen';
+import WebViewScreen from '../WebViewScreen';
 import SignInWithEmailScreen from '../auth/SignInWithEmailScreen';
 import SignUpWithEmailScreen from '../auth/SignUpWithEmailScreen';
 import AddEventScreen from '../event/AddEventScreen';
@@ -256,6 +257,14 @@ export default function AppNavigator({ isLoadingUser }) {
                 <Stack.Screen
                   name='TicketFormScreen'
                   component={TicketFormScreen}
+                  options={{
+                    title: '',
+                    headerBackTitle: 'Back',
+                  }}
+                />
+                <Stack.Screen
+                  name='WebViewScreen'
+                  component={WebViewScreen}
                   options={{
                     title: '',
                     headerBackTitle: 'Back',

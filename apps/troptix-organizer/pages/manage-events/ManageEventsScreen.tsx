@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import _ from 'lodash';
 import { useCallback, useContext, useState } from 'react';
 import { RefreshControl, ScrollView } from 'react-native';
-import { Card, Colors, FloatingButton, FloatingButtonLayouts, LoaderScreen, Text, View } from 'react-native-ui-lib';
+import { Card, Colors, LoaderScreen, Text, View } from 'react-native-ui-lib';
 import { TropTixContext } from '../../App';
 import { RequestType, useFetchEventsById } from '../../hooks/useFetchEvents';
 
@@ -107,7 +107,7 @@ export default function ManageEventsScreen({ navigation }) {
                   </ScrollView>
                 </View>
             }
-            <View>
+            {/* <View>
               <FloatingButton
                 visible={true}
                 button={{
@@ -117,7 +117,7 @@ export default function ManageEventsScreen({ navigation }) {
                 buttonLayout={FloatingButtonLayouts.HORIZONTAL}
                 bottomMargin={16}
               />
-            </View>
+            </View> */}
           </View>
       }
     </View>

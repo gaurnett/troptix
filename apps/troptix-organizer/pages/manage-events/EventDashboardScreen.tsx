@@ -3,7 +3,7 @@ import { ScrollView } from 'react-native';
 import CircularProgress from "react-native-circular-progress-indicator";
 import 'react-native-gesture-handler';
 import { RefreshControl } from 'react-native-gesture-handler';
-import { FloatingButton, FloatingButtonLayouts, ListItem, Text, View } from 'react-native-ui-lib';
+import { ListItem, Text, View } from 'react-native-ui-lib';
 import { Event } from "troptix-models";
 import { OrderSummary, TicketSummary, generateOrderSummary } from "../../hooks/types/Order";
 
@@ -154,7 +154,7 @@ export default function EventDashboardScreen({ eventObject, navigation, orders }
           </ScrollView>
         </View>
 
-        <View marginB-16>
+        {/* <View marginB-16>
           <FloatingButton
             visible={true}
             button={{
@@ -164,7 +164,7 @@ export default function EventDashboardScreen({ eventObject, navigation, orders }
             buttonLayout={FloatingButtonLayouts.HORIZONTAL}
             bottomMargin={16}
           />
-        </View>
+        </View> */}
       </View>
     </View>
   );
