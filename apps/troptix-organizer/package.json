@@ -26,6 +26,7 @@
     "expo-image": "~1.3.4",
     "expo-image-picker": "~14.3.2",
     "expo-status-bar": "~1.6.0",
+    "firebase": "^10.7.1",
     "light-date": "^1.2.0",
     "lodash": "^4.17.21",
     "react": "18.2.0",
@@ -33,6 +34,7 @@
     "react-native": "0.72.5",
     "react-native-barcode-mask": "^1.2.4",
     "react-native-circular-progress-indicator": "~4.3.0",
+    "react-native-dotenv": "^3.4.9",
     "react-native-gesture-handler": "~2.12.0",
     "react-native-google-places-autocomplete": "^2.5.1",
     "react-native-reanimated": "~3.3.0",
@@ -43,6 +45,7 @@
     "react-native-ui-lib": "^7.7.1",
     "react-native-uuid": "^2.0.1",
     "react-native-web": "~0.19.6",
+    "react-query": "^3.39.3",
     "troptix-api": "*",
     "troptix-models": "*",
     "typescript": "^5.1.3"
