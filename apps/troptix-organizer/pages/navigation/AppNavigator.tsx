@@ -1,24 +1,26 @@
 import 'react-native-gesture-handler';
 
-import { View } from 'react-native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useContext } from 'react';
+import { View } from 'react-native';
 import { Colors, Image } from 'react-native-ui-lib';
-import SignInWithEmailScreen from '../auth/SignInWithEmailScreen';
-import SignUpWithEmailScreen from '../auth/SignUpWithEmailScreen';
-import ManageEventsScreen from '../manage-events/ManageEventsScreen';
+import { TropTixContext } from '../../App';
+import ScanEventScreen from '../ScanEventScreen';
 import ScanEventsScreen from '../ScanEventsScreen';
 import SettingsScreen from '../SettingsScreen';
+import SignInScreen from '../SignInScreen';
 import SplashScreen from '../SplashScreen';
+import SignInWithEmailScreen from '../auth/SignInWithEmailScreen';
+import SignUpWithEmailScreen from '../auth/SignUpWithEmailScreen';
 import AddEventScreen from '../event/AddEventScreen';
 import GooglePlacesScreen from '../event/GooglePlacesScreen';
-import ScanEventScreen from '../ScanEventScreen';
-import ManageEventScreen from '../manage-events/ManageEventScreen';
 import TicketFormScreen from '../event/TicketFormScreen';
-import SignInScreen from '../SignInScreen';
 import AddDelegatorScreen from '../manage-events/AddDelegatorScreen';
 import AddPromotionScreen from '../manage-events/AddPromotionScreen';
+import ManageEventScreen from '../manage-events/ManageEventScreen';
+import ManageEventsScreen from '../manage-events/ManageEventsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -144,7 +146,9 @@ function MainAppScreen({ route }) {
 }
 
 
-export default function AppNavigator({ isLoadingUser, user }) {
+export default function AppNavigator({ isLoadingUser }) {
+  const { user } = useContext(TropTixContext);
+
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -158,7 +162,7 @@ export default function AppNavigator({ isLoadingUser, user }) {
                 headerShadowVisible: false,
               }}
             /> :
-            user === undefined ?
+            !user ?
               <Stack.Group>
                 <Stack.Screen
                   name='SignInScreen'

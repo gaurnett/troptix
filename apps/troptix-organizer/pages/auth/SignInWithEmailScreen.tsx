@@ -1,11 +1,10 @@
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRef, useState } from 'react';
-import { Keyboard, SafeAreaView, ScrollView, TouchableWithoutFeedback } from 'react-native';
-import { Button, Colors, Image, Text, TextField, View } from 'react-native-ui-lib';
-import { auth } from 'troptix-firebase';
-import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
-import * as authentication from "firebase/auth";
-import CustomTextField from '../../components/CustomTextField';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Button, Colors, Image, Text, View } from 'react-native-ui-lib';
 import { User } from 'troptix-models';
+import CustomTextField from '../../components/CustomTextField';
+import { auth } from "../../firebase/config";
 
 export default function SignInWithEmailScreen({ navigation }) {
   const emailRef = useRef();

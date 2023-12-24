@@ -1,7 +1,7 @@
-import { TropTixContext } from "@/components/WebNavigator";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { message } from "antd";
 import { useContext } from "react";
+import { useMutation, useQuery } from "react-query";
+import { TropTixContext } from "../App";
 import { Charge } from "./types/Charge";
 import { Checkout } from "./types/Checkout";
 import { ComplementaryOrder, Order, createOrder } from "./types/Order";

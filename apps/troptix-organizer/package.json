@@ -18,7 +18,9 @@
     "@react-navigation/native-stack": "^6.9.13",
     "@react-navigation/stack": "^6.3.17",
     "@types/react": "~18.2.14",
+    "antd": "^5.12.5",
     "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.0",
     "expo": "~49.0.8",
     "expo-barcode-scanner": "~12.5.3",
     "expo-camera": "~13.4.4",
@@ -46,6 +48,7 @@
     "react-native-uuid": "^2.0.1",
     "react-native-web": "~0.19.6",
     "react-query": "^3.39.3",
+    "short-unique-id": "^5.0.3",
     "troptix-api": "*",
     "troptix-models": "*",
     "typescript": "^5.1.3"

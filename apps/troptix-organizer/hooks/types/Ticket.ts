@@ -1,4 +1,4 @@
-import { generateId } from "@/lib/utils";
+import { generateId } from "../../lib/utils";
 import { Checkout, CheckoutTicket } from "./Checkout";
 
 export enum TicketStatus {

@@ -3,7 +3,7 @@ import 'react-native-gesture-handler';
 import { createContext, useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { auth } from 'troptix-firebase';
+import { auth } from './firebase/config';
 import { initializeUser } from './hooks/types/User';
 import AppNavigator from './pages/navigation/AppNavigator';
 

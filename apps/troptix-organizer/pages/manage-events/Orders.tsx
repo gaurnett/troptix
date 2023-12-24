@@ -1,32 +1,22 @@
 import _ from 'lodash';
-import { createRef, useEffect, useState } from 'react';
+import { createRef, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import {
   Colors,
-  LoaderScreen,
   TabController,
   TabControllerImperativeMethods,
   TabControllerItemProps,
   View
 } from 'react-native-ui-lib';
-import { useFetchEventOrders } from '../../hooks/useOrders';
-import EventDashboardScreen from './EventDashboardScreen';
-import Orders from './Orders';
+import OrdersGuestList from './OrdersGuestList';
+import OrdersList from './OrdersList';
 
-const TABS = ['Dashboard', 'Orders'];
+const TABS = ['Order List', 'Tickets'];
 
-export default function ManageEventScreen({ route, navigation }) {
-  const { event } = route.params;
+export default function Orders({ orders }) {
   const [key, setKey] = useState(Date.now())
   const [items, setItems] = useState(generateTabItems())
   const tabController = createRef<TabControllerImperativeMethods>();
-  const { isLoading, isError, data, error } = useFetchEventOrders(event.id);
-
-  useEffect(() => {
-    navigation.setOptions({
-      title: event.name,
-    });
-  }, [event.title, navigation]);
 
   function generateTabItems(): TabControllerItemProps[] {
     // @ts-expect-error
@@ -46,23 +36,13 @@ export default function ManageEventScreen({ route, navigation }) {
     return (
       <Container {...containerProps}>
         <TabController.TabPage index={0}>
-          <EventDashboardScreen eventObject={event} navigation={navigation} orders={data} />
+          <OrdersList orders={orders} />
         </TabController.TabPage>
         <TabController.TabPage index={1}>
-          <Orders orders={data} />
+          <OrdersGuestList orders={orders} />
         </TabController.TabPage>
       </Container>
     );
-  }
-
-  if (isLoading) {
-    return (
-      <View paddingR-16 paddingL-16 style={{ height: "100%" }} backgroundColor='white'>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <LoaderScreen message={'Fetching Order Summary'} color={Colors.grey40} />
-        </View>
-      </View>
-    )
   }
 
   return (
@@ -74,19 +54,19 @@ export default function ManageEventScreen({ route, navigation }) {
       >
         <TabController.TabBar
           key={key}
+          height={60}
           spreadItems={true}
           labelStyle={styles.labelStyle}
           selectedLabelStyle={styles.selectedLabelStyle}
-          enableShadow
-          activeBackgroundColor={Colors.$backgroundPrimaryMedium}
+          activeBackgroundColor={Colors.green70}
+          selectedLabelColor={Colors.green30}
+          indicatorStyle={{ backgroundColor: Colors.green30, height: 2 }}
         />
         {renderTabPages()}
       </TabController>
     </View>
   );
 }
-
-// export default gestureHandlerRootHOC(ManageEventScreen);
 
 const styles = StyleSheet.create({
   labelStyle: {

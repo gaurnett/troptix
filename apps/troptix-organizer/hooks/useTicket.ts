@@ -1,17 +1,19 @@
-import { TropTixContext } from "@/components/WebNavigator";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
+import { useMutation, useQuery } from "react-query";
+import { TropTixContext } from "../App";
 import { Ticket } from "./types/Ticket";
 import { prodUrl } from "./useFetchEvents";
 
 export enum PostTicketType {
   UPDATE_STATUS = "UPDATE_STATUS",
   UPDATE_NAME = "UPDATE_NAME",
+  SCAN_TICKET = "SCAN_TICKET",
 }
 
 export interface PostTicketRequest {
   type: keyof typeof PostTicketType;
   ticket?: Ticket;
+  id?: string;
 }
 
 export async function mutateTicket(request: PostTicketRequest): Promise<any> {

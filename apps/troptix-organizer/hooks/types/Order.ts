@@ -1,4 +1,4 @@
-import { generateId } from "@/lib/utils";
+import { generateId } from "../../lib/utils";
 import { Checkout, CheckoutTicket } from "./Checkout";
 import { createTicket } from "./Ticket";
 
@@ -107,4 +107,58 @@ export type ComplementaryTicket = {
   firstName?: string;
   lastName?: string;
   email?: string;
+}
+
+export type TicketSummary = {
+  name?: string;
+  quantity?: number;
+  quantitySold?: number;
+  ticketId?: string;
+}
+
+export type OrderSummary = {
+  gross?: number;
+  fees?: number;
+  ticketsSummary?: Map<string, TicketSummary>;
+  summary?: TicketSummary[];
+}
+
+export function generateOrderSummary(orders: any[]): OrderSummary {
+  const orderSummary: OrderSummary = {
+    gross: 0,
+    fees: 0,
+    ticketsSummary: new Map<string, TicketSummary>(),
+    summary: []
+  }
+
+  for (const order of orders) {
+    orderSummary.gross += order.subtotal;
+    orderSummary.fees = order.fees;
+
+    for (const ticket of order.tickets) {
+      const ticketName = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.name;
+      const ticketId = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.id;
+      const quantity = ticket.ticketsType === "COMPLEMENTARY" ? 0 : ticket.ticketType.quantity;
+
+      if (orderSummary.ticketsSummary.has(ticketId)) {
+        let summary = orderSummary.ticketsSummary.get(ticketId);
+        if (summary && summary.quantitySold) {
+          summary.quantitySold += 1;
+          orderSummary.ticketsSummary.set(ticketId, summary);
+        }
+      } else {
+        let summary: TicketSummary = {
+          name: ticketName,
+          quantity: quantity,
+          quantitySold: 1
+        }
+
+        orderSummary.ticketsSummary.set(ticketId, summary);
+      }
+    }
+  }
+
+  orderSummary.summary = Array.from(orderSummary.ticketsSummary.values());
+
+  return orderSummary;
 }

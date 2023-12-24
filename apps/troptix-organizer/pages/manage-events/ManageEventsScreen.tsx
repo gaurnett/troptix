@@ -3,24 +3,18 @@ import _ from 'lodash';
 import { useCallback, useContext, useState } from 'react';
 import { RefreshControl, ScrollView } from 'react-native';
 import { Card, Colors, FloatingButton, FloatingButtonLayouts, LoaderScreen, Text, View } from 'react-native-ui-lib';
-import { Event } from 'troptix-models';
 import { TropTixContext } from '../../App';
 import { RequestType, useFetchEventsById } from '../../hooks/useFetchEvents';
 
 export default function ManageEventsScreen({ navigation }) {
   const { user } = useContext(TropTixContext);
   const userId = user === null || user === undefined ? null : user.id;
-  const [isFetchingEvents, setIsFetchingEvents] = useState(true);
-  const [events, setEvents] = useState<Event[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
   const { isLoading, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_BY_ORGANIZER,
     id: userId,
   });
-
-  console.log(data);
-  // console.log(error)
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);

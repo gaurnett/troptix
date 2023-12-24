@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Text, View, Button } from 'react-native-ui-lib';
-import { Camera } from 'expo-camera';
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
-import { StyleSheet, Dimensions, Alert } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Dimensions, StyleSheet } from 'react-native';
 import BarcodeMask from 'react-native-barcode-mask';
-import { scanTicket } from 'troptix-api';
+import { Button, Dialog, PanningProvider, Text, View } from 'react-native-ui-lib';
+import { PostTicketRequest, PostTicketType, useCreateTicket } from '../hooks/useTicket';
 
 const finderWidth: number = 250;
 const finderHeight: number = 250;
@@ -26,6 +25,9 @@ export default function ScanEventScreen({ route, navigation }) {
   const { event } = route.params;
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [showDialog, setShowDialog] = useState(true);
+  const [dialogData, setDialogData] = useState<any>({});
+  const createTicket = useCreateTicket();
 
   useEffect(() => {
     (async () => {
@@ -46,34 +48,35 @@ export default function ScanEventScreen({ route, navigation }) {
       // @ts-ignore
       const { x, y } = bounds.origin;
       if (x >= viewMinX && y >= viewMinY && x <= (viewMinX + finderWidth / 2) && y <= (viewMinY + finderHeight / 2)) {
-        console.log("Ticket Data: " + data);
         setScanned(true);
-        try {
-          const response = await scanTicket(data);
-          if (response.response.scan_succeeded) {
-            setScanned(true);
-            Alert.alert('Scan Successful', 'This ticket has been scanned successfully', [
-              {
-                text: 'Okay', onPress: () => {
-                  setScanned(false);
-                }
-              },
-            ]);
-          } else {
-            setScanned(true);
-            Alert.alert('Scan Failed', 'This ticket has already been scanned', [
-              {
-                text: 'Okay', onPress: () => {
-                  setScanned(false);
-                }
-              },
-            ]);
-          }
-        } catch (error) {
-          console.log(error);
-        }
+        const response = await scanTicket(data);
       }
     }
+  };
+
+  async function scanTicket(ticketId: string) {
+    const request: PostTicketRequest = {
+      type: PostTicketType.SCAN_TICKET,
+      id: ticketId
+    }
+
+    createTicket.mutate(request, {
+      onSuccess: (data) => {
+        console.log(data);
+        setDialogData(data);
+        setShowDialog(true);
+        setScanned(true);
+      },
+      onError: (error) => {
+        console.log(error);
+        return;
+      }
+    });
+  }
+
+  function hideDialog() {
+    setShowDialog(false);
+    setScanned(false);
   };
 
   // const handleBarCodeScanned = ({ type, data }) => {
@@ -91,6 +94,41 @@ export default function ScanEventScreen({ route, navigation }) {
 
   return (
     <View style={styles.container}>
+      <Dialog
+        width={300}
+        containerStyle={{ backgroundColor: 'white', borderRadius: 8 }}
+        visible={showDialog}
+        // ignoreBackgroundPress={true}
+        onDismiss={() => console.log('dismissed')}
+        panDirection={PanningProvider.Directions.DOWN}
+      >
+        <View marginV-16 marginH-8>
+          {
+            dialogData.scanSucceeded ?
+              <View margin-4>
+                <Text center text60>Scan Successful</Text>
+                <Text center marginT-8 text70 $textDefault>{dialogData.ticketName}</Text>
+                <Text marginT-8 marginB-8 center text90 $textDefault>This ticket has been scanned successfully</Text>
+              </View>
+              :
+              <View>
+                <Text center text60>Scan Failed</Text>
+                <Text center marginT-8 text70 $textDefault>{dialogData.ticketName}</Text>
+                <Text marginT-8 marginB-8 center text70 $textDefault>This ticket has already been scanned</Text>
+              </View>
+          }
+          <View
+            marginT-8
+            backgroundColor="transparent"
+            style={{ height: 50, justifyContent: 'center', alignItems: 'center' }}>
+            <Button
+              onPress={hideDialog}
+              style={{ width: '60%', height: '100%', justifyContent: 'center', alignItems: 'center' }}
+              label={"Done"}
+              labelStyle={{ fontSize: 18 }} />
+          </View>
+        </View>
+      </Dialog>
       <BarCodeScanner
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={StyleSheet.absoluteFillObject}

@@ -1,8 +1,8 @@
 import { useContext } from 'react';
-import { StyleSheet, Alert, FlatList, ScrollView } from 'react-native';
-import { View, Text, Colors, ListItem, Image, BorderRadiuses } from 'react-native-ui-lib';
-import { auth } from 'troptix-firebase';
+import { Alert, ScrollView, StyleSheet } from 'react-native';
+import { Colors, Image, ListItem, Text, View } from 'react-native-ui-lib';
 import { TropTixContext } from '../App';
+import { auth } from '../firebase/config';
 
 const styles = StyleSheet.create({
   image: {
