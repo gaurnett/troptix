@@ -4,7 +4,6 @@ import CircularProgress from "react-native-circular-progress-indicator";
 import 'react-native-gesture-handler';
 import { RefreshControl } from 'react-native-gesture-handler';
 import { ListItem, Text, View } from 'react-native-ui-lib';
-import { Event } from "troptix-models";
 import { OrderSummary, TicketSummary, generateOrderSummary } from "../../hooks/types/Order";
 
 export default function EventDashboardScreen({ eventObject, navigation, orders }) {
@@ -104,23 +103,6 @@ export default function EventDashboardScreen({ eventObject, navigation, orders }
     );
   }
 
-  function renderTicketSummary() {
-    console.log(orderSummary.summary);
-    return (
-      <></>
-    )
-
-    return
-    // return _.map(Array.from(orderSummary.ticketsSummary.keys()), (key, i) => {
-    //   const ticket = orderSummary.ticketsSummary.get(key);
-    // return (
-    // <View key={key} marginT-16>
-    //   {TicketSoldItem(ticket.name, ticket.quantitySold, ticket.quantity)}
-    // </View>
-    // )
-    // })
-  }
-
   return (
     <View paddingR-16 paddingL-16 style={{ height: "100%" }} backgroundColor='white'>
       <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -144,7 +126,7 @@ export default function EventDashboardScreen({ eventObject, navigation, orders }
               {
                 orderSummary.summary.map((value: TicketSummary, index: number) => {
                   return (
-                    <View key={value.ticketId} marginT-16>
+                    <View key={index} marginT-16>
                       {TicketSoldItem(value.name, value.quantitySold, value.quantity)}
                     </View>
                   )

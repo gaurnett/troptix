@@ -209,7 +209,7 @@ export default function OrdersGuestList({ orders }) {
             }
 
             return (
-              <View key={guest.id}>
+              <View key={index}>
                 <View marginT-16 row>
                   <View flex>
                     <View>

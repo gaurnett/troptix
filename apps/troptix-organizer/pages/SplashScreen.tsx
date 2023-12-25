@@ -1,10 +1,13 @@
+import { useHeaderHeight } from '@react-navigation/elements';
 import * as React from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { Image } from 'react-native-ui-lib';
 
 export default function SplashScreen() {
+  const headerHeight = useHeaderHeight();
+
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+    <View style={{ paddingBottom: headerHeight, flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
       <Image
         resizeMode='cover'
         height={150}

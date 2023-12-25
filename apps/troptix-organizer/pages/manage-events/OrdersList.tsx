@@ -59,7 +59,7 @@ export default function OrdersList({ orders }) {
         </View>
         {orderList.map((order, index: any) => {
           return (
-            <View key={order.id}>
+            <View key={index}>
               <View marginT-16 row>
                 <View flex>
                   <View>
@@ -71,7 +71,6 @@ export default function OrdersList({ orders }) {
               </View>
               <View marginT-16 style={{ height: 1 }} backgroundColor={Colors.grey60} />
             </View>
-
           );
         })}
       </View>

@@ -34,7 +34,6 @@ export default function SettingsScreen({ navigation }) {
   }
 
   function handleSettingsClick(type: SettingsType) {
-    console.log(type);
     switch (type) {
       case SettingsType.TICKETS:
         navigation.navigate('TicketsScreen', {
@@ -47,7 +46,7 @@ export default function SettingsScreen({ navigation }) {
       case SettingsType.MANAGE_ACCOUNT:
         break;
       case SettingsType.SIGN_OUT:
-        // signOut();
+        signOut();
         break;
       case SettingsType.CONTACT_US:
         navigation.navigate('WebViewScreen', {
@@ -124,9 +123,9 @@ export default function SettingsScreen({ navigation }) {
               <Text marginT-16 marginB-8 text40 $textDefault>
                 Settings
               </Text>
-              <View>
+              {/* <View>
                 {renderSettingsRow(SettingsType.MANAGE_ACCOUNT, "Manage Account", require('../assets/icons/person.png'), Colors.blue50)}
-              </View>
+              </View> */}
               <View>
                 {renderSettingsRow(SettingsType.SIGN_OUT, "Sign Out", require('../assets/icons/logout.png'), Colors.red50)}
               </View>
