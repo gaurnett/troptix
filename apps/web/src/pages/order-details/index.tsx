@@ -104,7 +104,7 @@ export default function OrderDetailsPage() {
   if (isPending) {
     return (
       <div className="mt-32">
-        <Spinner text={"Fetching Tickets"} />
+        <Spinner text={"Fetching Order Details"} />
       </div>
     )
   }

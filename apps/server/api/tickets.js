@@ -58,9 +58,10 @@ async function updateName(body, response) {
 
 async function scanTicket(body, response) {
   const id = body.id;
+  const eventId = body.eventId;
 
   try {
-    const scannedTicket = await updateScannedTicketStatus(id);
+    const scannedTicket = await updateScannedTicketStatus(id, eventId);
     return response.status(200).json(scannedTicket);
   } catch (e) {
     console.error('Request error', e);

@@ -136,7 +136,7 @@ export default function OrdersGuestList({ orders }) {
           toastDismiss: 2000,
           showLoader: false,
           toastIcon: require('../../assets/icons/close.png')
-        })
+        });
         return;
       }
     });

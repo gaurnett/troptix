@@ -52,7 +52,7 @@ export default function TicketsPage() {
     fetchOrders();
   }, [userId]);
 
-  if (!userId) {
+  if (isFetchingOrders) {
     return (<div className="mt-32"><Spinner text={"Fetching Tickets"} /></div>);
   }
 
@@ -77,7 +77,7 @@ export default function TicketsPage() {
                           width={110}
                           height={110}
                           className="w-auto rounded"
-                          style={{ objectFit: 'cover' }}
+                          style={{ objectFit: 'cover', width: 150, height: 150 }}
                           src={order.event.imageUrl}
                           alt={"event flyer image"} />
                       </div>
