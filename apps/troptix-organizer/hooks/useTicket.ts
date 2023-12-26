@@ -14,6 +14,7 @@ export interface PostTicketRequest {
   type: keyof typeof PostTicketType;
   ticket?: Ticket;
   id?: string;
+  eventId?: string;
 }
 
 export async function mutateTicket(request: PostTicketRequest): Promise<any> {

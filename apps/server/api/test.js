@@ -1,28 +1,26 @@
+import prisma from "../prisma/prisma";
+
 const sgMail = require('@sendgrid/mail');
 
 sgMail.setApiKey(process.env.RESEND_DYNAMIC_TEMPLATE_API);
 export default async function handler(request, response) {
 
-  const templateData = {
-    // id: order.id,
-    // eventTitle: order.event.name,
-    // orderNumber: String(order.id),
-    // orderDate: new Date(order.createdAt).toLocaleDateString(),
-    // orders: Array.from(orderMap.values())
-  };
+  const ticketId = "ZM385LACCIK0";
+  const eventId = "JO7JUGR3LCH9";
 
-  const msg = {
-    to: 'flowersgaurnett@gmail.com',
-    from: {
-      email: 'flowersgaurnett@gmail.com',
-      name: 'TropTix',
-    },
-    subject: 'TropTix Confirmation',
-    templateId: 'd-925a204fa5b7431db20d7fe93e8d7ec0',
-    dynamicTemplateData: templateData,
-  };
+  try {
+    const ticket = await prisma.tickets.findUnique({
+      where: {
+        id: ticketId,
+        eventId: eventId
+      },
+    });
 
-  await sgMail.send(msg);
+    console.log("Ticket: " + JSON.stringify(ticket));
+  } catch (error) {
+    console.error('Request error', error);
+    throw error;
+  }
 
   return response.status(200).json({ message: "Hello World" });
 }

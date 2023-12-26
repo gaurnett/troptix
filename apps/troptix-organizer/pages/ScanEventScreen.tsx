@@ -2,7 +2,7 @@ import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
 import { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 import BarcodeMask from 'react-native-barcode-mask';
-import { Button, Dialog, PanningProvider, Text, View } from 'react-native-ui-lib';
+import { Button, Colors, Dialog, PanningProvider, Text, Toast, View } from 'react-native-ui-lib';
 import { PostTicketRequest, PostTicketType, useCreateTicket } from '../hooks/useTicket';
 
 const finderWidth: number = 250;
@@ -21,6 +21,13 @@ const styles = StyleSheet.create({
   },
 });
 
+type ToastSettings = {
+  toastDismiss?: number;
+  toastMessage?: string;
+  toastIcon?: any;
+  showLoader?: boolean;
+}
+
 export default function ScanEventScreen({ route, navigation }) {
   const { event } = route.params;
   const [hasPermission, setHasPermission] = useState(null);
@@ -28,6 +35,12 @@ export default function ScanEventScreen({ route, navigation }) {
   const [showDialog, setShowDialog] = useState(false);
   const [dialogData, setDialogData] = useState<any>({});
   const createTicket = useCreateTicket();
+  const [toastSettings, setToastSettings] = useState<ToastSettings>({
+    toastDismiss: 0,
+    toastMessage: "Scanning Ticket...",
+    showLoader: true
+  });
+  const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -49,6 +62,7 @@ export default function ScanEventScreen({ route, navigation }) {
       const { x, y } = bounds.origin;
       if (x >= viewMinX && y >= viewMinY && x <= (viewMinX + finderWidth / 2) && y <= (viewMinY + finderHeight / 2)) {
         setScanned(true);
+        setShowToast(true);
         const response = await scanTicket(data);
       }
     }
@@ -57,7 +71,8 @@ export default function ScanEventScreen({ route, navigation }) {
   async function scanTicket(ticketId: string) {
     const request: PostTicketRequest = {
       type: PostTicketType.SCAN_TICKET,
-      id: ticketId
+      id: ticketId,
+      eventId: event.id
     }
 
     createTicket.mutate(request, {
@@ -65,10 +80,17 @@ export default function ScanEventScreen({ route, navigation }) {
         console.log(data);
         setDialogData(data);
         setShowDialog(true);
-        setScanned(true);
+        setShowToast(false);
       },
       onError: (error) => {
-        console.log(error);
+        setShowToast(false);
+        setShowToast(true);
+        setToastSettings({
+          toastMessage: "Failed to scan ticket, please try again.",
+          toastDismiss: 2000,
+          showLoader: false,
+          toastIcon: require('../assets/icons/close.png')
+        })
         return;
       }
     });
@@ -77,6 +99,10 @@ export default function ScanEventScreen({ route, navigation }) {
   function hideDialog() {
     setShowDialog(false);
     setScanned(false);
+  };
+
+  function updateToastVisibility() {
+    setShowToast(!showToast)
   };
 
   if (hasPermission === null) {
@@ -89,9 +115,19 @@ export default function ScanEventScreen({ route, navigation }) {
 
   return (
     <View style={styles.container}>
+      <Toast
+        position={'bottom'}
+        swipeable={true}
+        visible={showToast}
+        message={toastSettings.toastMessage}
+        showLoader={toastSettings.showLoader}
+        autoDismiss={toastSettings.toastDismiss}
+        icon={toastSettings.toastIcon}
+        onDismiss={updateToastVisibility}
+      />
       <Dialog
         width={300}
-        containerStyle={{ backgroundColor: 'white', borderRadius: 8 }}
+        containerStyle={{ backgroundColor: `${dialogData.scanSucceeded ? Colors.green50 : Colors.red50}`, borderRadius: 8 }}
         visible={showDialog}
         ignoreBackgroundPress={true}
         onDismiss={() => console.log('dismissed')}
@@ -106,11 +142,22 @@ export default function ScanEventScreen({ route, navigation }) {
                 <Text marginT-8 marginB-8 center text90 $textDefault>This ticket has been scanned successfully</Text>
               </View>
               :
-              <View>
-                <Text center text60>Scan Failed</Text>
-                <Text center marginT-8 text70 $textDefault>{dialogData.ticketName}</Text>
-                <Text marginT-8 marginB-8 center text70 $textDefault>This ticket has already been scanned</Text>
-              </View>
+              <>
+                {
+                  !dialogData.ticketName ?
+                    <View>
+                      <Text center text60>Scan Failed</Text>
+                      <Text center marginT-8 text70 $textDefault>Ticket not found</Text>
+                      <Text marginT-8 marginB-8 center text70 $textDefault>This ticket is not valid for {event.name}</Text>
+                    </View>
+                    :
+                    <View>
+                      <Text center text60>Scan Failed</Text>
+                      <Text center marginT-8 text70 $textDefault>{dialogData.ticketName}</Text>
+                      <Text marginT-8 marginB-8 center text70 $textDefault>This ticket has already been scanned</Text>
+                    </View>
+                }
+              </>
           }
           <View
             marginT-8
@@ -118,6 +165,7 @@ export default function ScanEventScreen({ route, navigation }) {
             style={{ height: 50, justifyContent: 'center', alignItems: 'center' }}>
             <Button
               onPress={hideDialog}
+              backgroundColor={Colors.blue20}
               style={{ width: '60%', height: '100%', justifyContent: 'center', alignItems: 'center' }}
               label={"Done"}
               labelStyle={{ fontSize: 18 }} />

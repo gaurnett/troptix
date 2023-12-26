@@ -3,7 +3,7 @@ import { ConfigContext, ExpoConfig } from 'expo/config';
 // first get variabele
 const APP_ENVIRONMENT = process.env.APP_VARIANT;// let's declare variable to store the Google service file.
 let googleServicesPlist = "./GoogleService-Info.plist"; // while developing this file will be the default.
-let apiUrl = "https://troptix-git-dev-flowersgaurnett-gmailcom.vercel.app";
+let apiUrl = "Hello World";
 
 // then checking which env we are, and based on that choosing
 // the right Google services file to add
@@ -23,7 +23,7 @@ if (APP_ENVIRONMENT === "development") {
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  version: '1.0.1',
+  version: '1.0.2',
   slug: 'troptix-organizer',
   icon: './assets/icon.png',
   name: process.env.APP_NAME || 'TropTix Organizer',

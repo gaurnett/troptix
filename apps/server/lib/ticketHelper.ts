@@ -24,13 +24,30 @@ export function getPrismaUpdateTicketStatusQuery(ticket) {
   return updatedTicket;
 }
 
-export async function updateScannedTicketStatus(ticketId: string) {
+export async function updateScannedTicketStatus(ticketId: string, eventId: string) {
+  if (!eventId || !ticketId) {
+    return {
+      ticketName: undefined,
+      ticketDescription: undefined,
+      scanSucceeded: false,
+    }
+  }
+
   try {
     const ticket = await prismaClient.tickets.findUnique({
       where: {
         id: ticketId,
+        eventId: eventId
       },
     });
+
+    if (!ticket) {
+      return {
+        ticketName: undefined,
+        ticketDescription: undefined,
+        scanSucceeded: false,
+      }
+    }
 
     const ticketType = await prismaClient.ticketTypes.findUnique({
       where: {

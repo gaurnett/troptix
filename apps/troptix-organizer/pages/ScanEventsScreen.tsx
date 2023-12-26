@@ -55,19 +55,24 @@ export default function ScanEventsScreen({ navigation }) {
               }} />
           </View>
 
-          <View marginL-12>
-            <View style={{ width: '85%', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <View style={{ display: 'flex', flexDirection: 'column' }}>
-                <Text style={{ fontWeight: 'bold' }} text70 $textDefault>
-                  {event.name}
-                </Text>
-                <Text numberOfLines={1} text70 $textDefault>
-                  {event.address}
-                </Text>
-                <Text text70 $textDefault>
-                  {getDateFormatted(new Date(event.startDate), new Date(event.startTime))}
+          <View marginL-12 flex style={{ width: '100%', justifyContent: 'center' }}>
+            <View paddingR-8>
+              <Text style={{ fontWeight: 'bold' }} text70 $textDefault>
+                {event.name}
+              </Text>
+              <View style={{ flexDirection: 'row' }}>
+                <Text text70 $textDefault numberOfLines={1} style={{ flex: 1, flexWrap: 'wrap' }}>
+                  {event.venue}
                 </Text>
               </View>
+              <View style={{ flexDirection: 'row' }}>
+                <Text text70 $textDefault numberOfLines={1} style={{ flex: 1, flexWrap: 'wrap' }}>
+                  {event.address}
+                </Text>
+              </View>
+              <Text text70 $textDefault>
+                {getDateFormatted(new Date(event.startDate), new Date(event.startTime))}
+              </Text>
             </View>
           </View>
         </Card>

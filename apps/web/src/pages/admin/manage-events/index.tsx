@@ -47,7 +47,7 @@ export default function ManageEventsPage() {
                           width={110}
                           height={110}
                           className="w-auto"
-                          style={{ objectFit: "cover" }}
+                          style={{ objectFit: "cover", width: 150, height: 150 }}
                           src={
                             event.imageUrl !== null
                               ? event.imageUrl
