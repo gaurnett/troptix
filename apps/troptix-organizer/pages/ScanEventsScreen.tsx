@@ -1,45 +1,24 @@
-import _ from 'lodash';
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { Text, View, Card, Colors, CardProps, Button, LoaderScreen } from 'react-native-ui-lib';
-import events from '../data/events';
-import { TropTixResponse, getEvents, GetEventsRequest, GetEventsType } from 'troptix-api';
-import { TropTixContext } from '../App';
-import { Event, getEventsFromRequest } from 'troptix-models';
+import { format } from 'date-fns';
 import { Image } from 'expo-image';
-import { format } from 'date-fns'
+import _ from 'lodash';
+import { useCallback, useContext, useState } from 'react';
+import { RefreshControl, ScrollView } from 'react-native';
+import { Card, Colors, LoaderScreen, Text, View } from 'react-native-ui-lib';
+import { TropTixContext } from '../App';
+import { RequestType, useFetchEventsById } from '../hooks/useFetchEvents';
 
 export default function ScanEventsScreen({ navigation }) {
-  const [user, setUser] = useContext(TropTixContext);
-  const [isFetchingEvents, setIsFetchingEvents] = useState(true);
-  const [events, setEvents] = useState<Event[]>([]);
+  const { user } = useContext(TropTixContext);
+  const userId = user === null || user === undefined ? null : user.id;
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchScannableEvents = async () => {
-    try {
-      const getEventsRequest: GetEventsRequest = {
-        getEventsType: GetEventsType.GET_EVENTS_SCANNABLE_BY_ORGANIZER,
-        organizerId: user.id
-      }
-      const response = await getEvents(getEventsRequest);
-
-      if (response !== undefined && response.length !== 0) {
-        setEvents(getEventsFromRequest(response));
-      }
-    } catch (error) {
-      console.log("ManageEventsScreen [fetchScannableEvents] error: " + error)
-    }
-
-    setIsFetchingEvents(false);
-  };
-
-  useEffect(() => {
-    fetchScannableEvents();
-  }, []);
+  const { isLoading, isError, data, error } = useFetchEventsById({
+    requestType: RequestType.GET_EVENTS_SCANNABLE_BY_ORGANIZER,
+    id: userId,
+  });
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchScannableEvents();
     setRefreshing(false);
   }, []);
 
@@ -54,7 +33,7 @@ export default function ScanEventsScreen({ navigation }) {
   }
 
   function renderEvents() {
-    return _.map(events, (event, i) => {
+    return _.map(data, (event, i) => {
       return (
         <Card
           borderRadius={5}
@@ -77,16 +56,18 @@ export default function ScanEventsScreen({ navigation }) {
           </View>
 
           <View marginL-12>
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={{ flex: 1, flexWrap: 'wrap', fontWeight: 'bold' }} text70 $textDefault>
+            <View style={{ width: '85%', flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              <View style={{ display: 'flex', flexDirection: 'column' }}>
+                <Text style={{ fontWeight: 'bold' }} text70 $textDefault>
                   {event.name}
                 </Text>
+                <Text numberOfLines={1} text70 $textDefault>
+                  {event.address}
+                </Text>
+                <Text text70 $textDefault>
+                  {getDateFormatted(new Date(event.startDate), new Date(event.startTime))}
+                </Text>
               </View>
-
-              <Text text70 $textDefault>
-                {getDateFormatted(new Date(event.startDate), new Date(event.startTime))}
-              </Text>
             </View>
           </View>
         </Card>
@@ -97,14 +78,14 @@ export default function ScanEventsScreen({ navigation }) {
   return (
     <View style={{ height: '100%', backgroundColor: 'white' }}>
       {
-        isFetchingEvents ?
+        isLoading ?
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <LoaderScreen message={'Fetching scannable events'} color={Colors.grey40} />
           </View>
           :
           <View>
             {
-              events.length === 0 ?
+              data.length === 0 ?
                 <View style={{ alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%" }}>
                   <Image source={require('../assets/icons/empty-scan.png')} width={120} height={120} />
                   <Text marginT-24 style={{ fontSize: 24 }}>No events scannable</Text>

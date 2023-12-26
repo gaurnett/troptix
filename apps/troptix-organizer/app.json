@@ -15,7 +15,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.usetroptix.organizerapp",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "runtimeVersion": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +27,11 @@
       },
       "permissions": [
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "runtimeVersion": {
+        "policy": "appVersion"
+      },
+      "package": "com.usetroptix.organizerapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -34,14 +41,9 @@
         "projectId": "5831737d-5d6e-4d8a-84fb-a3e926c92b23"
       }
     },
-    "plugins": [
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
-        }
-      ]
-    ],
-    "owner": "gaurnett"
+    "owner": "gaurnett",
+    "updates": {
+      "url": "https://u.expo.dev/5831737d-5d6e-4d8a-84fb-a3e926c92b23"
+    }
   }
 }

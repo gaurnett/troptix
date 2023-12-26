@@ -1,35 +1,26 @@
 import _ from 'lodash';
-import { useEffect, createRef, useState } from 'react';
+import { createRef, useEffect, useState } from 'react';
+import { StyleSheet } from 'react-native';
 import {
-  TabController,
   Colors,
-  View,
-  Text,
-  TabControllerItemProps,
+  LoaderScreen,
+  TabController,
   TabControllerImperativeMethods,
-  FloatingButton,
-  FloatingButtonLayouts
+  TabControllerItemProps,
+  View
 } from 'react-native-ui-lib';
-import { gestureHandlerRootHOC } from 'react-native-gesture-handler';
-import { Keyboard, ScrollView, TouchableWithoutFeedback, StyleSheet } from 'react-native';
-import EventForm from '../../components/EventForm';
+import { useFetchEventOrders } from '../../hooks/useOrders';
 import EventDashboardScreen from './EventDashboardScreen';
-import EventDelegationScreen from './EventDelegationScreen';
-import PromotionsScreen from './PromotionsScreen';
+import Orders from './Orders';
 
-const TABS = ['Dashboard', 'Promotions', 'Delegation'];
+const TABS = ['Dashboard', 'Orders'];
 
-function ManageEventScreen({ route, navigation }) {
+export default function ManageEventScreen({ route, navigation }) {
   const { event } = route.params;
   const [key, setKey] = useState(Date.now())
   const [items, setItems] = useState(generateTabItems())
   const tabController = createRef<TabControllerImperativeMethods>();
-
-  function openAddEvents() {
-    navigation.navigate('AddEventScreen', {
-      eventObject: event
-    })
-  }
+  const { isLoading, isError, data, error } = useFetchEventOrders(event.id);
 
   useEffect(() => {
     navigation.setOptions({
@@ -38,7 +29,8 @@ function ManageEventScreen({ route, navigation }) {
   }, [event.title, navigation]);
 
   function generateTabItems(): TabControllerItemProps[] {
-    const items: TabControllerItemProps[] = _.flow(tabs => _.take(tabs, 3),
+    // @ts-expect-error
+    const items: TabControllerItemProps[] = _.flow(tabs => _.take(tabs, 2),
       (tabs: TabControllerItemProps[]) =>
         _.map<TabControllerItemProps>(tabs, (tab: TabControllerItemProps, index: number) => ({
           label: tab,
@@ -54,16 +46,23 @@ function ManageEventScreen({ route, navigation }) {
     return (
       <Container {...containerProps}>
         <TabController.TabPage index={0}>
-          <EventDashboardScreen eventObject={event} navigation={navigation} />
+          <EventDashboardScreen eventObject={event} navigation={navigation} orders={data} />
         </TabController.TabPage>
         <TabController.TabPage index={1}>
-          <PromotionsScreen eventObject={event} navigation={navigation} />
-        </TabController.TabPage>
-        <TabController.TabPage index={2}>
-          <EventDelegationScreen eventObject={event} navigation={navigation} />
+          <Orders orders={data} />
         </TabController.TabPage>
       </Container>
     );
+  }
+
+  if (isLoading) {
+    return (
+      <View paddingR-16 paddingL-16 style={{ height: "100%" }} backgroundColor='white'>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <LoaderScreen message={'Fetching Order Summary'} color={Colors.grey40} />
+        </View>
+      </View>
+    )
   }
 
   return (
@@ -87,7 +86,7 @@ function ManageEventScreen({ route, navigation }) {
   );
 }
 
-export default gestureHandlerRootHOC(ManageEventScreen);
+// export default gestureHandlerRootHOC(ManageEventScreen);
 
 const styles = StyleSheet.create({
   labelStyle: {

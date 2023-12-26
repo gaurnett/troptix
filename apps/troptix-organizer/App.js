@@ -1,57 +1,58 @@
+import 'expo-dev-client';
 import 'react-native-gesture-handler';
 
-import { useState, useEffect, createContext } from 'react';
-import { auth } from 'troptix-firebase';
-import AppNavigator from './pages/navigation/AppNavigator';
+import auth from '@react-native-firebase/auth';
+import * as SplashScreen from 'expo-splash-screen';
+import { createContext, useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { getUsers, GetUsersType } from 'troptix-api';
-import { User, setUserFromResponse } from 'troptix-models';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { initializeUser } from './hooks/types/User';
+import AppNavigator from './pages/navigation/AppNavigator';
+
+SplashScreen.preventAutoHideAsync();
+
+const user = {
+  id: '',
+  jwtToken: ''
+};
 
 export const TropTixContext = createContext();
+const queryClient = new QueryClient();
 
 export default function App() {
-  const [user, setUser] = useState(new User());
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [user, setUser] = useState();
+  const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
-    async function fetchUser(user) {
-      try {
-        const getUsersRequest = {
-          getUsersType: GetUsersType.GET_USERS_BY_ID,
-          userId: user.uid
-        };
-
-        const response = await getUsers(getUsersRequest);
-        let currentUser = setUserFromResponse(response.response, user);
-
-        setUser(prevUser => ({ ...prevUser, currentUser }));
-        setIsLoadingUser(false);
-      } catch (error) {
-        let currentUser = setUserFromResponse(null, user);
-
-        setUser(prevUser => ({ ...prevUser, currentUser }));
-        setIsLoadingUser(false);
-        console.log("TropTix Organizer: " + error);
-      }
-    }
-
-    const unsubscribeFromAuthStateChange = auth.onAuthStateChanged(user => {
+    const unsubscribeFromAuthStateChange = auth().onAuthStateChanged(async user => {
       if (user) {
-        fetchUser(user);
+        let currentUser = await initializeUser(user);
+        setUser(currentUser);
       } else {
-        setUser(undefined);
-        setIsLoadingUser(false);
+        setUser(null);
       }
+
+      await SplashScreen.hideAsync();
+      setAppIsReady(true);
     });
 
     return unsubscribeFromAuthStateChange;
   }, []);
 
+  if (!appIsReady) {
+    return null;
+  }
+
   return (
-    <TropTixContext.Provider value={user === undefined ? [] : [user.currentUser, setUser]}>
-      <SafeAreaProvider>
-        <AppNavigator isLoadingUser={isLoadingUser} user={user} />
-      </SafeAreaProvider>
-    </TropTixContext.Provider>
+    <QueryClientProvider client={queryClient}>
+      <TropTixContext.Provider
+        value={{
+          user: user,
+        }}>
+        <SafeAreaProvider>
+          <AppNavigator />
+        </SafeAreaProvider>
+      </TropTixContext.Provider>
+    </QueryClientProvider>
   );
 }
