@@ -1,8 +1,8 @@
+import auth from '@react-native-firebase/auth';
 import { useContext } from 'react';
 import { Alert, ScrollView, StyleSheet } from 'react-native';
 import { Colors, Image, ListItem, Text, View } from 'react-native-ui-lib';
 import { TropTixContext } from '../App';
-import { auth } from '../firebase/config';
 
 const styles = StyleSheet.create({
   image: {
@@ -30,7 +30,7 @@ export default function SettingsScreen({ navigation }) {
   const { user } = useContext(TropTixContext);
 
   function signOut() {
-    auth.signOut();
+    auth().signOut();
   }
 
   function handleSettingsClick(type: SettingsType) {

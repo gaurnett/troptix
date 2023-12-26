@@ -1,6 +1,6 @@
-import { ContactUsForm } from "./types/Contact";
-import { prodUrl } from "./useFetchEvents";
 import { useMutation } from "@tanstack/react-query";
+import { prodUrl } from "./constants";
+import { ContactUsForm } from "./types/Contact";
 
 export enum PostContactRequestType {
   CONTACT_US = "CONTACT_US",

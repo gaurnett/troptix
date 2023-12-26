@@ -1,11 +1,15 @@
+import 'expo-dev-client';
 import 'react-native-gesture-handler';
 
+import auth from '@react-native-firebase/auth';
+import * as SplashScreen from 'expo-splash-screen';
 import { createContext, useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { auth } from './firebase/config';
 import { initializeUser } from './hooks/types/User';
 import AppNavigator from './pages/navigation/AppNavigator';
+
+SplashScreen.preventAutoHideAsync();
 
 const user = {
   id: '',
@@ -17,22 +21,27 @@ const queryClient = new QueryClient();
 
 export default function App() {
   const [user, setUser] = useState();
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
-    const unsubscribeFromAuthStateChange = auth.onAuthStateChanged(async user => {
+    const unsubscribeFromAuthStateChange = auth().onAuthStateChanged(async user => {
       if (user) {
         let currentUser = await initializeUser(user);
         setUser(currentUser);
-        setIsLoadingUser(false);
       } else {
         setUser(null);
-        setIsLoadingUser(false);
       }
+
+      await SplashScreen.hideAsync();
+      setAppIsReady(true);
     });
 
     return unsubscribeFromAuthStateChange;
   }, []);
+
+  if (!appIsReady) {
+    return null;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -41,7 +50,7 @@ export default function App() {
           user: user,
         }}>
         <SafeAreaProvider>
-          <AppNavigator isLoadingUser={isLoadingUser} user={user} />
+          <AppNavigator />
         </SafeAreaProvider>
       </TropTixContext.Provider>
     </QueryClientProvider>

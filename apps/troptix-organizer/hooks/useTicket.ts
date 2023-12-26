@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { useMutation, useQuery } from "react-query";
 import { TropTixContext } from "../App";
+import { prodUrl } from "./constants";
 import { Ticket } from "./types/Ticket";
-import { prodUrl } from "./useFetchEvents";
 
 export enum PostTicketType {
   UPDATE_STATUS = "UPDATE_STATUS",

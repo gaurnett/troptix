@@ -2,10 +2,10 @@ import { message } from "antd";
 import { useContext } from "react";
 import { useMutation, useQuery } from "react-query";
 import { TropTixContext } from "../App";
+import { prodUrl } from "./constants";
 import { Charge } from "./types/Charge";
 import { Checkout } from "./types/Checkout";
 import { ComplementaryOrder, Order, createOrder } from "./types/Order";
-import { prodUrl } from "./useFetchEvents";
 
 export enum GetOrdersType {
   GET_ORDERS_FOR_USER = "GET_ORDERS_FOR_USER",

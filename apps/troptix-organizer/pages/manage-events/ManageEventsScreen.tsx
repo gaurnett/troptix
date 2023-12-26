@@ -11,6 +11,8 @@ export default function ManageEventsScreen({ navigation }) {
   const userId = user === null || user === undefined ? null : user.id;
   const [refreshing, setRefreshing] = useState(false);
 
+  console.log("Hello");
+
   const { isLoading, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_BY_ORGANIZER,
     id: userId,

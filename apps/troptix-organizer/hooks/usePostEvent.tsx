@@ -1,5 +1,5 @@
-import { prodUrl } from "./useFetchEvents";
 import { useMutation } from "@tanstack/react-query";
+import { prodUrl } from "./constants";
 
 export async function mutateEvent(event, editEvent): Promise<any> {
   let url = prodUrl + `/api/events`;

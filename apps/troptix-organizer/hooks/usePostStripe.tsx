@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
+import { prodUrl } from "./constants";
 import { Charge } from "./types/Charge";
 import { Checkout } from "./types/Checkout";
-import { prodUrl } from "./useFetchEvents";
 
 export enum PostStripeType {
   CREATE_CHARGE = "CREATE_CHARGE",

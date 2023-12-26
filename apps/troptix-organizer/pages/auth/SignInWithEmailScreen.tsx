@@ -1,10 +1,9 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import auth from '@react-native-firebase/auth';
 import { useRef, useState } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Button, Colors, Image, Text, View } from 'react-native-ui-lib';
 import { User } from 'troptix-models';
 import CustomTextField from '../../components/CustomTextField';
-import { auth } from "../../firebase/config";
 
 export default function SignInWithEmailScreen({ navigation }) {
   const emailRef = useRef();
@@ -21,7 +20,7 @@ export default function SignInWithEmailScreen({ navigation }) {
   }
 
   function signIn() {
-    signInWithEmailAndPassword(auth, user.email, password)
+    auth().signInWithEmailAndPassword(user.email, password)
       .then((result) => {
         console.log("[signInWithEmailAndPassword] User signed in")
       }).catch((error) => {

@@ -1,5 +1,5 @@
-import { REACT_APP_VERCEL_URL } from "@env";
 import { useQuery } from "react-query";
+import { prodUrl } from "./constants";
 
 export enum RequestType {
   GET_EVENTS_ALL = "GET_EVENTS_ALL",
@@ -12,8 +12,6 @@ export type GetEventsRequestType = {
   id?: string;
 };
 
-export const prodUrl = REACT_APP_VERCEL_URL;
-
 export async function eventFetcher({
   requestType,
   id,
@@ -25,6 +23,8 @@ export async function eventFetcher({
   } else {
     url += `&id=${id}`;
   }
+
+  console.log(url);
 
   return await fetch(url, {
     method: "GET",

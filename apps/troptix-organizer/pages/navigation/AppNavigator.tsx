@@ -11,10 +11,8 @@ import ScanEventScreen from '../ScanEventScreen';
 import ScanEventsScreen from '../ScanEventsScreen';
 import SettingsScreen from '../SettingsScreen';
 import SignInScreen from '../SignInScreen';
-import SplashScreen from '../SplashScreen';
 import WebViewScreen from '../WebViewScreen';
 import SignInWithEmailScreen from '../auth/SignInWithEmailScreen';
-import SignUpWithEmailScreen from '../auth/SignUpWithEmailScreen';
 import AddEventScreen from '../event/AddEventScreen';
 import GooglePlacesScreen from '../event/GooglePlacesScreen';
 import TicketFormScreen from '../event/TicketFormScreen';
@@ -25,7 +23,6 @@ import ManageEventsScreen from '../manage-events/ManageEventsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
 
 function ManageEventStack() {
   return (
@@ -147,130 +144,113 @@ function MainAppScreen({ route }) {
 }
 
 
-export default function AppNavigator({ isLoadingUser }) {
+export default function AppNavigator() {
   const { user } = useContext(TropTixContext);
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
         {
-          isLoadingUser ?
-            <Stack.Screen
-              name='SplashScreen'
-              component={SplashScreen}
-              options={{
-                title: '',
-                headerShadowVisible: false,
-              }}
-            /> :
-            !user ?
-              <Stack.Group>
-                <Stack.Screen
-                  name='SignInScreen'
-                  component={SignInScreen}
-                  options={{
-                    title: '',
-                    headerShadowVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name="SignInWithEmailScreen"
-                  component={SignInWithEmailScreen}
-                  options={{
-                    title: '',
-                    headerShadowVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name="SignUpWithEmailScreen"
-                  component={SignUpWithEmailScreen}
-                  options={{
-                    title: '',
-                    headerShadowVisible: false,
-                  }}
-                />
-              </Stack.Group>
-              :
-              <Stack.Group>
-                <Stack.Screen
-                  name="MainAppScreen"
-                  component={MainAppScreen}
-                  initialParams={{ user: user }}
-                  options={{
-                    headerShown: false,
-                    headerBackTitleVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name='AddEventScreen'
-                  component={AddEventScreen}
-                  options={{
-                    title: 'Add Event',
-                    headerBackTitle: 'Back',
-                    headerShadowVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name='GooglePlacesScreen'
-                  component={GooglePlacesScreen}
-                  options={{
-                    title: 'Location',
-                    headerBackTitle: 'Back',
-                    headerShadowVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name='ScanEventScreen'
-                  component={ScanEventScreen}
-                  options={{
-                    title: '',
-                    headerBackTitle: 'Back',
-                  }}
-                />
-                <Stack.Screen
-                  name='ManageEventScreen'
-                  component={ManageEventScreen}
-                  options={{
-                    title: '',
-                    headerBackTitle: 'Back',
-                    headerShadowVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name='AddDelegatorScreen'
-                  component={AddDelegatorScreen}
-                  options={{
-                    title: 'Add Delegator',
-                    headerBackTitle: 'Back',
-                    headerShadowVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name='AddPromotionScreen'
-                  component={AddPromotionScreen}
-                  options={{
-                    title: 'Add Promotion',
-                    headerBackTitle: 'Back',
-                    headerShadowVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name='TicketFormScreen'
-                  component={TicketFormScreen}
-                  options={{
-                    title: '',
-                    headerBackTitle: 'Back',
-                  }}
-                />
-                <Stack.Screen
-                  name='WebViewScreen'
-                  component={WebViewScreen}
-                  options={{
-                    title: '',
-                    headerBackTitle: 'Back',
-                  }}
-                />
-              </Stack.Group>
+          !user ?
+            <Stack.Group>
+              <Stack.Screen
+                name='SignInScreen'
+                component={SignInScreen}
+                options={{
+                  title: '',
+                  headerShadowVisible: false,
+                }}
+              />
+              <Stack.Screen
+                name="SignInWithEmailScreen"
+                component={SignInWithEmailScreen}
+                options={{
+                  title: '',
+                  headerShadowVisible: false,
+                }}
+              />
+            </Stack.Group>
+            :
+            <Stack.Group>
+              <Stack.Screen
+                name="MainAppScreen"
+                component={MainAppScreen}
+                initialParams={{ user: user }}
+                options={{
+                  headerShown: false,
+                  headerBackTitleVisible: false,
+                }}
+              />
+              <Stack.Screen
+                name='AddEventScreen'
+                component={AddEventScreen}
+                options={{
+                  title: 'Add Event',
+                  headerBackTitle: 'Back',
+                  headerShadowVisible: false,
+                }}
+              />
+              <Stack.Screen
+                name='GooglePlacesScreen'
+                component={GooglePlacesScreen}
+                options={{
+                  title: 'Location',
+                  headerBackTitle: 'Back',
+                  headerShadowVisible: false,
+                }}
+              />
+              <Stack.Screen
+                name='ScanEventScreen'
+                component={ScanEventScreen}
+                options={{
+                  title: '',
+                  headerBackTitle: 'Back',
+                }}
+              />
+              <Stack.Screen
+                name='ManageEventScreen'
+                component={ManageEventScreen}
+                options={{
+                  title: '',
+                  headerBackTitle: 'Back',
+                  headerShadowVisible: false,
+                }}
+              />
+              <Stack.Screen
+                name='AddDelegatorScreen'
+                component={AddDelegatorScreen}
+                options={{
+                  title: 'Add Delegator',
+                  headerBackTitle: 'Back',
+                  headerShadowVisible: false,
+                }}
+              />
+              <Stack.Screen
+                name='AddPromotionScreen'
+                component={AddPromotionScreen}
+                options={{
+                  title: 'Add Promotion',
+                  headerBackTitle: 'Back',
+                  headerShadowVisible: false,
+                }}
+              />
+              <Stack.Screen
+                name='TicketFormScreen'
+                component={TicketFormScreen}
+                options={{
+                  title: '',
+                  headerBackTitle: 'Back',
+                }}
+              />
+              <Stack.Screen
+                name='WebViewScreen'
+                component={WebViewScreen}
+                options={{
+                  title: '',
+                  headerBackTitle: 'Back',
+                }}
+              />
+            </Stack.Group>
         }
       </Stack.Navigator>
     </NavigationContainer>

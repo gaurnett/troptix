@@ -25,7 +25,7 @@ export default function ScanEventScreen({ route, navigation }) {
   const { event } = route.params;
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
-  const [showDialog, setShowDialog] = useState(true);
+  const [showDialog, setShowDialog] = useState(false);
   const [dialogData, setDialogData] = useState<any>({});
   const createTicket = useCreateTicket();
 
@@ -79,11 +79,6 @@ export default function ScanEventScreen({ route, navigation }) {
     setScanned(false);
   };
 
-  // const handleBarCodeScanned = ({ type, data }) => {
-  //   setScanned(true);
-  //   alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-  // };
-
   if (hasPermission === null) {
     return <Text>Requesting for camera permission</Text>;
   }
@@ -98,7 +93,7 @@ export default function ScanEventScreen({ route, navigation }) {
         width={300}
         containerStyle={{ backgroundColor: 'white', borderRadius: 8 }}
         visible={showDialog}
-        // ignoreBackgroundPress={true}
+        ignoreBackgroundPress={true}
         onDismiss={() => console.log('dismissed')}
         panDirection={PanningProvider.Directions.DOWN}
       >

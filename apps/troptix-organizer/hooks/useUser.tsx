@@ -1,8 +1,8 @@
-import { TropTixContext } from "@/components/WebNavigator";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useContext } from "react";
+import { TropTixContext } from "../App";
+import { prodUrl } from "./constants";
 import { SocialMediaAccount, User } from "./types/User";
-import { prodUrl } from "./useFetchEvents";
 
 export enum GetUsersType {
   GET_USERS_BY_ID = "GET_USERS_BY_ID",
