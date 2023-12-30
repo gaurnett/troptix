@@ -11,7 +11,8 @@
         "APP_VARIANT": "development",
         "EXPO_PUBLIC_API_URL": "https://troptix-git-dev-flowersgaurnett-gmailcom.vercel.app",
         "APP_ICON": "./assets/logo/logo_v1.png",
-        "APP_NAME": "TropTix Org Dev"
+        "APP_NAME": "TropTix Org Dev",
+        "APP_BUNDLE": "com.usetroptix.organizerdev"
       }
     },
     "preview": {
@@ -24,7 +25,8 @@
         "APP_VARIANT": "preview",
         "EXPO_PUBLIC_API_URL": "https://troptix-git-dev-flowersgaurnett-gmailcom.vercel.app",
         "APP_ICON": "./assets/logo/logo_v1.png",
-        "APP_NAME": "TropTix Org Preview"
+        "APP_NAME": "TropTix Org Preview",
+        "APP_BUNDLE": "com.usetroptix.organizerpreview"
       }
     },
     "preprod": {
@@ -32,7 +34,8 @@
         "APP_VARIANT": "preprod",
         "EXPO_PUBLIC_API_URL": "https://api.usetroptix.com",
         "APP_ICON": "./assets/logo/logo_v1.png",
-        "APP_NAME": "TropTix Org Pre Prod"
+        "APP_NAME": "TropTix Org Pre Prod",
+        "APP_BUNDLE": "com.usetroptix.organizerpreprod"
       }
     },
     "production": {
@@ -41,7 +44,8 @@
         "APP_VARIANT": "prod",
         "EXPO_PUBLIC_API_URL": "https://api.usetroptix.com",
         "APP_ICON": "./assets/logo/logo_v1.png",
-        "APP_NAME": "TropTix Organizer"
+        "APP_NAME": "TropTix Organizer",
+        "APP_BUNDLE": "com.usetroptix.organizerapp"
       }
     }
   },

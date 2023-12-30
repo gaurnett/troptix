@@ -11,6 +11,7 @@
   "dependencies": {
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
     "@expo/webpack-config": "^19.0.0",
+    "@invertase/react-native-apple-authentication": "^2.3.0",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-community/cli-platform-ios": "^13.2.0",
     "@react-native-community/datetimepicker": "7.2.0",
@@ -27,6 +28,7 @@
     "date-fns": "^2.30.0",
     "date-fns-tz": "^2.0.0",
     "expo": "^49.0.0",
+    "expo-apple-authentication": "~6.1.0",
     "expo-barcode-scanner": "~12.5.3",
     "expo-build-properties": "~0.8.3",
     "expo-camera": "~13.4.4",

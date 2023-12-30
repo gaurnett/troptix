@@ -43,10 +43,12 @@ export default function ScanEventScreen({ route, navigation }) {
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
-    (async () => {
+    const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
-    })();
+    };
+
+    getBarCodeScannerPermissions();
   }, []);
 
   useEffect(() => {

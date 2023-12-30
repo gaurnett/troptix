@@ -23,14 +23,15 @@ if (APP_ENVIRONMENT === "development") {
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  version: '1.0.2',
+  version: '1.0.4',
   slug: 'troptix-organizer',
   icon: './assets/icon.png',
   name: process.env.APP_NAME || 'TropTix Organizer',
   ios: {
     supportsTablet: true,
+    usesAppleSignIn: true,
     googleServicesFile: googleServicesPlist,
-    bundleIdentifier: "com.usetroptix.organizerapp",
+    bundleIdentifier: process.env.APP_BUNDLE || "com.usetroptix.organizerapp",
   },
   splash: {
     image: "./assets/splash.png",
@@ -57,6 +58,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       }
     ],
     [
+      "expo-barcode-scanner",
+      {
+        "cameraPermission": "Allow TropTix to access your camera to scan event tickets. This will allow you to validate tickets purchased on our platform for your events."
+      }
+    ],
+    [
       "@react-native-google-signin/google-signin"
     ],
     [
@@ -73,5 +80,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
+    ["expo-apple-authentication"],
   ],
 });
