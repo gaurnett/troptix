@@ -3,10 +3,12 @@ import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import jwt from "jsonwebtoken";
 
-const account = require('../troptix-dev-firebase-adminsdk.json');
+const serviceAccount = JSON.parse(
+  process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
+);
 
-const app = initializeApp({
-  credential: admin.credential.cert(account)
+initializeApp({
+  credential: admin.credential.cert(serviceAccount)
 });
 
 export async function verifyUser(request): Promise<any> {
@@ -46,7 +48,7 @@ export async function verifyJwtToken(request): Promise<any> {
     return undefined;
   }
 
-  const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET;
+  const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET as string;
 
   try {
     return jwt.verify(token, jwtSecretKey) as string;

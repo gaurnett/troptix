@@ -33,9 +33,9 @@ export async function eventFetcher({
 
   return await fetch(url, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${jwtToken}`,
-    }
+    // headers: {
+    //   Authorization: `Bearer ${jwtToken}`,
+    // }
   })
     .then(async (response) => {
       if (response.ok) {
@@ -60,16 +60,13 @@ export function useFetchAllEvents(initialData?) {
 
 export function useFetchEventsById(
   { requestType, id, jwtToken }: GetEventsRequestType,
-  intialData?
+  initialData?
 ) {
   const query = useQuery({
     queryKey: [requestType, id],
     queryFn: () => eventFetcher({ requestType, id, jwtToken }),
-    initialData: intialData,
+    initialData: initialData,
   });
-
-  console.log(id);
-  console.log(query);
 
   return { ...query };
 }

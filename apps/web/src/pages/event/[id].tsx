@@ -6,7 +6,7 @@ import { MetaHead } from "@/components/utils/MetaHead";
 import {
   RequestType,
   eventFetcher,
-  useFetchEventsById,
+  useFetchEventsById
 } from "@/hooks/useFetchEvents";
 import { getDateFormatter, getFormattedCurrency } from "@/lib/utils";
 import { Button, Modal, Result, Typography } from "antd";
@@ -52,8 +52,8 @@ export async function getStaticProps({ params }) {
 export default function EventDetailPage(props) {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const router = useRouter();
-  const { user } = useContext(TropTixContext)
-  const eventId = router.query.eventId as string;
+  const { user } = useContext(TropTixContext);
+  const eventId = router.query.id as string;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(

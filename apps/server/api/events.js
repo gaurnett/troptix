@@ -2,8 +2,6 @@ import { getAllEventsQuery, getEventByIdQuery, getPrismaCreateStarterEventQuery,
 import prisma from "../prisma/prisma";
 
 const allowCors = fn => async (req, res) => {
-  console.log(req.headers);
-
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
   // another common pattern
@@ -22,8 +20,6 @@ const allowCors = fn => async (req, res) => {
 
 async function handler(request, response) {
   const { body, method } = request;
-
-  console.log(method);
 
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for events endpoint' });
