@@ -1,6 +1,5 @@
-import { TicketStatus } from '@prisma/client';
 import { verifyUser } from "../lib/auth";
-import { getPrismaUpdateTicketQuery, getPrismaUpdateTicketStatusQuery } from '../lib/ticketHelper';
+import { getPrismaUpdateTicketQuery, getPrismaUpdateTicketStatusQuery, updateScannedTicketStatus } from '../lib/ticketHelper';
 import prisma from "../prisma/prisma";
 
 export default async function handler(request, response) {
@@ -8,6 +7,10 @@ export default async function handler(request, response) {
 
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for tickets endpoint' });
+  }
+
+  if (method === "OPTIONS") {
+    return response.status(200).end();
   }
 
   const userId = await verifyUser(request);
@@ -26,8 +29,6 @@ export default async function handler(request, response) {
       return await putTicket(body, response);
     case "DELETE":
       break;
-    case "OPTIONS":
-      return response.status(200).end();
     default:
       break;
   }
@@ -39,6 +40,8 @@ async function putTicket(body, response) {
       return updateStatus(body, response);
     case "UPDATE_NAME":
       return updateName(body, response);
+    case "SCAN_TICKET":
+      return scanTicket(body, response);
     default:
       response.status(500).json('No put type set on ticket');
   }
@@ -64,32 +67,11 @@ async function updateName(body, response) {
 
 async function scanTicket(body, response) {
   const id = body.id;
+  const eventId = body.eventId;
 
   try {
-    const ticket = await prisma.tickets.findUnique({
-      where: {
-        id: id,
-      },
-    });
-
-    if (ticket.status === TicketStatus.NOT_AVAILABLE) {
-      return response.status(200).json({
-        scan_succeeded: false,
-      });
-    } else {
-      await prisma.tickets.update({
-        where: {
-          id: id,
-        },
-        data: {
-          status: TicketStatus.NOT_AVAILABLE
-        },
-      });
-
-      return response.status(200).json({
-        scan_succeeded: true,
-      });
-    }
+    const scannedTicket = await updateScannedTicketStatus(id, eventId);
+    return response.status(200).json(scannedTicket);
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error fetching user' });
