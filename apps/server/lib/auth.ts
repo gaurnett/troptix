@@ -1,10 +1,9 @@
-import admin from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import jwt from "jsonwebtoken";
 
 const app = initializeApp({
-  credential: admin.credential.applicationDefault()
+  credential: require('../troptix-dev-firebase-adminsdk.json')
 });
 
 export async function verifyUser(request): Promise<any> {
@@ -32,7 +31,7 @@ export async function verifyUser(request): Promise<any> {
     });
 }
 
-export async function verifyJwtToken(request): Promise<string> {
+export async function verifyJwtToken(request): Promise<any> {
   let token = "";
   if (request.headers.authorization) {
     const authorization = request.headers.authorization.split(' ');
