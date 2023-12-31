@@ -1,4 +1,4 @@
-import { verifyJwtToken, verifyUser } from "../lib/auth";
+import { verifyJwtToken } from "../lib/auth";
 import { getAllEventsQuery, getEventByIdQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 
@@ -7,6 +7,10 @@ export default async function handler(request, response) {
 
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for events endpoint' });
+  }
+
+  if (method === "OPTIONS") {
+    return response.status(200).end();
   }
 
   switch (method) {
@@ -20,8 +24,6 @@ export default async function handler(request, response) {
       return await updateEvent(body, response);
     case "DELETE":
       break;
-    case "OPTIONS":
-      return response.status(200).end();
     default:
       break;
   }
@@ -76,11 +78,14 @@ async function getEventById(request, response, id) {
 }
 
 async function getEventsByOrganizerId(request, response) {
-  const { userId } = await verifyUser(request);
+  // Uncomment when we are ready to limit organizer ID query
+  // const { userId } = await verifyUser(request);
 
-  if (!userId) {
-    return response.status(401).json({ error: "Unauthorized" });
-  }
+  // if (!userId) {
+  //   return response.status(401).json({ error: "Unauthorized" });
+  // }
+
+  const userId = request.query.id;
 
   try {
     const events = await prisma.events.findMany({

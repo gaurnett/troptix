@@ -29,7 +29,7 @@ export async function eventFetcher({
     jwtToken = jwt.sign(generateJwtId(), jwtSecretKey as string);
   }
 
-  if (requestType === RequestType.GET_EVENTS_BY_ID) {
+  if (requestType === RequestType.GET_EVENTS_BY_ID || requestType === RequestType.GET_EVENTS_BY_ORGANIZER) {
     url += `&id=${id}`;
   }
 
