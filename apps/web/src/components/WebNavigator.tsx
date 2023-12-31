@@ -85,6 +85,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
+        console.log(user);
         let currentUser = await initializeUser(user);
         currentUser.isOrganizer = await isUserAnOrganizer(currentUser.id as string);
         setUser(currentUser);

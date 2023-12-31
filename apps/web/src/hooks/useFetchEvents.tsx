@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { generateJwtId } from "@/lib/utils";
-import jwt from "jsonwebtoken";
 
 export enum RequestType {
   GET_EVENTS_ALL = "GET_EVENTS_ALL",
@@ -24,10 +22,10 @@ export async function eventFetcher({
 }: GetEventsRequestType): Promise<any> {
   let url = prodUrl + `/api/events?getEventsType=${requestType}`;
 
-  if (requestType === RequestType.GET_EVENTS_ALL || requestType === RequestType.GET_EVENTS_BY_ID) {
-    const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET;
-    jwtToken = jwt.sign(generateJwtId(), jwtSecretKey as string);
-  }
+  // if (requestType === RequestType.GET_EVENTS_ALL || requestType === RequestType.GET_EVENTS_BY_ID) {
+  //   const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET;
+  //   jwtToken = jwt.sign(generateJwtId(), jwtSecretKey as string);
+  // }
 
   if (requestType === RequestType.GET_EVENTS_BY_ID || requestType === RequestType.GET_EVENTS_BY_ORGANIZER) {
     url += `&id=${id}`;
@@ -35,9 +33,9 @@ export async function eventFetcher({
 
   return await fetch(url, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${jwtToken}`,
-    }
+    // headers: {
+    //   Authorization: `Bearer ${jwtToken}`,
+    // }
   })
     .then(async (response) => {
       if (response.ok) {
@@ -62,13 +60,13 @@ export function useFetchAllEvents(initialData?) {
 
 export function useFetchEventsById(
   { requestType, id, jwtToken }: GetEventsRequestType,
-  intialData?
+  initialData?
 ) {
-  const { isPending, isError, data, error } = useQuery({
+  const query = useQuery({
     queryKey: [requestType, id],
     queryFn: () => eventFetcher({ requestType, id, jwtToken }),
-    initialData: intialData,
+    initialData: initialData,
   });
 
-  return { isPending, isError, data, error };
+  return { ...query };
 }

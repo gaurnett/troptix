@@ -1,8 +1,24 @@
-import { verifyJwtToken } from "../lib/auth";
 import { getAllEventsQuery, getEventByIdQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 
-export default async function handler(request, response) {
+const allowCors = fn => async (req, res) => {
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  // another common pattern
+  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Authorization, Origin, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  return await fn(req, res);
+};
+
+async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -29,6 +45,8 @@ export default async function handler(request, response) {
   }
 }
 
+module.exports = allowCors(handler);
+
 async function getEvents(getEventType, id, request, response) {
   switch (String(getEventType)) {
     case 'GET_EVENTS_ALL': // GetEventsType.GET_EVENTS_ALL
@@ -45,12 +63,6 @@ async function getEvents(getEventType, id, request, response) {
 }
 
 async function getAllEvents(request, response) {
-  const token = await verifyJwtToken(request);
-
-  if (!token) {
-    return response.status(401).json({ error: "User unauthorized" });
-  }
-
   try {
     const events = await getAllEventsQuery();
     return response.status(200).json(events);
@@ -61,13 +73,6 @@ async function getAllEvents(request, response) {
 }
 
 async function getEventById(request, response, id) {
-  const token = await verifyJwtToken(request);
-  console.log(token);
-
-  if (!token) {
-    return response.status(401).json({ error: "User unauthorized" });
-  }
-
   try {
     const event = await getEventByIdQuery(id);
     return response.status(200).json(event);
@@ -78,13 +83,6 @@ async function getEventById(request, response, id) {
 }
 
 async function getEventsByOrganizerId(request, response) {
-  // Uncomment when we are ready to limit organizer ID query
-  // const { userId } = await verifyUser(request);
-
-  // if (!userId) {
-  //   return response.status(401).json({ error: "Unauthorized" });
-  // }
-
   const userId = request.query.id;
 
   try {
