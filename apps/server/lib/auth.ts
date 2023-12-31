@@ -1,9 +1,12 @@
+import admin from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import jwt from "jsonwebtoken";
 
+const account = require('../troptix-dev-firebase-adminsdk.json');
+
 const app = initializeApp({
-  credential: require('../troptix-dev-firebase-adminsdk.json')
+  credential: admin.credential.cert(account)
 });
 
 export async function verifyUser(request): Promise<any> {
