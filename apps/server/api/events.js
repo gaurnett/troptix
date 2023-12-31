@@ -1,8 +1,58 @@
 import { getAllEventsQuery, getEventByIdQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 
-export default async function handler(request, response) {
+const allowCors = fn => async (req, res) => {
+  console.log(req.headers);
+
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  // res.setHeader('Access-Control-Allow-Origin', '*');
+  // another common pattern
+  res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'Authorization, Origin, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  );
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  return await fn(req, res);
+};
+
+// const handler = (req, res) => {
+//   const d = new Date();
+//   res.end(d.toString());
+// };
+
+// export default async function handler(request, response) {
+
+//   console.log(request.headers);
+
+//   response.setHeader("Access-Control-Allow-Origin", "*");
+//   response.setHeader("Access-Control-Allow-Methods", "OPTIONS, POST, GET");
+//   response.setHeader("Access-Control-Max-Age", 2592000);
+
+//   const headers = {
+//     "Access-Control-Allow-Origin": "http://localhost:3000",
+//     "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
+//     "Access-Control-Max-Age": 2592000,
+//     'Access-Control-Allow-Headers': 'Authorization, Origin, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+//   };
+
+//   if (request.method === "OPTIONS") {
+//     res.writeHead(200, headers);
+//     res.end();
+//     return;
+//   }
+
+//   return response.status(200).end();
+// }
+
+async function handler(request, response) {
   const { body, method } = request;
+
+  console.log(method);
 
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for events endpoint' });
@@ -27,6 +77,8 @@ export default async function handler(request, response) {
       break;
   }
 }
+
+module.exports = allowCors(handler);
 
 async function getEvents(getEventType, id, request, response) {
   switch (String(getEventType)) {
