@@ -10,6 +10,10 @@ export default async function handler(request, response) {
     return response.status(500).json({ error: 'No method found for users endpoint' });
   }
 
+  if (method === "OPTIONS") {
+    return response.status(200).end();
+  }
+
   const { userId, email } = await verifyUser(request);
 
   if (!userId) {
@@ -25,8 +29,6 @@ export default async function handler(request, response) {
       break;
     case "DELETE":
       break;
-    case "OPTIONS":
-      return response.status(200).end();
     default:
       break;
   }

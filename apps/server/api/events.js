@@ -76,7 +76,7 @@ async function getEventById(request, response, id) {
 }
 
 async function getEventsByOrganizerId(request, response) {
-  const userId = await verifyUser(request);
+  const { userId } = await verifyUser(request);
 
   if (!userId) {
     return response.status(401).json({ error: "Unauthorized" });
