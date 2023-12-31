@@ -1,16 +1,12 @@
-import { TropTixContext } from "@/components/WebNavigator";
 import { Spinner } from "@/components/ui/spinner";
 import { useFetchUserOrders } from "@/hooks/useOrders";
 import { getDateFormatter } from "@/lib/utils";
-import { Divider, Empty } from "antd";
+import { Button, Divider, Empty, Result } from "antd";
 import Image from "next/image";
 import Link from "next/link";
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-export default function TicketsPage() {
-  const { user } = useContext(TropTixContext);
-  const userId = user === null || user === undefined ? null : user.id;
-  const [isFetchingOrders, setIsFetchingOrders] = useState(true);
+export default function OrdersPage() {
   const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' && window.innerWidth < 768
   );
@@ -31,11 +27,54 @@ export default function TicketsPage() {
   }, [isMobile]);
 
   const {
+    showSignInError,
     isPending,
     isError,
     data: orders,
     error,
   } = useFetchUserOrders();
+
+  if (showSignInError) {
+    return (
+      <div className="mt-24">
+        <Result
+          icon={
+            <div className="w-full flex justify-center text-center">
+              <Image
+                width={75}
+                height={75}
+                className="w-auto"
+                style={{ objectFit: 'contain', width: 100 }}
+                src={"/icons/tickets.png"}
+                alt={"tickets image"} />
+            </div>
+          }
+          title="Please sign in or sign up with the email used to view orders"
+          extra={
+            <div>
+              <Link
+                href={{ pathname: "/auth/signin" }}
+                key={"login"}>
+                <Button
+                  className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  Log in
+                </Button>
+              </Link>
+              <Link
+                href={{ pathname: "/auth/signup" }}
+                key={"signup"}>
+                <Button
+                  type='primary'
+                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  Sign up
+                </Button>
+              </Link>
+            </div>
+          }
+        />
+      </div>
+    );
+  }
 
   if (isPending) {
     return (<div className="mt-32"><Spinner text={"Fetching Tickets"} /></div>);
@@ -70,10 +109,10 @@ export default function TicketsPage() {
                       <div className="flex">
                         <div className="my-auto">
                           <Image
-                            width={110}
-                            height={110}
+                            width={150}
+                            height={150}
                             className="w-auto rounded"
-                            style={{ objectFit: 'cover' }}
+                            style={{ objectFit: 'cover', width: 150, height: 150, maxHeight: 150, maxWidth: 150 }}
                             src={order.event.imageUrl}
                             alt={"event flyer image"} />
                         </div>

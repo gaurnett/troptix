@@ -15,7 +15,8 @@ export enum GetOrdersType {
 
 export interface GetOrdersRequest {
   getOrdersType: keyof typeof GetOrdersType;
-  id: string;
+  id?: string;
+  email?: string;
   jwtToken?: string
 }
 
@@ -38,22 +39,31 @@ export function useFetchOrderById({
   id,
   jwtToken
 }: GetOrdersRequest) {
-  return useQuery({
+  const query = useQuery({
     queryKey: ["order", getOrdersType, id],
     queryFn: () => getOrders({ getOrdersType, id, jwtToken }),
   });
+
+  return {
+    ...query,
+    showSignInError: !jwtToken
+  };
 }
 // fetch the events for the user logged in currently
 export function useFetchUserOrders() {
   const { user } = useContext(TropTixContext);
   const getOrdersType = GetOrdersType.GET_ORDERS_FOR_USER;
-  const id = user.id;
-  const jwtToken = user.jwtToken;
-
-  return useQuery({
-    queryKey: ["order", getOrdersType, id],
-    queryFn: () => getOrders({ getOrdersType, id, jwtToken }),
+  const email = user?.email;
+  const jwtToken = user?.jwtToken;
+  const query = useQuery({
+    queryKey: ["order", getOrdersType, email],
+    queryFn: () => getOrders({ getOrdersType, email, jwtToken }),
   });
+
+  return {
+    ...query,
+    showSignInError: !user
+  };
 }
 
 // fetch the events for a specific event currently
@@ -69,10 +79,21 @@ export function useFetchEventOrders(eventId: string) {
   });
 }
 
-export async function getOrders({ getOrdersType, id, jwtToken }: GetOrdersRequest) {
-  try {
-    let url = prodUrl + `/api/orders?getOrdersType=${getOrdersType}&id=${id}`;
+export async function getOrders({ getOrdersType, id, email, jwtToken }: GetOrdersRequest) {
+  if (!jwtToken) {
+    return {};
+  }
 
+  let url = prodUrl + `/api/orders?getOrdersType=${getOrdersType}`;
+
+  if (getOrdersType === GetOrdersType.GET_ORDERS_FOR_USER) {
+    url += `&email=${email}`;
+  } else {
+    url += `&id=${id}`;
+  }
+
+  try {
+    console.log(url);
     const response = await fetch(url, {
       method: "GET",
       headers: {

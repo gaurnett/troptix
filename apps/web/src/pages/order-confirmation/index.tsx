@@ -1,12 +1,13 @@
+import { TropTixContext } from "@/components/WebNavigator";
 import { Spinner } from "@/components/ui/spinner";
 import { useFetchOrderById } from "@/hooks/useOrders";
 import { getDateFormatter, getFormattedCurrency } from "@/lib/utils";
-import { Result, Table, Typography } from "antd";
+import { Button, Result, Table, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { GetOrdersType } from 'troptix-api';
 
 const { Text } = Typography;
@@ -25,10 +26,12 @@ interface DataType {
 export default function OrderConfirmationPage() {
   const router = useRouter();
   const orderId = router.query.orderId as string;
+  const { user } = useContext(TropTixContext);
   const [isFetchingOrders, setIsFetchingOrders] = useState(true);
   const [data, setData] = useState<DataType[]>([]);
 
   const {
+    showSignInError,
     isPending,
     isError,
     data: order,
@@ -36,10 +39,12 @@ export default function OrderConfirmationPage() {
   } = useFetchOrderById({
     getOrdersType: GetOrdersType.GET_ORDER_BY_ID,
     id: orderId,
+    jwtToken: user?.jwtToken
   });
 
   useEffect(() => {
-    if (!order) return;
+    if (!order || !user?.jwtToken) return;
+
     const orderMap = new Map<string, any>();
     order.tickets.forEach(ticket => {
       const ticketId = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.id;
@@ -117,6 +122,48 @@ export default function OrderConfirmationPage() {
     )
   }
 
+  if (showSignInError) {
+    return (
+      <div className="mt-24">
+        <Result
+          icon={
+            <div className="w-full flex justify-center text-center">
+              <Image
+                width={75}
+                height={75}
+                className="w-auto"
+                style={{ objectFit: 'contain', width: 100 }}
+                src={"/icons/tickets.png"}
+                alt={"tickets image"} />
+            </div>
+          }
+          title="Please sign in or sign up with the email used to view order confirmation"
+          extra={
+            <div>
+              <Link
+                href={{ pathname: "/auth/signin" }}
+                key={"login"}>
+                <Button
+                  className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  Log in
+                </Button>
+              </Link>
+              <Link
+                href={{ pathname: "/auth/signup" }}
+                key={"signup"}>
+                <Button
+                  type='primary'
+                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  Sign up
+                </Button>
+              </Link>
+            </div>
+          }
+        />
+      </div>
+    );
+  }
+
   if (!order) {
     return (
       <Result
@@ -150,7 +197,7 @@ export default function OrderConfirmationPage() {
                 width={250}
                 height={250}
                 className="w-auto"
-                style={{ objectFit: 'cover' }}
+                style={{ objectFit: 'cover', maxWidth: 250, maxHeight: 250 }}
                 src={order.event.imageUrl}
                 alt={"event flyer image"} />
             </div>

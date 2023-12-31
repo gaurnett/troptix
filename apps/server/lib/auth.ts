@@ -7,8 +7,10 @@ const app = initializeApp({
   credential: admin.credential.applicationDefault()
 });
 
-export async function verifyUser(request): Promise<string> {
+export async function verifyUser(request): Promise<any> {
   let token = "";
+  let undefinedUser = { userId: undefined, email: undefined };
+
   if (request.headers.authorization) {
     const authorization = request.headers.authorization.split(' ');
     token = authorization[1];
@@ -16,17 +18,17 @@ export async function verifyUser(request): Promise<string> {
 
   if (!token) {
     console.log("No authorized token");
-    return undefined;
+    return undefinedUser;
   }
 
   return await getAuth()
     .verifyIdToken(token)
     .then((decodedToken) => {
-      return decodedToken.uid;
+      return { userId: decodedToken.uid, email: decodedToken.email };
     })
     .catch((error) => {
       console.log(error);
-      return undefined;
+      return undefinedUser;
     });
 }
 

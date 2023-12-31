@@ -16,8 +16,6 @@ export default async function handler(request, response) {
     return response.status(500).json({ error: 'No method found for stripe endpoint' });
   }
 
-  console.log(body);
-
   switch (method) {
     case "POST":
       return postOrders(request, response);

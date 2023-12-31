@@ -1,11 +1,13 @@
+import { TropTixContext } from "@/components/WebNavigator";
 import { Spinner } from "@/components/ui/spinner";
 import { GetOrdersType, useFetchOrderById } from "@/hooks/useOrders";
 import { getDateFormatter } from "@/lib/utils";
 import { Button, Carousel, Divider, QRCode, Result } from "antd";
 import JsPDF from 'jspdf';
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
 import {
   MdOutlineKeyboardArrowLeft,
   MdOutlineKeyboardArrowRight,
@@ -15,8 +17,10 @@ export default function TicketsPage() {
   const router = useRouter();
   const carouselRef = useRef<any>();
   const orderId = router.query.orderId as string;
+  const { user } = useContext(TropTixContext);
 
   const {
+    showSignInError,
     isPending,
     isError,
     data: order,
@@ -24,6 +28,7 @@ export default function TicketsPage() {
   } = useFetchOrderById({
     getOrdersType: GetOrdersType.GET_ORDER_BY_ID,
     id: orderId,
+    jwtToken: user?.jwtToken
   });
 
   function goNext() {
@@ -112,6 +117,48 @@ export default function TicketsPage() {
         <Spinner text={"Fetching Tickets"} />
       </div>
     )
+  }
+
+  if (showSignInError) {
+    return (
+      <div className="mt-24">
+        <Result
+          icon={
+            <div className="w-full flex justify-center text-center">
+              <Image
+                width={75}
+                height={75}
+                className="w-auto"
+                style={{ objectFit: 'contain', width: 100 }}
+                src={"/icons/tickets.png"}
+                alt={"tickets image"} />
+            </div>
+          }
+          title="Please sign in or sign up with the email used to view tickets"
+          extra={
+            <div>
+              <Link
+                href={{ pathname: "/auth/signin" }}
+                key={"login"}>
+                <Button
+                  className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  Log in
+                </Button>
+              </Link>
+              <Link
+                href={{ pathname: "/auth/signup" }}
+                key={"signup"}>
+                <Button
+                  type='primary'
+                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  Sign up
+                </Button>
+              </Link>
+            </div>
+          }
+        />
+      </div>
+    );
   }
 
   if (!order) {

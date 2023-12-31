@@ -10,21 +10,17 @@ export default async function handler(request, response) {
     return response.status(500).json({ error: 'No method found for users endpoint' });
   }
 
-  const userId = await verifyUser(request);
+  const { userId, email } = await verifyUser(request);
 
   if (!userId) {
     return response.status(401).json({ error: "Unauthorized" });
   }
 
-  console.log(userId);
-
   switch (method) {
     case "POST":
       return postOrders(request, response);
     case "GET":
-      const getOrderType = request.query.getOrdersType;
-      const id = request.query.id;
-      return getOrders(getOrderType, userId, id, response);
+      return getOrders(email, request, response);
     case "PUT":
       break;
     case "DELETE":
@@ -125,24 +121,29 @@ async function createComplementaryOrder(body, response) {
 
 }
 
-async function getOrders(getOrderType, userId, id, response) {
+async function getOrders(email, request, response) {
+  const getOrderType = request.query.getOrdersType;
+
   switch (String(getOrderType)) {
     case 'GET_ORDERS_FOR_USER': // GetOrdersType.GET_ORDERS_FOR_USER
-      return getOrdersForUser(response, userId);
+      const userEmail = request.query.email;
+      return getOrdersForUser(response, userEmail);
     case 'GET_ORDER_BY_ID': // GetOrdersType.GET_ORDER_BY_ID
-      return getOrderById(response, userId, id);
+      const orderId = request.query.id;
+      return getOrderById(response, orderId, email);
     case 'GET_ORDERS_FOR_EVENT': // GetOrdersType.GET_ORDERS_FOR_EVENT
-      return getOrdersForEvent(response, id);
+      const eventId = request.query.id;
+      return getOrdersForEvent(response, eventId);
     default:
       return response.status(500).json({ error: 'No get order type set' });
   }
 }
 
-async function getOrdersForUser(response, userId) {
+async function getOrdersForUser(response, userEmail) {
   try {
     const orders = await prisma.orders.findMany({
       where: {
-        userId: userId,
+        email: userEmail,
         status: 'COMPLETED'
       },
       include: {
@@ -161,12 +162,12 @@ async function getOrdersForUser(response, userId) {
   }
 }
 
-async function getOrderById(response, userId, orderId) {
+async function getOrderById(response, orderId, userEmail) {
   try {
     const order = await prisma.orders.findUnique({
       where: {
         id: orderId,
-        userId: userId,
+        email: userEmail,
         status: 'COMPLETED'
       },
       include: {
