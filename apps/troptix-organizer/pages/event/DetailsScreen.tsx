@@ -1,25 +1,20 @@
-import _ from "lodash";
+import * as ImagePicker from 'expo-image-picker';
 import { useRef, useState } from "react";
-import {
-  Text,
-  View,
-  Image,
-  Button,
-  Colors,
-} from "react-native-ui-lib";
 import {
   ImageBackground,
   Keyboard,
-  KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
-  TouchableWithoutFeedback,
+  TouchableWithoutFeedback
 } from "react-native";
-import { Event } from "troptix-models";
-import { storage, ref, uploadBytesResumable, getDownloadURL } from 'troptix-firebase';
-import * as ImagePicker from 'expo-image-picker';
-import CustomTextField from "../../components/CustomTextField";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import {
+  Image,
+  Text,
+  View
+} from "react-native-ui-lib";
+import CustomTextField from "../../components/CustomTextField";
+import { getDownloadURL, ref, storage, uploadBytesResumable } from "../../firebase/config";
 
 export default function DetailsScreen({ event, setEvent }) {
   const eventSummaryRef = useRef();

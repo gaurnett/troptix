@@ -37,7 +37,7 @@ function createCharge(checkout: Checkout): Charge {
     : totalPrice * 100;
 
   const charge: Charge = {
-    total,
+    total: Math.round(total),
     userId: checkout.userId as string,
     name: checkout?.firstName + " " + checkout?.lastName,
     email: checkout.email

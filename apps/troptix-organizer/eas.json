@@ -1,0 +1,51 @@
+{
+  "cli": {
+    "version": ">= 5.2.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development",
+      "env": {
+        "APP_VARIANT": "development",
+        "EXPO_PUBLIC_API_URL": "https://troptix-git-dev-flowersgaurnett-gmailcom.vercel.app",
+        "APP_ICON": "./assets/logo/logo_v1.png",
+        "APP_NAME": "TropTix Org Dev"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "APP_VARIANT": "preview",
+        "EXPO_PUBLIC_API_URL": "https://troptix-git-dev-flowersgaurnett-gmailcom.vercel.app",
+        "APP_ICON": "./assets/logo/logo_v1.png",
+        "APP_NAME": "TropTix Org Preview"
+      }
+    },
+    "preprod": {
+      "env": {
+        "APP_VARIANT": "preprod",
+        "EXPO_PUBLIC_API_URL": "https://api.usetroptix.com",
+        "APP_ICON": "./assets/logo/logo_v1.png",
+        "APP_NAME": "TropTix Org Pre Prod"
+      }
+    },
+    "production": {
+      "channel": "production",
+      "env": {
+        "APP_VARIANT": "prod",
+        "EXPO_PUBLIC_API_URL": "https://api.usetroptix.com",
+        "APP_ICON": "./assets/logo/logo_v1.png",
+        "APP_NAME": "TropTix Organizer"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

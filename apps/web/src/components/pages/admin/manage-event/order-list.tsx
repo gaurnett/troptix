@@ -13,15 +13,20 @@ export default function OrderListPage({ orders }) {
   }
 
   function doesStringInclude(string1: string, string2: string) {
+    if (!string1 || !string2) return false;
+
     return string1.toLowerCase().includes(string2.toLowerCase());
   }
 
   function filterList(value: string) {
-    if (value === "" || value === undefined) {
+    if (!value) {
       setOrderList(orders);
     } else {
-      setOrderList(orders.filter(order =>
-        doesStringInclude(order.id, value) || doesStringInclude(order.user.name, value) || doesStringInclude(order.user.email, value)
+      setOrderList(orders.filter(order => {
+        if (!order || !order.user) return false;
+
+        return doesStringInclude(order.id, value) || doesStringInclude(order.user.name, value) || doesStringInclude(order.user.email, value)
+      }
       ));
     }
   }
@@ -31,7 +36,7 @@ export default function OrderListPage({ orders }) {
       <div>
         <div className="flex flex-wrap -mx-3 mb-4">
           <div className="w-full px-3">
-            <Input placeholder={"Search order number, email, or name"} onChange={handleChange} name={"search"} value={searchValue} id={"search"} type={"text"} classNames={{ input: "form-input w-full text-gray-800" }} />
+            <Input defaultValue={""} autoComplete="off" placeholder={"Search order number, email, or name"} onChange={handleChange} name={"search"} value={searchValue} id={"search"} type={"text"} classNames={{ input: "form-input w-full text-gray-800" }} />
           </div>
         </div>
 
