@@ -1,4 +1,3 @@
-import { verifyJwtToken } from "../lib/auth";
 import { getAllEventsQuery, getEventByIdQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 
@@ -45,12 +44,6 @@ async function getEvents(getEventType, id, request, response) {
 }
 
 async function getAllEvents(request, response) {
-  const token = await verifyJwtToken(request);
-
-  if (!token) {
-    return response.status(401).json({ error: "User unauthorized" });
-  }
-
   try {
     const events = await getAllEventsQuery();
     return response.status(200).json(events);
@@ -61,13 +54,6 @@ async function getAllEvents(request, response) {
 }
 
 async function getEventById(request, response, id) {
-  const token = await verifyJwtToken(request);
-  console.log(token);
-
-  if (!token) {
-    return response.status(401).json({ error: "User unauthorized" });
-  }
-
   try {
     const event = await getEventByIdQuery(id);
     return response.status(200).json(event);
@@ -78,13 +64,6 @@ async function getEventById(request, response, id) {
 }
 
 async function getEventsByOrganizerId(request, response) {
-  // Uncomment when we are ready to limit organizer ID query
-  // const { userId } = await verifyUser(request);
-
-  // if (!userId) {
-  //   return response.status(401).json({ error: "Unauthorized" });
-  // }
-
   const userId = request.query.id;
 
   try {

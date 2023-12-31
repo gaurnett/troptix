@@ -41,10 +41,6 @@ export async function getStaticProps({ params }) {
     id: id,
   });
 
-  if (!event) {
-    return { props: { events: {} }, revalidate: 60 };
-  }
-
   return {
     props: {
       event,
