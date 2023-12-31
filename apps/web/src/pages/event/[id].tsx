@@ -40,6 +40,11 @@ export async function getStaticProps({ params }) {
     requestType: RequestType.GET_EVENTS_BY_ID,
     id: id,
   });
+
+  if (!event) {
+    return { props: { events: {} }, revalidate: 60 };
+  }
+
   return {
     props: {
       event,
@@ -104,7 +109,7 @@ export default function EventDetailPage(props) {
     setIsTicketModalOpen(true);
   }
 
-  if (isPending) {
+  if (isPending || !event) {
     return (
       <div className="mt-32">
         <Spinner text={"Fetching Event"} />
@@ -282,6 +287,7 @@ export default function EventDetailPage(props) {
                     Description
                   </h2>
                   <Paragraph
+                    style={{ whiteSpace: 'pre-line' }}
                     className="mt-2 text-justify text-base"
                     ellipsis={{
                       rows: 2,

@@ -1,3 +1,4 @@
+import { verifyUser } from "../lib/auth";
 import { getPrismaUpdateTicketQuery, getPrismaUpdateTicketStatusQuery, updateScannedTicketStatus } from '../lib/ticketHelper';
 import prisma from "../prisma/prisma";
 
@@ -6,6 +7,12 @@ export default async function handler(request, response) {
 
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for tickets endpoint' });
+  }
+
+  const userId = await verifyUser(request);
+
+  if (!userId) {
+    return response.status(401).json({ error: "Unauthorized" });
   }
 
   switch (method) {

@@ -14,12 +14,18 @@ export async function getStaticProps() {
   const events = await eventFetcher({
     requestType: RequestType.GET_EVENTS_ALL,
   });
+
+  if (!events) {
+    return { props: { events: [] }, revalidate: 60 };
+  }
+
   return { props: { events }, revalidate: 60 };
 }
 
 export default function ManageEventsPage(props) {
   const { isPending, isError, data, error } = useFetchAllEvents(props.events);
   const events = data as any[];
+  console.log(events);
 
   return (
     <div className="flex min-h-screen flex-col">

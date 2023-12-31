@@ -1,4 +1,4 @@
-import { TicketType } from "./Ticket";
+import { TicketsType } from "./Ticket";
 
 export interface Checkout {
   id?: string;
@@ -62,7 +62,7 @@ export interface CheckoutTicket {
   fees: number;
   subtotal: number;
   total: number;
-  ticketType: TicketType;
+  ticketType: TicketsType;
 }
 
 export function initializeCheckoutTicket(ticket): CheckoutTicket {
@@ -76,7 +76,7 @@ export function initializeCheckoutTicket(ticket): CheckoutTicket {
     fees: 0,
     subtotal: 0,
     total: 0,
-    ticketType: TicketType.PAID
+    ticketType: TicketsType.PAID
   }
 
   return checkoutTicket;

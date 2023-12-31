@@ -17,6 +17,18 @@ export async function getAllEventsQuery() {
   });
 }
 
+export async function getEventByIdQuery(id: string) {
+  return prismaClient.events.findUnique({
+    where: {
+      id: id,
+    },
+    include: {
+      ticketTypes: true,
+    },
+  });
+}
+
+
 export function getPrismaTicketTypeQuery(ticket) {
   let ticketInput: Prisma.TicketTypesUpdateInput;
   ticketInput = {

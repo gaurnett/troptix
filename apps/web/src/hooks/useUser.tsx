@@ -17,9 +17,19 @@ export enum PutUsersType {
   PUT_USERS_USER_DETAILS = "PUT_USERS_USER_DETAILS",
   PUT_USERS_SOCIAL_MEDIA = "PUT_USERS_SOCIAL_MEDIA",
 }
+
 export type PutUsersRequest = {
   putUsersType: keyof typeof PutUsersType;
   socialMediaAccount?: SocialMediaAccount;
+  user?: User;
+};
+
+export enum PostUsersType {
+  POST_USERS_NEW_USER = "POST_USERS_NEW_USER",
+}
+
+export type PostUsersRequest = {
+  postUsersType: keyof typeof PostUsersType;
   user?: User;
 };
 
@@ -71,10 +81,14 @@ export async function fetchUserById(userId: string) {
 }
 
 export function useCreateUser(user: User) {
-  return useMutation({ mutationFn: () => addUser(user) });
+  const request: PostUsersRequest = {
+    postUsersType: PostUsersType.POST_USERS_NEW_USER,
+    user: user
+  }
+  return useMutation({ mutationFn: () => addUser(request) });
 }
 
-export async function addUser(user: User) {
+export async function addUser(request: PostUsersRequest) {
   const url = prodUrl + "/api/users";
 
   try {
@@ -84,9 +98,7 @@ export async function addUser(user: User) {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        user: user,
-      }),
+      body: JSON.stringify(request),
     });
 
     if (!response.ok) {

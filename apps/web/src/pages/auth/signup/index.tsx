@@ -8,6 +8,7 @@ export const metadata = {
 import { TropTixContext } from "@/components/WebNavigator";
 import { CustomInput } from "@/components/ui/input";
 import { signInWithGoogle, signUpWithEmail } from "@/firebase/auth";
+import { isInputBad, isValidEmail } from "@/lib/utils";
 import { Button, Form, message } from "antd";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -17,14 +18,8 @@ export type SignUpFields = {
   firstName: string;
   lastName: string;
   email: string;
+  confirmEmail: string;
   password: string;
-};
-const isValidEmail = (email) => {
-  return String(email)
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
 };
 
 export default function SignUpPage() {
@@ -32,11 +27,11 @@ export default function SignUpPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const { user } = useContext(TropTixContext);
 
-  const [confirmEmail, setConfirmEmail] = useState("");
   const [signUpFields, setSignUpFields] = useState<SignUpFields>({
     firstName: "",
     lastName: "",
     email: "",
+    confirmEmail: "",
     password: "",
   });
 
@@ -60,6 +55,14 @@ export default function SignUpPage() {
     }));
   }
 
+  function areSignUpFieldsBad(): boolean {
+    return isInputBad(signUpFields.firstName)
+      || isInputBad(signUpFields.lastName)
+      || isInputBad(signUpFields.email)
+      || isInputBad(signUpFields.confirmEmail)
+      || isInputBad(signUpFields.password);
+  }
+
   async function onFinish(values: any) {
     if (!isValidEmail(signUpFields.email)) {
       messageApi.open({
@@ -68,7 +71,8 @@ export default function SignUpPage() {
       });
       return;
     }
-    if (String(signUpFields.email).toLowerCase() !== String(confirmEmail).toLowerCase()) {
+
+    if (String(signUpFields.email).toLowerCase() !== String(signUpFields.confirmEmail).toLowerCase()) {
       messageApi.open({
         type: "error",
         content: "Emails do not match",
@@ -76,6 +80,15 @@ export default function SignUpPage() {
       return;
     }
     sanitizeNames();
+
+    if (areSignUpFieldsBad()) {
+      messageApi.open({
+        type: "error",
+        content: "There is an issue signing up. Please try again",
+      });
+      return;
+    }
+
     const { result, error } = await signUpWithEmail(signUpFields);
 
     if (error) {
@@ -184,15 +197,13 @@ export default function SignUpPage() {
                       </div>
                       <div className="w-full px-3">
                         <CustomInput
-                          value={confirmEmail}
-                          name={"email"}
+                          value={signUpFields.confirmEmail}
+                          name={"confirmEmail"}
                           id={"confirmEmail"}
                           label={"Re-type Email Address *"}
                           type={"text"}
                           placeholder={"johndoe@gmail.com"}
-                          handleChange={(e) => {
-                            setConfirmEmail(e.target.value);
-                          }}
+                          handleChange={handleChange}
                           required={true}
                         />
                       </div>

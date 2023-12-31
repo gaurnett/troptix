@@ -35,6 +35,11 @@ async function addUser(body, response) {
     const user = await prisma.users.create({
       data: getPrismaCreateUserQuery(body.user),
     });
+
+    if (user) {
+      const updatedTickets = await prisma.tickets.update({
+      });
+    }
     return response.status(200).json({ error: null, message: "Successfully added user" });
   } catch (e) {
     return response.status(500).json({ error: 'Error adding user' });
