@@ -1,10 +1,11 @@
+import { Order } from "@/hooks/types/Order";
 import { Button, Input, List } from "antd";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function OrderListPage({ orders }) {
   const [searchValue, setSearchValue] = useState("");
-  const [orderList, setOrderList] = useState<any[]>(orders);
+  const [orderList, setOrderList] = useState<Order[]>(orders);
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const searchText = event.target.value;
@@ -47,7 +48,7 @@ export default function OrderListPage({ orders }) {
           pagination={{
             pageSize: 8,
           }}
-          renderItem={(order: any) => (
+          renderItem={(order: Order) => (
             <List.Item
               actions={[
                 <Link key="receipt" target="_blank" rel="noopener noreferrer" href={{ pathname: "/order-confirmation", query: { orderId: order.id } }}>
@@ -59,8 +60,8 @@ export default function OrderListPage({ orders }) {
                 <div className="flex">
                   <div className="my-auto">
                     <div>{String(order.id).toUpperCase()}</div>
-                    <div>{order.user ? order.user?.name : order.name}</div>
-                    <div>{order.user ? order.user.email : order.email}</div>
+                    <div>{order.firstName + " " + order.lastName}</div>
+                    <div>{order.email}</div>
                   </div>
                 </div>
               </div>

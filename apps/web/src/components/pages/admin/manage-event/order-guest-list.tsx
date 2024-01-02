@@ -187,6 +187,7 @@ export default function OrderGuestListPage({ orders }) {
                   <div className="flex">
                     <div className="my-auto">
                       <div>{String(guest.id).toUpperCase()}</div>
+                      <div>{guest.ticketType ? guest.ticketType?.name : "Complementary"}</div>
                       <div className={`${guest.status === TicketStatus.NOT_AVAILABLE ? 'line-through' : ''}`}>
                         <div>{guest?.firstName} {guest?.lastName}</div>
                         <div>{guest?.email}</div>

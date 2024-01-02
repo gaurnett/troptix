@@ -1,5 +1,5 @@
-import prisma from "../prisma/prisma";
 import { getPrismaUpdatePromotionQuery } from "../lib/promotionHelper";
+import prisma from "../prisma/prisma";
 
 export default async function handler(request, response) {
   const { body, method } = request;

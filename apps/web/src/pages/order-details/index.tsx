@@ -1,3 +1,4 @@
+import { TropTixContext } from "@/components/WebNavigator";
 import EditTicketForm from "@/components/pages/order-details/edit-ticket-form";
 import { Spinner } from "@/components/ui/spinner";
 import { Ticket } from "@/hooks/types/Ticket";
@@ -6,9 +7,10 @@ import { PostTicketRequest, PostTicketType, useCreateTicket } from "@/hooks/useT
 import { getDateFormatter, getFormattedCurrency } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button, Drawer, List, Result, Typography, message } from "antd";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { GetOrdersType } from 'troptix-api';
 
 const { Text } = Typography;
@@ -23,9 +25,8 @@ interface DataType {
 
 export default function OrderDetailsPage() {
   const router = useRouter();
+  const { user } = useContext(TropTixContext);
   const orderId = router.query.orderId as string;
-  const [isFetchingOrders, setIsFetchingOrders] = useState(true);
-  const [data, setData] = useState<DataType[]>([]);
 
   const [selectedTicket, setSelectedTicket] = useState<Ticket>();
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -35,6 +36,7 @@ export default function OrderDetailsPage() {
   const queryClient = useQueryClient();
 
   const {
+    showSignInError,
     isPending,
     isError,
     data: order,
@@ -42,6 +44,7 @@ export default function OrderDetailsPage() {
   } = useFetchOrderById({
     getOrdersType: GetOrdersType.GET_ORDER_BY_ID,
     id: orderId,
+    jwtToken: user?.jwtToken
   });
   const tickets: any[] = order?.tickets;
 
@@ -107,6 +110,48 @@ export default function OrderDetailsPage() {
         <Spinner text={"Fetching Order Details"} />
       </div>
     )
+  }
+
+  if (showSignInError) {
+    return (
+      <div className="mt-24">
+        <Result
+          icon={
+            <div className="w-full flex justify-center text-center">
+              <Image
+                width={75}
+                height={75}
+                className="w-auto"
+                style={{ objectFit: 'contain', width: 100 }}
+                src={"/icons/tickets.png"}
+                alt={"tickets image"} />
+            </div>
+          }
+          title="Please sign in or sign up with the email used to view order details"
+          extra={
+            <div>
+              <Link
+                href={{ pathname: "/auth/signin" }}
+                key={"login"}>
+                <Button
+                  className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  Log in
+                </Button>
+              </Link>
+              <Link
+                href={{ pathname: "/auth/signup" }}
+                key={"signup"}>
+                <Button
+                  type='primary'
+                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  Sign up
+                </Button>
+              </Link>
+            </div>
+          }
+        />
+      </div>
+    );
   }
 
   if (!order) {

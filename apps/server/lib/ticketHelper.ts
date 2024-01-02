@@ -82,3 +82,17 @@ export async function updateScannedTicketStatus(ticketId: string, eventId: strin
     throw e;
   }
 }
+
+export function getPrismaUpdateTicketUserQuery(userId) {
+  let updatedTicket: Prisma.TicketsUpdateInput;
+
+  updatedTicket = {
+    user: {
+      connect: {
+        id: userId
+      }
+    },
+  }
+
+  return updatedTicket;
+}

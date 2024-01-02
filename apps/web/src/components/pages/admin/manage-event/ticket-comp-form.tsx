@@ -1,13 +1,14 @@
+import { TropTixContext } from "@/components/WebNavigator";
 import { CustomInput } from "@/components/ui/input";
 import { ComplementaryOrder, ComplementaryTicket, generateComplementaryOrder } from "@/hooks/types/Order";
-import { useCreateComplementaryOrder } from "@/hooks/useOrders";
+import { PostOrdersRequest, PostOrdersType, useCreateComplementaryOrder } from "@/hooks/useOrders";
 import { generateId } from "@/lib/utils";
 import { Button, Form, Select, message } from "antd";
-import { useEffect, useState } from "react";
-import { PostOrdersType } from 'troptix-api';
+import { useContext, useEffect, useState } from "react";
 
 export default function TicketCompForm({ event, ticketTypes, onClose }) {
 
+  const { user } = useContext(TropTixContext);
   const [messageApi, contextHolder] = message.useMessage();
   const [complementaryOrder, setComplementaryOrder] = useState<ComplementaryOrder>(generateComplementaryOrder(event));
   const [ticketTypeOptions, setTicketTypeOptions] = useState<Map<string, any>>(new Map());
@@ -82,9 +83,10 @@ export default function TicketCompForm({ event, ticketTypes, onClose }) {
       return;
     }
 
-    const postOrdersRequest = {
+    const postOrdersRequest: PostOrdersRequest = {
       type: PostOrdersType.POST_ORDERS_CREATE_COMPLEMENTARY_ORDER,
-      complementaryOrder: complementaryOrder
+      complementaryOrder: complementaryOrder,
+      jwtToken: user?.jwtToken
     }
 
     createOrder.mutate(postOrdersRequest, {
