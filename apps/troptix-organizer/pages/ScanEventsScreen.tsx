@@ -15,6 +15,7 @@ export default function ScanEventsScreen({ navigation }) {
   const { isLoading, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_SCANNABLE_BY_ORGANIZER,
     id: userId,
+    jwtToken: user?.jwtToken
   });
 
   const onRefresh = useCallback(async () => {

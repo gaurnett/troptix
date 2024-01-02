@@ -11,6 +11,7 @@ export type User = {
   stripeId?: string;
   role?: Role;
   isOrganizer?: boolean;
+  jwtToken?: string;
   telephoneNumber?: string;
   billingAddress1?: string;
   billingAddress2?: string;
@@ -51,6 +52,7 @@ export async function initializeUser(firebaseUser: FirebaseUser): Promise<User> 
 
   const user: User = {
     id: firebaseUser.uid,
+    jwtToken: token as string
   }
 
   user.email = firebaseUser.email as string;

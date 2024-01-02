@@ -16,6 +16,8 @@ export enum GetOrdersType {
 export interface GetOrdersRequest {
   getOrdersType: keyof typeof GetOrdersType;
   id: string;
+  email?: string;
+  jwtToken?: string
 }
 
 export enum PostOrdersType {
@@ -51,13 +53,18 @@ export function useFetchUserOrders() {
 
 // fetch the events for a specific event currently
 export function useFetchEventOrders(eventId: string) {
-  return useFetchOrderById({
-    getOrdersType: GetOrdersType.GET_ORDERS_FOR_EVENT,
-    id: eventId,
+  const { user } = useContext(TropTixContext);
+  const getOrdersType = GetOrdersType.GET_ORDERS_FOR_EVENT;
+  const id = eventId;
+  const jwtToken = user.jwtToken;
+
+  return useQuery({
+    queryKey: ["order", getOrdersType, id],
+    queryFn: () => getOrders({ getOrdersType, id, jwtToken }),
   });
 }
 
-export async function getOrders({ getOrdersType, id }: GetOrdersRequest) {
+export async function getOrders({ getOrdersType, id, jwtToken }: GetOrdersRequest) {
   try {
     if (!id) {
       throw new Error("user id not defined");
@@ -66,7 +73,9 @@ export async function getOrders({ getOrdersType, id }: GetOrdersRequest) {
 
     const response = await fetch(url, {
       method: "GET",
-      cache: "no-cache",
+      headers: {
+        Authorization: `Bearer ${jwtToken}`,
+      },
     });
 
     if (!response.ok) {

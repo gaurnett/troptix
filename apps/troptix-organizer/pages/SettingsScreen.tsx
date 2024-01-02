@@ -41,7 +41,6 @@ export default function SettingsScreen({ navigation }) {
         })
         break;
       case SettingsType.ORDERS:
-        // setUser(prevUser => ({ ...prevUser, ["name"]: "Hello" }));
         break;
       case SettingsType.MANAGE_ACCOUNT:
         break;

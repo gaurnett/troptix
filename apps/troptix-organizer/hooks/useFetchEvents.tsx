@@ -10,24 +10,25 @@ export enum RequestType {
 export type GetEventsRequestType = {
   requestType: keyof typeof RequestType;
   id?: string;
+  jwtToken?: string;
 };
 
 export async function eventFetcher({
   requestType,
   id,
+  jwtToken
 }: GetEventsRequestType): Promise<any> {
   let url = prodUrl + `/api/events?getEventsType=${requestType}`;
 
-  if (requestType !== RequestType.GET_EVENTS_ALL && !id) {
-    throw new Error("The appropriate ID is missing");
-  } else {
+  if (requestType === RequestType.GET_EVENTS_BY_ID) {
     url += `&id=${id}`;
   }
 
-  console.log(url);
-
   return await fetch(url, {
     method: "GET",
+    headers: {
+      Authorization: `Bearer ${jwtToken}`,
+    }
   })
     .then(async (response) => {
       if (response.ok) {
@@ -51,12 +52,12 @@ export function useFetchAllEvents(initialData?) {
 }
 
 export function useFetchEventsById(
-  { requestType, id }: GetEventsRequestType,
+  { requestType, id, jwtToken }: GetEventsRequestType,
   intialData?
 ) {
   const { isLoading, isError, data, error } = useQuery({
     queryKey: [requestType, id],
-    queryFn: () => eventFetcher({ requestType, id }),
+    queryFn: () => eventFetcher({ requestType, id, jwtToken }),
     initialData: intialData,
   });
 

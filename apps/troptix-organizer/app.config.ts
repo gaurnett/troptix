@@ -2,7 +2,7 @@ import { ConfigContext, ExpoConfig } from 'expo/config';
 
 // first get variabele
 const APP_ENVIRONMENT = process.env.APP_VARIANT;// let's declare variable to store the Google service file.
-let googleServicesPlist = "./GoogleService-Info.plist"; // while developing this file will be the default.
+let googleServicesPlist: string | undefined = "./GoogleService-Info.plist"; // while developing this file will be the default.
 let apiUrl = "Hello World";
 
 // then checking which env we are, and based on that choosing
@@ -23,14 +23,15 @@ if (APP_ENVIRONMENT === "development") {
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  version: '1.0.2',
+  version: '1.0.7',
   slug: 'troptix-organizer',
   icon: './assets/icon.png',
   name: process.env.APP_NAME || 'TropTix Organizer',
   ios: {
-    supportsTablet: true,
+    supportsTablet: false,
+    usesAppleSignIn: true,
     googleServicesFile: googleServicesPlist,
-    bundleIdentifier: "com.usetroptix.organizerapp",
+    bundleIdentifier: process.env.APP_BUNDLE || "com.usetroptix.organizerapp",
   },
   splash: {
     image: "./assets/splash.png",
@@ -57,6 +58,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       }
     ],
     [
+      "expo-barcode-scanner",
+      {
+        "cameraPermission": "Allow TropTix to access your camera to scan event tickets. This will allow you to validate tickets purchased on our platform for your events."
+      }
+    ],
+    [
       "@react-native-google-signin/google-signin"
     ],
     [
@@ -73,5 +80,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         },
       },
     ],
+    ["expo-apple-authentication"],
   ],
 });

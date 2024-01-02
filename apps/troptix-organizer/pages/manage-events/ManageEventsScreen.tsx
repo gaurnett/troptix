@@ -8,14 +8,13 @@ import { RequestType, useFetchEventsById } from '../../hooks/useFetchEvents';
 
 export default function ManageEventsScreen({ navigation }) {
   const { user } = useContext(TropTixContext);
-  const userId = user === null || user === undefined ? null : user.id;
+  const userId = user ? user.id : null;
   const [refreshing, setRefreshing] = useState(false);
-
-  console.log("Hello");
 
   const { isLoading, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_BY_ORGANIZER,
     id: userId,
+    jwtToken: user?.jwtToken
   });
 
   const onRefresh = useCallback(async () => {
