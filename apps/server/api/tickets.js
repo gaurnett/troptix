@@ -9,6 +9,10 @@ export default async function handler(request, response) {
     return response.status(500).json({ error: 'No method found for tickets endpoint' });
   }
 
+  if (method === "OPTIONS") {
+    return response.status(200).end();
+  }
+
   const userId = await verifyUser(request);
 
   if (!userId) {
@@ -25,8 +29,6 @@ export default async function handler(request, response) {
       return await putTicket(body, response);
     case "DELETE":
       break;
-    case "OPTIONS":
-      return response.status(200).end();
     default:
       break;
   }

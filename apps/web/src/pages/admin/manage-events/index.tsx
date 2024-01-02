@@ -11,7 +11,8 @@ export default function ManageEventsPage() {
 
   const { isPending, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_BY_ORGANIZER,
-    jwtToken: user.jwtToken
+    jwtToken: user.jwtToken,
+    id: user.id
   });
 
   return (

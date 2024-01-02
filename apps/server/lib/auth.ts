@@ -3,8 +3,12 @@ import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import jwt from "jsonwebtoken";
 
-const app = initializeApp({
-  credential: admin.credential.applicationDefault()
+const serviceAccount = JSON.parse(
+  process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
+);
+
+initializeApp({
+  credential: admin.credential.cert(serviceAccount)
 });
 
 export async function verifyUser(request): Promise<any> {
@@ -32,7 +36,7 @@ export async function verifyUser(request): Promise<any> {
     });
 }
 
-export async function verifyJwtToken(request): Promise<string> {
+export async function verifyJwtToken(request): Promise<any> {
   let token = "";
   if (request.headers.authorization) {
     const authorization = request.headers.authorization.split(' ');
@@ -44,7 +48,7 @@ export async function verifyJwtToken(request): Promise<string> {
     return undefined;
   }
 
-  const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET;
+  const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET as string;
 
   try {
     return jwt.verify(token, jwtSecretKey) as string;

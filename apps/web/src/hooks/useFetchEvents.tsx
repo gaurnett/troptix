@@ -27,15 +27,15 @@ export async function eventFetcher({
   //   jwtToken = jwt.sign(generateJwtId(), jwtSecretKey as string);
   // }
 
-  if (requestType === RequestType.GET_EVENTS_BY_ID) {
+  if (requestType === RequestType.GET_EVENTS_BY_ID || requestType === RequestType.GET_EVENTS_BY_ORGANIZER) {
     url += `&id=${id}`;
   }
 
   return await fetch(url, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${jwtToken}`,
-    }
+    // headers: {
+    //   Authorization: `Bearer ${jwtToken}`,
+    // }
   })
     .then(async (response) => {
       if (response.ok) {
@@ -60,13 +60,13 @@ export function useFetchAllEvents(initialData?) {
 
 export function useFetchEventsById(
   { requestType, id, jwtToken }: GetEventsRequestType,
-  intialData?
+  initialData?
 ) {
-  const { isPending, isError, data, error } = useQuery({
+  const query = useQuery({
     queryKey: [requestType, id],
     queryFn: () => eventFetcher({ requestType, id, jwtToken }),
-    initialData: intialData,
+    initialData: initialData,
   });
 
-  return { isPending, isError, data, error };
+  return { ...query };
 }
