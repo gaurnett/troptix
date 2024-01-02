@@ -99,7 +99,6 @@ export async function getOrders({ getOrdersType, id, email, jwtToken }: GetOrder
       headers: {
         Authorization: `Bearer ${jwtToken}`,
       },
-      cache: "no-cache",
     });
 
     if (!response.ok) {

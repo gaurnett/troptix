@@ -36,7 +36,7 @@ async function getEvents(getEventType, id, request, response) {
     case 'GET_EVENTS_BY_ORGANIZER': // GetEventsType.GET_EVENTS_BY_ORGANIZER
       return getEventsByOrganizerId(request, response);
     case 'GET_EVENTS_SCANNABLE_BY_ORGANIZER': // GetEventsType.GET_EVENTS_SCANNABLE_BY_ORGANIZER
-      return getEventsScannableByOrganizerId(response, id);
+      return getEventsScannableByOrganizerId(request, response);
     default:
       return response.status(500).json({ error: 'No event type set' });
   }
@@ -76,7 +76,7 @@ async function getEventById(request, response, id) {
 }
 
 async function getEventsByOrganizerId(request, response) {
-  const userId = await verifyUser(request);
+  const { userId } = await verifyUser(request);
 
   if (!userId) {
     return response.status(401).json({ error: "Unauthorized" });
@@ -98,11 +98,17 @@ async function getEventsByOrganizerId(request, response) {
   }
 }
 
-async function getEventsScannableByOrganizerId(response, id) {
+async function getEventsScannableByOrganizerId(request, response) {
+  const { userId } = await verifyUser(request);
+
+  if (!userId) {
+    return response.status(401).json({ error: "Unauthorized" });
+  }
+
   try {
     const organizedEvents = await prisma.events.findMany({
       where: {
-        organizerUserId: id,
+        organizerUserId: userId,
       },
     });
 
@@ -111,7 +117,7 @@ async function getEventsScannableByOrganizerId(response, id) {
         event: true
       },
       where: {
-        userId: id,
+        userId: userId,
         delegatedAccess: 'TICKET_SCANNER'
       },
     });

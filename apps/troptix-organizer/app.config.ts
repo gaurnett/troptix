@@ -2,7 +2,7 @@ import { ConfigContext, ExpoConfig } from 'expo/config';
 
 // first get variabele
 const APP_ENVIRONMENT = process.env.APP_VARIANT;// let's declare variable to store the Google service file.
-let googleServicesPlist = "./GoogleService-Info.plist"; // while developing this file will be the default.
+let googleServicesPlist: string | undefined = "./GoogleService-Info.plist"; // while developing this file will be the default.
 let apiUrl = "Hello World";
 
 // then checking which env we are, and based on that choosing
@@ -23,12 +23,12 @@ if (APP_ENVIRONMENT === "development") {
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  version: '1.0.4',
+  version: '1.0.7',
   slug: 'troptix-organizer',
   icon: './assets/icon.png',
   name: process.env.APP_NAME || 'TropTix Organizer',
   ios: {
-    supportsTablet: true,
+    supportsTablet: false,
     usesAppleSignIn: true,
     googleServicesFile: googleServicesPlist,
     bundleIdentifier: process.env.APP_BUNDLE || "com.usetroptix.organizerapp",

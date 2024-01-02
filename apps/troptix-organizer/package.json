@@ -39,7 +39,7 @@
     "expo-image-picker": "~14.3.2",
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
-    "expo-updates": "~0.18.18",
+    "expo-updates": "~0.18.19",
     "light-date": "^1.2.0",
     "lodash": "^4.17.21",
     "react": "18.2.0",

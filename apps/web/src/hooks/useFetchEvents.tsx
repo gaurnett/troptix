@@ -1,7 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { generateJwtId } from "@/lib/utils";
-import jwt from "jsonwebtoken";
 
 export enum RequestType {
   GET_EVENTS_ALL = "GET_EVENTS_ALL",
@@ -24,10 +22,10 @@ export async function eventFetcher({
 }: GetEventsRequestType): Promise<any> {
   let url = prodUrl + `/api/events?getEventsType=${requestType}`;
 
-  if (requestType === RequestType.GET_EVENTS_ALL || requestType === RequestType.GET_EVENTS_BY_ID) {
-    const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET;
-    jwtToken = jwt.sign(generateJwtId(), jwtSecretKey as string);
-  }
+  // if (requestType === RequestType.GET_EVENTS_ALL || requestType === RequestType.GET_EVENTS_BY_ID) {
+  //   const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET;
+  //   jwtToken = jwt.sign(generateJwtId(), jwtSecretKey as string);
+  // }
 
   if (requestType === RequestType.GET_EVENTS_BY_ID) {
     url += `&id=${id}`;
