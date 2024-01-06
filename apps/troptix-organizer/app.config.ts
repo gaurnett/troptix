@@ -23,7 +23,7 @@ if (APP_ENVIRONMENT === "development") {
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  version: '1.0.7',
+  version: '1.0.8',
   slug: 'troptix-organizer',
   icon: './assets/icon.png',
   name: process.env.APP_NAME || 'TropTix Organizer',
