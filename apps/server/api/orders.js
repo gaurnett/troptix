@@ -1,9 +1,9 @@
-import { verifyUser } from "../lib/auth";
+import { allowCors, verifyUser } from "../lib/auth";
 import { sendComplementaryTicketEmailToUser } from "../lib/emailHelper";
 import { getPrismaCreateComplementaryOrderQuery, getPrismaCreateOrderQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 
-export default async function handler(request, response) {
+async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -33,6 +33,8 @@ export default async function handler(request, response) {
       break;
   }
 }
+
+module.exports = allowCors(handler);
 
 async function postOrders(request, response) {
   const { body, headers } = request;
