@@ -1,12 +1,14 @@
 import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
-import { useEffect, useState } from 'react';
+import { Image } from 'expo-image';
+import { useContext, useEffect, useState } from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
 import BarcodeMask from 'react-native-barcode-mask';
 import { Button, Colors, Dialog, PanningProvider, Text, Toast, View } from 'react-native-ui-lib';
+import { TropTixContext } from '../App';
 import { PostTicketRequest, PostTicketType, useCreateTicket } from '../hooks/useTicket';
 
-const finderWidth: number = 250;
-const finderHeight: number = 250;
+const finderWidth: number = 300;
+const finderHeight: number = 300;
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
 const viewMinX = (width - finderWidth) / 2;
@@ -30,6 +32,7 @@ type ToastSettings = {
 
 export default function ScanEventScreen({ route, navigation }) {
   const { event } = route.params;
+  const { user } = useContext(TropTixContext);
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
@@ -57,16 +60,17 @@ export default function ScanEventScreen({ route, navigation }) {
     });
   }, [event.title, navigation]);
 
+  function formatDate(date: Date) {
+    return date.toDateString();
+  }
+
   async function handleBarCodeScanned(scanningResult: BarCodeScannerResult) {
     if (!scanned) {
       const { type, data, bounds } = scanningResult;
-      // @ts-ignore
-      const { x, y } = bounds.origin;
-      if (x >= viewMinX && y >= viewMinY && x <= (viewMinX + finderWidth / 2) && y <= (viewMinY + finderHeight / 2)) {
-        setScanned(true);
-        setShowToast(true);
-        const response = await scanTicket(data);
-      }
+      setScanned(true);
+      setShowToast(true);
+      console.log(data);
+      const response = await scanTicket(data);
     }
   };
 
@@ -74,7 +78,8 @@ export default function ScanEventScreen({ route, navigation }) {
     const request: PostTicketRequest = {
       type: PostTicketType.SCAN_TICKET,
       id: ticketId,
-      eventId: event.id
+      eventId: event.id,
+      jwtToken: user?.jwtToken
     }
 
     createTicket.mutate(request, {
@@ -94,7 +99,7 @@ export default function ScanEventScreen({ route, navigation }) {
           toastIcon: require('../assets/icons/close.png')
         })
         return;
-      }
+      },
     });
   }
 
@@ -116,7 +121,13 @@ export default function ScanEventScreen({ route, navigation }) {
   }
 
   return (
-    <View style={styles.container}>
+    <View flex style={{
+      backgroundColor: 'white',
+      width: '100%',
+      height: '100%',
+      flex: 1,
+      alignItems: 'center',
+    }}>
       <Toast
         position={'bottom'}
         swipeable={true}
@@ -174,16 +185,50 @@ export default function ScanEventScreen({ route, navigation }) {
           </View>
         </View>
       </Dialog>
-      <BarCodeScanner
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}
-      >
-        <BarcodeMask
-          width={finderWidth}
-          height={finderHeight}
-          edgeColor="#62B1F6"
-          showAnimatedLine />
-      </BarCodeScanner>
+      <View center margin-32>
+        <Image
+          contentFit='cover'
+          style={{
+            height: 175,
+            width: 175
+          }}
+          source={{
+            uri: event.imageUrl
+          }} />
+
+        <Text marginT-16 center text50 $textDefault>
+          {event.name}
+        </Text>
+        <View center row>
+          <Text text70 $textDefault>{formatDate(new Date(event.startDate))} | </Text>
+          <Text text70 color={Colors.$textMajor}>
+            {event.organizer}
+          </Text>
+        </View>
+
+        <Text center text70 $textDefault>
+          {event.address}
+        </Text>
+
+        <Text color={Colors.grey30} center text70 $textDefault>
+          Scan barcodes using the camera below to validate tickets.
+        </Text>
+      </View>
+      <View>
+        <BarCodeScanner
+          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+          style={{
+            width: finderWidth,
+            height: finderWidth
+          }}
+        >
+          <BarcodeMask
+            width={finderWidth}
+            height={finderHeight}
+            edgeColor="#62B1F6"
+            showAnimatedLine={false} />
+        </BarCodeScanner>
+      </View>
     </View>
   );
 }

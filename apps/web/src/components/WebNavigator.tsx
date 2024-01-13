@@ -22,13 +22,13 @@ const inter = Inter({
   display: "swap",
 });
 
-const user: User = {
+const emptyUser: User = {
   id: '',
   jwtToken: ''
 }
 
 export const TropTixContext = createContext({
-  user: user,
+  user: emptyUser,
 });
 
 export const useTropTixContext = () => useContext(TropTixContext);
@@ -43,7 +43,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
     if (
       (pathname.includes("admin") || pathname.includes("account")) &&
       !loading &&
-      !user
+      !user?.id
     ) {
       router.push("/auth/signup");
     }
@@ -83,15 +83,14 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
       return isOrganizer;
     }
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        console.log(user);
-        let currentUser = await initializeUser(user);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        let currentUser = await initializeUser(firebaseUser);
         currentUser.isOrganizer = await isUserAnOrganizer(currentUser.id as string);
         setUser(currentUser);
         setLoading(false);
       } else {
-        setUser(undefined);
+        setUser(emptyUser);
         setLoading(false);
       }
     });

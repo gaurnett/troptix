@@ -1,6 +1,6 @@
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { message } from "antd";
 import { useContext } from "react";
-import { useMutation, useQuery } from "react-query";
 import { TropTixContext } from "../App";
 import { prodUrl } from "./constants";
 import { Charge } from "./types/Charge";

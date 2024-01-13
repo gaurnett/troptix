@@ -1,4 +1,6 @@
+import { TropTixContext } from "@/components/WebNavigator";
 import { useQuery } from "@tanstack/react-query";
+import { useContext } from "react";
 
 
 export enum RequestType {
@@ -11,6 +13,7 @@ export type GetEventsRequestType = {
   requestType: keyof typeof RequestType;
   id?: string;
   jwtToken?: string;
+  userId?: string;
 };
 
 export const prodUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
@@ -18,7 +21,8 @@ export const prodUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
 export async function eventFetcher({
   requestType,
   id,
-  jwtToken
+  jwtToken,
+  userId
 }: GetEventsRequestType): Promise<any> {
   let url = prodUrl + `/api/events?getEventsType=${requestType}`;
 
@@ -30,6 +34,10 @@ export async function eventFetcher({
 
   if (requestType === RequestType.GET_EVENTS_BY_ID || requestType === RequestType.GET_EVENTS_BY_ORGANIZER) {
     url += `&id=${id}`;
+  }
+
+  if (userId) {
+    url += `&userId=${userId}`
   }
 
   return await fetch(url, {
@@ -50,9 +58,10 @@ export async function eventFetcher({
 }
 
 export function useFetchAllEvents(initialData?) {
+  const { user } = useContext(TropTixContext);
   const { isPending, isError, data, error } = useQuery({
     queryKey: [RequestType.GET_EVENTS_ALL],
-    queryFn: () => eventFetcher({ requestType: RequestType.GET_EVENTS_ALL }),
+    queryFn: () => eventFetcher({ requestType: RequestType.GET_EVENTS_ALL, userId: user.id }),
     initialData: initialData,
   });
 

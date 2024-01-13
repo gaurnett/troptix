@@ -1,15 +1,36 @@
 import { OrderStatus, Prisma, PrismaClient, TicketStatus, TicketType } from '@prisma/client';
 import prisma from "../prisma/prisma";
+import { adminUserId } from './experimentHelper';
 
 const prismaClient = prisma as PrismaClient;
 
-export async function getAllEventsQuery() {
+export async function getAllEventsQuery(userId: string) {
+  if (adminUserId.includes(userId)) {
+    return prismaClient.events.findMany({
+      include: {
+        ticketTypes: true,
+      },
+      where: {
+        isDraft: false,
+        startDate: {
+          gte: new Date()
+        }
+      }
+    });
+  }
+
   return prismaClient.events.findMany({
     include: {
       ticketTypes: true,
     },
     where: {
       isDraft: false,
+      NOT: {
+        OR: [
+          { organizerUserId: "PgAbhPHZxBR4Y26ShZlwn6WN04a2" },
+          { organizerUserId: "sU6kLOZGY6cbyEvuPaUAKjPszzX2" },
+        ],
+      },
       startDate: {
         gte: new Date()
       }

@@ -12,6 +12,7 @@ export enum PostTicketType {
 export interface PostTicketRequest {
   type: keyof typeof PostTicketType;
   ticket?: Ticket;
+  jwtToken?: string
 }
 
 export async function mutateTicket(request: PostTicketRequest): Promise<any> {
@@ -23,6 +24,7 @@ export async function mutateTicket(request: PostTicketRequest): Promise<any> {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${request.jwtToken}`,
       },
       body: JSON.stringify(request),
     });

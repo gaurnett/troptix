@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { prodUrl } from "./constants";
 
 export enum RequestType {
@@ -20,7 +20,9 @@ export async function eventFetcher({
 }: GetEventsRequestType): Promise<any> {
   let url = prodUrl + `/api/events?getEventsType=${requestType}`;
 
-  if (requestType === RequestType.GET_EVENTS_BY_ID) {
+  if (requestType === RequestType.GET_EVENTS_BY_ID
+    || requestType === RequestType.GET_EVENTS_BY_ORGANIZER
+    || requestType === RequestType.GET_EVENTS_SCANNABLE_BY_ORGANIZER) {
     url += `&id=${id}`;
   }
 

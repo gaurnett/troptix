@@ -59,7 +59,8 @@ export default function OrderDetailsPage() {
 
     const request: PostTicketRequest = {
       type: PostTicketType.UPDATE_NAME,
-      ticket: selectedTicket
+      ticket: selectedTicket,
+      jwtToken: user?.jwtToken
     }
 
     createTicket.mutate(request, {
@@ -74,6 +75,11 @@ export default function OrderDetailsPage() {
           ...order,
           ["tickets"]: tickets
         });
+        messageApi.destroy('update-ticket-loading');
+        messageApi.open({
+          type: 'success',
+          content: 'Successfully saved ticket.',
+        });
       },
       onError: (error) => {
         messageApi.destroy('update-ticket-loading');
@@ -83,12 +89,6 @@ export default function OrderDetailsPage() {
         });
         return;
       }
-    })
-
-    messageApi.destroy('update-ticket-loading');
-    messageApi.open({
-      type: 'success',
-      content: 'Successfully saved ticket.',
     });
 
     setModalOpen(false);

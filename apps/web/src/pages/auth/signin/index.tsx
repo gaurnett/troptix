@@ -24,7 +24,7 @@ export default function SignInPage() {
   }
 
   useEffect(() => {
-    if (user !== undefined) {
+    if (user?.id) {
       router.back();
     }
   }, [router, user]);

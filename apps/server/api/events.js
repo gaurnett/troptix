@@ -47,8 +47,9 @@ async function getEvents(getEventType, id, request, response) {
 }
 
 async function getAllEvents(request, response) {
+  const userId = request.query.userId;
   try {
-    const events = await getAllEventsQuery();
+    const events = await getAllEventsQuery(userId);
     return response.status(200).json(events);
   } catch (e) {
     console.error('Request error', e);

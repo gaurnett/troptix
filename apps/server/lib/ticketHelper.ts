@@ -49,11 +49,19 @@ export async function updateScannedTicketStatus(ticketId: string, eventId: strin
       }
     }
 
-    const ticketType = await prismaClient.ticketTypes.findUnique({
-      where: {
-        id: ticket.ticketTypeId,
-      },
-    });
+    let ticketType: any = {
+      name: "Complementary",
+      description: ""
+    }
+
+    if (ticket.ticketTypeId) {
+      ticketType = await prismaClient.ticketTypes.findUnique({
+        where: {
+          id: ticket.ticketTypeId,
+        },
+      });
+    }
+
 
     if (ticket.status === TicketStatus.NOT_AVAILABLE) {
       return {

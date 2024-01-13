@@ -9,12 +9,11 @@ import { RequestType, useFetchEventsById } from '../hooks/useFetchEvents';
 
 export default function ScanEventsScreen({ navigation }) {
   const { user } = useContext(TropTixContext);
-  const userId = user === null || user === undefined ? null : user.id;
   const [refreshing, setRefreshing] = useState(false);
 
   const { isLoading, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_SCANNABLE_BY_ORGANIZER,
-    id: userId,
+    id: user?.id,
     jwtToken: user?.jwtToken
   });
 
