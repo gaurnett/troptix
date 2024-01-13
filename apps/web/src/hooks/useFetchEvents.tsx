@@ -22,6 +22,7 @@ export async function eventFetcher({
 }: GetEventsRequestType): Promise<any> {
   let url = prodUrl + `/api/events?getEventsType=${requestType}`;
 
+  // Uncomment for auth
   // if (requestType === RequestType.GET_EVENTS_ALL || requestType === RequestType.GET_EVENTS_BY_ID) {
   //   const jwtSecretKey = process.env.NEXT_PUBLIC_VERCEL_SECRET;
   //   jwtToken = jwt.sign(generateJwtId(), jwtSecretKey as string);
