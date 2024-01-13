@@ -1,4 +1,4 @@
-import { User as FirebaseUser } from "firebase/auth";
+import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 export type User = {
   id: string;
@@ -42,7 +42,7 @@ export type SocialMediaAccount = {
   link: string;
 };
 
-export async function initializeUser(firebaseUser: FirebaseUser): Promise<User> {
+export async function initializeUser(firebaseUser: FirebaseAuthTypes.User): Promise<User> {
   const token = await firebaseUser.getIdToken(/* forceRefresh */ true)
     .then(function (idToken) {
       return idToken;

@@ -13,7 +13,7 @@ export default async function handler(request, response) {
     return response.status(200).end();
   }
 
-  const userId = await verifyUser(request);
+  const { userId, email } = await verifyUser(request);
 
   if (!userId) {
     return response.status(401).json({ error: "Unauthorized" });

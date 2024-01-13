@@ -112,7 +112,7 @@ export default function Header() {
                   </Link>
                 </li>
                 {
-                  user &&
+                  user.id &&
                   <li>
                     <Link
                       href="/orders"
@@ -137,7 +137,7 @@ export default function Header() {
             <nav className="hidden md:flex">
               <div className='flex md:order-2'>
                 {
-                  !user ?
+                  !user.id ?
                     <ul className="flex grow justify-end flex-wrap items-center">
                       <li>
                         <Link href="/auth/signin" className="">

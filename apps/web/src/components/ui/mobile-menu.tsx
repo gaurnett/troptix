@@ -124,7 +124,7 @@ export default function MobileMenu() {
               <Link onClick={closeMobileMenu} href="/events" className={`block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Events</Link>
             </li>
             {
-              user &&
+              user.id &&
               <li>
                 <Link onClick={closeMobileMenu} href="/orders" className={`block py-2 pl-3 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}>Tickets</Link>
               </li>
@@ -137,7 +137,7 @@ export default function MobileMenu() {
             </li>
 
             {
-              !user ?
+              !user.id ?
                 <div>
                   <li>
                     <Link onClick={closeMobileMenu} href="/auth/signin" className="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">Log in</Link>

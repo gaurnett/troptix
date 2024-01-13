@@ -2,34 +2,36 @@ import 'expo-dev-client';
 import 'react-native-gesture-handler';
 
 import auth from '@react-native-firebase/auth';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as SplashScreen from 'expo-splash-screen';
-import { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { initializeUser } from './hooks/types/User';
+import { User, initializeUser } from './hooks/types/User';
 import AppNavigator from './pages/navigation/AppNavigator';
 
 SplashScreen.preventAutoHideAsync();
 
-const user = {
+const user: User = {
   id: '',
   jwtToken: ''
 };
 
-export const TropTixContext = createContext();
+export const TropTixContext = createContext({
+  user: user
+});
 const queryClient = new QueryClient();
 
 export default function App() {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState<User>();
   const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
-    const unsubscribeFromAuthStateChange = auth().onAuthStateChanged(async user => {
-      if (user) {
-        let currentUser = await initializeUser(user);
+    const unsubscribeFromAuthStateChange = auth().onAuthStateChanged(async firebaseUser => {
+      if (firebaseUser) {
+        let currentUser = await initializeUser(firebaseUser);
         setUser(currentUser);
       } else {
-        setUser(null);
+        setUser(undefined);
       }
 
       await SplashScreen.hideAsync();
@@ -47,7 +49,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <TropTixContext.Provider
         value={{
-          user: user,
+          user: user as User,
         }}>
         <SafeAreaProvider>
           <AppNavigator />

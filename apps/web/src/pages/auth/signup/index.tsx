@@ -36,7 +36,7 @@ export default function SignUpPage() {
   });
 
   useEffect(() => {
-    if (user !== undefined) {
+    if (user?.id) {
       router.back();
     }
   }, [router, user]);

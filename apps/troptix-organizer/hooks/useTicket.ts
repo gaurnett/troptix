@@ -1,5 +1,5 @@
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
-import { useMutation, useQuery } from "react-query";
 import { TropTixContext } from "../App";
 import { prodUrl } from "./constants";
 import { Ticket } from "./types/Ticket";
@@ -15,6 +15,7 @@ export interface PostTicketRequest {
   ticket?: Ticket;
   id?: string;
   eventId?: string;
+  jwtToken?: string
 }
 
 export async function mutateTicket(request: PostTicketRequest): Promise<any> {
@@ -26,6 +27,7 @@ export async function mutateTicket(request: PostTicketRequest): Promise<any> {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${request.jwtToken}`,
       },
       body: JSON.stringify(request),
     });

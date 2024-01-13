@@ -70,11 +70,6 @@ export default function ManageEventsScreen({ navigation }) {
             <Text text70 $textDefault>
               {event.address}
             </Text>
-
-            <Text text70 color={Colors.$textSuccess}>
-              $200
-              {/* {event.price} */}
-            </Text>
           </View>
         </Card>
       );
