@@ -1,6 +1,7 @@
+import { allowCors } from "../lib/auth";
 import { sendContactUsForm } from "../lib/emailHelper";
 
-export default async function handler(request, response) {
+async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -21,6 +22,8 @@ export default async function handler(request, response) {
       return response.status(500).json({ error: 'No contact type set' });
   }
 }
+
+module.exports = allowCors(handler);
 
 function postContact(body, response) {
   if (body === undefined || body.requestType === undefined) {

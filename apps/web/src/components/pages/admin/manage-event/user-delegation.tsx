@@ -1,74 +1,108 @@
+import { TropTixContext } from "@/components/WebNavigator";
 import { Spinner } from "@/components/ui/spinner";
+import { DelegatedAccess, DelegatedUser, createUser } from "@/hooks/types/DelegatedUser";
+import { DeleteDelegatedUserRequest, PostDelegatedUserRequest, useDeleteDelegatedUser, useFetchDelegatedUsers, usePostDelegatedUser } from "@/hooks/useDelegatedUser";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button, Drawer, List, Popconfirm, message } from "antd";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { addDelegatedUser, getDelegatedUsers } from 'troptix-api';
-import { DelegatedUser } from "troptix-models";
+import { useContext, useState } from "react";
 import UserDelegationForm from "./user-delegation-form";
 
 export default function UserDelegationPage() {
   const router = useRouter();
-  const eventId = router.query.eventId;
+  const { user } = useContext(TropTixContext);
+  const eventId = router.query.eventId as string;
 
   const [messageApi, contextHolder] = message.useMessage();
-  const [delegatedUsers, setDelegatedUsers] = useState<any[]>([]);
-  const [isFetchingUsers, setIsFetchingUsers] = useState(true);
   const [open, setOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>();
+  const [selectedUser, setSelectedUser] = useState<DelegatedUser>();
   const [selectedIndex, setSelectedIndex] = useState(-1);
-
-  useEffect(() => {
-    async function fetchUsers() {
-      try {
-        const response = await getDelegatedUsers(eventId);
-
-        if (response !== undefined && response.length !== 0) {
-          setDelegatedUsers(response);
-        }
-      } catch (error) {
-      }
-      setIsFetchingUsers(false);
-    };
-
-    fetchUsers();
-  }, [eventId]);
+  const {
+    isPending,
+    isError,
+    data: delegatedUsers,
+    error,
+  } = useFetchDelegatedUsers(eventId as string, user?.jwtToken);
+  const postDelegatedUser = usePostDelegatedUser();
+  const deleteDelegatedUser = useDeleteDelegatedUser();
+  const queryClient = useQueryClient();
 
   async function saveUser() {
-    const response = await addDelegatedUser(selectedUser, selectedIndex !== -1);
-
-    if (response === null || response === undefined || response.error !== null) {
-      messageApi.open({
-        type: 'error',
-        content: 'Failed to save user, please try again.',
+    messageApi
+      .open({
+        key: 'update-user-loading',
+        type: 'loading',
+        content: 'Updating Users..',
+        duration: 0,
       });
-      return;
+
+    const request: PostDelegatedUserRequest = {
+      editingUser: selectedIndex !== -1,
+      user: selectedUser,
+      jwtToken: user?.jwtToken
     }
 
-    messageApi.open({
-      type: 'success',
-      content: 'Successfully saved user.',
-    });
-
-    if (selectedIndex === -1) {
-      setDelegatedUsers([...delegatedUsers, selectedUser]);
-    } else {
-      const updatedUsers = delegatedUsers.map((user, i) => {
-        if (user.id === selectedUser.id) {
-          return selectedUser;
+    postDelegatedUser.mutate(request, {
+      onSuccess: (data) => {
+        const updatedList: DelegatedUser[] = delegatedUsers;
+        if (selectedIndex >= 0) {
+          updatedList[selectedIndex] = data
         } else {
-          return user;
+          updatedList.push(data)
         }
-      });
-      setDelegatedUsers(updatedUsers);
-    }
+        queryClient.setQueryData([eventId], updatedList);
 
-    setOpen(false);
+        messageApi.destroy('update-user-loading');
+        messageApi.open({
+          type: 'success',
+          content: 'Successfully saved user.',
+        });
+        setOpen(false);
+      },
+      onError: (error) => {
+        messageApi.destroy('update-user-loading');
+        messageApi.open({
+          type: 'error',
+          content: error.message,
+        });
+        return;
+      }
+    });
   }
 
-  function deleteUser() {
-    setDelegatedUsers(
-      delegatedUsers.filter(user => user.email !== selectedUser.email)
-    );
+  function deleteUser(deletedUser: DelegatedUser) {
+    messageApi
+      .open({
+        key: 'delete-user-loading',
+        type: 'loading',
+        content: 'Deleting User...',
+        duration: 0,
+      });
+    const request: DeleteDelegatedUserRequest = {
+      id: deletedUser?.id,
+      jwtToken: user.jwtToken
+    }
+
+    deleteDelegatedUser.mutate(request, {
+      onSuccess: (data: DelegatedUser) => {
+        const updatedList: DelegatedUser[] = delegatedUsers.filter(user => user.email !== data?.email);
+        queryClient.setQueryData([eventId], updatedList);
+
+        messageApi.destroy('delete-user-loading');
+        messageApi.open({
+          type: 'success',
+          content: 'Successfully deleted user.',
+        });
+        setOpen(false);
+      },
+      onError: (error) => {
+        messageApi.destroy('delete-user-loading');
+        messageApi.open({
+          type: 'error',
+          content: 'There was an error deleting the user, please try again',
+        });
+      }
+    })
   }
 
   function showDrawer(ticket: any, index: number) {
@@ -81,12 +115,21 @@ export default function UserDelegationPage() {
     setOpen(false);
   };
 
+  function normalizeAccessType(delegatedAccess: DelegatedAccess) {
+    switch (delegatedAccess) {
+      case DelegatedAccess.OWNER:
+        return "Owner";
+      case DelegatedAccess.TICKET_SCANNER:
+        return "Ticket Scanner";
+    }
+  }
+
   return (
     <div className="">
       {contextHolder}
       <div className="w-full md:max-w-md mr-8">
         {
-          isFetchingUsers ?
+          isPending ?
             <div className="mt-4">
               <Spinner text={"Fetching Users"} />
             </div>
@@ -94,29 +137,32 @@ export default function UserDelegationPage() {
             <div>
               <h2 className="text-2xl md:text-3xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">Users</h2>
 
-              <Button onClick={() => showDrawer(new DelegatedUser(eventId), -1)} type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Add User</Button>
+              <Button onClick={() => showDrawer(createUser(eventId), -1)} type="primary" className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex">Add User</Button>
 
               <List
                 className="demo-loadmore-list"
                 itemLayout="horizontal"
                 dataSource={delegatedUsers}
-                renderItem={(item, index) => (
+                renderItem={(item: DelegatedUser, index) => (
                   <List.Item
                     actions={[
                       <Button onClick={() => showDrawer(item, index)} key="edit">Edit</Button>,
                       <Popconfirm
                         key="delete"
-                        title="Delete this promotion"
-                        description="Are you sure to delete this promotion?"
+                        title="Delete User"
+                        description="Are you sure to delete this user?"
                         className="time-picker-button"
-                        onConfirm={deleteUser}
+                        onConfirm={() => deleteUser(item)}
                         okText="Yes"
                         cancelText="No"
                       >
                         <Button danger>Delete</Button>
                       </Popconfirm>]}
                   >
-                    <div>{item.email}</div>
+                    <div>
+                      <div>{item.email}</div>
+                      <div>{normalizeAccessType(item.delegatedAccess as DelegatedAccess)}</div>
+                    </div>
                   </List.Item>
                 )}
               />

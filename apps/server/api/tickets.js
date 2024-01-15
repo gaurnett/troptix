@@ -1,8 +1,8 @@
-import { verifyUser } from "../lib/auth";
+import { allowCors, verifyUser } from "../lib/auth";
 import { getPrismaUpdateTicketQuery, getPrismaUpdateTicketStatusQuery, updateScannedTicketStatus } from '../lib/ticketHelper';
 import prisma from "../prisma/prisma";
 
-export default async function handler(request, response) {
+async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -33,6 +33,8 @@ export default async function handler(request, response) {
       break;
   }
 }
+
+module.exports = allowCors(handler);
 
 async function putTicket(body, response) {
   switch (body.type) {

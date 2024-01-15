@@ -1,7 +1,8 @@
+import { allowCors } from "../lib/auth";
 import { getPrismaCreateUserQuery, getPrismaUpdateSocialMediaQuery, getPrismaUpdateUserQuery } from "../lib/userHelper";
 import prisma from "../prisma/prisma";
 
-export default async function handler(request, response) {
+async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -25,6 +26,8 @@ export default async function handler(request, response) {
       break;
   }
 }
+
+module.exports = allowCors(handler);
 
 async function addUser(body, response) {
   if (body === undefined || body.user === undefined) {

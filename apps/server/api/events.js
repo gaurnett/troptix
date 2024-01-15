@@ -1,5 +1,5 @@
 import { allowCors } from "../lib/auth";
-import { getAllEventsQuery, getEventByIdQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
+import { getAllEventsQuery, getEventByIdQuery, getEventsByOrganizerIdQuery, getEventsScannableByOrganizerIdQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
 import prisma from "../prisma/prisma";
 
 async function handler(request, response) {
@@ -71,14 +71,7 @@ async function getEventsByOrganizerId(request, response) {
   const userId = request.query.id;
 
   try {
-    const events = await prisma.events.findMany({
-      where: {
-        organizerUserId: userId,
-      },
-      include: {
-        ticketTypes: true,
-      },
-    });
+    const events = await getEventsByOrganizerIdQuery(userId);
     return response.status(200).json(events);
   } catch (e) {
     console.error('Request error', e);
@@ -90,30 +83,8 @@ async function getEventsScannableByOrganizerId(request, response) {
   const userId = request.query.id;
 
   try {
-    const organizedEvents = await prisma.events.findMany({
-      where: {
-        organizerUserId: userId,
-      },
-    });
-
-    const scannableEvents = await prisma.delegatedUsers.findMany({
-      select: {
-        event: true
-      },
-      where: {
-        userId: userId,
-        delegatedAccess: 'TICKET_SCANNER'
-      },
-    });
-
-    let scannedEvents = [];
-    if (scannableEvents.length !== 0) {
-      scannableEvents.forEach(scannableEvent => {
-        scannedEvents.push(scannableEvent.event);
-      });
-    }
-
-    return response.status(200).json(organizedEvents.concat(scannedEvents));
+    const events = await getEventsScannableByOrganizerIdQuery(userId);
+    return response.status(200).json(events);
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error fetching orders' });
