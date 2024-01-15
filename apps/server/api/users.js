@@ -1,7 +1,8 @@
+import { allowCors } from "../lib/auth";
 import { getPrismaCreateUserQuery, getPrismaUpdateSocialMediaQuery, getPrismaUpdateUserQuery } from "../lib/userHelper";
 import prisma from "../prisma/prisma";
 
-export default async function handler(request, response) {
+async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -26,6 +27,8 @@ export default async function handler(request, response) {
   }
 }
 
+module.exports = allowCors(handler);
+
 async function addUser(body, response) {
   if (body === undefined || body.user === undefined) {
     return response.status(500).json({ error: 'No body found in User POST request' });
@@ -35,6 +38,11 @@ async function addUser(body, response) {
     const user = await prisma.users.create({
       data: getPrismaCreateUserQuery(body.user),
     });
+
+    if (user) {
+      const updatedTickets = await prisma.tickets.update({
+      });
+    }
     return response.status(200).json({ error: null, message: "Successfully added user" });
   } catch (e) {
     return response.status(500).json({ error: 'Error adding user' });

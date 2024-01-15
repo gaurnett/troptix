@@ -1,52 +1,69 @@
-import { useRef, useState } from 'react';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
+import auth from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { useHeaderHeight } from '@react-navigation/elements';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import * as React from 'react';
-import { Keyboard, SafeAreaView, ScrollView, TouchableWithoutFeedback } from 'react-native';
-import { Button, Colors, Image, Text, TextField, View } from 'react-native-ui-lib';
-import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from 'troptix-firebase';
-import { User } from 'troptix-models';
-import CustomTextField from '../components/CustomTextField';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Button, Colors, Image, Text, View } from 'react-native-ui-lib';
 
 export default function SignInScreen({ navigation }) {
-  const emailRef = useRef();
-  const [email, setEmail] = useState<User>(new User());
+  const [isAppleLoginAvailable, setIsAppleLoginAvailable] = React.useState(false);
 
-  function handleChange(name, value) {
-    setEmail(value);
-  }
+  React.useEffect(() => {
+    AppleAuthentication.isAvailableAsync().then(setIsAppleLoginAvailable);
+  }, []);
 
-  function signUpWithEmail() {
-    navigation.navigate("SignUpWithEmailScreen", {
-      userEmail: email,
-    });
-  }
+  GoogleSignin.configure({
+    webClientId: '912947419048-sark3aqudtojmsci3tk9c6p5ud9o7aes.apps.googleusercontent.com',
+  });
+
+  const headerHeight = useHeaderHeight();
 
   function signInWithEmail() {
     navigation.navigate("SignInWithEmailScreen");
   }
 
-  function handleGoogleSignIn() {
-    const provider = new GoogleAuthProvider();
-    signInWithEmailAndPassword(auth, "flowersgaurnett@gmail.com", "Password15")
-      .then((result) => {
-        // This gives you a Google Access Token. You can use it to access the Google API.
-        // const credential = GoogleAuthProvider.credentialFromResult(result);
-        // const token = credential.accessToken;
-        // const user = result.user;
-      }).catch((error) => {
-        // Handle Errors here.
-        // const errorCode = error.code;
-        // const errorMessage = error.message;
-        // const email = error.customData.email;
-        // const credential = GoogleAuthProvider.credentialFromError(error);
-      })
+  async function handleGoogleSignIn() {
+    // Check if your device supports Google Play
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    // Get the users ID token
+    const { idToken } = await GoogleSignin.signIn();
+
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+
+    // Sign-in the user with the credential
+    return auth().signInWithCredential(googleCredential);
+  }
+
+  async function handleAppleSignIn() {
+    const appleAuthRequestResponse = await appleAuth.performRequest({
+      requestedOperation: appleAuth.Operation.LOGIN,
+      // As per the FAQ of react-native-apple-authentication, the name should come first in the following array.
+      // See: https://github.com/invertase/react-native-apple-authentication#faqs
+      requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+    });
+
+    // Ensure Apple returned a user identityToken
+    if (!appleAuthRequestResponse.identityToken) {
+      throw new Error('Apple Sign-In failed - no identify token returned');
+    }
+
+    // Create a Firebase credential from the response
+    const { identityToken, nonce } = appleAuthRequestResponse;
+
+    const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
+
+    // Sign the user in with the credential
+    return auth().signInWithCredential(appleCredential);
   }
 
   return (
     <TouchableWithoutFeedback
       onPress={Keyboard.dismiss}
       accessible={false}>
-      <View paddingR-32 paddingL-32 style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
+      <View flex paddingR-32 paddingL-32 style={{ paddingBottom: headerHeight, alignItems: 'center', justifyContent: 'center', backgroundColor: 'white' }}>
         <Image
           resizeMode='cover'
           height={150}
@@ -56,47 +73,35 @@ export default function SignInScreen({ navigation }) {
           TropTix Organizer
         </Text>
 
-        <View width={"100%"}>
-          <CustomTextField
-            name="email"
-            label="Email address"
-            placeholder="johndoe@troptix.com"
-            value={email}
-            reference={emailRef}
-            handleChange={handleChange}
-          />
-        </View>
-
-        <Button
-          onPress={() => signUpWithEmail()}
-          marginT-16
-          borderRadius={25}
-          color={Colors.white}
-          style={{ backgroundColor: '#FF7043', height: 50, width: '100%' }}>
-          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>Sign Up</Text>
-        </Button>
-
-        <View marginT-24 marginB-24 style={{ flexDirection: 'row', alignItems: 'center', width: 300 }}>
-          <View style={{ flex: 1, height: 1, backgroundColor: 'black' }} />
-          <View>
-            <Text style={{ width: 50, textAlign: 'center' }}>OR</Text>
-          </View>
-          <View style={{ flex: 1, height: 1, backgroundColor: 'black' }} />
-        </View>
-
         <Button
           onPress={() => signInWithEmail()}
           backgroundColor={Colors.orange30}
           borderRadius={25}
           style={{ backgroundColor: '#2196F3', height: 50, width: '100%' }}>
-          <Image source={require('../assets/logo/email.png')} tintColor={Colors.white} width={24} height={24} />
-          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>Sign In with Email</Text>
+          <Image source={require('../assets/logo/email.png')} tintColor={Colors.white} width={20} height={20} />
+          <Text style={{ color: '#ffffff', fontSize: 18, fontWeight: '600' }} marginL-8>Sign in with Email</Text>
         </Button>
 
-        <Button onPress={() => handleGoogleSignIn()} marginT-16 outline borderRadius={25} outlineColor={Colors.grey30} style={{ height: 50, width: '100%' }}>
-          <Image source={require('../assets/logo/google.png')} width={24} height={24} />
-          <Text style={{ fontSize: 16 }} marginL-10>Sign In with Google</Text>
+        <Button
+          onPress={() => handleGoogleSignIn()}
+          marginT-16 outline borderRadius={25}
+          outlineColor={Colors.grey30}
+          style={{ height: 50, width: '100%', backgroundColor: 'white' }}>
+          <Image source={require('../assets/logo/google.png')} width={16} height={16} />
+          <Text style={{ fontSize: 18, fontWeight: '600', color: 'black' }} marginL-8>Sign in with Google</Text>
         </Button>
+
+        {isAppleLoginAvailable && (
+          <View marginT-16 style={{ alignItems: 'center', width: '100%' }}>
+            <AppleAuthentication.AppleAuthenticationButton
+              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+              buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+              cornerRadius={25}
+              onPress={handleAppleSignIn}
+              style={{ width: '100%', height: 50 }}
+            />
+          </View>
+        )}
       </View>
     </TouchableWithoutFeedback>
   );

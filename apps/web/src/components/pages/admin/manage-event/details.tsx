@@ -70,7 +70,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
     <div className="w-full md:max-w-md mr-8">
       <Form
         className=""
-        name="basic"
+        name="details"
         onFinish={() => {
           updateEvent(event);
         }}

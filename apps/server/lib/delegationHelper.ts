@@ -1,4 +1,7 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
+import prisma from "../prisma/prisma";
+
+const prismaClient = prisma as PrismaClient;
 
 export function getPrismaUpdateDelegatedUserQuery(user, userId) {
   let delegatedUser: Prisma.DelegatedUsersUpdateInput;
@@ -16,4 +19,18 @@ export function getPrismaUpdateDelegatedUserQuery(user, userId) {
   }
 
   return delegatedUser;
+}
+
+export async function deleteDelegatedUserQuery(userId: string) {
+  try {
+    const deletedUser = await prismaClient.delegatedUsers.delete({
+      where: {
+        id: userId,
+      },
+    });
+    return deletedUser;
+  } catch (error) {
+    console.log(error);
+  }
+
 }

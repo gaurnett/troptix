@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    if (user !== undefined) {
+    if (user?.id) {
       router.push('/');
     }
   }, [router, user]);

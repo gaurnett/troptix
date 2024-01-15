@@ -1,6 +1,6 @@
 import { CustomInput } from "@/components/ui/input";
+import { DelegatedAccess } from "@/hooks/types/DelegatedUser";
 import { Button, Form, Select } from "antd";
-import { DelegatedAccess } from 'troptix-models';
 
 export default function UserDelegationForm({ onClose, selectedUser, setSelectedUser, saveUser }) {
 
@@ -11,17 +11,10 @@ export default function UserDelegationForm({ onClose, selectedUser, setSelectedU
     }))
   }
 
-  function handleNumberChange(name, value) {
-    setSelectedUser(previousUser => ({
-      ...previousUser,
-      [name]: value,
-    }))
-  }
-
   function handleSelectChange(value: string) {
     setSelectedUser(previousUser => ({
       ...previousUser,
-      ["ticketingFees"]: value,
+      ["delegatedAccess"]: value,
     }))
   };
 
@@ -42,7 +35,7 @@ export default function UserDelegationForm({ onClose, selectedUser, setSelectedU
             <Select
               className="sm:w-screen w-full md:w-52 h-12 text-gray-800"
               id="delegatedAccess"
-              defaultValue={DelegatedAccess.PERCENTAGE}
+              placeholder={"Select user role"}
               onChange={handleSelectChange}
               value={selectedUser.delegatedAccess}
               options={[

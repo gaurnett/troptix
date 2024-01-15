@@ -1,10 +1,11 @@
+import { Order } from "@/hooks/types/Order";
 import { Button, Input, List } from "antd";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function OrderListPage({ orders }) {
   const [searchValue, setSearchValue] = useState("");
-  const [orderList, setOrderList] = useState<any[]>(orders);
+  const [orderList, setOrderList] = useState<Order[]>(orders);
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     const searchText = event.target.value;
@@ -13,15 +14,20 @@ export default function OrderListPage({ orders }) {
   }
 
   function doesStringInclude(string1: string, string2: string) {
+    if (!string1 || !string2) return false;
+
     return string1.toLowerCase().includes(string2.toLowerCase());
   }
 
   function filterList(value: string) {
-    if (value === "" || value === undefined) {
+    if (!value) {
       setOrderList(orders);
     } else {
-      setOrderList(orders.filter(order =>
-        doesStringInclude(order.id, value) || doesStringInclude(order.user.name, value) || doesStringInclude(order.user.email, value)
+      setOrderList(orders.filter(order => {
+        if (!order || !order.user) return false;
+
+        return doesStringInclude(order.id, value) || doesStringInclude(order.user.name, value) || doesStringInclude(order.user.email, value)
+      }
       ));
     }
   }
@@ -31,7 +37,7 @@ export default function OrderListPage({ orders }) {
       <div>
         <div className="flex flex-wrap -mx-3 mb-4">
           <div className="w-full px-3">
-            <Input placeholder={"Search order number, email, or name"} onChange={handleChange} name={"search"} value={searchValue} id={"search"} type={"text"} classNames={{ input: "form-input w-full text-gray-800" }} />
+            <Input defaultValue={""} autoComplete="off" placeholder={"Search order number, email, or name"} onChange={handleChange} name={"search"} value={searchValue} id={"search"} type={"text"} classNames={{ input: "form-input w-full text-gray-800" }} />
           </div>
         </div>
 
@@ -42,7 +48,7 @@ export default function OrderListPage({ orders }) {
           pagination={{
             pageSize: 8,
           }}
-          renderItem={(order: any) => (
+          renderItem={(order: Order) => (
             <List.Item
               actions={[
                 <Link key="receipt" target="_blank" rel="noopener noreferrer" href={{ pathname: "/order-confirmation", query: { orderId: order.id } }}>
@@ -54,8 +60,8 @@ export default function OrderListPage({ orders }) {
                 <div className="flex">
                   <div className="my-auto">
                     <div>{String(order.id).toUpperCase()}</div>
-                    <div>{order.user ? order.user?.name : order.name}</div>
-                    <div>{order.user ? order.user.email : order.email}</div>
+                    <div>{order.firstName + " " + order.lastName}</div>
+                    <div>{order.email}</div>
                   </div>
                 </div>
               </div>

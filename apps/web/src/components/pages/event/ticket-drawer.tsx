@@ -67,7 +67,7 @@ export default function TicketDrawer({ event, isTicketModalOpen, handleCancel })
       onSuccess: (data) => {
         const { paymentId, customerId, clientSecret } = data;
 
-        createOrder.mutate({ checkout, paymentId, customerId, userId: user.id }, {
+        createOrder.mutate({ checkout, paymentId, customerId, userId: user.id, jwtToken: user.jwtToken as string }, {
           onSuccess: (data) => {
             setClientSecret(clientSecret);
             setOrderId(data as string);

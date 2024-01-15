@@ -8,16 +8,16 @@ import { useContext } from "react";
 
 export default function ManageEventsPage() {
   const { user } = useContext(TropTixContext);
-  const userId = user === null || user === undefined ? null : user.id;
 
   const { isPending, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_BY_ORGANIZER,
-    id: userId,
+    jwtToken: user.jwtToken,
+    id: user.id
   });
 
   return (
     <div className="w-full md:max-w-2xl mx-auto">
-      <div className="mx-4">
+      <div>
         <h1
           className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
           data-aos="zoom-y-out"
@@ -47,7 +47,7 @@ export default function ManageEventsPage() {
                           width={110}
                           height={110}
                           className="w-auto"
-                          style={{ objectFit: "cover" }}
+                          style={{ objectFit: "cover", width: 150, height: 150 }}
                           src={
                             event.imageUrl !== null
                               ? event.imageUrl
