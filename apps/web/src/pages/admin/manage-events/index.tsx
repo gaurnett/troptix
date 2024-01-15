@@ -17,7 +17,7 @@ export default function ManageEventsPage() {
 
   return (
     <div className="w-full md:max-w-2xl mx-auto">
-      <div className="mx-4">
+      <div>
         <h1
           className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
           data-aos="zoom-y-out"
@@ -47,7 +47,7 @@ export default function ManageEventsPage() {
                           width={110}
                           height={110}
                           className="w-auto"
-                          style={{ objectFit: "cover", height: 120, width: 120 }}
+                          style={{ objectFit: "cover", width: 150, height: 150 }}
                           src={
                             event.imageUrl !== null
                               ? event.imageUrl

@@ -16,10 +16,10 @@ export default function PrivacyPolicy() {
 
 function policy() {
   return (
-    <div className="text-base">
+    <div className="text-base mx-6">
       <p>Welcome to TropTix!</p>
       <br />
-      <p>These terms and conditions outline the rules and regulations for the use of Tech Brewery LLC&apos;s Website, located at https://usetroptix.com.</p>
+      <p>These terms and conditions outline the rules and regulations for the use of Tech Brewery LLC&apos;s Website, located at <a className="underline" href="https://www.usetroptix.com" target="_blank" data-custom-class="link">www.usetroptix.com</a>.</p>
       <br />
       <p>By accessing this website we assume you accept these terms and conditions. Do not continue to use TropTix if you do not agree to take all of the terms and conditions stated on this page.</p>
       <br />
