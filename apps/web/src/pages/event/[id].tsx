@@ -6,7 +6,7 @@ import { MetaHead } from "@/components/utils/MetaHead";
 import {
   RequestType,
   eventFetcher,
-  useFetchEventsById,
+  useFetchEventsById
 } from "@/hooks/useFetchEvents";
 import { getDateFormatter, getFormattedCurrency } from "@/lib/utils";
 import { Button, Modal, Result, Typography } from "antd";
@@ -40,6 +40,7 @@ export async function getStaticProps({ params }) {
     requestType: RequestType.GET_EVENTS_BY_ID,
     id: id,
   });
+
   return {
     props: {
       event,
@@ -51,8 +52,8 @@ export async function getStaticProps({ params }) {
 export default function EventDetailPage(props) {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const router = useRouter();
-  const { user } = useContext(TropTixContext)
-  const eventId = router.query.eventId as string;
+  const { user } = useContext(TropTixContext);
+  const eventId = router.query.id as string;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(
@@ -104,7 +105,7 @@ export default function EventDetailPage(props) {
     setIsTicketModalOpen(true);
   }
 
-  if (isPending) {
+  if (isPending || !event) {
     return (
       <div className="mt-32">
         <Spinner text={"Fetching Event"} />
@@ -282,6 +283,7 @@ export default function EventDetailPage(props) {
                     Description
                   </h2>
                   <Paragraph
+                    style={{ whiteSpace: 'pre-line' }}
                     className="mt-2 text-justify text-base"
                     ellipsis={{
                       rows: 2,

@@ -9,7 +9,8 @@
     "dev": "npm-run-all --parallel next"
   },
   "workspaces": [
-    "apps/*",
+    "apps/server",
+    "apps/web",
     "packages/*"
   ],
   "keywords": [],

@@ -1,3 +1,4 @@
+import { allowCors } from "../lib/auth";
 import { sendEmailToUser } from "../lib/emailHelper";
 import { getBuffer, updateSuccessfulOrder, updateTicketTypeQuantitySold } from "../lib/orderHelper";
 import prisma from "../prisma/prisma";
@@ -9,14 +10,12 @@ const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
 // stripe trigger payment_intent.succeeded
 // stripe listen --forward-to localhost:3001/api/stripe
 
-export default async function handler(request, response) {
+async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
     return response.status(500).json({ error: 'No method found for stripe endpoint' });
   }
-
-  console.log(body);
 
   switch (method) {
     case "POST":
@@ -27,6 +26,8 @@ export default async function handler(request, response) {
       return response.status(500).json("No type set");
   }
 }
+
+module.exports = allowCors(handler);
 
 async function postOrders(request, response) {
   const { body, headers } = request;

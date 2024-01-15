@@ -1,6 +1,7 @@
 "use client";
 
 import { TROPTIX_ORGANIZER_ALLOW_LIST } from '@/firebase/remoteConfig';
+import { User, initializeUser } from '@/hooks/types/User';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Analytics } from '@vercel/analytics/react';
 import { Spin } from "antd";
@@ -11,7 +12,6 @@ import { Inter } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
-import { User, setUserFromResponse } from "troptix-models";
 import { app, auth } from "../config";
 import AdminHeader from "./ui/admin-header";
 import Header from "./ui/header";
@@ -22,15 +22,20 @@ const inter = Inter({
   display: "swap",
 });
 
+const emptyUser: User = {
+  id: '',
+  jwtToken: ''
+}
+
 export const TropTixContext = createContext({
-  user: new User(),
-  setUser: (user: any) => { },
+  user: emptyUser,
 });
+
 export const useTropTixContext = () => useContext(TropTixContext);
 
 export default function WebNavigator({ Component, pageProps }: AppProps) {
   const pathname = usePathname();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -38,7 +43,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
     if (
       (pathname.includes("admin") || pathname.includes("account")) &&
       !loading &&
-      !user
+      !user?.id
     ) {
       router.push("/auth/signup");
     }
@@ -78,14 +83,14 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
       return isOrganizer;
     }
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        let currentUser = setUserFromResponse(null, user);
-        currentUser.isOrganizer = await isUserAnOrganizer(currentUser.id);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        let currentUser = await initializeUser(firebaseUser);
+        currentUser.isOrganizer = await isUserAnOrganizer(currentUser.id as string);
         setUser(currentUser);
         setLoading(false);
       } else {
-        setUser(null);
+        setUser(emptyUser);
         setLoading(false);
       }
     });
@@ -93,19 +98,14 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
     return () => unsubscribe();
   }, []);
 
+  if (loading && pathname !== '/' && pathname !== '/home') {
+    return (<></>);
+  }
+
   return (
-    <TropTixContext.Provider
-      value={
-        user === undefined || user === null
-          ? {
-            user: undefined,
-            setUser: (user: any) => { },
-          }
-          : {
-            user: user,
-            setUser: setUser,
-          }
-      }
+    <TropTixContext.Provider value={{
+      user: user as User,
+    }}
     >
       {loading && (pathname === '/' || pathname === '/home') ? (
         <>

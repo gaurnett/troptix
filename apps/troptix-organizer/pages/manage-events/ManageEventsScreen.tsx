@@ -1,43 +1,24 @@
-import _ from 'lodash';
-import { useCallback, useContext, useEffect, useState } from 'react';
-import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { Text, View, Card, Colors, CardProps, Button, LoaderScreen, FloatingButton, FloatingButtonLayouts } from 'react-native-ui-lib';
-import { Event, getEventsFromRequest } from 'troptix-models';
-import { TropTixResponse, getEvents, GetEventsRequest, GetEventsType } from 'troptix-api';
-import { TropTixContext } from '../../App';
 import { Image } from 'expo-image';
+import _ from 'lodash';
+import { useCallback, useContext, useState } from 'react';
+import { RefreshControl, ScrollView } from 'react-native';
+import { Card, Colors, LoaderScreen, Text, View } from 'react-native-ui-lib';
+import { TropTixContext } from '../../App';
+import { RequestType, useFetchEventsById } from '../../hooks/useFetchEvents';
 
 export default function ManageEventsScreen({ navigation }) {
-  const [user, setUser] = useContext(TropTixContext);
-  const [isFetchingEvents, setIsFetchingEvents] = useState(true);
-  const [events, setEvents] = useState<Event[]>([]);
+  const { user } = useContext(TropTixContext);
+  const userId = user ? user.id : null;
   const [refreshing, setRefreshing] = useState(false);
 
-  const fetchEvents = async () => {
-    try {
-      const getEventsRequest: GetEventsRequest = {
-        getEventsType: GetEventsType.GET_EVENTS_BY_ORGANIZER,
-        organizerId: user.id
-      }
-      const response = await getEvents(getEventsRequest);
-
-      if (response !== undefined && response.length !== 0) {
-        setEvents(getEventsFromRequest(response));
-      }
-    } catch (error) {
-      console.log("ManageEventsScreen [fetchEvents] error: " + error)
-    }
-
-    setIsFetchingEvents(false);
-  };
-
-  useEffect(() => {
-    fetchEvents();
-  }, []);
+  const { isLoading, isError, data, error } = useFetchEventsById({
+    requestType: RequestType.GET_EVENTS_BY_ORGANIZER,
+    id: userId,
+    jwtToken: user?.jwtToken
+  });
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await fetchEvents();
     setRefreshing(false);
   }, []);
 
@@ -58,7 +39,7 @@ export default function ManageEventsScreen({ navigation }) {
   }
 
   function renderEvents() {
-    return _.map(events, (event, i) => {
+    return _.map(data, (event, i) => {
       return (
         <Card
           key={i}
@@ -89,11 +70,6 @@ export default function ManageEventsScreen({ navigation }) {
             <Text text70 $textDefault>
               {event.address}
             </Text>
-
-            <Text text70 color={Colors.$textSuccess}>
-              $200
-              {/* {event.price} */}
-            </Text>
           </View>
         </Card>
       );
@@ -103,14 +79,14 @@ export default function ManageEventsScreen({ navigation }) {
   return (
     <View style={{ flex: 1, height: '100%', backgroundColor: 'white' }}>
       {
-        isFetchingEvents ?
+        isLoading ?
           <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <LoaderScreen message={'Fetching events'} color={Colors.grey40} />
           </View>
           :
           <View>
             {
-              events.length === 0 ?
+              data.length === 0 ?
                 <View style={{ alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%" }}>
                   <Image source={require('../../assets/icons/empty-events.png')} width={120} height={120} />
                   <Text marginT-24 style={{ fontSize: 24 }}>No events managed</Text>
@@ -127,7 +103,7 @@ export default function ManageEventsScreen({ navigation }) {
                   </ScrollView>
                 </View>
             }
-            <View>
+            {/* <View>
               <FloatingButton
                 visible={true}
                 button={{
@@ -137,7 +113,7 @@ export default function ManageEventsScreen({ navigation }) {
                 buttonLayout={FloatingButtonLayouts.HORIZONTAL}
                 bottomMargin={16}
               />
-            </View>
+            </View> */}
           </View>
       }
     </View>

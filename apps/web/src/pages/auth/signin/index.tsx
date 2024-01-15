@@ -2,6 +2,7 @@
 
 import { TropTixContext } from '@/components/WebNavigator';
 import { signInWithEmail, signInWithGoogle } from '@/firebase/auth';
+import { isInputBad, isValidEmail } from '@/lib/utils';
 import { Button, Form, message } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -23,12 +24,33 @@ export default function SignInPage() {
   }
 
   useEffect(() => {
-    if (user !== undefined) {
+    if (user?.id) {
       router.back();
     }
   }, [router, user]);
 
+  function areSignUpFieldsBad(): boolean {
+    return isInputBad(email)
+      || isInputBad(password);
+  }
+
   async function onFinish(values: any) {
+    if (!isValidEmail(email)) {
+      messageApi.open({
+        type: "error",
+        content: "Please Enter a valid email",
+      });
+      return;
+    }
+
+    if (areSignUpFieldsBad()) {
+      messageApi.open({
+        type: "error",
+        content: "There is an issue signing in. Please try again",
+      });
+      return;
+    }
+
     let { result, error } = await signInWithEmail(email, password);
 
     if (error) {

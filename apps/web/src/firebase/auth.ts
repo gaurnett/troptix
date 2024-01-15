@@ -1,3 +1,5 @@
+import { User } from "@/hooks/types/User";
+import { useCreateUser } from "@/hooks/useUser";
 import { SignUpFields } from "@/pages/auth/signup";
 import {
   GoogleAuthProvider,
@@ -9,7 +11,6 @@ import {
   updateProfile
 } from "firebase/auth";
 import { addUser } from "troptix-api";
-import { User } from "troptix-models";
 import { auth } from "../config";
 
 export async function signUpWithEmail(
@@ -26,12 +27,14 @@ export async function signUpWithEmail(
       await updateProfile(result.user, { displayName });
 
       const userResult = result.user;
-      const user = new User();
-      user.id = userResult.uid;
-      user.firstName = signUpFields.firstName;
-      user.lastName = signUpFields.lastName;
-      user.email = userResult.email;
-      await addUser(user);
+      const user: User = {
+        id: userResult.uid,
+        firstName: signUpFields.firstName,
+        lastName: signUpFields.lastName,
+        email: signUpFields.email
+      };
+
+      const { isPending, isError, data, error } = await useCreateUser(user);
     });
   } catch (e) {
     error = e;
@@ -75,9 +78,11 @@ export async function signInWithGoogle() {
         const additionalInfo = getAdditionalUserInfo(result);
 
         if (additionalInfo?.isNewUser) {
-          const user = new User();
-          user.id = userResult.uid;
-          user.email = userResult.email;
+          const user: User = {
+            id: userResult.uid,
+            email: userResult.email as string
+          };
+
           await addUser(user);
         }
       }

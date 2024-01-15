@@ -1,7 +1,8 @@
-import prisma from "../prisma/prisma";
+import { allowCors } from "../lib/auth";
 import { getPrismaTicketTypeQuery } from "../lib/eventHelper";
+import prisma from "../prisma/prisma";
 
-export default async function handler(request, response) {
+async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -24,6 +25,8 @@ export default async function handler(request, response) {
       break;
   }
 }
+
+module.exports = allowCors(handler);
 
 async function getTicketTypes(request, response) {
   const getTicketTypesType = request.query.getTicketTypesType;
