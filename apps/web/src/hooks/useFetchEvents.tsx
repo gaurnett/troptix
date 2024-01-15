@@ -2,7 +2,6 @@ import { TropTixContext } from "@/components/WebNavigator";
 import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
 
-
 export enum RequestType {
   GET_EVENTS_ALL = "GET_EVENTS_ALL",
   GET_EVENTS_BY_ID = "GET_EVENTS_BY_ID",
