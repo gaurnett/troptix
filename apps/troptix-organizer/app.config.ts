@@ -3,27 +3,32 @@ import { ConfigContext, ExpoConfig } from 'expo/config';
 // first get variabele
 const APP_ENVIRONMENT = process.env.APP_VARIANT;// let's declare variable to store the Google service file.
 let googleServicesPlist: string | undefined = "./GoogleService-Info.plist"; // while developing this file will be the default.
-let apiUrl = "Hello World";
+let webClientId: string | undefined = "912947419048-sark3aqudtojmsci3tk9c6p5ud9o7aes.apps.googleusercontent.com";
+let apiUrl = "http://192.168.1.214:3000";
 
 // then checking which env we are, and based on that choosing
 // the right Google services file to add
 if (APP_ENVIRONMENT === "development") {
   googleServicesPlist = process.env.GOOGLE_SERVICE_INFO_IOS_DEV;
+  webClientId = process.env.WEB_CLIENT_ID;
   apiUrl = "https://troptix-git-dev-flowersgaurnett-gmailcom.vercel.app";
 } else if (APP_ENVIRONMENT === "preview") {
   googleServicesPlist = process.env.GOOGLE_SERVICE_INFO_IOS_DEV;
+  webClientId = process.env.WEB_CLIENT_ID;
   apiUrl = "https://troptix-git-dev-flowersgaurnett-gmailcom.vercel.app";
 } else if (APP_ENVIRONMENT === "preprod") {
   googleServicesPlist = process.env.GOOGLE_SERVICE_INFO_IOS_DEV;
+  webClientId = process.env.WEB_CLIENT_ID;
   apiUrl = "https://troptix-git-dev-flowersgaurnett-gmailcom.vercel.app";
 } else if (APP_ENVIRONMENT === "prod") {
-  googleServicesPlist = process.env.GOOGLE_SERVICE_INFO_IOS_DEV;
-  apiUrl = "https://troptix-git-dev-flowersgaurnett-gmailcom.vercel.app";
+  googleServicesPlist = process.env.GOOGLE_SERVICE_INFO_IOS_PROD;
+  webClientId = process.env.WEB_CLIENT_ID;
+  apiUrl = "https://api.usetroptix.com";
 }
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  version: '1.0.8',
+  version: '1.1.0',
   slug: 'troptix-organizer',
   icon: './assets/icon.png',
   name: process.env.APP_NAME || 'TropTix Organizer',
@@ -40,6 +45,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   extra: {
     apiUrl: apiUrl,
+    webClientId: webClientId,
     environment: process.env.APP_VARIANT,
     test: "test",
     eas: {
