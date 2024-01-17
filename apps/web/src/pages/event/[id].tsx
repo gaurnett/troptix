@@ -6,7 +6,7 @@ import { MetaHead } from "@/components/utils/MetaHead";
 import {
   RequestType,
   eventFetcher,
-  useFetchEventsById
+  useFetchEventsById,
 } from "@/hooks/useFetchEvents";
 import { getDateFormatter, getFormattedCurrency } from "@/lib/utils";
 import { Button, Modal, Result, Typography } from "antd";
@@ -138,9 +138,10 @@ export default function EventDetailPage(props) {
       />
       <div
         style={{
-          backgroundImage: `url("${event?.imageUrl ??
+          backgroundImage: `url("${
+            event?.imageUrl ??
             "https://placehold.co/400x400?text=Add+Event+Flyer"
-            }")`,
+          }")`,
           backgroundRepeat: "no-repeat",
           backgroundSize: "cover",
           WebkitBackgroundSize: "cover",
@@ -170,25 +171,20 @@ export default function EventDetailPage(props) {
           <Result
             title="Please log in/sign up to buy tickets"
             extra={[
-              <Link
-                href={{ pathname: "/auth/signin" }}
-                key={"tickets"}>
-                <Button
-                  className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+              <Link href={{ pathname: "/auth/signin" }} key={"tickets"}>
+                <Button className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
                   Log in
                 </Button>
               </Link>,
-              <Link
-                href={{ pathname: "/auth/signup" }}
-                key={"tickets"}>
+              <Link href={{ pathname: "/auth/signup" }} key={"tickets"}>
                 <Button
-                  type='primary'
-                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  type="primary"
+                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
+                >
                   Sign up
                 </Button>
-              </Link>
-            ]
-            }
+              </Link>,
+            ]}
           />
         </Modal>
         <div className="w-full md:min-h-screen flex backdrop-blur-3xl">
@@ -205,44 +201,48 @@ export default function EventDetailPage(props) {
                   alt={event.name}
                   className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg"
                 />
-                {
-                  user ?
-                    <Button
-                      type="primary"
-                      onClick={openModal}
-                      className="w-full px-6 py-6 shadow-md items-center text-base bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
-                      icon={<IoTicket className='text-base' />}>
-                      Buy Tickets
-                    </Button>
-                    :
-                    <div className="w-5/6 md:w-full mx-auto bg-white bg-opacity-80 py-4 rounded-lg">
-                      <div className="text-center text-base font-extrabold">You must have a TropTix account to purchase tickets.</div>
-                      <div className="flex mx-auto text-center mt-4">
-                        <div className="w-full ml-4 mr-2">
-                          <Link
-                            className=""
-                            href={{ pathname: "/auth/signin" }}
-                            key={"tickets"}>
-                            <Button
-                              className="w-full p-5 shadow-md items-center justify-center font-medium inline-flex">
-                              Log in
-                            </Button>
-                          </Link>
-                        </div>
-                        <div className="w-full mr-4 ml-2">
-                          <Link
-                            href={{ pathname: "/auth/signup" }}
-                            key={"tickets"}>
-                            <Button
-                              type='primary'
-                              className="w-full bg-blue-600 hover:bg-blue-700 p-5 shadow-md items-center justify-center font-medium inline-flex">
-                              Sign up
-                            </Button>
-                          </Link>
-                        </div>
+                {user.id ? (
+                  <Button
+                    type="primary"
+                    onClick={openModal}
+                    className="w-full px-6 py-6 shadow-md items-center text-base bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
+                    icon={<IoTicket className="text-base" />}
+                  >
+                    Buy Tickets
+                  </Button>
+                ) : (
+                  <div className="w-5/6 md:w-full mx-auto bg-white bg-opacity-80 py-4 rounded-lg">
+                    <div className="text-center text-base font-extrabold">
+                      You must have a TropTix account to purchase tickets.
+                    </div>
+                    <div className="flex mx-auto text-center mt-4">
+                      <div className="w-full ml-4 mr-2">
+                        <Link
+                          className=""
+                          href={{ pathname: "/auth/signin" }}
+                          key={"tickets"}
+                        >
+                          <Button className="w-full p-5 shadow-md items-center justify-center font-medium inline-flex">
+                            Log in
+                          </Button>
+                        </Link>
+                      </div>
+                      <div className="w-full mr-4 ml-2">
+                        <Link
+                          href={{ pathname: "/auth/signup" }}
+                          key={"tickets"}
+                        >
+                          <Button
+                            type="primary"
+                            className="w-full bg-blue-600 hover:bg-blue-700 p-5 shadow-md items-center justify-center font-medium inline-flex"
+                          >
+                            Sign up
+                          </Button>
+                        </Link>
                       </div>
                     </div>
-                }
+                  </div>
+                )}
               </aside>
               <div className="w-full md:ml-8 bg-white bg-opacity-80 p-6 rounded-lg">
                 <div className="mb-8">
@@ -252,7 +252,9 @@ export default function EventDetailPage(props) {
                   >
                     {event.name}
                   </h1>
-                  <div className="text-xl font-extrabold">{event.organizer}</div>
+                  <div className="text-xl font-extrabold">
+                    {event.organizer}
+                  </div>
                   <div className="text-xl">{event.venue}</div>
                   <div className="text-xl text-blue-500">
                     {getDateFormatter(new Date(event.startDate))}
@@ -283,7 +285,7 @@ export default function EventDetailPage(props) {
                     Description
                   </h2>
                   <Paragraph
-                    style={{ whiteSpace: 'pre-line' }}
+                    style={{ whiteSpace: "pre-line" }}
                     className="mt-2 text-justify text-base"
                     ellipsis={{
                       rows: 2,
