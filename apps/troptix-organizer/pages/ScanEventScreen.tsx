@@ -84,7 +84,6 @@ export default function ScanEventScreen({ route, navigation }) {
 
     createTicket.mutate(request, {
       onSuccess: (data) => {
-        console.log(data);
         setDialogData(data);
         setShowDialog(true);
         setShowToast(false);
@@ -92,13 +91,13 @@ export default function ScanEventScreen({ route, navigation }) {
       onError: (error) => {
         setShowToast(false);
         setShowToast(true);
+        setScanned(false);
         setToastSettings({
           toastMessage: "Failed to scan ticket, please try again.",
           toastDismiss: 2000,
           showLoader: false,
           toastIcon: require('../assets/icons/close.png')
-        })
-        return;
+        });
       },
     });
   }

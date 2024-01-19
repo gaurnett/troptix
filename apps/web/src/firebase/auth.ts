@@ -1,5 +1,4 @@
 import { User } from "@/hooks/types/User";
-import { useCreateUser } from "@/hooks/useUser";
 import { SignUpFields } from "@/pages/auth/signup";
 import {
   GoogleAuthProvider,
@@ -34,7 +33,7 @@ export async function signUpWithEmail(
         email: signUpFields.email
       };
 
-      const { isPending, isError, data, error } = await useCreateUser(user);
+      await addUser(user);
     });
   } catch (e) {
     error = e;
