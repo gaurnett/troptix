@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import {
@@ -9,6 +9,7 @@ import {
   Toast,
   View
 } from 'react-native-ui-lib';
+import { TropTixContext } from '../../App';
 import { Ticket, TicketStatus } from '../../hooks/types/Ticket';
 import { PostTicketRequest, PostTicketType, useCreateTicket } from '../../hooks/useTicket';
 
@@ -28,6 +29,7 @@ type ToastSettings = {
 
 export default function OrdersGuestList({ orders }) {
   const [guests, setGuests] = useState<Ticket[]>([]);
+  const { user } = useContext(TropTixContext);
   const [originalGuestList, setOriginalGuestList] = useState<Ticket[]>([])
   const [toastSettings, setToastSettings] = useState<ToastSettings>({});
   const [showToast, setShowToast] = useState(false);
@@ -98,7 +100,8 @@ export default function OrdersGuestList({ orders }) {
 
     const request: PostTicketRequest = {
       type: PostTicketType.UPDATE_STATUS,
-      ticket: updatedTicket
+      ticket: updatedTicket,
+      jwtToken: user?.jwtToken
     }
 
     createTicket.mutate(request, {

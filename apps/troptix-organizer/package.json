@@ -23,6 +23,7 @@
     "@react-navigation/native": "^6.1.7",
     "@react-navigation/native-stack": "^6.9.13",
     "@react-navigation/stack": "^6.3.17",
+    "@tanstack/react-query": "^5.17.12",
     "@types/react": "~18.2.14",
     "antd": "^5.12.5",
     "date-fns": "^2.30.0",
