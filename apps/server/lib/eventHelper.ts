@@ -68,8 +68,6 @@ export async function getEventsScannableByOrganizerIdQuery(userId: string) {
 }
 
 export async function getEventsByOrganizerIdQuery(userId: string) {
-  console.log(userId);
-
   const events = await prismaClient.events.findMany({
     where: {
       organizerUserId: userId,
