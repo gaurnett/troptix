@@ -156,12 +156,14 @@ export default function OrderDetailsPage() {
 
   if (!order) {
     return (
-      <Result
-        status="error"
-        title="No Order Found"
-        className="mt-32"
-        subTitle="No order found with that Order ID."
-      />
+      <div className="md:w-1/2 mx-auto">
+        <Result
+          status="error"
+          title="No Order Found"
+          className="mt-32"
+          subTitle="No order found with that Order ID. Your order may still be processing so keep an eye out for your email confirmation and check back later. Please contact us if you have any further questions."
+        />
+      </div>
     )
   }
 

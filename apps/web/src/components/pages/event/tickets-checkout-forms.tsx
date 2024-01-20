@@ -243,7 +243,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
         </div>
         <div className="flex justify-between">
           <div className="mb-4 w-full">
-            <CustomInput value={checkout.email} name={"email"} id={"email"} label={"Email *"} type={"text"} placeholder={"johndoe@gmail.com"} handleChange={handleChange} required={true} />
+            <CustomInput disabled={true} value={checkout.email} name={"email"} id={"email"} label={"Email *"} type={"text"} placeholder={"johndoe@gmail.com"} handleChange={handleChange} required={true} />
           </div>
         </div>
 

@@ -10,12 +10,14 @@ import { Button, Colors, Image, Text, View } from 'react-native-ui-lib';
 export default function SignInScreen({ navigation }) {
   const [isAppleLoginAvailable, setIsAppleLoginAvailable] = React.useState(false);
 
+  console.log(process.env.WEB_CLIENT_ID);
+
   React.useEffect(() => {
     AppleAuthentication.isAvailableAsync().then(setIsAppleLoginAvailable);
   }, []);
 
   GoogleSignin.configure({
-    webClientId: '912947419048-sark3aqudtojmsci3tk9c6p5ud9o7aes.apps.googleusercontent.com',
+    webClientId: process.env.WEB_CLIENT_ID,
   });
 
   const headerHeight = useHeaderHeight();

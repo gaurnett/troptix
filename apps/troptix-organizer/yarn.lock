@@ -2357,6 +2357,18 @@
     deepmerge "^4.3.1"
     svgo "^3.0.2"
 
+"@tanstack/query-core@5.17.10":
+  version "5.17.10"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-5.17.10.tgz#8b799f4a973ca1e2da8936b27aadc472900e6f36"
+  integrity sha512-bJ2oQUDBftvHcEkLS3gyzzShSeZpJyzNNRu8oHK13iNdsofyaDXtNO/c1Zy/PZYVX+PhqOXwoT42gMiEMRSSfQ==
+
+"@tanstack/react-query@^5.17.12":
+  version "5.17.12"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-5.17.12.tgz#7d5c05615f02a5f27a792e4a8019a85c86630d00"
+  integrity sha512-mJQ+3da1ug4t9b+GycUuNzMs5hd6t+F4tJ1hqyaN/dlETP+bWwYwrv2GXFIbZIfI1K1Hu+XWZ6HUhRPbNtZ4QQ==
+  dependencies:
+    "@tanstack/query-core" "5.17.10"
+
 "@trysound/sax@0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@trysound/sax/-/sax-0.2.0.tgz#cccaab758af56761eb7bf37af6f03f326dd798ad"
