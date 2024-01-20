@@ -53,7 +53,7 @@ export default function OrderDetailsPage() {
       .open({
         key: 'update-ticket-loading',
         type: 'loading',
-        content: 'Updating Ticket..',
+        content: 'Updating Ticket...',
         duration: 0,
       });
 
