@@ -1,5 +1,12 @@
-import { DelegatedAccess, OrderStatus, Prisma, PrismaClient, TicketStatus, TicketType } from '@prisma/client';
-import prisma from "../prisma/prisma";
+import {
+  DelegatedAccess,
+  OrderStatus,
+  Prisma,
+  PrismaClient,
+  TicketStatus,
+  TicketType,
+} from '@prisma/client';
+import prisma from '../prisma/prisma';
 import { adminUserIds } from './experimentHelper';
 
 const prismaClient = prisma as PrismaClient;
@@ -13,9 +20,9 @@ export async function getAllEventsQuery(userId: string) {
       where: {
         isDraft: false,
         startDate: {
-          gte: new Date()
-        }
-      }
+          gte: new Date(),
+        },
+      },
     });
   }
 
@@ -27,13 +34,13 @@ export async function getAllEventsQuery(userId: string) {
       isDraft: false,
       NOT: {
         organizerUserId: {
-          in: adminUserIds
-        }
+          in: adminUserIds,
+        },
       },
       startDate: {
-        gte: new Date()
-      }
-    }
+        gte: new Date(),
+      },
+    },
   });
 }
 
@@ -46,20 +53,20 @@ export async function getEventsScannableByOrganizerIdQuery(userId: string) {
 
   const scannableEvents = await prismaClient.delegatedUsers.findMany({
     select: {
-      event: true
+      event: true,
     },
     where: {
       userId: userId,
       OR: [
         { delegatedAccess: DelegatedAccess.OWNER },
-        { delegatedAccess: DelegatedAccess.TICKET_SCANNER }
-      ]
+        { delegatedAccess: DelegatedAccess.TICKET_SCANNER },
+      ],
     },
   });
 
   let scannedEvents = [];
   if (scannableEvents.length !== 0) {
-    scannableEvents.forEach(scannableEvent => {
+    scannableEvents.forEach((scannableEvent) => {
       scannedEvents.push(scannableEvent.event);
     });
   }
@@ -79,24 +86,23 @@ export async function getEventsByOrganizerIdQuery(userId: string) {
 
   const ownedEvents = await prismaClient.delegatedUsers.findMany({
     select: {
-      event: true
+      event: true,
     },
     where: {
       userId: userId,
-      delegatedAccess: DelegatedAccess.OWNER
+      delegatedAccess: DelegatedAccess.OWNER,
     },
   });
 
   let ownerEvents = [];
   if (ownedEvents.length !== 0) {
-    ownedEvents.forEach(event => {
+    ownedEvents.forEach((event) => {
       ownerEvents.push(event.event);
     });
   }
 
   return events.concat(ownerEvents);
 }
-
 
 export async function getEventByIdQuery(id: string) {
   return prismaClient.events.findUnique({
@@ -108,7 +114,6 @@ export async function getEventByIdQuery(id: string) {
     },
   });
 }
-
 
 export function getPrismaTicketTypeQuery(ticket) {
   let ticketInput: Prisma.TicketTypesUpdateInput;
@@ -124,12 +129,12 @@ export function getPrismaTicketTypeQuery(ticket) {
     ticketingFees: ticket.ticketingFees,
     event: {
       connect: {
-        id: ticket.eventId
-      }
-    }
-  }
+        id: ticket.eventId,
+      },
+    },
+  };
 
-  return ticketInput
+  return ticketInput;
 }
 
 export function getPrismaUpdateEventQuery(event) {
@@ -150,7 +155,7 @@ export function getPrismaUpdateEventQuery(event) {
     latitude: event.latitude,
     longitude: event.longitude,
     country: event.country,
-  }
+  };
 
   return eventInput;
 }
@@ -172,7 +177,7 @@ export function getPrismaCreateStarterEventQuery(event) {
     latitude: event.latitude,
     longitude: event.longitude,
     country: event.country,
-  }
+  };
 
   return eventInput;
 }
@@ -194,13 +199,13 @@ export function getPrismaCreateOrderQuery(order) {
       firstName: order.firstName,
       lastName: order.lastName,
       email: order.email,
-    }
+    };
 
     if (order.userId) {
       ticketInput = {
         ...ticketInput,
-        userId: order.userId
-      }
+        userId: order.userId,
+      };
     }
 
     orderTickets.push(ticketInput);
@@ -227,25 +232,25 @@ export function getPrismaCreateOrderQuery(order) {
     ticketsLink: order.ticketsLink,
     event: {
       connect: {
-        id: order.eventId
-      }
+        id: order.eventId,
+      },
     },
     tickets: {
       createMany: {
         data: orderTickets,
       },
     },
-  }
+  };
 
   if (order.userId !== undefined) {
     orderInput = {
       ...orderInput,
       user: {
         connect: {
-          id: order.userId
-        }
+          id: order.userId,
+        },
       },
-    }
+    };
   }
 
   return orderInput;
@@ -267,8 +272,8 @@ export function getPrismaCreateComplementaryOrderQuery(order) {
       subtotal: 0,
       firstName: order.firstName,
       lastName: order.lastName,
-      email: order.email
-    })
+      email: order.email,
+    });
   }
 
   orderInput = {
@@ -283,25 +288,25 @@ export function getPrismaCreateComplementaryOrderQuery(order) {
     email: order.email,
     event: {
       connect: {
-        id: order.eventId
-      }
+        id: order.eventId,
+      },
     },
     tickets: {
       createMany: {
         data: orderTickets,
       },
     },
-  }
+  };
 
   if (order.userId !== undefined) {
     orderInput = {
       ...orderInput,
       user: {
         connect: {
-          id: order.userId
-        }
+          id: order.userId,
+        },
       },
-    }
+    };
   }
 
   return orderInput;

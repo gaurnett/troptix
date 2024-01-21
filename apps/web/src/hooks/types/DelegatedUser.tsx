@@ -1,4 +1,4 @@
-import { generateId } from "@/lib/utils";
+import { generateId } from '@/lib/utils';
 
 export enum DelegatedAccess {
   OWNER = 'OWNER',
@@ -13,14 +13,14 @@ export type DelegatedUser = {
   email?: string;
   eventId?: string;
   delegatedAccess?: DelegatedAccess;
-}
+};
 
 export function createUser(eventId: string): DelegatedUser {
   const id = generateId();
   let user: DelegatedUser = {
     id: id,
-    eventId: eventId
-  }
+    eventId: eventId,
+  };
 
   return user;
 }

@@ -1,4 +1,8 @@
-import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import {
+  PaymentElement,
+  useElements,
+  useStripe,
+} from '@stripe/react-stripe-js';
 import { message, notification } from 'antd';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
@@ -6,7 +10,8 @@ import { useEffect } from 'react';
 export default function PaymentForm({
   orderId,
   completePurchaseClicked,
-  setCompletePurchaseClicked }) {
+  setCompletePurchaseClicked,
+}) {
   const stripe = useStripe();
   const elements = useElements();
   const [messageApi, contextHolder] = message.useMessage();
@@ -15,11 +20,13 @@ export default function PaymentForm({
   function openNotification(message: string | undefined) {
     notification.error({
       message: `Payment Failed`,
-      description: message ? message : "Your card could not be authorized. Please try again, or contact your card issuer for further details.",
+      description: message
+        ? message
+        : 'Your card could not be authorized. Please try again, or contact your card issuer for further details.',
       placement: 'bottom',
-      duration: 0
+      duration: 0,
     });
-  };
+  }
 
   useEffect(() => {
     async function completeStripePurchase() {
@@ -29,21 +36,20 @@ export default function PaymentForm({
         return;
       }
 
-      messageApi
-        .open({
-          key: 'process-payment-loading',
-          type: 'loading',
-          content: 'Processing Payment..',
-          duration: 0,
-        });
+      messageApi.open({
+        key: 'process-payment-loading',
+        type: 'loading',
+        content: 'Processing Payment..',
+        duration: 0,
+      });
 
       const url = window.location.origin;
 
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: url + `/orders/order-confirmation?orderId=${orderId}`
-        }
+          return_url: url + `/orders/order-confirmation?orderId=${orderId}`,
+        },
       });
 
       messageApi.destroy('process-payment-loading');
@@ -51,9 +57,9 @@ export default function PaymentForm({
         openNotification(error.message);
       } else {
         messageApi.open({
-          type: "success",
-          content: "Ticket purchase successful.",
-          duration: 1.5
+          type: 'success',
+          content: 'Ticket purchase successful.',
+          duration: 1.5,
         });
       }
 
@@ -63,13 +69,20 @@ export default function PaymentForm({
     if (completePurchaseClicked) {
       completeStripePurchase();
     }
-
-  }, [completePurchaseClicked, elements, messageApi, orderId, router, setCompletePurchaseClicked, stripe])
+  }, [
+    completePurchaseClicked,
+    elements,
+    messageApi,
+    orderId,
+    router,
+    setCompletePurchaseClicked,
+    stripe,
+  ]);
 
   return (
     <div className="h-full w-full md:max-w-2xl mx-auto mb-6">
       {contextHolder}
-      <PaymentElement className='grow h-full overflow-hidden p-2' />
+      <PaymentElement className="grow h-full overflow-hidden p-2" />
     </div>
   );
 }

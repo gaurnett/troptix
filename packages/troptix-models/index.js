@@ -1,8 +1,26 @@
 import { Event, getEventsFromRequest } from './event';
 import { TicketType, TicketFeeStructure } from './ticketType';
-import { Ticket, TicketSummary, TicketsSummary, CheckoutTicket } from './ticket';
-import { Order, Charge, Checkout, OrderSummary, createTicketOrder, ComplementaryOrder, ComplementaryTicket } from './order';
-import { User, setUserFromResponse, SocialMediaAccount, SocialMediaAccountType } from './user';
+import {
+  Ticket,
+  TicketSummary,
+  TicketsSummary,
+  CheckoutTicket,
+} from './ticket';
+import {
+  Order,
+  Charge,
+  Checkout,
+  OrderSummary,
+  createTicketOrder,
+  ComplementaryOrder,
+  ComplementaryTicket,
+} from './order';
+import {
+  User,
+  setUserFromResponse,
+  SocialMediaAccount,
+  SocialMediaAccountType,
+} from './user';
 import { DelegatedAccess, DelegatedUser } from './delegatedUser';
 import { PromotionType, Promotion } from './promotions';
 import { generateId } from './idHelper';

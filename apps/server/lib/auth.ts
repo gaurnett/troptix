@@ -1,18 +1,18 @@
 import admin from 'firebase-admin';
 import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
-import jwt from "jsonwebtoken";
+import jwt from 'jsonwebtoken';
 
 const serviceAccount = JSON.parse(
   process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
 );
 
 initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
 export async function verifyUser(request): Promise<any> {
-  let token = "";
+  let token = '';
   let undefinedUser = { userId: undefined, email: undefined };
 
   if (request.headers.authorization) {
@@ -21,7 +21,7 @@ export async function verifyUser(request): Promise<any> {
   }
 
   if (!token) {
-    console.log("No authorized token");
+    console.log('No authorized token');
     return undefinedUser;
   }
 
@@ -37,14 +37,14 @@ export async function verifyUser(request): Promise<any> {
 }
 
 export async function verifyJwtToken(request): Promise<any> {
-  let token = "";
+  let token = '';
   if (request.headers.authorization) {
     const authorization = request.headers.authorization.split(' ');
     token = authorization[1];
   }
 
   if (!token) {
-    console.log("No authorized token");
+    console.log('No authorized token');
     return undefined;
   }
 
@@ -58,10 +58,13 @@ export async function verifyJwtToken(request): Promise<any> {
   }
 }
 
-export const allowCors = fn => async (req, res) => {
+export const allowCors = (fn) => async (req, res) => {
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', "GET, OPTIONS, PATCH, DELETE, POST, PUT");
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, OPTIONS, PATCH, DELETE, POST, PUT'
+  );
   res.setHeader(
     'Access-Control-Allow-Headers',
     'Authorization, Origin, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'

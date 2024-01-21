@@ -1,39 +1,39 @@
 export default function Features() {
   const features = [
     {
-      title: "Create Events",
+      title: 'Create Events',
       description:
-        "Effortlessly plan and manage your own events, from small gatherings to large-scale occasions, offering customization options, ticketing, and promotional tools for a seamless event planning and organization experience for you and your patrons.",
+        'Effortlessly plan and manage your own events, from small gatherings to large-scale occasions, offering customization options, ticketing, and promotional tools for a seamless event planning and organization experience for you and your patrons.',
       icon: FeatureIcons.crossArrows,
     },
     {
-      title: " Sell Tickets Online",
+      title: ' Sell Tickets Online',
       description:
-        "List and sell tickets for their events through a user-friendly platform. It provides a streamlined process for setting prices, managing sales, and reaching a broader audience, simplifying the entire ticket-selling experience.",
+        'List and sell tickets for their events through a user-friendly platform. It provides a streamlined process for setting prices, managing sales, and reaching a broader audience, simplifying the entire ticket-selling experience.',
       icon: FeatureIcons.radar,
     },
     {
-      title: "Ticket Customization",
+      title: 'Ticket Customization',
       description:
         "Tailor and personalize event tickets, allowing for unique branding, specific event details, and varied designs. This feature ensures a professional and distinctive touch to tickets, enhancing the event's overall appeal and memorability.",
       icon: FeatureIcons.zipper,
     },
     {
-      title: "Track Registration",
+      title: 'Track Registration',
       description:
-        "Monitor and manage attendee sign-ups and information. It provides a streamlined system to categorize, organize, and track participant details, ensuring a smooth registration process for different segments or sessions within an event.",
+        'Monitor and manage attendee sign-ups and information. It provides a streamlined system to categorize, organize, and track participant details, ensuring a smooth registration process for different segments or sessions within an event.',
       icon: FeatureIcons.smallStars,
     },
     {
-      title: "Manage Attendees",
+      title: 'Manage Attendees',
       description:
-        "Oversee attendee information, ticket status, and engagement. It enables easy access to attendee data, simplifies check-ins, and facilitates personalized communication, ensuring a seamless and enhanced experience for any user.",
+        'Oversee attendee information, ticket status, and engagement. It enables easy access to attendee data, simplifies check-ins, and facilitates personalized communication, ensuring a seamless and enhanced experience for any user.',
       icon: FeatureIcons.antennaDish,
     },
     {
-      title: "Payouts and Analytics",
+      title: 'Payouts and Analytics',
       description:
-        "See comprehensive insights into ticket sale performance. Easily track your event earnings, facilitate efficient payouts, and see valuable analytics to understand event success, attendee demographics, and revenue trends.",
+        'See comprehensive insights into ticket sale performance. Easily track your event earnings, facilitate efficient payouts, and see valuable analytics to understand event success, attendee demographics, and revenue trends.',
       icon: FeatureIcons.crossArrows,
     },
   ];

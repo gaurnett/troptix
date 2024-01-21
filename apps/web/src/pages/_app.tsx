@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import WebNavigator from "@/components/WebNavigator";
-import { ErrorBoundary } from "react-error-boundary";
-import { MetaHead } from "@/components/utils/MetaHead";
-import "@/styles/globals.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import type { AppProps } from "next/app";
+import WebNavigator from '@/components/WebNavigator';
+import { ErrorBoundary } from 'react-error-boundary';
+import { MetaHead } from '@/components/utils/MetaHead';
+import '@/styles/globals.css';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { AppProps } from 'next/app';
 
-import { withRouter } from "next/router";
-import { ErrorFallback } from "@/components/utils/ErrorFallback";
+import { withRouter } from 'next/router';
+import { ErrorFallback } from '@/components/utils/ErrorFallback';
 
 function App({ Component, pageProps, router }: AppProps) {
   const queryClient = new QueryClient();
@@ -18,13 +18,13 @@ function App({ Component, pageProps, router }: AppProps) {
       key={router.asPath}
       FallbackComponent={ErrorFallback}
       onReset={() => {
-        router.push("/");
+        router.push('/');
       }}
     >
       <>
         <MetaHead
           title="Troptix"
-          description={"Troptix is a better way to get tickets"}
+          description={'Troptix is a better way to get tickets'}
         >
           <meta
             name="viewport"

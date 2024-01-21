@@ -1,26 +1,32 @@
-import { allowCors } from "../lib/auth";
-import { getPrismaCreateUserQuery, getPrismaUpdateSocialMediaQuery, getPrismaUpdateUserQuery } from "../lib/userHelper";
-import prisma from "../prisma/prisma";
+import { allowCors } from '../lib/auth';
+import {
+  getPrismaCreateUserQuery,
+  getPrismaUpdateSocialMediaQuery,
+  getPrismaUpdateUserQuery,
+} from '../lib/userHelper';
+import prisma from '../prisma/prisma';
 
 async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
-    return response.status(500).json({ error: 'No method found for events endpoint' });
+    return response
+      .status(500)
+      .json({ error: 'No method found for events endpoint' });
   }
 
   switch (method) {
-    case "POST":
+    case 'POST':
       return addUser(body, response);
-    case "GET":
+    case 'GET':
       const getUserType = request.query.getUsersType;
       const id = request.query.id;
       return getUsers(getUserType, id, response);
-    case "PUT":
+    case 'PUT':
       return putUsers(body, response);
-    case "DELETE":
+    case 'DELETE':
       break;
-    case "OPTIONS":
+    case 'OPTIONS':
       return response.status(200).end();
     default:
       break;
@@ -31,7 +37,9 @@ module.exports = allowCors(handler);
 
 async function addUser(body, response) {
   if (body === undefined || body.user === undefined) {
-    return response.status(500).json({ error: 'No body found in User POST request' });
+    return response
+      .status(500)
+      .json({ error: 'No body found in User POST request' });
   }
 
   try {
@@ -39,7 +47,9 @@ async function addUser(body, response) {
       data: getPrismaCreateUserQuery(body.user),
     });
 
-    return response.status(200).json({ error: null, message: "Successfully added user" });
+    return response
+      .status(200)
+      .json({ error: null, message: 'Successfully added user' });
   } catch (e) {
     return response.status(500).json({ error: 'Error adding user' });
   }
@@ -84,9 +94,10 @@ async function putUsers(body, response) {
 }
 
 async function putUserDetails(body, response) {
-
   if (body === undefined || body.user === undefined) {
-    return response.status(500).json({ error: 'No body found in user PUT request' });
+    return response
+      .status(500)
+      .json({ error: 'No body found in user PUT request' });
   }
 
   const user = body.user;
@@ -99,17 +110,21 @@ async function putUserDetails(body, response) {
       data: getPrismaUpdateUserQuery(user),
     });
 
-    return response.status(200).json({ error: null, message: "Successfully updated user" });
+    return response
+      .status(200)
+      .json({ error: null, message: 'Successfully updated user' });
   } catch (e) {
-    return response.status(500).json({ error: 'Error updating user: ' + JSON.stringify(e) });
+    return response
+      .status(500)
+      .json({ error: 'Error updating user: ' + JSON.stringify(e) });
   }
-
 }
 
 async function putUserSocialMedia(body, response) {
-
   if (body === undefined || body.socialMediaAccount === undefined) {
-    return response.status(500).json({ error: 'No body found in social media PUT request' });
+    return response
+      .status(500)
+      .json({ error: 'No body found in social media PUT request' });
   }
 
   const account = body.socialMediaAccount;
@@ -123,9 +138,12 @@ async function putUserSocialMedia(body, response) {
       create: getPrismaUpdateSocialMediaQuery(account),
     });
 
-    return response.status(200).json({ error: null, message: "Successfully updated social media" });
+    return response
+      .status(200)
+      .json({ error: null, message: 'Successfully updated social media' });
   } catch (e) {
-    return response.status(500).json({ error: 'Error updating social media: ' + JSON.stringify(e) });
+    return response
+      .status(500)
+      .json({ error: 'Error updating social media: ' + JSON.stringify(e) });
   }
-
 }

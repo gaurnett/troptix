@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Text, View, ListItem, Colors, BorderRadiuses, Button } from 'react-native-ui-lib';
+import {
+  Text,
+  View,
+  ListItem,
+  Colors,
+  BorderRadiuses,
+  Button,
+} from 'react-native-ui-lib';
 import { Alert, FlatList, ScrollView, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 
@@ -10,8 +17,8 @@ const styles = StyleSheet.create({
   },
   border: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: Colors.grey70
-  }
+    borderColor: Colors.grey70,
+  },
 });
 
 function getDetailItemList(event) {
@@ -30,7 +37,7 @@ function getDetailItemList(event) {
       detail: event.price,
       icon: require('../../assets/icons/money.png'),
       color: Colors.blue20,
-    }
+    },
   ];
 }
 
@@ -40,8 +47,8 @@ export default function EventDetailsScreen({ route, navigation }) {
   function onGetTicketsClick() {
     navigation.navigate('TicketCheckoutScreen', {
       event: event,
-      user: user
-    })
+      user: user,
+    });
   }
 
   function EventDetailsItem(details, detailsIcon, color) {
@@ -73,12 +80,13 @@ export default function EventDetailsScreen({ route, navigation }) {
         <ScrollView style={{ height: '100%' }}>
           <View>
             <Image
-              resizeMode='cover'
+              resizeMode="cover"
               height={350}
-              width='100%'
+              width="100%"
               source={{
-                uri: event.imageUrl
-              }} />
+                uri: event.imageUrl,
+              }}
+            />
           </View>
           <View flex padding-20>
             <Text text50 $textDefault>
@@ -86,9 +94,21 @@ export default function EventDetailsScreen({ route, navigation }) {
             </Text>
 
             <View>
-              {EventDetailsItem(new Date(event.startDate).toDateString(), require('../../assets/icons/date.png'), Colors.red20)}
-              {EventDetailsItem(event.address, require('../../assets/icons/location.png'), Colors.blue20)}
-              {EventDetailsItem("$200", require('../../assets/icons/money.png'), Colors.green20)}
+              {EventDetailsItem(
+                new Date(event.startDate).toDateString(),
+                require('../../assets/icons/date.png'),
+                Colors.red20
+              )}
+              {EventDetailsItem(
+                event.address,
+                require('../../assets/icons/location.png'),
+                Colors.blue20
+              )}
+              {EventDetailsItem(
+                '$200',
+                require('../../assets/icons/money.png'),
+                Colors.green20
+              )}
             </View>
             <View>
               <Text marginT-16 marginB-8 text60 $textDefault>
@@ -107,19 +127,26 @@ export default function EventDetailsScreen({ route, navigation }) {
                 {event.address}
               </Text>
             </View>
-
           </View>
         </ScrollView>
       </View>
       <View
         backgroundColor="transparent"
         marginB-24
-        style={{ borderTopColor: '#D3D3D3', borderTopWidth: 1, height: 70, justifyContent: 'center', alignItems: 'center' }}>
+        style={{
+          borderTopColor: '#D3D3D3',
+          borderTopWidth: 1,
+          height: 70,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <Button
           style={{ width: '70%', height: '70%' }}
-          label={"Get Tickets"}
+          label={'Get Tickets'}
           labelStyle={{ fontSize: 18 }}
-          onPress={() => onGetTicketsClick()} />
+          onPress={() => onGetTicketsClick()}
+        />
       </View>
     </View>
   );

@@ -1,5 +1,5 @@
-import _ from "lodash";
-import { useRef, useState } from "react";
+import _ from 'lodash';
+import { useRef, useState } from 'react';
 import {
   Text,
   View,
@@ -12,7 +12,7 @@ import {
   Icon,
   Image,
   Button,
-} from "react-native-ui-lib";
+} from 'react-native-ui-lib';
 import {
   Alert,
   Keyboard,
@@ -20,21 +20,21 @@ import {
   ScrollView,
   TouchableOpacity,
   TouchableWithoutFeedback,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import tickets from "../data/tickets";
-import { Event } from "troptix-models";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import tickets from '../data/tickets';
+import { Event } from 'troptix-models';
 import * as LightDate from 'light-date';
-import { TicketType } from "troptix-models";
+import { TicketType } from 'troptix-models';
 import { format } from 'date-fns';
 import uuid from 'react-native-uuid';
-import { TropTixResponse, getEvents, saveEvent, } from 'troptix-api';
+import { TropTixResponse, getEvents, saveEvent } from 'troptix-api';
 import * as ImagePicker from 'expo-image-picker';
-import CustomTextField from "./CustomTextField";
+import CustomTextField from './CustomTextField';
 
 export default function EventForm({ eventObject, editEvent, navigation }) {
   const [date, setDate] = useState(new Date(1598051730000));
-  const [mode, setMode] = useState("date");
+  const [mode, setMode] = useState('date');
   const [show, setShow] = useState(false);
   const [event, setEvent] = useState<Event>(eventObject);
   const eventNameRef = useRef();
@@ -61,22 +61,20 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
   };
 
   function showDateTime(ref) {
-    if (ref === undefined || ref.current === undefined)
-      return;
+    if (ref === undefined || ref.current === undefined) return;
 
     setShow(true);
     ref.current.focus();
   }
 
   function setTextFieldFocused(ref) {
-    if (ref === undefined || ref.current === undefined)
-      return;
+    if (ref === undefined || ref.current === undefined) return;
 
     ref.current.focus();
   }
 
   function onTicketClick(ticket, isEditTicket, index) {
-    navigation.navigate("TicketFormScreen", {
+    navigation.navigate('TicketFormScreen', {
       ticketObject: ticket,
       isEditTicket: isEditTicket,
       ticketIndex: index,
@@ -86,41 +84,55 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
   }
 
   function handleChange(name, value) {
-    setEvent(previousEvent => ({ ...previousEvent, [name]: value }));
+    setEvent((previousEvent) => ({ ...previousEvent, [name]: value }));
   }
 
   function getDateFormatter(): DateTimePickerProps['dateTimeFormatter'] {
     return (value: Date, mode: DateTimePickerMode) =>
       format(value, mode === 'date' ? 'MMM dd, yyyy' : 'hh:mm a');
-  };
+  }
 
   function addTicket(ticket: TicketType) {
     let tempTickets = event.ticketTypes;
     tempTickets.push(ticket);
-    setEvent(previousEvent => ({ ...previousEvent, ["ticketTypes"]: tempTickets }))
+    setEvent((previousEvent) => ({
+      ...previousEvent,
+      ['ticketTypes']: tempTickets,
+    }));
   }
 
   function editTicket(index, ticket: TicketType) {
     let tempTickets = event.ticketTypes;
     tempTickets[index] = ticket;
-    setEvent(previousEvent => ({ ...previousEvent, ["ticketTypes"]: tempTickets }))
+    setEvent((previousEvent) => ({
+      ...previousEvent,
+      ['ticketTypes']: tempTickets,
+    }));
   }
 
   function deleteTicket(index) {
-    Alert.alert('Delete Ticket', 'Are you sure you want to delete this ticket?', [
-      {
-        text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
-        style: 'cancel',
-      },
-      {
-        text: 'Delete', onPress: () => {
-          let tempTickets = event.ticketTypes;
-          tempTickets.splice(index, 1);
-          setEvent(previousEvent => ({ ...previousEvent, ["tickets"]: tempTickets }));
-        }
-      },
-    ]);
+    Alert.alert(
+      'Delete Ticket',
+      'Are you sure you want to delete this ticket?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          onPress: () => {
+            let tempTickets = event.ticketTypes;
+            tempTickets.splice(index, 1);
+            setEvent((previousEvent) => ({
+              ...previousEvent,
+              ['tickets']: tempTickets,
+            }));
+          },
+        },
+      ]
+    );
   }
 
   function fetchTextField(
@@ -135,8 +147,8 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
         onPress={() => setTextFieldFocused(textFieldReference)}
         style={{
           flex: 1,
-          alignItems: "center",
-          backgroundColor: "white",
+          alignItems: 'center',
+          backgroundColor: 'white',
         }}
       >
         <View
@@ -145,9 +157,9 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
           paddingL-8
           style={{
             height: 60,
-            width: "100%",
+            width: '100%',
             borderWidth: 0.5,
-            borderColor: "#D3D3D3",
+            borderColor: '#D3D3D3',
           }}
         >
           <TextField
@@ -180,8 +192,8 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
         onPress={() => setTextFieldFocused(textFieldReference)}
         style={{
           flex: 1,
-          alignItems: "center",
-          backgroundColor: "white",
+          alignItems: 'center',
+          backgroundColor: 'white',
         }}
       >
         <View
@@ -190,9 +202,9 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
           paddingL-8
           style={{
             height: 150,
-            width: "100%",
+            width: '100%',
             borderWidth: 0.5,
-            borderColor: "#D3D3D3",
+            borderColor: '#D3D3D3',
           }}
         >
           <TextField
@@ -229,8 +241,8 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
         onPress={() => showDateTime(textFieldReference)}
         style={{
           flex: 1,
-          alignItems: "center",
-          backgroundColor: "white",
+          alignItems: 'center',
+          backgroundColor: 'white',
         }}
       >
         <View
@@ -239,9 +251,9 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
           paddingL-8
           style={{
             height: 60,
-            width: "100%",
+            width: '100%',
             borderWidth: 0.5,
-            borderColor: "#D3D3D3",
+            borderColor: '#D3D3D3',
           }}
         >
           <DateTimePicker
@@ -273,9 +285,9 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
   };
 
   function getFormattedCurrency(price) {
-    const formatter = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
+    const formatter = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
     });
 
     return formatter.format(price);
@@ -311,9 +323,9 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
 
     try {
       const response: TropTixResponse = await saveEvent(event, editEvent);
-      console.log("[updateEvent] ", response);
+      console.log('[updateEvent] ', response);
     } catch (error) {
-      console.log("[updateEvent] Events Error: " + error)
+      console.log('[updateEvent] Events Error: ' + error);
     }
   }
 
@@ -326,24 +338,24 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
               <View
                 marginB-16
                 style={{
-                  width: "100%",
+                  width: '100%',
                   borderWidth: 1,
                   borderRadius: 10,
-                  borderColor: "#D3D3D3",
+                  borderColor: '#D3D3D3',
                 }}
               >
                 <View
                   row
                   margin-12
-                  style={{ height: 50, alignItems: "center" }}
+                  style={{ height: 50, alignItems: 'center' }}
                 >
                   <Text>{ticket.name}</Text>
-                  <View style={{ flex: 1, alignItems: "flex-end" }}>
+                  <View style={{ flex: 1, alignItems: 'flex-end' }}>
                     <View
                       style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        height: "100%",
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        height: '100%',
                       }}
                     >
                       <Text>{ticket.quantity} available</Text>
@@ -354,24 +366,29 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
                   style={{
                     flex: 1,
                     height: 1,
-                    backgroundColor: "#D3D3D3",
+                    backgroundColor: '#D3D3D3',
                   }}
                 />
                 <View margin-12>
                   <Text>{getFormattedCurrency(ticket.price)}</Text>
-                  <Text>
-                    + {getFormattedCurrency(ticket.price * 0.1)}{" "}
-                    fees
-                  </Text>
+                  <Text>+ {getFormattedCurrency(ticket.price * 0.1)} fees</Text>
                   <Text marginT-8>{ticket.description}</Text>
                 </View>
               </View>
             </Pressable>
           </View>
 
-          <View style={{ justifyContent: 'center', alignItems: 'center' }} marginL-8>
+          <View
+            style={{ justifyContent: 'center', alignItems: 'center' }}
+            marginL-8
+          >
             <Pressable onPress={() => deleteTicket(i)}>
-              <Image source={require('../assets/icons/delete.png')} tintColor={Colors.black} width={24} height={24} />
+              <Image
+                source={require('../assets/icons/delete.png')}
+                tintColor={Colors.black}
+                width={24}
+                height={24}
+              />
             </Pressable>
           </View>
         </View>
@@ -380,20 +397,17 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
   }
 
   return (
-    <View style={{ height: "100%", flex: 1, backgroundColor: "white" }}>
+    <View style={{ height: '100%', flex: 1, backgroundColor: 'white' }}>
       <View
         paddingR-16
         paddingL-16
-        style={{ flex: 1, backgroundColor: "white" }}
+        style={{ flex: 1, backgroundColor: 'white' }}
       >
-        <TouchableWithoutFeedback
-          onPress={Keyboard.dismiss}
-          accessible={false}
-        >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <ScrollView>
             <View>
               <Text
-                style={{ fontSize: 24, fontWeight: "bold" }}
+                style={{ fontSize: 24, fontWeight: 'bold' }}
                 marginT-16
                 marginB-8
                 $textDefault
@@ -410,7 +424,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
                 marginB-8
                 style={{ alignSelf: 'center' }}
                 source={{
-                  uri: image
+                  uri: image,
                 }}
                 width={300}
                 height={300}
@@ -419,7 +433,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
 
             <View>
               <Text
-                style={{ fontSize: 24, fontWeight: "bold" }}
+                style={{ fontSize: 24, fontWeight: 'bold' }}
                 marginT-16
                 marginB-8
                 $textDefault
@@ -438,18 +452,18 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
               </View>
               <View>
                 {fetchTextArea(
-                  "description",
-                  "Event Description",
-                  "Very Cool Description",
+                  'description',
+                  'Event Description',
+                  'Very Cool Description',
                   event.description,
                   eventDescriptionRef
                 )}
               </View>
               <View>
                 {fetchTextField(
-                  "address",
-                  "Event Location",
-                  "Very Cool Location",
+                  'address',
+                  'Event Location',
+                  'Very Cool Location',
                   event.address,
                   eventLocationRef
                 )}
@@ -458,7 +472,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
 
             <View>
               <Text
-                style={{ fontSize: 24, fontWeight: "bold" }}
+                style={{ fontSize: 24, fontWeight: 'bold' }}
                 marginT-16
                 marginB-8
                 $textDefault
@@ -468,53 +482,44 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
               <View row>
                 <View marginR-8 flex>
                   {fetchDateTimeField(
-                    "startDate",
-                    "Start Date",
+                    'startDate',
+                    'Start Date',
                     event.startDate,
-                    getDatePlaceholder(
-                      event.startDate,
-                      false
-                    ),
+                    getDatePlaceholder(event.startDate, false),
                     eventDateRef,
-                    "date"
+                    'date'
                   )}
                 </View>
                 <View marginL-8 flex>
                   {fetchDateTimeField(
-                    "startTime",
-                    "Start Time",
+                    'startTime',
+                    'Start Time',
                     event.startTime,
-                    getDatePlaceholder(
-                      event.startTime,
-                      true
-                    ),
+                    getDatePlaceholder(event.startTime, true),
                     eventDateRef,
-                    "time"
+                    'time'
                   )}
                 </View>
               </View>
               <View row>
                 <View marginR-8 flex>
                   {fetchDateTimeField(
-                    "endDate",
-                    "End Date",
+                    'endDate',
+                    'End Date',
                     event.endDate,
-                    getDatePlaceholder(
-                      event.endDate,
-                      false
-                    ),
+                    getDatePlaceholder(event.endDate, false),
                     eventDateRef,
-                    "date"
+                    'date'
                   )}
                 </View>
                 <View marginL-8 flex>
                   {fetchDateTimeField(
-                    "endTime",
-                    "End Time",
+                    'endTime',
+                    'End Time',
                     event.endTime,
                     getDatePlaceholder(event.endTime, true),
                     eventDateRef,
-                    "time"
+                    'time'
                   )}
                 </View>
               </View>
@@ -522,7 +527,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
 
             <View>
               <Text
-                style={{ fontSize: 24, fontWeight: "bold" }}
+                style={{ fontSize: 24, fontWeight: 'bold' }}
                 marginT-16
                 marginB-8
                 $textDefault
@@ -530,7 +535,9 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
                 Ticket Details
               </Text>
               <Button
-                onPress={() => onTicketClick(new TicketType(event.id), false, 0)}
+                onPress={() =>
+                  onTicketClick(new TicketType(event.id), false, 0)
+                }
                 marginT-16
                 outline
                 borderRadius={25}
@@ -538,7 +545,7 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
                 style={{ height: 40, width: 150 }}
               >
                 <Image
-                  source={require("../assets/icons/add.png")}
+                  source={require('../assets/icons/add.png')}
                   width={24}
                   height={24}
                 />
@@ -557,17 +564,17 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
           backgroundColor="transparent"
           marginB-24
           style={{
-            borderTopColor: "#D3D3D3",
+            borderTopColor: '#D3D3D3',
             borderTopWidth: 1,
             height: 70,
-            justifyContent: "center",
-            alignItems: "center",
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
           <Button
             onPress={() => updateEvent()}
-            style={{ width: "70%", height: "70%" }}
-            label={"Save Event"}
+            style={{ width: '70%', height: '70%' }}
+            label={'Save Event'}
             labelStyle={{ fontSize: 18 }}
           />
         </View>
@@ -575,17 +582,17 @@ export default function EventForm({ eventObject, editEvent, navigation }) {
         <View
           backgroundColor="transparent"
           style={{
-            borderTopColor: "#D3D3D3",
+            borderTopColor: '#D3D3D3',
             borderTopWidth: 1,
             height: 70,
-            justifyContent: "center",
-            alignItems: "center",
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
           <Button
             onPress={() => updateEvent()}
-            style={{ width: "70%", height: "70%" }}
-            label={"Add Event"}
+            style={{ width: '70%', height: '70%' }}
+            label={'Add Event'}
             labelStyle={{ fontSize: 18 }}
           />
         </View>

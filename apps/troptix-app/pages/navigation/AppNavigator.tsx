@@ -24,7 +24,7 @@ function EventStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name='EventsScreen'
+        name="EventsScreen"
         component={EventsScreen}
         options={{
           title: 'Events',
@@ -39,7 +39,7 @@ function TicketsStack({ route }) {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name='TicketsScreen'
+        name="TicketsScreen"
         component={TicketsScreen}
         options={{
           title: 'Tickets',
@@ -50,12 +50,11 @@ function TicketsStack({ route }) {
   );
 }
 
-
 function SettingsStack({ route }) {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name='Settings'
+        name="Settings"
         component={SettingsScreen}
         options={{
           title: '',
@@ -74,51 +73,53 @@ function MainAppScreen() {
         component={EventStack}
         options={{
           headerShown: false,
-          tabBarLabel: "",
+          tabBarLabel: '',
           tabBarIcon: ({ focused }) => {
             return (
               <View>
                 <Image
                   marginT-16
-                  source={require("../../assets/icons/party_64.png")}
+                  source={require('../../assets/icons/party_64.png')}
                   style={{ width: 24, height: 24 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>
             );
           },
-        }} />
+        }}
+      />
       <Tab.Screen
         name="TicketsStack"
         component={TicketsStack}
         options={{
           headerShown: false,
-          tabBarLabel: "",
+          tabBarLabel: '',
           tabBarIcon: ({ focused }) => {
             return (
               <View>
                 <Image
                   marginT-16
-                  source={require("../../assets/icons/tickets_64.png")}
+                  source={require('../../assets/icons/tickets_64.png')}
                   style={{ width: 24, height: 24 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
               </View>
             );
           },
-        }} />
+        }}
+      />
       <Tab.Screen
         name="SettingsStack"
         component={SettingsStack}
         options={{
           headerShown: false,
-          tabBarLabel: "",
+          tabBarLabel: '',
           tabBarIcon: ({ focused }) => {
             return (
               <View>
                 <Image
                   marginT-16
-                  source={require("../../assets/icons/settings_64.png")}
+                  source={require('../../assets/icons/settings_64.png')}
                   style={{ width: 24, height: 24 }}
                   tintColor={focused ? Colors.blue30 : Colors.black}
                 />
@@ -135,105 +136,104 @@ export default function AppNavigator({ isLoadingUser, user }) {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {
-          isLoadingUser ?
+        {isLoadingUser ? (
+          <Stack.Screen
+            name="SplashScreen"
+            component={SplashScreen}
+            options={{
+              title: '',
+              headerShadowVisible: false,
+            }}
+          />
+        ) : user === undefined ? (
+          <Stack.Group>
             <Stack.Screen
-              name='SplashScreen'
-              component={SplashScreen}
+              name="SignInScreen"
+              component={SignInScreen}
               options={{
                 title: '',
                 headerShadowVisible: false,
               }}
             />
-            :
-            user === undefined ?
-              <Stack.Group>
-                <Stack.Screen
-                  name='SignInScreen'
-                  component={SignInScreen}
-                  options={{
-                    title: '',
-                    headerShadowVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name="SignInWithEmailScreen"
-                  component={SignInWithEmailScreen}
-                  options={{
-                    title: '',
-                    headerShadowVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name="SignUpWithEmailScreen"
-                  component={SignUpWithEmailScreen}
-                  options={{
-                    title: '',
-                    headerShadowVisible: false,
-                  }}
-                />
-              </Stack.Group>
-              : <Stack.Group>
-                <Stack.Screen
-                  name="MainAppScreen"
-                  component={MainAppScreen}
-                  options={{
-                    headerShown: false,
-                    headerBackTitleVisible: false
-                  }}
-                />
-                <Stack.Screen
-                  name='EventDetailsScreen'
-                  component={EventDetailsScreen}
-                  options={{
-                    title: '',
-                    headerTransparent: true,
-                    headerBackTitle: 'Back',
-                  }}
-                />
-                <Stack.Screen
-                  name='TicketCheckoutScreen'
-                  component={TicketCheckoutScreen}
-                  options={{
-                    title: 'Ticket Checkout',
-                    headerBackTitle: 'Back',
-                    headerBackTitleVisible: false,
-                    headerLeft: null,
-                    gestureEnabled: false,
-                  }}
-                />
-                <Stack.Screen
-                  name='TicketBillingAndPaymentScreen'
-                  component={TicketBillingAndPaymentScreen}
-                  options={{
-                    title: 'Ticket Checkout',
-                    headerBackTitleVisible: true,
-                    headerTransparent: false,
-                    headerBackTitle: 'Back',
-                    gestureEnabled: false,
-                  }}
-                />
-                <Stack.Screen
-                  name='TicketsScreen'
-                  component={TicketsScreen}
-                  options={{
-                    title: 'Tickets',
-                    headerBackTitle: 'Back',
-                    headerBackTitleVisible: false,
-                  }}
-                />
-                <Stack.Screen
-                  name='TicketDetailsScreen'
-                  component={TicketDetailsScreen}
-                  options={{
-                    title: '',
-                    headerBackTitle: 'Back',
-                    headerBackTitleVisible: true,
-                    headerTransparent: true
-                  }}
-                />
-              </Stack.Group>
-        }
+            <Stack.Screen
+              name="SignInWithEmailScreen"
+              component={SignInWithEmailScreen}
+              options={{
+                title: '',
+                headerShadowVisible: false,
+              }}
+            />
+            <Stack.Screen
+              name="SignUpWithEmailScreen"
+              component={SignUpWithEmailScreen}
+              options={{
+                title: '',
+                headerShadowVisible: false,
+              }}
+            />
+          </Stack.Group>
+        ) : (
+          <Stack.Group>
+            <Stack.Screen
+              name="MainAppScreen"
+              component={MainAppScreen}
+              options={{
+                headerShown: false,
+                headerBackTitleVisible: false,
+              }}
+            />
+            <Stack.Screen
+              name="EventDetailsScreen"
+              component={EventDetailsScreen}
+              options={{
+                title: '',
+                headerTransparent: true,
+                headerBackTitle: 'Back',
+              }}
+            />
+            <Stack.Screen
+              name="TicketCheckoutScreen"
+              component={TicketCheckoutScreen}
+              options={{
+                title: 'Ticket Checkout',
+                headerBackTitle: 'Back',
+                headerBackTitleVisible: false,
+                headerLeft: null,
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="TicketBillingAndPaymentScreen"
+              component={TicketBillingAndPaymentScreen}
+              options={{
+                title: 'Ticket Checkout',
+                headerBackTitleVisible: true,
+                headerTransparent: false,
+                headerBackTitle: 'Back',
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="TicketsScreen"
+              component={TicketsScreen}
+              options={{
+                title: 'Tickets',
+                headerBackTitle: 'Back',
+                headerBackTitleVisible: false,
+              }}
+            />
+            <Stack.Screen
+              name="TicketDetailsScreen"
+              component={TicketDetailsScreen}
+              options={{
+                title: '',
+                headerBackTitle: 'Back',
+                headerBackTitleVisible: true,
+                headerTransparent: true,
+              }}
+            />
+          </Stack.Group>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

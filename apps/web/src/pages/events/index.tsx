@@ -1,14 +1,14 @@
-import EventCard from "@/components/EventCard";
+import EventCard from '@/components/EventCard';
 
-import Footer from "@/components/ui/footer";
-import { Spinner } from "@/components/ui/spinner";
+import Footer from '@/components/ui/footer';
+import { Spinner } from '@/components/ui/spinner';
 import {
   RequestType,
   eventFetcher,
   useFetchAllEvents,
-} from "@/hooks/useFetchEvents";
-import Image from "next/image";
-import Link from "next/link";
+} from '@/hooks/useFetchEvents';
+import Image from 'next/image';
+import Link from 'next/link';
 
 export async function getStaticProps() {
   const events = await eventFetcher({
@@ -46,19 +46,19 @@ export default function ManageEventsPage(props) {
                     <div
                       className="text-center"
                       style={{
-                        alignItems: "center",
-                        justifyContent: "center",
-                        height: "100%",
-                        width: "100%",
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100%',
+                        width: '100%',
                       }}
                     >
                       <Image
                         width={75}
                         height={75}
                         className="w-full mx-auto justify-center content-center items-center"
-                        style={{ objectFit: "contain", width: 75 }}
-                        src={"/icons/empty-events.png"}
-                        alt={"mobile wallet image"}
+                        style={{ objectFit: 'contain', width: 75 }}
+                        src={'/icons/empty-events.png'}
+                        alt={'mobile wallet image'}
                       />
                       <div className="mt-4 font-bold text-xl">
                         There are no events nearby
@@ -88,7 +88,7 @@ export default function ManageEventsPage(props) {
             </div>
           ) : (
             <div className="container mx-auto py-16">
-              <Spinner text={"Fetching Events"} />
+              <Spinner text={'Fetching Events'} />
             </div>
           )}
         </div>

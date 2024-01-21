@@ -1,11 +1,41 @@
 import _ from 'lodash';
 import { useContext, useEffect, useState, useRef } from 'react';
-import { Alert, Keyboard, Pressable, ScrollView, TouchableOpacity } from 'react-native';
-import { Button, Colors, Icon, Image, Picker, Text, View } from 'react-native-ui-lib';
+import {
+  Alert,
+  Keyboard,
+  Pressable,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
+import {
+  Button,
+  Colors,
+  Icon,
+  Image,
+  Picker,
+  Text,
+  View,
+} from 'react-native-ui-lib';
 import tickets from '../../data/tickets';
 import { Checkout, Order, Charge } from 'troptix-models';
-import { postOrders, PostOrdersType, PostOrdersRequest, GetPromotionsType, GetPromotionsRequest, getPromotions } from 'troptix-api';
-import { PlatformPay, PlatformPayButton, StripeProvider, createPlatformPayPaymentMethod, initPaymentSheet, isPlatformPaySupported, presentPaymentSheet, useStripe } from "@stripe/stripe-react-native";
+import {
+  postOrders,
+  PostOrdersType,
+  PostOrdersRequest,
+  GetPromotionsType,
+  GetPromotionsRequest,
+  getPromotions,
+} from 'troptix-api';
+import {
+  PlatformPay,
+  PlatformPayButton,
+  StripeProvider,
+  createPlatformPayPaymentMethod,
+  initPaymentSheet,
+  isPlatformPaySupported,
+  presentPaymentSheet,
+  useStripe,
+} from '@stripe/stripe-react-native';
 import { auth } from 'troptix-firebase';
 import { TropTixContext } from '../../App';
 import CustomTextField from '../../components/CustomTextField';
@@ -47,20 +77,21 @@ export default function TicketBillingAndPaymentScreen({ route, navigation }) {
   //   [navigation]
   // );
 
-
   function updateCheckout(name, value) {
-    setCheckout(previousCheckout => ({ ...previousCheckout, [name]: value }))
+    setCheckout((previousCheckout) => ({ ...previousCheckout, [name]: value }));
   }
 
   const fetchPaymentSheetParams = async () => {
     const charge = new Charge();
-    charge.total = checkout.promotionApplied ? checkout.discountedTotal * 100 : checkout.total * 100;
+    charge.total = checkout.promotionApplied
+      ? checkout.discountedTotal * 100
+      : checkout.total * 100;
     charge.userId = user.id;
 
     const postOrdersRequest: PostOrdersRequest = {
       type: PostOrdersType.POST_ORDERS_CREATE_CHARGE,
-      charge: charge
-    }
+      charge: charge,
+    };
 
     const response = await postOrders(postOrdersRequest);
     const { paymentId, paymentIntent, ephemeralKey, customer } = await response;
@@ -74,15 +105,11 @@ export default function TicketBillingAndPaymentScreen({ route, navigation }) {
   };
 
   const initializePaymentSheet = async () => {
-    const {
-      paymentId,
-      paymentIntent,
-      ephemeralKey,
-      customer,
-    } = await fetchPaymentSheetParams();
+    const { paymentId, paymentIntent, ephemeralKey, customer } =
+      await fetchPaymentSheetParams();
 
     const { error } = await initPaymentSheet({
-      merchantDisplayName: "TropTix",
+      merchantDisplayName: 'TropTix',
       customerId: customer,
       customerEphemeralKeySecret: ephemeralKey,
       paymentIntentClientSecret: paymentIntent,
@@ -96,15 +123,15 @@ export default function TicketBillingAndPaymentScreen({ route, navigation }) {
           city: checkout.billingCity,
           state: checkout.billingState,
           postalCode: checkout.billingZip,
-          country: checkout.billingCountry
-        }
-      }
+          country: checkout.billingCountry,
+        },
+      },
     });
 
     console.log(error);
 
     if (error) {
-      console.log("Error: " + error.localizedMessage);
+      console.log('Error: ' + error.localizedMessage);
       // setLoading(true);
     }
 
@@ -119,11 +146,11 @@ export default function TicketBillingAndPaymentScreen({ route, navigation }) {
     try {
       paymentId = await initializePaymentSheet();
     } catch (error) {
-      console.log("[openStripePayment] initializePaymentSheet error: " + error);
+      console.log('[openStripePayment] initializePaymentSheet error: ' + error);
     }
 
     if (paymentId === undefined) {
-      Alert.alert("Cannot create payment order, please try again later");
+      Alert.alert('Cannot create payment order, please try again later');
       return;
     }
 
@@ -134,11 +161,11 @@ export default function TicketBillingAndPaymentScreen({ route, navigation }) {
     try {
       const postOrdersRequest: PostOrdersRequest = {
         type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
-        order: order
-      }
+        order: order,
+      };
       await postOrders(postOrdersRequest);
     } catch (error) {
-      console.log("[openStripePayment] create order error: " + error);
+      console.log('[openStripePayment] create order error: ' + error);
       return;
     }
 
@@ -163,16 +190,23 @@ export default function TicketBillingAndPaymentScreen({ route, navigation }) {
 
   return (
     <StripeProvider
-      publishableKey='pk_test_51Noxs0FEd6UvxBWGgUgu6JQw6VnDqC8ei9YkxAthxkjGBsAY3OKEKbkuRlnCTcHoVnQp5vvCrM0YfuhSFQZv3wR300x6wKe6oJ'
-      merchantIdentifier="merchant.identifier" >
+      publishableKey="pk_test_51Noxs0FEd6UvxBWGgUgu6JQw6VnDqC8ei9YkxAthxkjGBsAY3OKEKbkuRlnCTcHoVnQp5vvCrM0YfuhSFQZv3wR300x6wKe6oJ"
+      merchantIdentifier="merchant.identifier"
+    >
       <View style={{ flex: 1, backgroundColor: 'white' }}>
         <ScrollView
           // contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', flexDirection: 'column' }}
-          automaticallyAdjustKeyboardInsets>
+          automaticallyAdjustKeyboardInsets
+        >
           <View style={{ flex: 1, backgroundColor: 'white' }}>
             <View row>
               <View marginL-20 marginR-20 flex>
-                <Text style={{ fontSize: 20, fontWeight: "bold" }} marginT-16 marginB-8 $textDefault>
+                <Text
+                  style={{ fontSize: 20, fontWeight: 'bold' }}
+                  marginT-16
+                  marginB-8
+                  $textDefault
+                >
                   Billing Address
                 </Text>
 
@@ -239,17 +273,16 @@ export default function TicketBillingAndPaymentScreen({ route, navigation }) {
               </View>
             </View>
           </View>
-
         </ScrollView>
         <View
           backgroundColor="transparent"
           marginB-24
-          style={{ borderTopColor: '#D3D3D3', borderTopWidth: 1, height: 120 }}>
-          <View
-            marginT-16
-            marginR-20
-            style={{ alignItems: 'flex-end' }}>
-            <Text style={{ fontSize: 18 }}>Total: {getFormattedCurrency(checkout.total)}</Text>
+          style={{ borderTopColor: '#D3D3D3', borderTopWidth: 1, height: 120 }}
+        >
+          <View marginT-16 marginR-20 style={{ alignItems: 'flex-end' }}>
+            <Text style={{ fontSize: 18 }}>
+              Total: {getFormattedCurrency(checkout.total)}
+            </Text>
           </View>
           <View marginL-20 marginR-20>
             {/* <Button
@@ -277,13 +310,15 @@ export default function TicketBillingAndPaymentScreen({ route, navigation }) {
               onPress={() => openStripePayment()}
               marginT-16
               borderRadius={30}
-              style={{ backgroundColor: '#2196F3', height: 45, width: '100%' }}>
-              <Text style={{ fontSize: 16, color: '#fff' }} marginL-10>Pay</Text>
+              style={{ backgroundColor: '#2196F3', height: 45, width: '100%' }}
+            >
+              <Text style={{ fontSize: 16, color: '#fff' }} marginL-10>
+                Pay
+              </Text>
             </Button>
           </View>
         </View>
       </View>
     </StripeProvider>
-
   );
 }

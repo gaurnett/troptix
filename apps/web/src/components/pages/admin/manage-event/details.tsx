@@ -1,13 +1,12 @@
-import { CustomTextArea } from "@/components/ui/input";
-import { uploadFlyerToFirebase } from "@/firebase/storage";
-import { UploadOutlined } from "@ant-design/icons";
-import type { UploadProps } from "antd";
-import { Button, Form, Image, Upload, message } from "antd";
-import { RcFile } from "antd/es/upload";
-import { getDownloadURL } from "firebase/storage";
+import { CustomTextArea } from '@/components/ui/input';
+import { uploadFlyerToFirebase } from '@/firebase/storage';
+import { UploadOutlined } from '@ant-design/icons';
+import type { UploadProps } from 'antd';
+import { Button, Form, Image, Upload, message } from 'antd';
+import { RcFile } from 'antd/es/upload';
+import { getDownloadURL } from 'firebase/storage';
 
 export default function DetailsPage({ event, setEvent, updateEvent }) {
-
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setEvent((previousEvent) => ({
       ...previousEvent,
@@ -16,27 +15,30 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
   }
 
   const props: UploadProps = {
-    name: "file",
+    name: 'file',
     multiple: false,
-    listType: "picture",
+    listType: 'picture',
     maxCount: 1,
     action: '/api/noop',
     async onChange(info) {
       const { status } = info.file;
-      if (status === "done") {
+      if (status === 'done') {
         const rcFile = info.file.originFileObj as RcFile;
 
-        const uploadTask = uploadFlyerToFirebase(event.id, info.file.name, rcFile);
-        message
-          .open({
-            key: 'update-flyer-loading',
-            type: 'loading',
-            content: 'Uploading Flyer..',
-            duration: 0,
-          });
+        const uploadTask = uploadFlyerToFirebase(
+          event.id,
+          info.file.name,
+          rcFile
+        );
+        message.open({
+          key: 'update-flyer-loading',
+          type: 'loading',
+          content: 'Uploading Flyer..',
+          duration: 0,
+        });
 
         uploadTask.on(
-          "state_changed",
+          'state_changed',
           (snapshot) => {
             const percent = Math.round(
               (snapshot.bytesTransferred / snapshot.totalBytes) * 100
@@ -50,7 +52,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
             getDownloadURL(uploadTask.snapshot.ref).then((url) => {
               setEvent((previousEvent) => ({
                 ...previousEvent,
-                ["imageUrl"]: url,
+                ['imageUrl']: url,
               }));
 
               message.destroy('update-flyer-loading');
@@ -58,12 +60,11 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
             });
           }
         );
-      } else if (status === "error") {
+      } else if (status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    onDrop(e) {
-    },
+    onDrop(e) {},
   };
 
   return (
@@ -93,7 +94,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
                 <Image
                   width={200}
                   height={200}
-                  style={{ objectFit: "cover" }}
+                  style={{ objectFit: 'cover' }}
                   src={event.imageUrl}
                   alt={`${event.name} event flyer`}
                 />
@@ -113,12 +114,12 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
           <div className="w-full px-3">
             <CustomTextArea
               value={event.summary}
-              name={"summary"}
-              id={"summary"}
-              label={"Event Summary"}
+              name={'summary'}
+              id={'summary'}
+              label={'Event Summary'}
               rows={3}
               placeholder={
-                "Add a summary for your event. This will be shown as a snippet when patrons view your event."
+                'Add a summary for your event. This will be shown as a snippet when patrons view your event.'
               }
               handleChange={handleChange}
               required={true}
@@ -130,12 +131,12 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
             <CustomTextArea
               value={event.description}
               maxLength={2000}
-              name={"description"}
-              id={"description"}
-              label={"Event Description"}
+              name={'description'}
+              id={'description'}
+              label={'Event Description'}
               rows={6}
               placeholder={
-                "Add a full description of your event. This will be presented on your event details page."
+                'Add a full description of your event. This will be presented on your event details page.'
               }
               handleChange={handleChange}
               required={true}

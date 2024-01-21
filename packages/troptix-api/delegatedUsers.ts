@@ -1,5 +1,5 @@
-import { json } from "stream/consumers";
-import { TropTixResponse, prodUrl } from "./api";
+import { json } from 'stream/consumers';
+import { TropTixResponse, prodUrl } from './api';
 
 export async function addDelegatedUser(user, isEditUser) {
   const url = prodUrl + '/api/delegatedUsers';
@@ -10,7 +10,7 @@ export async function addDelegatedUser(user, isEditUser) {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(user)
+    body: JSON.stringify(user),
   });
   const json = await response.json();
 

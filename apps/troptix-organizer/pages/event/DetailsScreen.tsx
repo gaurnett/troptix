@@ -1,20 +1,21 @@
 import * as ImagePicker from 'expo-image-picker';
-import { useRef, useState } from "react";
+import { useRef, useState } from 'react';
 import {
   ImageBackground,
   Keyboard,
   ScrollView,
   StyleSheet,
-  TouchableWithoutFeedback
-} from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+  TouchableWithoutFeedback,
+} from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Image, Text, View } from 'react-native-ui-lib';
+import CustomTextField from '../../components/CustomTextField';
 import {
-  Image,
-  Text,
-  View
-} from "react-native-ui-lib";
-import CustomTextField from "../../components/CustomTextField";
-import { getDownloadURL, ref, storage, uploadBytesResumable } from "../../firebase/config";
+  getDownloadURL,
+  ref,
+  storage,
+  uploadBytesResumable,
+} from '../../firebase/config';
 
 export default function DetailsScreen({ event, setEvent }) {
   const eventSummaryRef = useRef();
@@ -32,17 +33,19 @@ export default function DetailsScreen({ event, setEvent }) {
 
     if (!result.canceled) {
       const { uri } = result.assets[0];
-      const fileName = uri.split("/").pop();
+      const fileName = uri.split('/').pop();
       const fetchResponse = await fetch(uri);
       const theBlob = await fetchResponse.blob();
 
       const storageRef = ref(storage, `images/${fileName}`);
       const uploadTask = uploadBytesResumable(storageRef, theBlob);
       // Listen for state changes, errors, and completion of the upload.
-      uploadTask.on('state_changed',
+      uploadTask.on(
+        'state_changed',
         (snapshot) => {
           // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log('Upload is ' + progress + '% done');
           switch (snapshot.state) {
             case 'paused':
@@ -54,7 +57,7 @@ export default function DetailsScreen({ event, setEvent }) {
           }
         },
         (error) => {
-          console.log("Error: ", error)
+          console.log('Error: ', error);
           switch (error.code) {
             case 'storage/unauthorized':
               // User doesn't have permission to access the object
@@ -73,7 +76,10 @@ export default function DetailsScreen({ event, setEvent }) {
           // Upload completed successfully, now we can get the download URL
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImage(uri);
-            setEvent(prevEvent => ({ ...prevEvent, ["imageUrl"]: downloadURL }));
+            setEvent((prevEvent) => ({
+              ...prevEvent,
+              ['imageUrl']: downloadURL,
+            }));
           });
         }
       );
@@ -81,24 +87,17 @@ export default function DetailsScreen({ event, setEvent }) {
   };
 
   function handleChange(name, value) {
-    setEvent(previousEvent => ({ ...previousEvent, [name]: value }))
+    setEvent((previousEvent) => ({ ...previousEvent, [name]: value }));
   }
 
   return (
     <View style={{ flex: 1 }}>
-      <View
-        paddingR-16
-        paddingL-16
-        style={{ flex: 1 }}
-      >
-        <TouchableWithoutFeedback
-          onPress={Keyboard.dismiss}
-          accessible={false}
-        >
+      <View paddingR-16 paddingL-16 style={{ flex: 1 }}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <ScrollView automaticallyAdjustKeyboardInsets>
             <View>
               <Text
-                style={{ fontSize: 24, fontWeight: "bold" }}
+                style={{ fontSize: 24, fontWeight: 'bold' }}
                 marginT-16
                 marginB-16
                 $textDefault
@@ -106,39 +105,43 @@ export default function DetailsScreen({ event, setEvent }) {
                 Event Flyer
               </Text>
               <TouchableOpacity
-                activeOpacity={.95}
-                onPress={() => pickImage()}>
-                {
-                  event.imageUrl === undefined || event.imageUrl === null ?
-                    <View style={styles.container}>
-                      <ImageBackground
-                        blurRadius={10}
-                        width={300}
-                        height={300}
-                        style={styles.coverImage}
-                        source={require('../../assets/images/image-placeholder.jpg')}>
-                        <View style={styles.textView}>
-                          <Text style={styles.imageText}>TAP TO UPLOAD EVENT FLYER</Text>
-                        </View>
-                      </ImageBackground>
-                    </View> :
-                    <Image
-                      marginT-8
-                      marginB-8
-                      style={{ alignSelf: 'center' }}
-                      source={{
-                        uri: event.imageUrl
-                      }}
+                activeOpacity={0.95}
+                onPress={() => pickImage()}
+              >
+                {event.imageUrl === undefined || event.imageUrl === null ? (
+                  <View style={styles.container}>
+                    <ImageBackground
+                      blurRadius={10}
                       width={300}
                       height={300}
-                    />
-                }
+                      style={styles.coverImage}
+                      source={require('../../assets/images/image-placeholder.jpg')}
+                    >
+                      <View style={styles.textView}>
+                        <Text style={styles.imageText}>
+                          TAP TO UPLOAD EVENT FLYER
+                        </Text>
+                      </View>
+                    </ImageBackground>
+                  </View>
+                ) : (
+                  <Image
+                    marginT-8
+                    marginB-8
+                    style={{ alignSelf: 'center' }}
+                    source={{
+                      uri: event.imageUrl,
+                    }}
+                    width={300}
+                    height={300}
+                  />
+                )}
               </TouchableOpacity>
             </View>
 
             <View>
               <Text
-                style={{ fontSize: 24, fontWeight: "bold" }}
+                style={{ fontSize: 24, fontWeight: 'bold' }}
                 marginT-16
                 marginB-8
                 $textDefault

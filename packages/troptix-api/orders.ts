@@ -1,5 +1,5 @@
-import { TropTixResponse, prodUrl } from "./api";
-import { Order, Charge, ComplementaryOrder } from "../troptix-models";
+import { TropTixResponse, prodUrl } from './api';
+import { Order, Charge, ComplementaryOrder } from '../troptix-models';
 
 export enum GetOrdersType {
   GET_ORDERS_FOR_USER = 'GET_ORDERS_FOR_USER',
@@ -27,18 +27,19 @@ export interface PostOrdersRequest {
   complementaryOrder?: ComplementaryOrder;
 }
 
-export async function getOrders(request: GetOrdersRequest): Promise<TropTixResponse> {
-
+export async function getOrders(
+  request: GetOrdersRequest
+): Promise<TropTixResponse> {
   let url = prodUrl + `/api/orders?getOrdersType=${request.getOrdersType}`;
   switch (request.getOrdersType) {
     case GetOrdersType.GET_ORDERS_FOR_USER:
-      url += `&id=${request.userId}`
+      url += `&id=${request.userId}`;
       break;
     case GetOrdersType.GET_ORDER_BY_ID:
-      url += `&id=${request.orderId}`
+      url += `&id=${request.orderId}`;
       break;
     case GetOrdersType.GET_ORDERS_FOR_EVENT:
-      url += `&id=${request.eventId}`
+      url += `&id=${request.eventId}`;
       break;
   }
 
@@ -51,8 +52,9 @@ export async function getOrders(request: GetOrdersRequest): Promise<TropTixRespo
   return json;
 }
 
-export async function postOrders(request: PostOrdersRequest): Promise<TropTixResponse> {
-
+export async function postOrders(
+  request: PostOrdersRequest
+): Promise<TropTixResponse> {
   let url = prodUrl + `/api/orders`;
 
   const response = await fetch(url, {
@@ -61,9 +63,9 @@ export async function postOrders(request: PostOrdersRequest): Promise<TropTixRes
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(request)
+    body: JSON.stringify(request),
   });
   const json = await response.json();
 
-  return json
+  return json;
 }

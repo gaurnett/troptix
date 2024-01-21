@@ -40,7 +40,7 @@ export function ErrorFallback({ error, resetErrorBoundary }) {
               className="text-3xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400"
               data-aos="zoom-y-out"
             >
-              UH OH !!{" "}
+              UH OH !!{' '}
             </h1>
 
             <div className="max-w-3xl mx-auto">

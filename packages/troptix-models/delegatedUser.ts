@@ -17,6 +17,6 @@ export class DelegatedUser {
 
   constructor(eventId: string) {
     this.id = generateId();
-    this.eventId = eventId
+    this.eventId = eventId;
   }
 }

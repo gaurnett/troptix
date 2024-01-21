@@ -1,19 +1,16 @@
-import _ from "lodash";
-import { useRef, useState } from "react";
+import _ from 'lodash';
+import { useRef, useState } from 'react';
+import { Text, View } from 'react-native-ui-lib';
+import { Keyboard, ScrollView, TouchableWithoutFeedback } from 'react-native';
+import { Event } from 'troptix-models';
+import CustomTextField from '../../components/CustomTextField';
+import CustomDateTimeField from '../../components/CustomDateTimeField';
 import {
-  Text,
-  View,
-} from "react-native-ui-lib";
-import {
-  Keyboard,
-  ScrollView,
-  TouchableWithoutFeedback,
-} from "react-native";
-import { Event } from "troptix-models";
-import CustomTextField from "../../components/CustomTextField";
-import CustomDateTimeField from "../../components/CustomDateTimeField";
-import { GooglePlaceData, GooglePlaceDetail, GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import CustomLocationTextField from "../../components/CustomLocationTextField";
+  GooglePlaceData,
+  GooglePlaceDetail,
+  GooglePlacesAutocomplete,
+} from 'react-native-google-places-autocomplete';
+import CustomLocationTextField from '../../components/CustomLocationTextField';
 
 export default function BasicInfoForm({ event, setEvent, navigation }) {
   const eventNameRef = useRef();
@@ -22,28 +19,28 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
   const eventDateRef = useRef();
 
   function setMapsResults(data: GooglePlaceData, details: GooglePlaceDetail) {
-    let country = ""
-    let countryCode = "";
-    details.address_components.forEach(component => {
-      if (component.types.includes("country")) {
+    let country = '';
+    let countryCode = '';
+    details.address_components.forEach((component) => {
+      if (component.types.includes('country')) {
         country = component.long_name;
-        countryCode = component.short_name
+        countryCode = component.short_name;
       }
-    })
+    });
 
-    setEvent(previousEvent => ({
+    setEvent((previousEvent) => ({
       ...previousEvent,
-      ["address"]: details.formatted_address,
-      ["venue"]: details.name,
-      ["country"]: country,
-      ["country_code"]: countryCode,
-      ["latitude"]: details.geometry.location.lat,
-      ["longitude"]: details.geometry.location.lng
-    }))
+      ['address']: details.formatted_address,
+      ['venue']: details.name,
+      ['country']: country,
+      ['country_code']: countryCode,
+      ['latitude']: details.geometry.location.lat,
+      ['longitude']: details.geometry.location.lng,
+    }));
   }
 
   function handleChange(name, value) {
-    setEvent(previousEvent => ({ ...previousEvent, [name]: value }))
+    setEvent((previousEvent) => ({ ...previousEvent, [name]: value }));
   }
 
   function getDatePlaceholder(date, time) {
@@ -59,20 +56,17 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
   }
 
   return (
-    <View style={{ height: "100%", flex: 1, backgroundColor: "white" }}>
+    <View style={{ height: '100%', flex: 1, backgroundColor: 'white' }}>
       <View
         paddingR-16
         paddingL-16
-        style={{ flex: 1, backgroundColor: "white" }}
+        style={{ flex: 1, backgroundColor: 'white' }}
       >
-        <TouchableWithoutFeedback
-          onPress={Keyboard.dismiss}
-          accessible={false}
-        >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <ScrollView>
             <View>
               <Text
-                style={{ fontSize: 24, fontWeight: "bold" }}
+                style={{ fontSize: 24, fontWeight: 'bold' }}
                 marginT-16
                 marginB-8
                 $textDefault
@@ -113,7 +107,7 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
 
             <View>
               <Text
-                style={{ fontSize: 24, fontWeight: "bold" }}
+                style={{ fontSize: 24, fontWeight: 'bold' }}
                 marginT-16
                 marginB-8
                 $textDefault
@@ -125,14 +119,10 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
                   <CustomDateTimeField
                     name="startDate"
                     label="Start Date *"
-                    placeholder={
-                      getDatePlaceholder(
-                        event.startDate,
-                        false
-                      )}
+                    placeholder={getDatePlaceholder(event.startDate, false)}
                     value={event.startDate}
                     reference={eventDateRef}
-                    dateMode={"date"}
+                    dateMode={'date'}
                     handleChange={handleChange}
                   />
                 </View>
@@ -140,14 +130,10 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
                   <CustomDateTimeField
                     name="startTime"
                     label="Start Time *"
-                    placeholder={
-                      getDatePlaceholder(
-                        event.startTime,
-                        true
-                      )}
+                    placeholder={getDatePlaceholder(event.startTime, true)}
                     value={event.startTime}
                     reference={eventDateRef}
-                    dateMode={"time"}
+                    dateMode={'time'}
                     handleChange={handleChange}
                   />
                 </View>
@@ -157,14 +143,10 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
                   <CustomDateTimeField
                     name="endDate"
                     label="Start Date *"
-                    placeholder={
-                      getDatePlaceholder(
-                        event.endDate,
-                        false
-                      )}
+                    placeholder={getDatePlaceholder(event.endDate, false)}
                     value={event.endDate}
                     reference={eventDateRef}
-                    dateMode={"date"}
+                    dateMode={'date'}
                     handleChange={handleChange}
                   />
                 </View>
@@ -172,14 +154,10 @@ export default function BasicInfoForm({ event, setEvent, navigation }) {
                   <CustomDateTimeField
                     name="endTime"
                     label="End Time *"
-                    placeholder={
-                      getDatePlaceholder(
-                        event.startTime,
-                        true
-                      )}
+                    placeholder={getDatePlaceholder(event.startTime, true)}
                     value={event.endTime}
                     reference={eventDateRef}
-                    dateMode={"time"}
+                    dateMode={'time'}
                     handleChange={handleChange}
                   />
                 </View>

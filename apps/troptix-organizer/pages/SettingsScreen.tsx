@@ -8,12 +8,12 @@ const styles = StyleSheet.create({
   image: {
     width: 24,
     height: 24,
-    marginRight: 16
+    marginRight: 16,
   },
   border: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: Colors.grey70
-  }
+    borderColor: Colors.grey70,
+  },
 });
 enum SettingsType {
   TICKETS,
@@ -23,7 +23,7 @@ enum SettingsType {
   CONTACT_US,
   SUGGEST_IMPROVEMENTS,
   TERMS_OF_SERVICE,
-  PRIVACY
+  PRIVACY,
 }
 
 export default function SettingsScreen({ navigation }) {
@@ -37,8 +37,8 @@ export default function SettingsScreen({ navigation }) {
     switch (type) {
       case SettingsType.TICKETS:
         navigation.navigate('TicketsScreen', {
-          user: user
-        })
+          user: user,
+        });
         break;
       case SettingsType.ORDERS:
         break;
@@ -49,26 +49,26 @@ export default function SettingsScreen({ navigation }) {
         break;
       case SettingsType.CONTACT_US:
         navigation.navigate('WebViewScreen', {
-          url: "https://www.usetroptix.com/contact"
+          url: 'https://www.usetroptix.com/contact',
         });
         break;
       case SettingsType.SUGGEST_IMPROVEMENTS:
         navigation.navigate('WebViewScreen', {
-          url: "https://www.usetroptix.com/contact"
+          url: 'https://www.usetroptix.com/contact',
         });
         break;
       case SettingsType.TERMS_OF_SERVICE:
         navigation.navigate('WebViewScreen', {
-          url: "https://www.usetroptix.com/terms"
+          url: 'https://www.usetroptix.com/terms',
         });
         break;
       case SettingsType.PRIVACY:
         navigation.navigate('WebViewScreen', {
-          url: "https://www.usetroptix.com/privacypolicy"
+          url: 'https://www.usetroptix.com/privacypolicy',
         });
         break;
       default:
-        () => Alert.alert(`pressed on order #`)
+        () => Alert.alert(`pressed on order #`);
     }
   }
 
@@ -81,28 +81,42 @@ export default function SettingsScreen({ navigation }) {
       >
         <ListItem.Part left>
           <Image
-            resizeMode='cover'
+            resizeMode="cover"
             source={icon}
             style={styles.image}
-            tintColor={color} />
+            tintColor={color}
+          />
         </ListItem.Part>
         <ListItem.Part containerStyle={[styles.border, { paddingRight: 17 }]}>
           <ListItem.Part>
-            <Text grey10 text70 style={{ flex: 1, marginRight: 10 }} numberOfLines={1}>
+            <Text
+              grey10
+              text70
+              style={{ flex: 1, marginRight: 10 }}
+              numberOfLines={1}
+            >
               {title}
             </Text>
           </ListItem.Part>
         </ListItem.Part>
       </ListItem>
     );
-  };
+  }
 
   return (
     <View style={{ backgroundColor: 'white' }}>
       <View>
         <ScrollView style={{ height: '100%' }}>
-          <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
-            <Text style={{ fontSize: 20, fontWeight: "200" }} marginL-10>{user ? user.email : ""}</Text>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'white',
+            }}
+          >
+            <Text style={{ fontSize: 20, fontWeight: '200' }} marginL-10>
+              {user ? user.email : ''}
+            </Text>
           </View>
 
           <View marginL-16>
@@ -126,7 +140,12 @@ export default function SettingsScreen({ navigation }) {
                 {renderSettingsRow(SettingsType.MANAGE_ACCOUNT, "Manage Account", require('../assets/icons/person.png'), Colors.blue50)}
               </View> */}
               <View>
-                {renderSettingsRow(SettingsType.SIGN_OUT, "Sign Out", require('../assets/icons/logout.png'), Colors.red50)}
+                {renderSettingsRow(
+                  SettingsType.SIGN_OUT,
+                  'Sign Out',
+                  require('../assets/icons/logout.png'),
+                  Colors.red50
+                )}
               </View>
             </View>
 
@@ -135,16 +154,36 @@ export default function SettingsScreen({ navigation }) {
                 Support
               </Text>
               <View>
-                {renderSettingsRow(SettingsType.CONTACT_US, "Contact Us", require('../assets/icons/contact.png'), Colors.orange50)}
+                {renderSettingsRow(
+                  SettingsType.CONTACT_US,
+                  'Contact Us',
+                  require('../assets/icons/contact.png'),
+                  Colors.orange50
+                )}
               </View>
               <View>
-                {renderSettingsRow(SettingsType.SUGGEST_IMPROVEMENTS, "Suggest Improvements", require('../assets/icons/edit.png'), Colors.violet50)}
+                {renderSettingsRow(
+                  SettingsType.SUGGEST_IMPROVEMENTS,
+                  'Suggest Improvements',
+                  require('../assets/icons/edit.png'),
+                  Colors.violet50
+                )}
               </View>
               <View>
-                {renderSettingsRow(SettingsType.TERMS_OF_SERVICE, "Terms of Service", require('../assets/icons/verified.png'), Colors.grey50)}
+                {renderSettingsRow(
+                  SettingsType.TERMS_OF_SERVICE,
+                  'Terms of Service',
+                  require('../assets/icons/verified.png'),
+                  Colors.grey50
+                )}
               </View>
               <View>
-                {renderSettingsRow(SettingsType.PRIVACY, "Privacy", require('../assets/icons/lock.png'), Colors.red50)}
+                {renderSettingsRow(
+                  SettingsType.PRIVACY,
+                  'Privacy',
+                  require('../assets/icons/lock.png'),
+                  Colors.red50
+                )}
               </View>
             </View>
           </View>

@@ -1,9 +1,25 @@
 import { useRef, useState } from 'react';
-import { Keyboard, SafeAreaView, ScrollView, TouchableWithoutFeedback } from 'react-native';
-import { Button, Colors, Image, Text, TextField, View } from 'react-native-ui-lib';
+import {
+  Keyboard,
+  SafeAreaView,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import {
+  Button,
+  Colors,
+  Image,
+  Text,
+  TextField,
+  View,
+} from 'react-native-ui-lib';
 import { auth } from 'troptix-firebase';
-import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
-import * as authentication from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
+import * as authentication from 'firebase/auth';
 import CustomTextField from '../../components/CustomTextField';
 import { User } from 'troptix-models';
 
@@ -16,44 +32,48 @@ export default function SignInScreen({ navigation }) {
   }
 
   function signUpWithEmail() {
-    navigation.navigate("SignUpWithEmailScreen", {
+    navigation.navigate('SignUpWithEmailScreen', {
       userEmail: email,
     });
   }
 
   function signInWithEmail() {
-    navigation.navigate("SignInWithEmailScreen");
+    navigation.navigate('SignInWithEmailScreen');
   }
 
   function handleGoogleSignIn() {
     const provider = new GoogleAuthProvider();
-    signInWithEmailAndPassword(auth, "flowersgaurnett@gmail.com", "Password15")
+    signInWithEmailAndPassword(auth, 'flowersgaurnett@gmail.com', 'Password15')
       .then((result) => {
         // This gives you a Google Access Token. You can use it to access the Google API.
         // const credential = GoogleAuthProvider.credentialFromResult(result);
         // const token = credential.accessToken;
         // const user = result.user;
-      }).catch((error) => {
+      })
+      .catch((error) => {
         // Handle Errors here.
         // const errorCode = error.code;
         // const errorMessage = error.message;
         // const email = error.customData.email;
         // const credential = GoogleAuthProvider.credentialFromError(error);
-      })
+      });
   }
 
   return (
-    <TouchableWithoutFeedback
-      onPress={Keyboard.dismiss}
-      accessible={false}>
-      <View paddingR-32 paddingL-32 style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View
+        paddingR-32
+        paddingL-32
+        style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}
+      >
         <Image
-          resizeMode='cover'
+          resizeMode="cover"
           height={150}
           width={150}
-          source={require('../../assets/logo/logo_v1.png')} />
+          source={require('../../assets/logo/logo_v1.png')}
+        />
 
-        <View width={"100%"}>
+        <View width={'100%'}>
           <CustomTextField
             name="email"
             label="Email address"
@@ -69,11 +89,18 @@ export default function SignInScreen({ navigation }) {
           marginT-16
           borderRadius={25}
           color={Colors.white}
-          style={{ backgroundColor: '#FF7043', height: 50, width: '100%' }}>
-          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>Sign up with email</Text>
+          style={{ backgroundColor: '#FF7043', height: 50, width: '100%' }}
+        >
+          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>
+            Sign up with email
+          </Text>
         </Button>
 
-        <View marginT-24 marginB-24 style={{ flexDirection: 'row', alignItems: 'center', width: 300 }}>
+        <View
+          marginT-24
+          marginB-24
+          style={{ flexDirection: 'row', alignItems: 'center', width: 300 }}
+        >
           <View style={{ flex: 1, height: 1, backgroundColor: 'black' }} />
           <View>
             <Text style={{ width: 50, textAlign: 'center' }}>OR</Text>
@@ -85,16 +112,35 @@ export default function SignInScreen({ navigation }) {
           onPress={() => signInWithEmail()}
           backgroundColor={Colors.orange30}
           borderRadius={25}
-          style={{ backgroundColor: '#2196F3', height: 50, width: '100%' }}>
-          <Image source={require('../../assets/logo/email.png')} tintColor={Colors.white} width={24} height={24} />
-          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>Sign in with email</Text>
+          style={{ backgroundColor: '#2196F3', height: 50, width: '100%' }}
+        >
+          <Image
+            source={require('../../assets/logo/email.png')}
+            tintColor={Colors.white}
+            width={24}
+            height={24}
+          />
+          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>
+            Sign in with email
+          </Text>
         </Button>
 
         <Button
           onPress={() => handleGoogleSignIn()}
-          marginT-16 outline borderRadius={25} outlineColor={Colors.grey30} style={{ height: 50, width: '100%' }}>
-          <Image source={require('../../assets/logo/google.png')} width={24} height={24} />
-          <Text style={{ fontSize: 16 }} marginL-10>Sign in with Google</Text>
+          marginT-16
+          outline
+          borderRadius={25}
+          outlineColor={Colors.grey30}
+          style={{ height: 50, width: '100%' }}
+        >
+          <Image
+            source={require('../../assets/logo/google.png')}
+            width={24}
+            height={24}
+          />
+          <Text style={{ fontSize: 16 }} marginL-10>
+            Sign in with Google
+          </Text>
         </Button>
       </View>
     </TouchableWithoutFeedback>

@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient } from '@prisma/client';
-import prisma from "../prisma/prisma";
+import prisma from '../prisma/prisma';
 
 const prismaClient = prisma as PrismaClient;
 
@@ -13,10 +13,10 @@ export function getPrismaUpdateDelegatedUserQuery(user, userId) {
     email: user.email,
     event: {
       connect: {
-        id: user.eventId
-      }
-    }
-  }
+        id: user.eventId,
+      },
+    },
+  };
 
   return delegatedUser;
 }
@@ -32,5 +32,4 @@ export async function deleteDelegatedUserQuery(userId: string) {
   } catch (error) {
     console.log(error);
   }
-
 }
