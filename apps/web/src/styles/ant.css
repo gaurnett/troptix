@@ -1,6 +1,6 @@
 .ant-divider-horizontal.ant-divider-with-text-center::before,
 .ant-divider-horizontal.ant-divider-with-text-center::after {
-  border-top: .5px solid black;
+  border-top: 0.5px solid black;
 }
 
 .ant-carousel .slick-dots li button {

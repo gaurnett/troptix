@@ -1,22 +1,24 @@
-import { allowCors } from "../lib/auth";
-import { sendContactUsForm } from "../lib/emailHelper";
+import { allowCors } from '../lib/auth';
+import { sendContactUsForm } from '../lib/emailHelper';
 
 async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
-    return response.status(500).json({ error: 'No method found for contact endpoint' });
+    return response
+      .status(500)
+      .json({ error: 'No method found for contact endpoint' });
   }
 
   switch (method) {
-    case "POST":
+    case 'POST':
       return postContact(body.contact, response);
-    case "GET":
-    case "PUT":
+    case 'GET':
+    case 'PUT':
       break;
-    case "DELETE":
+    case 'DELETE':
       break;
-    case "OPTIONS":
+    case 'OPTIONS':
       return response.status(200).end();
     default:
       return response.status(500).json({ error: 'No contact type set' });
@@ -27,7 +29,9 @@ module.exports = allowCors(handler);
 
 function postContact(body, response) {
   if (body === undefined || body.requestType === undefined) {
-    return response.status(500).json({ error: 'No body found in post contact request' });
+    return response
+      .status(500)
+      .json({ error: 'No body found in post contact request' });
   }
 
   const postOrderType = body.requestType;

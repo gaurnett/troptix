@@ -1,16 +1,16 @@
-import { useMutation } from "@tanstack/react-query";
-import { prodUrl } from "./constants";
+import { useMutation } from '@tanstack/react-query';
+import { prodUrl } from './constants';
 
 export async function mutateEvent(event, editEvent): Promise<any> {
   let url = prodUrl + `/api/events`;
-  let method = editEvent ? "PUT" : "POST";
+  let method = editEvent ? 'PUT' : 'POST';
 
   try {
     const response = await fetch(url, {
       method: method,
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         event: event,
@@ -25,7 +25,7 @@ export async function mutateEvent(event, editEvent): Promise<any> {
 
     return json;
   } catch (error) {
-    console.error("An error occurred while fetching the data.", error);
+    console.error('An error occurred while fetching the data.', error);
     throw error;
   }
 }

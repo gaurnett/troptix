@@ -1,10 +1,10 @@
-import { TropTixContext } from "@/components/WebNavigator";
-import { Spinner } from "@/components/ui/spinner";
-import { RequestType, useFetchEventsById } from "@/hooks/useFetchEvents";
-import { List } from "antd";
-import Image from "next/image";
-import Link from "next/link";
-import { useContext } from "react";
+import { TropTixContext } from '@/components/WebNavigator';
+import { Spinner } from '@/components/ui/spinner';
+import { RequestType, useFetchEventsById } from '@/hooks/useFetchEvents';
+import { List } from 'antd';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useContext } from 'react';
 
 export default function ManageEventsPage() {
   const { user } = useContext(TropTixContext);
@@ -12,7 +12,7 @@ export default function ManageEventsPage() {
   const { isPending, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_BY_ORGANIZER,
     jwtToken: user.jwtToken,
-    id: user.id
+    id: user.id,
   });
 
   return (
@@ -37,7 +37,7 @@ export default function ManageEventsPage() {
                   <Link
                     key={event.id}
                     href={{
-                      pathname: "/admin/manage-event",
+                      pathname: '/admin/manage-event',
                       query: { eventId: event.id },
                     }}
                   >
@@ -47,21 +47,29 @@ export default function ManageEventsPage() {
                           width={110}
                           height={110}
                           className="w-auto"
-                          style={{ objectFit: "cover", width: 150, height: 150 }}
+                          style={{
+                            objectFit: 'cover',
+                            width: 150,
+                            height: 150,
+                          }}
                           src={
                             event.imageUrl !== null
                               ? event.imageUrl
-                              : "https://placehold.co/400x400?text=Add+Event+Flyer"
+                              : 'https://placehold.co/400x400?text=Add+Event+Flyer'
                           }
-                          alt={"event flyer image"}
+                          alt={'event flyer image'}
                         />
                       </div>
                       <div className="ml-4 my-auto">
                         <div className="font-bold text-xl">{event.name}</div>
                         <div className="text-base">{event.address}</div>
-                        <div className="text-blue-500 text-base">{new Date(event.startDate).toDateString()}</div>
-                        <div className={`${event.isDraft ? "text-amber-900" : "text-green-600"} text-amber-900 text-base`}>
-                          Status: {event.isDraft ? "Draft" : "Published"}
+                        <div className="text-blue-500 text-base">
+                          {new Date(event.startDate).toDateString()}
+                        </div>
+                        <div
+                          className={`${event.isDraft ? 'text-amber-900' : 'text-green-600'} text-amber-900 text-base`}
+                        >
+                          Status: {event.isDraft ? 'Draft' : 'Published'}
                         </div>
                       </div>
                     </div>
@@ -72,7 +80,7 @@ export default function ManageEventsPage() {
           </div>
         ) : (
           <div className="mt-8">
-            <Spinner text={"Fetching Events"} />
+            <Spinner text={'Fetching Events'} />
           </div>
         )}
       </div>

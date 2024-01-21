@@ -1,4 +1,3 @@
-
 import { TropTixContext } from '@/components/WebNavigator';
 import { Spinner } from '@/components/ui/spinner';
 import { List } from 'antd';
@@ -23,8 +22,8 @@ export default function OrdersPage() {
 
       const getEventsRequest: any = {
         getEventsType: GetEventsType.GET_EVENTS_BY_ORGANIZER,
-        organizerId: userId
-      }
+        organizerId: userId,
+      };
       const response: any = await getEvents(getEventsRequest);
 
       if (response !== undefined && response.length !== 0) {
@@ -32,7 +31,7 @@ export default function OrdersPage() {
       }
 
       setIsFetchingEvents(false);
-    };
+    }
 
     fetchEvents();
   }, [userId]);
@@ -40,9 +39,15 @@ export default function OrdersPage() {
   return (
     <div className="w-full md:max-w-2xl mx-auto">
       <div className="mx-4">
-        <h1 className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">Manage Events</span></h1>
-        {!isFetchingEvents
-          ?
+        <h1
+          className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
+          data-aos="zoom-y-out"
+        >
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">
+            Manage Events
+          </span>
+        </h1>
+        {!isFetchingEvents ? (
           <div className="gap-8 pb-16 mt-8">
             <List
               itemLayout="vertical"
@@ -50,7 +55,13 @@ export default function OrdersPage() {
               dataSource={events}
               renderItem={(event: any) => (
                 <List.Item>
-                  <Link key={event.id} href={{ pathname: "/admin/manage-event", query: { eventId: event.id } }} >
+                  <Link
+                    key={event.id}
+                    href={{
+                      pathname: '/admin/manage-event',
+                      query: { eventId: event.id },
+                    }}
+                  >
                     <div className="flex">
                       <div>
                         <Image
@@ -58,29 +69,31 @@ export default function OrdersPage() {
                           height={75}
                           className="w-auto"
                           style={{ objectFit: 'cover' }}
-                          src={event.imageUrl !== null ? event.imageUrl : 'https://placehold.co/400x400?text=Add+Event+Flyer'}
-                          alt={"event flyer image"} />
+                          src={
+                            event.imageUrl !== null
+                              ? event.imageUrl
+                              : 'https://placehold.co/400x400?text=Add+Event+Flyer'
+                          }
+                          alt={'event flyer image'}
+                        />
                       </div>
                       <div className="ml-4 my-auto">
                         <div>{event.name}</div>
                         <div>{event.address}</div>
                         <div>{new Date(event.startDate).toDateString()}</div>
-
                       </div>
                     </div>
                   </Link>
                 </List.Item>
-
               )}
             />
           </div>
-          :
+        ) : (
           <div className="mt-8">
-            <Spinner text={"Fetching Events"} />
+            <Spinner text={'Fetching Events'} />
           </div>
-        }
+        )}
       </div>
-
     </div>
   );
 }

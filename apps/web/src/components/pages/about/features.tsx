@@ -1,7 +1,7 @@
-import EventCard from "@/components/EventCard";
-import { EventType } from "@/types/Event";
-import { useRouter } from "next/navigation";
-import { Collapse, Divider } from "antd";
+import EventCard from '@/components/EventCard';
+import { EventType } from '@/types/Event';
+import { useRouter } from 'next/navigation';
+import { Collapse, Divider } from 'antd';
 
 export default function AboutFeatures() {
   return (
@@ -29,8 +29,8 @@ export default function AboutFeatures() {
           <Collapse
             items={[
               {
-                key: "1",
-                label: "See event creation and management features",
+                key: '1',
+                label: 'See event creation and management features',
                 children: (
                   <ol>
                     <li>
@@ -62,8 +62,8 @@ export default function AboutFeatures() {
           <Collapse
             items={[
               {
-                key: "1",
-                label: "See registration and attendee features",
+                key: '1',
+                label: 'See registration and attendee features',
                 children: (
                   <ol>
                     <li>
@@ -83,8 +83,8 @@ export default function AboutFeatures() {
           <Collapse
             items={[
               {
-                key: "1",
-                label: "See payout and revenue features",
+                key: '1',
+                label: 'See payout and revenue features',
                 children: (
                   <ol>
                     <li>

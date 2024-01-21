@@ -3,13 +3,13 @@ import {
   CustomInput,
   CustomTextArea,
   CustomTimeField,
-} from "@/components/ui/input";
-import Autocomplete from "react-google-autocomplete";
-import { Button, message, Form } from "antd";
-import { useRouter } from "next/router";
-import { RequestType } from "@/hooks/useFetchEvents";
-import { useCreateEvent } from "@/hooks/usePostEvent";
-import { useQueryClient } from "@tanstack/react-query";
+} from '@/components/ui/input';
+import Autocomplete from 'react-google-autocomplete';
+import { Button, message, Form } from 'antd';
+import { useRouter } from 'next/router';
+import { RequestType } from '@/hooks/useFetchEvents';
+import { useCreateEvent } from '@/hooks/usePostEvent';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function AddEventFormPage({ event, setEvent }) {
   const [messageApi, contextHolder] = message.useMessage();
@@ -30,22 +30,22 @@ export default function AddEventFormPage({ event, setEvent }) {
     const startDate = new Date(event.startDate);
     const endDate = new Date(event.endDate);
 
-    if (name === "startDate") {
+    if (name === 'startDate') {
       if (value.toDate().getTime() > endDate.getTime()) {
         const newEndDate = value.toDate();
         newEndDate.setHours(newEndDate.getHours() + 4);
 
         setEvent((previousEvent) => ({
           ...previousEvent,
-          ["endDate"]: newEndDate,
+          ['endDate']: newEndDate,
         }));
       }
     }
 
-    if (name === "endDate" && value.toDate().getTime() < startDate.getTime()) {
+    if (name === 'endDate' && value.toDate().getTime() < startDate.getTime()) {
       messageApi.open({
-        type: "error",
-        content: "End time cannot be before start time",
+        type: 'error',
+        content: 'End time cannot be before start time',
       });
       return;
     }
@@ -69,13 +69,13 @@ export default function AddEventFormPage({ event, setEvent }) {
       return;
     }
 
-    let country = "";
-    let countryCode = "";
+    let country = '';
+    let countryCode = '';
     let lat = 0;
     let lng = 0;
     if (place.address_components !== undefined) {
       place.address_components.forEach((component) => {
-        if (component.types.includes("country")) {
+        if (component.types.includes('country')) {
           country = component.long_name;
           countryCode = component.short_name;
         }
@@ -89,11 +89,11 @@ export default function AddEventFormPage({ event, setEvent }) {
 
     setEvent((previousEvent: any) => ({
       ...previousEvent,
-      ["address"]: getValueOrDefault(place.formatted_address, ""),
-      ["country"]: getValueOrDefault(country, ""),
-      ["country_code"]: getValueOrDefault(countryCode, ""),
-      ["latitude"]: getValueOrDefault(lat, 0),
-      ["longitude"]: getValueOrDefault(lng, 0),
+      ['address']: getValueOrDefault(place.formatted_address, ''),
+      ['country']: getValueOrDefault(country, ''),
+      ['country_code']: getValueOrDefault(countryCode, ''),
+      ['latitude']: getValueOrDefault(lat, 0),
+      ['longitude']: getValueOrDefault(lng, 0),
     }));
   }
 
@@ -105,8 +105,8 @@ export default function AddEventFormPage({ event, setEvent }) {
     mutation.mutate(e, {
       onSuccess: () => {
         messageApi.open({
-          type: "success",
-          content: "Successfully created event.",
+          type: 'success',
+          content: 'Successfully created event.',
         });
         queryClient.invalidateQueries({
           queryKey: [RequestType.GET_EVENTS_ALL],
@@ -121,18 +121,18 @@ export default function AddEventFormPage({ event, setEvent }) {
       },
       onError: () => {
         messageApi.open({
-          type: "error",
-          content: "Failed to create event, please try again.",
+          type: 'error',
+          content: 'Failed to create event, please try again.',
         });
       },
     });
   }
 
   async function onFinish(values: any) {
-    if (event.address === "" || event.address === undefined) {
+    if (event.address === '' || event.address === undefined) {
       messageApi.open({
-        type: "error",
-        content: "Please enter a valid address",
+        type: 'error',
+        content: 'Please enter a valid address',
       });
       return;
     }
@@ -155,11 +155,11 @@ export default function AddEventFormPage({ event, setEvent }) {
           <div className="w-full px-3">
             <CustomInput
               value={event.name}
-              name={"name"}
-              id={"name"}
-              label={"Event Title *"}
-              type={"text"}
-              placeholder={"TropTix Beach Party"}
+              name={'name'}
+              id={'name'}
+              label={'Event Title *'}
+              type={'text'}
+              placeholder={'TropTix Beach Party'}
               handleChange={handleChange}
               required={true}
             />
@@ -169,11 +169,11 @@ export default function AddEventFormPage({ event, setEvent }) {
           <div className="w-full px-3">
             <CustomInput
               value={event.organizer}
-              name={"organizer"}
-              id={"organizer"}
-              label={"Event Organizer *"}
-              type={"text"}
-              placeholder={"TropTix"}
+              name={'organizer'}
+              id={'organizer'}
+              label={'Event Organizer *'}
+              type={'text'}
+              placeholder={'TropTix'}
               handleChange={handleChange}
               required={true}
             />
@@ -183,11 +183,11 @@ export default function AddEventFormPage({ event, setEvent }) {
           <div className="w-full px-3">
             <CustomInput
               value={event.venue}
-              name={"venue"}
-              id={"venue"}
-              label={"Event Venue *"}
-              type={"text"}
-              placeholder={"Brooklyn Museum"}
+              name={'venue'}
+              id={'venue'}
+              label={'Event Venue *'}
+              type={'text'}
+              placeholder={'Brooklyn Museum'}
               handleChange={handleChange}
               required={true}
             />
@@ -197,7 +197,7 @@ export default function AddEventFormPage({ event, setEvent }) {
           <div className="w-full px-3">
             <label
               className="block text-gray-800 text-sm font-medium mb-1"
-              htmlFor={"location"}
+              htmlFor={'location'}
             >
               Event Address *
             </label>
@@ -226,12 +226,12 @@ export default function AddEventFormPage({ event, setEvent }) {
           <div className="w-full px-3">
             <CustomTextArea
               value={event.description}
-              name={"description"}
-              id={"description"}
-              label={"Event Description *"}
+              name={'description'}
+              id={'description'}
+              label={'Event Description *'}
               rows={6}
               placeholder={
-                "Add a full description of your event. This will be presented on your event details page."
+                'Add a full description of your event. This will be presented on your event details page.'
               }
               handleChange={handleChange}
               required={true}
@@ -249,22 +249,22 @@ export default function AddEventFormPage({ event, setEvent }) {
           <div className="mb-4 md:mr-4 w-full">
             <CustomDateField
               value={event.startDate}
-              name={"startDate"}
-              id={"startDate"}
-              label={"Start Date *"}
-              placeholder={"Start Date"}
-              handleChange={(value: any) => updateDate("startDate", value)}
+              name={'startDate'}
+              id={'startDate'}
+              label={'Start Date *'}
+              placeholder={'Start Date'}
+              handleChange={(value: any) => updateDate('startDate', value)}
               required={true}
             />
           </div>
           <div className="mb-4 md:ml-4 w-full">
             <CustomTimeField
               value={event.startDate}
-              name={"startDate"}
-              id={"startTime"}
-              label={"Start Time *"}
-              placeholder={"Start Time"}
-              handleChange={(value: any) => updateDate("startDate", value)}
+              name={'startDate'}
+              id={'startTime'}
+              label={'Start Time *'}
+              placeholder={'Start Time'}
+              handleChange={(value: any) => updateDate('startDate', value)}
               required={true}
             />
           </div>
@@ -273,11 +273,11 @@ export default function AddEventFormPage({ event, setEvent }) {
           <div className="mb-4 md:mr-4 w-full">
             <CustomDateField
               value={event.endDate}
-              name={"endDate"}
-              id={"endDate"}
-              label={"End Date *"}
-              placeholder={"End Date"}
-              handleChange={(value: any) => updateDate("endDate", value)}
+              name={'endDate'}
+              id={'endDate'}
+              label={'End Date *'}
+              placeholder={'End Date'}
+              handleChange={(value: any) => updateDate('endDate', value)}
               required={true}
               useCustomDisableDate={true}
               startDate={event.startDate}
@@ -286,11 +286,11 @@ export default function AddEventFormPage({ event, setEvent }) {
           <div className="mb-4 md:ml-4 w-full">
             <CustomTimeField
               value={event.endDate}
-              name={"endDate"}
-              id={"endTime"}
-              label={"End Time *"}
-              placeholder={"End Time"}
-              handleChange={(value: any) => updateDate("endDate", value)}
+              name={'endDate'}
+              id={'endTime'}
+              label={'End Time *'}
+              placeholder={'End Time'}
+              handleChange={(value: any) => updateDate('endDate', value)}
               required={true}
             />
           </div>

@@ -14,7 +14,7 @@ export default function ManageEventsScreen({ navigation }) {
   const { isLoading, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_BY_ORGANIZER,
     id: userId,
-    jwtToken: user?.jwtToken
+    jwtToken: user?.jwtToken,
   });
 
   const onRefresh = useCallback(async () => {
@@ -28,14 +28,14 @@ export default function ManageEventsScreen({ navigation }) {
 
   function onEventClick(event) {
     navigation.navigate('ManageEventScreen', {
-      event: event
-    })
+      event: event,
+    });
   }
 
   function openAddEvents() {
     navigation.navigate('AddEventScreen', {
-      eventObject: undefined
-    })
+      eventObject: undefined,
+    });
   }
 
   function renderEvents() {
@@ -47,21 +47,24 @@ export default function ManageEventsScreen({ navigation }) {
           onPress={() => onEventClick(event)}
         >
           <Image
-            contentFit='cover'
+            contentFit="cover"
             style={{
               height: 200,
-              width: '100%'
+              width: '100%',
             }}
             source={{
-              uri: event.imageUrl
-            }} />
+              uri: event.imageUrl,
+            }}
+          />
 
           <View padding-20>
             <Text text50 $textDefault>
               {event.name}
             </Text>
             <View row>
-              <Text text70 $textDefault>{formatDate(new Date(event.startDate))} | </Text>
+              <Text text70 $textDefault>
+                {formatDate(new Date(event.startDate))} |{' '}
+              </Text>
               <Text text70 color={Colors.$textMajor}>
                 {event.organizer}
               </Text>
@@ -74,36 +77,51 @@ export default function ManageEventsScreen({ navigation }) {
         </Card>
       );
     });
-  };
+  }
 
   return (
     <View style={{ flex: 1, height: '100%', backgroundColor: 'white' }}>
-      {
-        isLoading ?
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <LoaderScreen message={'Fetching events'} color={Colors.grey40} />
-          </View>
-          :
-          <View>
-            {
-              data.length === 0 ?
-                <View style={{ alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%" }}>
-                  <Image source={require('../../assets/icons/empty-events.png')} width={120} height={120} />
-                  <Text marginT-24 style={{ fontSize: 24 }}>No events managed</Text>
-                </View>
-                :
-                <View style={{ height: "100%" }}>
-                  <ScrollView
-                    refreshControl={
-                      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                    }>
-                    <View padding-20>
-                      {renderEvents()}
-                    </View>
-                  </ScrollView>
-                </View>
-            }
-            {/* <View>
+      {isLoading ? (
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <LoaderScreen message={'Fetching events'} color={Colors.grey40} />
+        </View>
+      ) : (
+        <View>
+          {data.length === 0 ? (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                width: '100%',
+              }}
+            >
+              <Image
+                source={require('../../assets/icons/empty-events.png')}
+                width={120}
+                height={120}
+              />
+              <Text marginT-24 style={{ fontSize: 24 }}>
+                No events managed
+              </Text>
+            </View>
+          ) : (
+            <View style={{ height: '100%' }}>
+              <ScrollView
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }
+              >
+                <View padding-20>{renderEvents()}</View>
+              </ScrollView>
+            </View>
+          )}
+          {/* <View>
               <FloatingButton
                 visible={true}
                 button={{
@@ -114,8 +132,8 @@ export default function ManageEventsScreen({ navigation }) {
                 bottomMargin={16}
               />
             </View> */}
-          </View>
-      }
+        </View>
+      )}
     </View>
   );
 }

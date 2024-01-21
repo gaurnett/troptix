@@ -1,5 +1,5 @@
 import { Prisma, PrismaClient, TicketStatus } from '@prisma/client';
-import prisma from "../prisma/prisma";
+import prisma from '../prisma/prisma';
 
 const prismaClient = prisma as PrismaClient;
 
@@ -8,8 +8,8 @@ export function getPrismaUpdateTicketQuery(ticket) {
 
   updatedTicket = {
     firstName: ticket.firstName,
-    lastName: ticket.lastName
-  }
+    lastName: ticket.lastName,
+  };
 
   return updatedTicket;
 }
@@ -19,25 +19,28 @@ export function getPrismaUpdateTicketStatusQuery(ticket) {
 
   updatedTicket = {
     status: ticket.status,
-  }
+  };
 
   return updatedTicket;
 }
 
-export async function updateScannedTicketStatus(ticketId: string, eventId: string) {
+export async function updateScannedTicketStatus(
+  ticketId: string,
+  eventId: string
+) {
   if (!eventId || !ticketId) {
     return {
       ticketName: undefined,
       ticketDescription: undefined,
       scanSucceeded: false,
-    }
+    };
   }
 
   try {
     const ticket = await prismaClient.tickets.findUnique({
       where: {
         id: ticketId,
-        eventId: eventId
+        eventId: eventId,
       },
     });
 
@@ -46,13 +49,13 @@ export async function updateScannedTicketStatus(ticketId: string, eventId: strin
         ticketName: undefined,
         ticketDescription: undefined,
         scanSucceeded: false,
-      }
+      };
     }
 
     let ticketType: any = {
-      name: "Complementary",
-      description: ""
-    }
+      name: 'Complementary',
+      description: '',
+    };
 
     if (ticket.ticketTypeId) {
       ticketType = await prismaClient.ticketTypes.findUnique({
@@ -61,7 +64,6 @@ export async function updateScannedTicketStatus(ticketId: string, eventId: strin
         },
       });
     }
-
 
     if (ticket.status === TicketStatus.NOT_AVAILABLE) {
       return {
@@ -75,7 +77,7 @@ export async function updateScannedTicketStatus(ticketId: string, eventId: strin
           id: ticketId,
         },
         data: {
-          status: TicketStatus.NOT_AVAILABLE
+          status: TicketStatus.NOT_AVAILABLE,
         },
       });
 
@@ -97,10 +99,10 @@ export function getPrismaUpdateTicketUserQuery(userId) {
   updatedTicket = {
     user: {
       connect: {
-        id: userId
-      }
+        id: userId,
+      },
     },
-  }
+  };
 
   return updatedTicket;
 }

@@ -1,22 +1,18 @@
-import _ from "lodash";
-import { useEffect, useRef, useState } from "react";
+import _ from 'lodash';
+import { useEffect, useRef, useState } from 'react';
+import { Text, View } from 'react-native-ui-lib';
+import { Keyboard, ScrollView, TouchableWithoutFeedback } from 'react-native';
+import { Event } from 'troptix-models';
+import CustomTextField from '../../components/CustomTextField';
+import CustomDateTimeField from '../../components/CustomDateTimeField';
 import {
-  Text,
-  View,
-} from "react-native-ui-lib";
-import {
-  Keyboard,
-  ScrollView,
-  TouchableWithoutFeedback,
-} from "react-native";
-import { Event } from "troptix-models";
-import CustomTextField from "../../components/CustomTextField";
-import CustomDateTimeField from "../../components/CustomDateTimeField";
-import { PlaceType, GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+  PlaceType,
+  GooglePlacesAutocomplete,
+} from 'react-native-google-places-autocomplete';
 
 export default function GooglePlacesScreen({ route }) {
   const placesRef = useRef();
-  const { getMapsResults } = route.params
+  const { getMapsResults } = route.params;
 
   useEffect(() => {
     if (placesRef.current !== undefined) {
@@ -25,12 +21,17 @@ export default function GooglePlacesScreen({ route }) {
   }, []);
 
   return (
-    <View paddingT-16 paddingL-16 paddingR-16 style={{ height: "100%", flex: 1, backgroundColor: "white" }}>
+    <View
+      paddingT-16
+      paddingL-16
+      paddingR-16
+      style={{ height: '100%', flex: 1, backgroundColor: 'white' }}
+    >
       <View
         style={{
-          height: "100%",
-          width: "100%",
-          borderColor: "#D3D3D3",
+          height: '100%',
+          width: '100%',
+          borderColor: '#D3D3D3',
         }}
       >
         <GooglePlacesAutocomplete
@@ -41,14 +42,14 @@ export default function GooglePlacesScreen({ route }) {
           }}
           query={{
             key: 'AIzaSyD8RUphX2zD_n9uzXhIwhBo-5oQD2n0B3M',
-            language: 'en'
+            language: 'en',
           }}
           nearbyPlacesAPI="GooglePlacesSearch"
           fetchDetails={true}
           styles={{
             textInputContainer: {
-              borderWidth: 1
-            }
+              borderWidth: 1,
+            },
           }}
         />
       </View>

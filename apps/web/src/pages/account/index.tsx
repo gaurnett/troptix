@@ -1,14 +1,10 @@
-import { CustomInput } from "@/components/ui/input";
-import { Spinner } from "@/components/ui/spinner";
-import { useFetchUser, useUpdateUser } from "@/hooks/useUser";
-import {
-  Button,
-  Form,
-  message
-} from "antd";
-import { updateProfile } from "firebase/auth";
-import { useEffect, useState } from "react";
-import { auth } from "../../config";
+import { CustomInput } from '@/components/ui/input';
+import { Spinner } from '@/components/ui/spinner';
+import { useFetchUser, useUpdateUser } from '@/hooks/useUser';
+import { Button, Form, message } from 'antd';
+import { updateProfile } from 'firebase/auth';
+import { useEffect, useState } from 'react';
+import { auth } from '../../config';
 
 export default function AccountPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -33,30 +29,27 @@ export default function AccountPage() {
   async function onFinish(values: any) {
     updateUser.mutate(adminUser, {
       onSuccess: async () => {
-        const name = adminUser.firstName + " " + adminUser.lastName;
-        if (
-          name !== auth.currentUser?.displayName &&
-          auth.currentUser
-        ) {
+        const name = adminUser.firstName + ' ' + adminUser.lastName;
+        if (name !== auth.currentUser?.displayName && auth.currentUser) {
           await updateProfile(auth.currentUser, {
             displayName: name,
           });
         }
         messageApi.open({
-          type: "success",
-          content: "Successfully saved account.",
+          type: 'success',
+          content: 'Successfully saved account.',
         });
       },
       onError: () => {
         messageApi.open({
-          type: "error",
-          content: "Failed to save account, please try again.",
+          type: 'error',
+          content: 'Failed to save account, please try again.',
         });
       },
     });
   }
 
-  const onFinishFailed = (errorInfo: any) => { };
+  const onFinishFailed = (errorInfo: any) => {};
 
   return (
     <div className="w-full md:max-w-2xl mx-auto mt-32">
@@ -88,22 +81,22 @@ export default function AccountPage() {
               <div className="mb-4 md:mr-4 w-full">
                 <CustomInput
                   value={adminUser.firstName}
-                  name={"firstName"}
-                  id={"firstName"}
-                  label={"First Name"}
-                  type={"text"}
-                  placeholder={"John"}
+                  name={'firstName'}
+                  id={'firstName'}
+                  label={'First Name'}
+                  type={'text'}
+                  placeholder={'John'}
                   handleChange={handleChange}
                 />
               </div>
               <div className="mb-4 md:ml-4 w-full">
                 <CustomInput
                   value={adminUser.lastName}
-                  name={"lastName"}
-                  id={"lastName"}
-                  label={"Last Name"}
-                  type={"text"}
-                  placeholder={"Doe"}
+                  name={'lastName'}
+                  id={'lastName'}
+                  label={'Last Name'}
+                  type={'text'}
+                  placeholder={'Doe'}
                   handleChange={handleChange}
                 />
               </div>
@@ -112,11 +105,11 @@ export default function AccountPage() {
               <div className="w-full px-3">
                 <CustomInput
                   value={adminUser.email}
-                  name={"email"}
-                  id={"email"}
-                  label={"Email"}
-                  type={"text"}
-                  placeholder={"johndoe@gmail.com"}
+                  name={'email'}
+                  id={'email'}
+                  label={'Email'}
+                  type={'text'}
+                  placeholder={'johndoe@gmail.com'}
                   handleChange={handleChange}
                   required={true}
                   disabled={true}
@@ -127,11 +120,11 @@ export default function AccountPage() {
               <div className="w-full px-3">
                 <CustomInput
                   value={adminUser.telephoneNumber}
-                  name={"telephoneNumber"}
-                  id={"telephoneNumber"}
-                  label={"Telephone Number"}
-                  type={"text"}
-                  placeholder={"123456789"}
+                  name={'telephoneNumber'}
+                  id={'telephoneNumber'}
+                  label={'Telephone Number'}
+                  type={'text'}
+                  placeholder={'123456789'}
                   handleChange={handleChange}
                 />
               </div>
@@ -148,11 +141,11 @@ export default function AccountPage() {
               <div className="w-full px-3">
                 <CustomInput
                   value={adminUser.billingAddress1}
-                  name={"billingAddress1"}
-                  id={"billingAddress1"}
-                  label={"Address"}
-                  type={"text"}
-                  placeholder={"185 Kings Street"}
+                  name={'billingAddress1'}
+                  id={'billingAddress1'}
+                  label={'Address'}
+                  type={'text'}
+                  placeholder={'185 Kings Street'}
                   handleChange={handleChange}
                 />
               </div>
@@ -161,11 +154,11 @@ export default function AccountPage() {
               <div className="w-full px-3">
                 <CustomInput
                   value={adminUser.billingAddress2}
-                  name={"billingAddress2"}
-                  id={"billingAddress2"}
-                  label={"Address 2"}
-                  type={"text"}
-                  placeholder={""}
+                  name={'billingAddress2'}
+                  id={'billingAddress2'}
+                  label={'Address 2'}
+                  type={'text'}
+                  placeholder={''}
                   handleChange={handleChange}
                 />
               </div>
@@ -174,22 +167,22 @@ export default function AccountPage() {
               <div className="mb-4 md:mr-4 w-full">
                 <CustomInput
                   value={adminUser.billingCity}
-                  name={"billingCity"}
-                  id={"billingCity"}
-                  label={"City"}
-                  type={"text"}
-                  placeholder={"Kingston"}
+                  name={'billingCity'}
+                  id={'billingCity'}
+                  label={'City'}
+                  type={'text'}
+                  placeholder={'Kingston'}
                   handleChange={handleChange}
                 />
               </div>
               <div className="mb-4 md:ml-4 w-full">
                 <CustomInput
                   value={adminUser.billingZip}
-                  name={"billingZip"}
-                  id={"billingZip"}
-                  label={"Zip/Postal Code"}
-                  type={"text"}
-                  placeholder={"12345"}
+                  name={'billingZip'}
+                  id={'billingZip'}
+                  label={'Zip/Postal Code'}
+                  type={'text'}
+                  placeholder={'12345'}
                   handleChange={handleChange}
                 />
               </div>
@@ -198,22 +191,22 @@ export default function AccountPage() {
               <div className="mb-4 md:mr-4 w-full">
                 <CustomInput
                   value={adminUser.billingState}
-                  name={"billingState"}
-                  id={"billingState"}
-                  label={"State/Parish"}
-                  type={"text"}
-                  placeholder={"Kingston"}
+                  name={'billingState'}
+                  id={'billingState'}
+                  label={'State/Parish'}
+                  type={'text'}
+                  placeholder={'Kingston'}
                   handleChange={handleChange}
                 />
               </div>
               <div className="mb-4 md:ml-4 w-full">
                 <CustomInput
                   value={adminUser.billingCountry}
-                  name={"billingCountry"}
-                  id={"billingCountry"}
-                  label={"Country"}
-                  type={"text"}
-                  placeholder={"Jamaica"}
+                  name={'billingCountry'}
+                  id={'billingCountry'}
+                  label={'Country'}
+                  type={'text'}
+                  placeholder={'Jamaica'}
                   handleChange={handleChange}
                 />
               </div>
@@ -233,7 +226,7 @@ export default function AccountPage() {
           </Form>
         ) : (
           <div className="mt-8">
-            <Spinner text={"Fetching User"} />
+            <Spinner text={'Fetching User'} />
           </div>
         )}
       </div>

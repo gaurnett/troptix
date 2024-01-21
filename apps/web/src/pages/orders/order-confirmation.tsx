@@ -1,12 +1,12 @@
 import { Spinner } from '@/components/ui/spinner';
 import { StripeError, loadStripe } from '@stripe/stripe-js';
-import { Button, Result, message } from "antd";
+import { Button, Result, message } from 'antd';
 import Link from 'next/link';
-import { useRouter } from "next/router";
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 
-const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-const stripePromise = loadStripe(stripeKey ? stripeKey : "");
+const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = loadStripe(stripeKey ? stripeKey : '');
 
 export default function OrderConfirmation() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -20,11 +20,10 @@ export default function OrderConfirmation() {
     async function getStripeStatus() {
       const stripe = await stripePromise;
       if (!stripe) {
-        messageApi
-          .error({
-            key: 'process-payment-loading',
-            content: 'There was an error loading order status',
-          });
+        messageApi.error({
+          key: 'process-payment-loading',
+          content: 'There was an error loading order status',
+        });
         return;
       }
 
@@ -33,13 +32,12 @@ export default function OrderConfirmation() {
         return;
       }
 
-      stripe.retrievePaymentIntent(clientSecret)
-        .then(paymentIntent => {
-          if (paymentIntent.error) {
-            setStripeError(paymentIntent?.error);
-          }
-          setFetchingStatus(false);
-        })
+      stripe.retrievePaymentIntent(clientSecret).then((paymentIntent) => {
+        if (paymentIntent.error) {
+          setStripeError(paymentIntent?.error);
+        }
+        setFetchingStatus(false);
+      });
     }
 
     getStripeStatus();
@@ -48,9 +46,9 @@ export default function OrderConfirmation() {
   if (fetchingStatus) {
     return (
       <div className="mt-32">
-        <Spinner text={"Fetching Order Status"} />
+        <Spinner text={'Fetching Order Status'} />
       </div>
-    )
+    );
   }
 
   if (stripeError) {
@@ -63,19 +61,21 @@ export default function OrderConfirmation() {
           subTitle={`Order number: ${orderId}. Please retry again or reach out to our team with the order number`}
           extra={[
             <Link
-              href={{ pathname: "/contact", query: { orderId } }}
+              href={{ pathname: '/contact', query: { orderId } }}
               target="_blank"
-              key={"contact"}>
+              key={'contact'}
+            >
               <Button
-                type='primary'
-                className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                type="primary"
+                className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
+              >
                 Contact Us
               </Button>
             </Link>,
           ]}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -87,17 +87,18 @@ export default function OrderConfirmation() {
         subTitle={`Order number: ${orderId}. Please check your email for an order confirmation within 5 minutes. View your order details below to see and update ticket names.`}
         extra={[
           <Link
-            href={{ pathname: "/order-details", query: { orderId } }}
-            key={"tickets"}>
+            href={{ pathname: '/order-details', query: { orderId } }}
+            key={'tickets'}
+          >
             <Button
-              type='primary'
-              className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+              type="primary"
+              className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
+            >
               View Order Details & Tickets
             </Button>
-          </Link>
+          </Link>,
         ]}
       />
-
     </div>
   );
 }

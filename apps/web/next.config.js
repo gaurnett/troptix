@@ -5,7 +5,7 @@ const nextConfig = {
   },
   reactStrictMode: false,
   images: {
-    domains: ["firebasestorage.googleapis.com", "placehold.co"],
+    domains: ['firebasestorage.googleapis.com', 'placehold.co'],
   },
 };
 

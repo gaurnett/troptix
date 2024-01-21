@@ -1,9 +1,25 @@
 import _ from 'lodash';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { Text, View, Card, Colors, CardProps, Button, LoaderScreen } from 'react-native-ui-lib';
+import {
+  Text,
+  View,
+  Card,
+  Colors,
+  CardProps,
+  Button,
+  LoaderScreen,
+} from 'react-native-ui-lib';
 import { Event, getEventsFromRequest } from 'troptix-models';
-import { TicketSummary, TicketsSummary, getOrders, Ticket, getTicketsForUser, GetOrdersType, GetOrdersRequest } from 'troptix-api';
+import {
+  TicketSummary,
+  TicketsSummary,
+  getOrders,
+  Ticket,
+  getTicketsForUser,
+  GetOrdersType,
+  GetOrdersRequest,
+} from 'troptix-api';
 import { TropTixContext } from '../../App';
 import { Image } from 'expo-image';
 
@@ -16,7 +32,7 @@ export default function TicketsScreen({ navigation }) {
   function onOrderClick(summary) {
     navigation.navigate('TicketDetailsScreen', {
       summary: summary,
-    })
+    });
   }
 
   function groupOrders(response) {
@@ -33,8 +49,8 @@ export default function TicketsScreen({ navigation }) {
             id: ticket.id,
             status: ticket.status,
             orderId: ticket.orderId,
-            ticketType: ticket.ticketType
-          }
+            ticketType: ticket.ticketType,
+          };
           ticketsSummary.tickets.push(ticketSummary);
         }
 
@@ -48,15 +64,15 @@ export default function TicketsScreen({ navigation }) {
             id: ticket.id,
             status: ticket.status,
             orderId: ticket.orderId,
-            ticketType: ticket.ticketType
-          }
+            ticketType: ticket.ticketType,
+          };
           tickets.push(ticketSummary);
         }
 
         let ticketsSummary: TicketsSummary = {
           event: order.event,
-          tickets: tickets
-        }
+          tickets: tickets,
+        };
         ticketsMap.set(eventId, ticketsSummary);
       }
     }
@@ -73,8 +89,8 @@ export default function TicketsScreen({ navigation }) {
         id: ticket.id,
         status: ticket.status,
         orderId: ticket.orderId,
-        ticketType: ticket.ticketType
-      }
+        ticketType: ticket.ticketType,
+      };
 
       if (ticketsMap.has(eventId)) {
         let ticketsSummary = ticketsMap.get(eventId);
@@ -85,8 +101,8 @@ export default function TicketsScreen({ navigation }) {
         tickets.push(ticketSummary);
         let ticketsSummary: TicketsSummary = {
           event: ticket.event,
-          tickets: tickets
-        }
+          tickets: tickets,
+        };
         ticketsMap.set(eventId, ticketsSummary);
       }
     }
@@ -98,15 +114,15 @@ export default function TicketsScreen({ navigation }) {
     try {
       const getOrdersRequest: GetOrdersRequest = {
         getOrdersType: GetOrdersType.GET_ORDERS_FOR_USER,
-        userId: user.id
-      }
+        userId: user.id,
+      };
       const response = await getOrders(getOrdersRequest);
 
       if (response !== undefined && response.length !== 0) {
         setOrders(groupOrders(response));
       }
     } catch (error) {
-      console.log("TicketsScreen [fetchOrders] error: " + error)
+      console.log('TicketsScreen [fetchOrders] error: ' + error);
     }
 
     setIsFetchingOrders(false);
@@ -140,18 +156,23 @@ export default function TicketsScreen({ navigation }) {
         >
           <View style={{ height: '100%' }}>
             <Image
-              contentFit='cover'
+              contentFit="cover"
               height={120}
               width={120}
               source={{
-                uri: order.event.imageUrl
-              }} />
+                uri: order.event.imageUrl,
+              }}
+            />
           </View>
 
           <View marginL-12 marginT-8>
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: 'row' }}>
-                <Text style={{ flex: 1, flexWrap: 'wrap', fontWeight: 'bold' }} text70 $textDefault>
+                <Text
+                  style={{ flex: 1, flexWrap: 'wrap', fontWeight: 'bold' }}
+                  text70
+                  $textDefault
+                >
                   {order.event.name}
                 </Text>
               </View>
@@ -163,45 +184,62 @@ export default function TicketsScreen({ navigation }) {
 
             <View marginB-8>
               <Text text70 color={Colors.$textMajor}>
-                {order.tickets.length} {order.tickets.length === 1 ? "Ticket" : "Tickets"}
+                {order.tickets.length}{' '}
+                {order.tickets.length === 1 ? 'Ticket' : 'Tickets'}
               </Text>
             </View>
           </View>
         </Card>
       );
     });
-  };
+  }
 
   return (
-    <View style={{ backgroundColor: 'white', height: '100%', }}>
-      {
-        isFetchingOrders ?
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <LoaderScreen message={'Fetching tickets'} color={Colors.grey40} />
-          </View> :
-          <View>
-            {
-              orders.length === 0 ?
-                <View style={{ alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%" }}>
-                  <Image source={require('../../assets/icons/empty-tickets.png')} width={120} height={120} />
-                  <Text marginT-24 style={{ fontSize: 24 }}>No tickets purchased</Text>
+    <View style={{ backgroundColor: 'white', height: '100%' }}>
+      {isFetchingOrders ? (
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <LoaderScreen message={'Fetching tickets'} color={Colors.grey40} />
+        </View>
+      ) : (
+        <View>
+          {orders.length === 0 ? (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                width: '100%',
+              }}
+            >
+              <Image
+                source={require('../../assets/icons/empty-tickets.png')}
+                width={120}
+                height={120}
+              />
+              <Text marginT-24 style={{ fontSize: 24 }}>
+                No tickets purchased
+              </Text>
+            </View>
+          ) : (
+            <View style={{ height: '100%' }}>
+              <ScrollView
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }
+              >
+                <View flex padding-20>
+                  {renderOrders()}
                 </View>
-                :
-                <View style={{ height: "100%" }}>
-                  <ScrollView
-                    refreshControl={
-                      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                    }>
-                    <View flex padding-20>
-                      {renderOrders()}
-                    </View>
-                  </ScrollView>
-                </View>
-            }
-
-          </View>
-
-      }
+              </ScrollView>
+            </View>
+          )}
+        </View>
+      )}
     </View>
-  )
+  );
 }

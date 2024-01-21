@@ -1,156 +1,197 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <title>TropTix Email Confirmation</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/css">
+      body {
+        height: 100vh;
+        width: 100vw;
+      }
 
-<head>
-  <title>TropTix Email Confirmation</title>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style type="text/css">
-    body {
-      height: 100vh;
-      width: 100vw;
-    }
+      img {
+        object-fit: contain;
+      }
 
-    img {
-      object-fit: contain;
-    }
+      .center {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    </style>
+  </head>
 
-    .center {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="md:mt-8 md:mb-8 w-full md:max-w-3xl mx-auto">
-    <div class="border px-4">
-      <div class='flex w-full md:max-w-2xl md:mx-auto my-6'>
-        <div>
-          <img
-            src="https://firebasestorage.googleapis.com/v0/b/troptix.appspot.com/o/icons%2Flogo_v1.png?alt=media&token=a3ff06fb-b2fa-4aaa-a226-b1f28787d470"
-            width="75" height="75" alt='troptix-logo' />
-        </div>
-        <div class="w-full text-right my-auto">
-          <div class="text-sm md:text-md font-bold">Order #1234567890</div>
-          <div class="text-sm md:text-md font-bold">Gaurnett Flowers</div>
-          <div class="text-sm md:text-md font-bold">Sunday, November 12, 2023</div>
-        </div>
-      </div>
-      <div class="mx-4 text-center text-4xl font-extrabold leading-tighter tracking-tighter mb-4" data-aos="zoom-y-out">
-        <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">TropTix Beach
-          Party</span>
-      </div>
-
-      <div class="w-full md:max-w-2xl mx-auto">
-        <div class="md:flex">
-          <div class="w-full mx-auto text-center">
+  <body>
+    <div class="md:mt-8 md:mb-8 w-full md:max-w-3xl mx-auto">
+      <div class="border px-4">
+        <div class="flex w-full md:max-w-2xl md:mx-auto my-6">
+          <div>
             <img
-              src="https://firebasestorage.googleapis.com/v0/b/troptix.appspot.com/o/images%2F660A7394-31B7-4642-ABA3-F009E106EF74.jpg?alt=media&token=e2bfb397-188d-4a95-87ad-00a04f6ae239"
-              width="250" height="250" class="center" alt='troptix-logo' />
+              src="https://firebasestorage.googleapis.com/v0/b/troptix.appspot.com/o/icons%2Flogo_v1.png?alt=media&token=a3ff06fb-b2fa-4aaa-a226-b1f28787d470"
+              width="75"
+              height="75"
+              alt="troptix-logo"
+            />
           </div>
-          <div class="w-full grow">
-            <div class="mt-2 mb-2">
-              <label class="block text-gray-800 text-base font-bold">Start Date</label>
-              <p class="text-base ">Sep 18, 2023, 10:00 PM</p>
-            </div>
-            <div class="mt-2 mb-2">
-              <label class="block text-gray-800 text-base font-bold">End Date</label>
-              <p class="text-base ">Sep 19, 2023, 02:00 AM</p>
-            </div>
-            <div class="mt-2 mb-2">
-              <label class="block text-gray-800 text-base font-bold">Event Venue</label>
-              <p class="text-base ">Brooklyn Museum</p>
-            </div>
-            <div class="mt-2 mb-2">
-              <label class="block text-gray-800 text-base font-bold">Event Address</label>
-              <p class="text-base ">200 Eastern Pkwy, Brooklyn, NY 11238, USA</p>
+          <div class="w-full text-right my-auto">
+            <div class="text-sm md:text-md font-bold">Order #1234567890</div>
+            <div class="text-sm md:text-md font-bold">Gaurnett Flowers</div>
+            <div class="text-sm md:text-md font-bold">
+              Sunday, November 12, 2023
             </div>
           </div>
         </div>
-      </div>
+        <div
+          class="mx-4 text-center text-4xl font-extrabold leading-tighter tracking-tighter mb-4"
+          data-aos="zoom-y-out"
+        >
+          <span
+            class="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400"
+            >TropTix Beach Party</span
+          >
+        </div>
 
-      <div class="w-full md:max-w-2xl mx-auto mb-8">
-        <div class="mx-auto">
-          <div class="flex justify-center mt-8 mx-auto w-full">
-            <div class="text-center">
+        <div class="w-full md:max-w-2xl mx-auto">
+          <div class="md:flex">
+            <div class="w-full mx-auto text-center">
               <img
-                src="https://firebasestorage.googleapis.com/v0/b/troptix.appspot.com/o/icons%2Fwallet.png?alt=media&token=05ec78b9-3a05-42d7-91b6-a6900ed27143"
-                width="50" height="50" class="mx-auto justify-center content-center items-center" alt='troptix-logo' />
-              <div>Add to mobile wallet</div>
+                src="https://firebasestorage.googleapis.com/v0/b/troptix.appspot.com/o/images%2F660A7394-31B7-4642-ABA3-F009E106EF74.jpg?alt=media&token=e2bfb397-188d-4a95-87ad-00a04f6ae239"
+                width="250"
+                height="250"
+                class="center"
+                alt="troptix-logo"
+              />
             </div>
-            <div class="text-center ml-16">
-              <img
-                src="https://firebasestorage.googleapis.com/v0/b/troptix.appspot.com/o/icons%2Ftickets.png?alt=media&token=6cc9bd9e-374d-41c9-bce9-7af4b0be55eb"
-                width="50" height="50" class="mx-auto justify-center content-center items-center" alt='troptix-logo' />
-              <div>View your tickets</div>
+            <div class="w-full grow">
+              <div class="mt-2 mb-2">
+                <label class="block text-gray-800 text-base font-bold"
+                  >Start Date</label
+                >
+                <p class="text-base">Sep 18, 2023, 10:00 PM</p>
+              </div>
+              <div class="mt-2 mb-2">
+                <label class="block text-gray-800 text-base font-bold"
+                  >End Date</label
+                >
+                <p class="text-base">Sep 19, 2023, 02:00 AM</p>
+              </div>
+              <div class="mt-2 mb-2">
+                <label class="block text-gray-800 text-base font-bold"
+                  >Event Venue</label
+                >
+                <p class="text-base">Brooklyn Museum</p>
+              </div>
+              <div class="mt-2 mb-2">
+                <label class="block text-gray-800 text-base font-bold"
+                  >Event Address</label
+                >
+                <p class="text-base">
+                  200 Eastern Pkwy, Brooklyn, NY 11238, USA
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="w-full md:max-w-2xl mx-auto mb-4">
-        <div class="mx-auto w-full border rounded-md">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th scope="col">Ticket Name</th>
-                <th scope="col">Price</th>
-                <th scope="col">Fees</th>
-                <th scope="col">Subtotal</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope="row">Early Bird</th>
-                <td>150</td>
-                <td>15</td>
-                <td>165</td>
-              </tr>
-              <tr>
-                <th scope="row">General Admission</th>
-                <td>300</td>
-                <td>30</td>
-                <td>330</td>
-              </tr>
-              <tr>
-                <th scope="row">All Inclusive VIP</th>
-                <td>1500</td>
-                <td>150</td>
-                <td>1650</td>
-              </tr>
-              <tr>
-                <th scope="row">Total</th>
-                <td>1950</td>
-                <td>195</td>
-                <td>2145</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="w-full md:max-w-2xl mx-auto mb-8">
+          <div class="mx-auto">
+            <div class="flex justify-center mt-8 mx-auto w-full">
+              <div class="text-center">
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/troptix.appspot.com/o/icons%2Fwallet.png?alt=media&token=05ec78b9-3a05-42d7-91b6-a6900ed27143"
+                  width="50"
+                  height="50"
+                  class="mx-auto justify-center content-center items-center"
+                  alt="troptix-logo"
+                />
+                <div>Add to mobile wallet</div>
+              </div>
+              <div class="text-center ml-16">
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/troptix.appspot.com/o/icons%2Ftickets.png?alt=media&token=6cc9bd9e-374d-41c9-bce9-7af4b0be55eb"
+                  width="50"
+                  height="50"
+                  class="mx-auto justify-center content-center items-center"
+                  alt="troptix-logo"
+                />
+                <div>View your tickets</div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="w-full md:max-w-2xl mx-auto">
-        <div class="md:flex md:justify-between">
-          <div class="mb-4 md:mr-4 w-full">
-            <p class="block text-gray-800 text-bold font-bold">Billing Details</p>
-            <p class="block text-gray-800 text-base font-base">Gaurnett Flowers</p>
-            <p class="block font-light">309 Gold Street</p>
-            <p class="block font-light">APT 8E</p>
-            <p class="block font-light">Brooklyn, NY, 11201</p>
-            <p class="block font-light">United States</p>
-            <p class="block text-gray-800 text-base font-base mt-4">Phone number: 786-657-4159</p>
-            <p class="block text-gray-800 text-base font-base">Email: flowersgaurnett@gmail.com</p>
+        <div class="w-full md:max-w-2xl mx-auto mb-4">
+          <div class="mx-auto w-full border rounded-md">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">Ticket Name</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Fees</th>
+                  <th scope="col">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Early Bird</th>
+                  <td>150</td>
+                  <td>15</td>
+                  <td>165</td>
+                </tr>
+                <tr>
+                  <th scope="row">General Admission</th>
+                  <td>300</td>
+                  <td>30</td>
+                  <td>330</td>
+                </tr>
+                <tr>
+                  <th scope="row">All Inclusive VIP</th>
+                  <td>1500</td>
+                  <td>150</td>
+                  <td>1650</td>
+                </tr>
+                <tr>
+                  <th scope="row">Total</th>
+                  <td>1950</td>
+                  <td>195</td>
+                  <td>2145</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
+        <div class="w-full md:max-w-2xl mx-auto">
+          <div class="md:flex md:justify-between">
+            <div class="mb-4 md:mr-4 w-full">
+              <p class="block text-gray-800 text-bold font-bold">
+                Billing Details
+              </p>
+              <p class="block text-gray-800 text-base font-base">
+                Gaurnett Flowers
+              </p>
+              <p class="block font-light">309 Gold Street</p>
+              <p class="block font-light">APT 8E</p>
+              <p class="block font-light">Brooklyn, NY, 11201</p>
+              <p class="block font-light">United States</p>
+              <p class="block text-gray-800 text-base font-base mt-4">
+                Phone number: 786-657-4159
+              </p>
+              <p class="block text-gray-800 text-base font-base">
+                Email: flowersgaurnett@gmail.com
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</body>
-
+  </body>
 </html>

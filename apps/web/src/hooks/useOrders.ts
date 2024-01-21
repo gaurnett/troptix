@@ -1,29 +1,29 @@
-import { TropTixContext } from "@/components/WebNavigator";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { message } from "antd";
-import { useContext } from "react";
-import { Charge } from "./types/Charge";
-import { Checkout } from "./types/Checkout";
-import { ComplementaryOrder, Order, createOrder } from "./types/Order";
-import { prodUrl } from "./useFetchEvents";
+import { TropTixContext } from '@/components/WebNavigator';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { message } from 'antd';
+import { useContext } from 'react';
+import { Charge } from './types/Charge';
+import { Checkout } from './types/Checkout';
+import { ComplementaryOrder, Order, createOrder } from './types/Order';
+import { prodUrl } from './useFetchEvents';
 
 export enum GetOrdersType {
-  GET_ORDERS_FOR_USER = "GET_ORDERS_FOR_USER",
-  GET_ORDER_BY_ID = "GET_ORDER_BY_ID",
-  GET_ORDERS_FOR_EVENT = "GET_ORDERS_FOR_EVENT",
+  GET_ORDERS_FOR_USER = 'GET_ORDERS_FOR_USER',
+  GET_ORDER_BY_ID = 'GET_ORDER_BY_ID',
+  GET_ORDERS_FOR_EVENT = 'GET_ORDERS_FOR_EVENT',
 }
 
 export interface GetOrdersRequest {
   getOrdersType: keyof typeof GetOrdersType;
   id?: string;
   email?: string;
-  jwtToken?: string
+  jwtToken?: string;
 }
 
 export enum PostOrdersType {
-  POST_ORDERS_CREATE_CHARGE = "POST_ORDERS_CREATE_CHARGE",
-  POST_ORDERS_CREATE_ORDER = "POST_ORDERS_CREATE_ORDER",
-  POST_ORDERS_CREATE_COMPLEMENTARY_ORDER = "POST_ORDERS_CREATE_COMPLEMENTARY_ORDER",
+  POST_ORDERS_CREATE_CHARGE = 'POST_ORDERS_CREATE_CHARGE',
+  POST_ORDERS_CREATE_ORDER = 'POST_ORDERS_CREATE_ORDER',
+  POST_ORDERS_CREATE_COMPLEMENTARY_ORDER = 'POST_ORDERS_CREATE_COMPLEMENTARY_ORDER',
 }
 
 export interface PostOrdersRequest {
@@ -31,22 +31,22 @@ export interface PostOrdersRequest {
   order?: Order;
   charge?: Charge;
   complementaryOrder?: ComplementaryOrder;
-  jwtToken?: string
+  jwtToken?: string;
 }
 
 export function useFetchOrderById({
   getOrdersType = GetOrdersType.GET_ORDER_BY_ID,
   id,
-  jwtToken
+  jwtToken,
 }: GetOrdersRequest) {
   const query = useQuery({
-    queryKey: ["order", getOrdersType, id],
+    queryKey: ['order', getOrdersType, id],
     queryFn: () => getOrders({ getOrdersType, id, jwtToken }),
   });
 
   return {
     ...query,
-    showSignInError: !jwtToken
+    showSignInError: !jwtToken,
   };
 }
 // fetch the events for the user logged in currently
@@ -56,13 +56,13 @@ export function useFetchUserOrders() {
   const email = user?.email;
   const jwtToken = user?.jwtToken;
   const query = useQuery({
-    queryKey: ["order", getOrdersType, email],
+    queryKey: ['order', getOrdersType, email],
     queryFn: () => getOrders({ getOrdersType, email, jwtToken }),
   });
 
   return {
     ...query,
-    showSignInError: !user
+    showSignInError: !user,
   };
 }
 
@@ -74,12 +74,17 @@ export function useFetchEventOrders(eventId: string) {
   const jwtToken = user.jwtToken;
 
   return useQuery({
-    queryKey: ["order", getOrdersType, id],
+    queryKey: ['order', getOrdersType, id],
     queryFn: () => getOrders({ getOrdersType, id, jwtToken }),
   });
 }
 
-export async function getOrders({ getOrdersType, id, email, jwtToken }: GetOrdersRequest) {
+export async function getOrders({
+  getOrdersType,
+  id,
+  email,
+  jwtToken,
+}: GetOrdersRequest) {
   if (!jwtToken) {
     return {};
   }
@@ -94,21 +99,21 @@ export async function getOrders({ getOrdersType, id, email, jwtToken }: GetOrder
 
   try {
     const response = await fetch(url, {
-      method: "GET",
+      method: 'GET',
       headers: {
         Authorization: `Bearer ${jwtToken}`,
       },
     });
 
     if (!response.ok) {
-      throw new Error('Network response was not ok')
+      throw new Error('Network response was not ok');
     }
 
     const json = await response.json();
 
     return json;
   } catch (error) {
-    console.error("Error in getOrders:", error);
+    console.error('Error in getOrders:', error);
     throw error;
   }
 }
@@ -120,17 +125,17 @@ export function useCreateOrder() {
       paymentId,
       customerId,
       userId,
-      jwtToken
+      jwtToken,
     }: {
       checkout: Checkout;
       paymentId: string;
       customerId: string;
-      userId: string
-      jwtToken: string
+      userId: string;
+      jwtToken: string;
     }) => {
       if (!paymentId) {
         message.error(
-          "There was a problem with your request, please try again later"
+          'There was a problem with your request, please try again later'
         );
       }
 
@@ -138,7 +143,7 @@ export function useCreateOrder() {
       await postOrders({
         type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
         order: order,
-        jwtToken: jwtToken
+        jwtToken: jwtToken,
       });
 
       return order.id;
@@ -154,16 +159,22 @@ export function useCreateComplementaryOrder() {
   });
 }
 
-export async function postOrders({ type, order, charge, complementaryOrder, jwtToken }: PostOrdersRequest) {
+export async function postOrders({
+  type,
+  order,
+  charge,
+  complementaryOrder,
+  jwtToken,
+}: PostOrdersRequest) {
   try {
     let url = prodUrl + `/api/orders`;
     const request = { type, order, charge, complementaryOrder };
 
     const response = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${jwtToken}`,
       },
       body: JSON.stringify(request),
@@ -177,7 +188,7 @@ export async function postOrders({ type, order, charge, complementaryOrder, jwtT
 
     return json;
   } catch (error) {
-    console.error("Error in postOrders:", error);
+    console.error('Error in postOrders:', error);
     throw error;
   }
 }

@@ -8,7 +8,8 @@ import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Button, Colors, Image, Text, View } from 'react-native-ui-lib';
 
 export default function SignInScreen({ navigation }) {
-  const [isAppleLoginAvailable, setIsAppleLoginAvailable] = React.useState(false);
+  const [isAppleLoginAvailable, setIsAppleLoginAvailable] =
+    React.useState(false);
 
   console.log(process.env.WEB_CLIENT_ID);
 
@@ -23,7 +24,7 @@ export default function SignInScreen({ navigation }) {
   const headerHeight = useHeaderHeight();
 
   function signInWithEmail() {
-    navigation.navigate("SignInWithEmailScreen");
+    navigation.navigate('SignInWithEmailScreen');
   }
 
   async function handleGoogleSignIn() {
@@ -55,22 +56,34 @@ export default function SignInScreen({ navigation }) {
     // Create a Firebase credential from the response
     const { identityToken, nonce } = appleAuthRequestResponse;
 
-    const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
+    const appleCredential = auth.AppleAuthProvider.credential(
+      identityToken,
+      nonce
+    );
 
     // Sign the user in with the credential
     return auth().signInWithCredential(appleCredential);
   }
 
   return (
-    <TouchableWithoutFeedback
-      onPress={Keyboard.dismiss}
-      accessible={false}>
-      <View flex paddingR-32 paddingL-32 style={{ paddingBottom: headerHeight, alignItems: 'center', justifyContent: 'center', backgroundColor: 'white' }}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View
+        flex
+        paddingR-32
+        paddingL-32
+        style={{
+          paddingBottom: headerHeight,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: 'white',
+        }}
+      >
         <Image
-          resizeMode='cover'
+          resizeMode="cover"
           height={150}
           width={150}
-          source={require('../assets/logo/logo_v1.png')} />
+          source={require('../assets/logo/logo_v1.png')}
+        />
         <Text marginT-16 marginB-16 text50 $textDefault>
           TropTix Organizer
         </Text>
@@ -79,25 +92,52 @@ export default function SignInScreen({ navigation }) {
           onPress={() => signInWithEmail()}
           backgroundColor={Colors.orange30}
           borderRadius={25}
-          style={{ backgroundColor: '#2196F3', height: 50, width: '100%' }}>
-          <Image source={require('../assets/logo/email.png')} tintColor={Colors.white} width={20} height={20} />
-          <Text style={{ color: '#ffffff', fontSize: 18, fontWeight: '600' }} marginL-8>Sign in with Email</Text>
+          style={{ backgroundColor: '#2196F3', height: 50, width: '100%' }}
+        >
+          <Image
+            source={require('../assets/logo/email.png')}
+            tintColor={Colors.white}
+            width={20}
+            height={20}
+          />
+          <Text
+            style={{ color: '#ffffff', fontSize: 18, fontWeight: '600' }}
+            marginL-8
+          >
+            Sign in with Email
+          </Text>
         </Button>
 
         <Button
           onPress={() => handleGoogleSignIn()}
-          marginT-16 outline borderRadius={25}
+          marginT-16
+          outline
+          borderRadius={25}
           outlineColor={Colors.grey30}
-          style={{ height: 50, width: '100%', backgroundColor: 'white' }}>
-          <Image source={require('../assets/logo/google.png')} width={16} height={16} />
-          <Text style={{ fontSize: 18, fontWeight: '600', color: 'black' }} marginL-8>Sign in with Google</Text>
+          style={{ height: 50, width: '100%', backgroundColor: 'white' }}
+        >
+          <Image
+            source={require('../assets/logo/google.png')}
+            width={16}
+            height={16}
+          />
+          <Text
+            style={{ fontSize: 18, fontWeight: '600', color: 'black' }}
+            marginL-8
+          >
+            Sign in with Google
+          </Text>
         </Button>
 
         {isAppleLoginAvailable && (
           <View marginT-16 style={{ alignItems: 'center', width: '100%' }}>
             <AppleAuthentication.AppleAuthenticationButton
-              buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
-              buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+              buttonStyle={
+                AppleAuthentication.AppleAuthenticationButtonStyle.BLACK
+              }
+              buttonType={
+                AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN
+              }
               cornerRadius={25}
               onPress={handleAppleSignIn}
               style={{ width: '100%', height: 50 }}

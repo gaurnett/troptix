@@ -1,10 +1,10 @@
 const localImageSource = require('../assets/images/empty-state.jpg'); // eslint-disable-line
-const rfbImage = require('../assets/images/rfb.jpeg')
-const sunriseImage = require('../assets/images/sunrise.jpeg')
-const strutImage = require('../assets/images/strut.jpeg')
-const riseUpImage = require('../assets/images/riseup.jpeg')
-const loveSocaImage = require('../assets/images/ilovesoca.jpeg')
-const fuzionImage = require('../assets/images/fuzion.jpeg')
+const rfbImage = require('../assets/images/rfb.jpeg');
+const sunriseImage = require('../assets/images/sunrise.jpeg');
+const strutImage = require('../assets/images/strut.jpeg');
+const riseUpImage = require('../assets/images/riseup.jpeg');
+const loveSocaImage = require('../assets/images/ilovesoca.jpeg');
+const fuzionImage = require('../assets/images/fuzion.jpeg');
 
 const events = [
   {
@@ -15,7 +15,8 @@ const events = [
     price: '$150 - $1,000',
     status: 'Published',
     timestamp: '31 March 2023',
-    description: 'Reference this table when designing your app’s interface, and make sure',
+    description:
+      'Reference this table when designing your app’s interface, and make sure',
     likes: 345,
   },
   {

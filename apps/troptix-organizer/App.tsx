@@ -13,11 +13,11 @@ SplashScreen.preventAutoHideAsync();
 
 const user: User = {
   id: '',
-  jwtToken: ''
+  jwtToken: '',
 };
 
 export const TropTixContext = createContext({
-  user: user
+  user: user,
 });
 const queryClient = new QueryClient();
 
@@ -26,17 +26,19 @@ export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
-    const unsubscribeFromAuthStateChange = auth().onAuthStateChanged(async firebaseUser => {
-      if (firebaseUser) {
-        let currentUser = await initializeUser(firebaseUser);
-        setUser(currentUser);
-      } else {
-        setUser(undefined);
-      }
+    const unsubscribeFromAuthStateChange = auth().onAuthStateChanged(
+      async (firebaseUser) => {
+        if (firebaseUser) {
+          let currentUser = await initializeUser(firebaseUser);
+          setUser(currentUser);
+        } else {
+          setUser(undefined);
+        }
 
-      await SplashScreen.hideAsync();
-      setAppIsReady(true);
-    });
+        await SplashScreen.hideAsync();
+        setAppIsReady(true);
+      }
+    );
 
     return unsubscribeFromAuthStateChange;
   }, []);
@@ -50,7 +52,8 @@ export default function App() {
       <TropTixContext.Provider
         value={{
           user: user as User,
-        }}>
+        }}
+      >
         <SafeAreaProvider>
           <AppNavigator />
         </SafeAreaProvider>

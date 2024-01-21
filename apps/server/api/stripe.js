@@ -1,7 +1,11 @@
-import { allowCors } from "../lib/auth";
-import { sendEmailToUser } from "../lib/emailHelper";
-import { getBuffer, updateSuccessfulOrder, updateTicketTypeQuantitySold } from "../lib/orderHelper";
-import prisma from "../prisma/prisma";
+import { allowCors } from '../lib/auth';
+import { sendEmailToUser } from '../lib/emailHelper';
+import {
+  getBuffer,
+  updateSuccessfulOrder,
+  updateTicketTypeQuantitySold,
+} from '../lib/orderHelper';
+import prisma from '../prisma/prisma';
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
@@ -14,16 +18,18 @@ async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
-    return response.status(500).json({ error: 'No method found for stripe endpoint' });
+    return response
+      .status(500)
+      .json({ error: 'No method found for stripe endpoint' });
   }
 
   switch (method) {
-    case "POST":
+    case 'POST':
       return postOrders(request, response);
-    case "OPTIONS":
+    case 'OPTIONS':
       return response.status(200).end();
     default:
-      return response.status(500).json("No type set");
+      return response.status(500).json('No type set');
   }
 }
 
@@ -33,7 +39,9 @@ async function postOrders(request, response) {
   const { body, headers } = request;
 
   if (body === undefined || body.type === undefined) {
-    return response.status(500).json({ error: 'No body found in post orders request' });
+    return response
+      .status(500)
+      .json({ error: 'No body found in post orders request' });
   }
 
   const postOrderType = body.type;
@@ -54,16 +62,18 @@ async function createCharge(body, response) {
   const charge = body.charge;
 
   if (charge === undefined || charge.total === undefined) {
-    return response.status(500).json({ error: 'No body found in create charge request' });
+    return response
+      .status(500)
+      .json({ error: 'No body found in create charge request' });
   }
 
   try {
-    var customerId = "";
+    var customerId = '';
 
     if (charge.userId === undefined) {
       const customer = await stripe.customers.create({
         name: charge?.name,
-        email: charge?.email
+        email: charge?.email,
       });
       customerId = customer.id;
     } else {
@@ -76,7 +86,7 @@ async function createCharge(body, response) {
       if (!user.stripeId) {
         const customer = await stripe.customers.create({
           name: charge?.name,
-          email: charge?.email
+          email: charge?.email,
         });
         await prisma.users.update({
           where: {
@@ -114,7 +124,6 @@ async function createCharge(body, response) {
       ephemeralKey: ephemeralKey.secret,
       customerId: customerId,
     });
-
   } catch (error) {
     console.log(error);
     return response.status(500).json({ error: error });
@@ -124,7 +133,7 @@ async function createCharge(body, response) {
 async function stripePaymentIntentFailed(body, headers, request, response) {
   console.log(body);
 
-  return response.status(200).json({ message: "Payment intent failed" });
+  return response.status(200).json({ message: 'Payment intent failed' });
 }
 
 async function stripePaymentIntentSucceeded(body, headers, request, response) {
@@ -133,14 +142,10 @@ async function stripePaymentIntentSucceeded(body, headers, request, response) {
     const signature = headers['stripe-signature'];
     const buf = await getBuffer(request);
     try {
-      event = stripe.webhooks.constructEvent(
-        buf,
-        signature,
-        endpointSecret
-      );
+      event = stripe.webhooks.constructEvent(buf, signature, endpointSecret);
     } catch (err) {
       console.log(`⚠️  Webhook signature verification failed.`, err.message);
-      return response.status(400).json({ error: "Web failed: " + err.message });
+      return response.status(400).json({ error: 'Web failed: ' + err.message });
     }
   }
 
@@ -154,26 +159,40 @@ async function stripePaymentIntentSucceeded(body, headers, request, response) {
   switch (event.type) {
     case 'payment_intent.succeeded':
       const paymentIntent = event.data.object;
-      console.log(`Payment intent attached for ${paymentIntent.id} ${paymentIntent.amount} was successful!`);
-      return updateOrderAfterPaymentSucceeds(paymentIntent.id, paymentMethod, response);
+      console.log(
+        `Payment intent attached for ${paymentIntent.id} ${paymentIntent.amount} was successful!`
+      );
+      return updateOrderAfterPaymentSucceeds(
+        paymentIntent.id,
+        paymentMethod,
+        response
+      );
     case 'payment_method.failed':
       const paymentFailed = event.data.object;
-      console.log(`attached for ${paymentFailed.id} ${paymentFailed.amount} was successful!`);
+      console.log(
+        `attached for ${paymentFailed.id} ${paymentFailed.amount} was successful!`
+      );
       break;
     case 'payment_method.canceled':
       const paymentCanceled = event.data.object;
-      console.log(`attached for ${paymentMethod.id} ${paymentCanceled.amount} was successful!`);
+      console.log(
+        `attached for ${paymentMethod.id} ${paymentCanceled.amount} was successful!`
+      );
       break;
     case 'charge.succeeded':
       const chargeSucceeded = event.data.object;
-      console.log(`Charge succeeded for ${chargeSucceeded.id} ${chargeSucceeded.amount} was successful!`);
+      console.log(
+        `Charge succeeded for ${chargeSucceeded.id} ${chargeSucceeded.amount} was successful!`
+      );
       break;
     default:
       console.log(`Unhandled event type ${event.type}`);
   }
 
   // Return a 200 response to acknowledge receipt of the event
-  response.status(200).json({ message: "Payment succeeded and tickets added to database" });
+  response
+    .status(200)
+    .json({ message: 'Payment succeeded and tickets added to database' });
 }
 
 async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
@@ -184,8 +203,8 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
       },
       data: updateSuccessfulOrder(paymentMethod),
       include: {
-        tickets: true
-      }
+        tickets: true,
+      },
     });
 
     const order = await prisma.orders.findUnique({
@@ -196,7 +215,7 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
         tickets: {
           include: {
             ticketType: true,
-          }
+          },
         },
         event: true,
       },
@@ -205,7 +224,7 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
     console.log(order);
 
     const orderMap = new Map();
-    order.tickets.forEach(ticket => {
+    order.tickets.forEach((ticket) => {
       const ticketId = ticket.ticketType.id;
       if (orderMap.has(ticketId)) {
         const order = orderMap.get(ticketId);
@@ -218,7 +237,7 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
         orderMap.set(ticketId, {
           ticketQuantity: 1,
           ticketName: ticket.ticketType.name,
-          ticketTotalPaid: ticket.total
+          ticketTotalPaid: ticket.total,
         });
       }
     });
@@ -237,11 +256,11 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
 
     const mailResponse = await sendEmailToUser(order, orderMap);
 
-    console.log("mail response: " + JSON.stringify(mailResponse));
+    console.log('mail response: ' + JSON.stringify(mailResponse));
 
-    return response.status(200).json({ message: "Updated order successfully" });
+    return response.status(200).json({ message: 'Updated order successfully' });
   } catch (e) {
-    console.log("Error: " + e);
+    console.log('Error: ' + e);
     return response.status(500).json({ error: 'Error fetching posts' });
   }
 }

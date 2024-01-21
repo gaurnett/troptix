@@ -2,7 +2,7 @@ import { generateId } from './idHelper';
 
 enum Role {
   PATRON,
-  ORGANIZER
+  ORGANIZER,
 }
 
 export class User {
@@ -20,19 +20,19 @@ export class User {
   telephoneNumber: string;
   billingAddress1: string;
   billingAddress2: string;
-  billingCity: string
+  billingCity: string;
   billingCountry: string;
   billingZip: string;
   billingState: string;
 
-  constructor() { }
+  constructor() {}
 }
 
 export enum SocialMediaAccountType {
-  FACEBOOK = "FACEBOOK",
-  INSTAGRAM = "INSTAGRAM",
-  TIKTOK = "TIKTOK",
-  TWITTER = "TWITTER"
+  FACEBOOK = 'FACEBOOK',
+  INSTAGRAM = 'INSTAGRAM',
+  TIKTOK = 'TIKTOK',
+  TWITTER = 'TWITTER',
 }
 
 export class SocialMediaAccount {
@@ -57,7 +57,7 @@ export function setUserFromResponse(response, firebaseUser): User {
   user.email = firebaseUser.email;
 
   if (firebaseUser.displayName !== null) {
-    const name = String(firebaseUser.displayName).split(" ");
+    const name = String(firebaseUser.displayName).split(' ');
     user.firstName = name[0];
 
     if (name.length > 1) {

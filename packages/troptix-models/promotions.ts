@@ -18,7 +18,7 @@ export class Promotion {
 
   constructor(eventId: string) {
     this.id = generateId();
-    this.eventId = eventId
-    this.promotionType = PromotionType.PERCENTAGE
+    this.eventId = eventId;
+    this.promotionType = PromotionType.PERCENTAGE;
   }
 }

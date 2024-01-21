@@ -10,10 +10,10 @@ export function getPrismaUpdatePromotionQuery(promo) {
     code: promo.code,
     event: {
       connect: {
-        id: promo.eventId
-      }
-    }
-  }
+        id: promo.eventId,
+      },
+    },
+  };
 
   return promotion;
 }

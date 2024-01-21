@@ -1,5 +1,5 @@
-import { generateId } from "./idHelper";
-import { CheckoutTicket, Ticket, createTicket } from "./ticket";
+import { generateId } from './idHelper';
+import { CheckoutTicket, Ticket, createTicket } from './ticket';
 
 export class Order {
   id: string;
@@ -22,14 +22,19 @@ export class Order {
   tickets: Ticket[];
   ticketsLink: string;
 
-  constructor(checkout: Checkout, paymentId: string, eventId: string, userId: string, stripeCustomerId: string) {
-
+  constructor(
+    checkout: Checkout,
+    paymentId: string,
+    eventId: string,
+    userId: string,
+    stripeCustomerId: string
+  ) {
     this.id = generateId();
     this.stripeCustomerId = stripeCustomerId;
     this.stripePaymentId = paymentId;
     this.total = checkout.total;
     this.subtotal = checkout.subtotal;
-    this.fees = checkout.fees
+    this.fees = checkout.fees;
     this.tickets = new Array();
     this.userId = userId;
     this.name = checkout.name;
@@ -42,9 +47,9 @@ export class Order {
     this.billingZip = checkout.billingZip;
     this.billingState = checkout.billingState;
     this.billingCountry = checkout.billingCountry;
-    this.ticketsLink = window.location.origin + `/tickets?orderId=${this.id}`
+    this.ticketsLink = window.location.origin + `/tickets?orderId=${this.id}`;
 
-    Array.from(checkout.tickets.keys()).forEach(checkoutItem => {
+    Array.from(checkout.tickets.keys()).forEach((checkoutItem) => {
       const checkoutTicket = checkout.tickets.get(checkoutItem);
       if (checkoutTicket.quantitySelected > 0) {
         for (let i = 0; i < checkoutTicket.quantitySelected; i++) {
@@ -52,7 +57,7 @@ export class Order {
           this.tickets.push(ticket);
         }
       }
-    })
+    });
   }
 }
 
@@ -64,7 +69,7 @@ class TicketSummary {
 
 export class OrderSummary {
   gross: number = 0;
-  fees: number = 0
+  fees: number = 0;
   ticketsSummary = new Map<string, TicketSummary>();
 
   constructor(orders) {
@@ -73,9 +78,18 @@ export class OrderSummary {
       this.fees = order.fees;
 
       for (const ticket of order.tickets) {
-        const ticketName = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.name;
-        const ticketId = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.id;
-        const quantity = ticket.ticketsType === "COMPLEMENTARY" ? 0 : ticket.ticketType.quantity;
+        const ticketName =
+          ticket.ticketsType === 'COMPLEMENTARY'
+            ? 'Complementary'
+            : ticket.ticketType.name;
+        const ticketId =
+          ticket.ticketsType === 'COMPLEMENTARY'
+            ? 'Complementary'
+            : ticket.ticketType.id;
+        const quantity =
+          ticket.ticketsType === 'COMPLEMENTARY'
+            ? 0
+            : ticket.ticketType.quantity;
 
         if (this.ticketsSummary.has(ticketId)) {
           let summary = this.ticketsSummary.get(ticketId);
@@ -87,8 +101,8 @@ export class OrderSummary {
           let summary: TicketSummary = {
             name: ticketName,
             quantity: quantity,
-            quantitySold: 1
-          }
+            quantitySold: 1,
+          };
 
           this.ticketsSummary.set(ticketId, summary);
         }
@@ -153,7 +167,7 @@ export class ComplementaryTicket {
 
 export class Charge {
   total: number = 0;
-  userId: string = "";
+  userId: string = '';
 
-  constructor() { }
+  constructor() {}
 }

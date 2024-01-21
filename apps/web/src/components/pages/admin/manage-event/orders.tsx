@@ -1,12 +1,12 @@
-import { Spinner } from "@/components/ui/spinner";
-import { useFetchEventOrders } from "@/hooks/useOrders";
-import { Tabs, TabsProps } from "antd";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import OrderCompListPage from "./order-comp-list";
-import OrderGuestListPage from "./order-guest-list";
-import OrderListPage from "./order-list";
-import OrderSummaryPage from "./order-summary";
+import { Spinner } from '@/components/ui/spinner';
+import { useFetchEventOrders } from '@/hooks/useOrders';
+import { Tabs, TabsProps } from 'antd';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import OrderCompListPage from './order-comp-list';
+import OrderGuestListPage from './order-guest-list';
+import OrderListPage from './order-list';
+import OrderSummaryPage from './order-summary';
 
 export default function OrdersPage() {
   const router = useRouter();
@@ -26,7 +26,7 @@ export default function OrdersPage() {
       currency: 'USD',
     });
 
-    return formatter.format(price)
+    return formatter.format(price);
   }
 
   const items: TabsProps['items'] = [
@@ -54,18 +54,17 @@ export default function OrdersPage() {
 
   return (
     <div className="w-full md:max-w-2xl mr-8">
-      {
-        isPending ?
-          <div className="mt-4">
-            <Spinner text={"Fetching Order Summary"} />
+      {isPending ? (
+        <div className="mt-4">
+          <Spinner text={'Fetching Order Summary'} />
+        </div>
+      ) : (
+        <div>
+          <div className="float-right w-full">
+            <Tabs defaultActiveKey="0" items={items} />
           </div>
-          :
-          <div>
-            <div className="float-right w-full">
-              <Tabs defaultActiveKey="0" items={items} />
-            </div>
-          </div>
-      }
+        </div>
+      )}
     </div>
   );
 }

@@ -1,12 +1,16 @@
 import uuid from 'react-native-uuid';
 import { TicketFeeStructure } from './ticketType';
-import { TicketType } from "./ticketType";
+import { TicketType } from './ticketType';
 import { generateId } from './idHelper';
 
-export function createTicket(checkoutTicket: CheckoutTicket, orderId: string, userId: string) {
+export function createTicket(
+  checkoutTicket: CheckoutTicket,
+  orderId: string,
+  userId: string
+) {
   const ticket = {} as Ticket;
 
-  ticket.id = generateId()
+  ticket.id = generateId();
   ticket.eventId = checkoutTicket.eventId;
   ticket.orderId = orderId;
   ticket.ticketTypeId = checkoutTicket.ticketTypeId;

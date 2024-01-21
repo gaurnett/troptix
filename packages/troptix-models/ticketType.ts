@@ -1,6 +1,6 @@
-import { Event } from "./event";
+import { Event } from './event';
 import uuid from 'react-native-uuid';
-import { generateId } from "./idHelper";
+import { generateId } from './idHelper';
 
 export enum TicketFeeStructure {
   // Fees to be included in the ticket price you set.
@@ -18,8 +18,8 @@ export class TicketType {
   updatedAt: Date;
 
   // Ticket Details
-  name: string = "";
-  description: string = "";
+  name: string = '';
+  description: string = '';
   maxPurchasePerUser: number = 0;
   quantity: number = 0;
   quantitySold: number = 0;

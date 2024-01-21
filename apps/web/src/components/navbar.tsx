@@ -1,15 +1,15 @@
-import Link from "next/link";
-import { Button } from "./ui/button";
+import Link from 'next/link';
+import { Button } from './ui/button';
 
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const links = [
-    { name: "Login", href: "#" },
-    { name: "Explore Events", href: "/" },
-    { name: "Contact", href: "#" },
-    { name: "Admin", href: "/admin" },
+    { name: 'Login', href: '#' },
+    { name: 'Explore Events', href: '/' },
+    { name: 'Contact', href: '#' },
+    { name: 'Admin', href: '/admin' },
   ];
 
   const toggleMobileMenu = () => {
@@ -51,8 +51,9 @@ const Navbar = () => {
           </div>
         </nav>
         <ul
-          className={`mobile-menu ${mobileMenuOpen ? "" : "hidden"
-            } mt-4 space-y-2 md:hidden`}
+          className={`mobile-menu ${
+            mobileMenuOpen ? '' : 'hidden'
+          } mt-4 space-y-2 md:hidden`}
         >
           {links.map((link, index) => {
             return (

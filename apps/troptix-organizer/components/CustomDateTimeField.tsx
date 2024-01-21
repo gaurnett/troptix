@@ -1,8 +1,5 @@
-
-import React, { useState } from "react";
-import {
-  Pressable,
-} from "react-native";
+import React, { useState } from 'react';
+import { Pressable } from 'react-native';
 import {
   View,
   TextField,
@@ -10,10 +7,18 @@ import {
   DateTimePicker,
   DateTimePickerProps,
   DateTimePickerMode,
-} from "react-native-ui-lib";
+} from 'react-native-ui-lib';
 import { format } from 'date-fns';
 
-export default function CustomDateTimeField({ name, label, placeholder, value, reference, dateMode, handleChange }) {
+export default function CustomDateTimeField({
+  name,
+  label,
+  placeholder,
+  value,
+  reference,
+  dateMode,
+  handleChange,
+}) {
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   function showDateTime(ref) {
@@ -23,11 +28,10 @@ export default function CustomDateTimeField({ name, label, placeholder, value, r
   function getDateFormatter(): DateTimePickerProps['dateTimeFormatter'] {
     return (value: Date, mode: DateTimePickerMode) =>
       format(value, mode === 'date' ? 'MMM dd, yyyy' : 'hh:mm a');
-  };
+  }
 
   function setTextFieldFocused(ref) {
-    if (ref === undefined || ref.current === undefined)
-      return;
+    if (ref === undefined || ref.current === undefined) return;
 
     ref.current.focus();
   }
@@ -38,8 +42,8 @@ export default function CustomDateTimeField({ name, label, placeholder, value, r
       onPress={() => showDateTime(reference)}
       style={{
         flex: 1,
-        alignItems: "center",
-        backgroundColor: "white",
+        alignItems: 'center',
+        backgroundColor: 'white',
       }}
     >
       <View
@@ -48,9 +52,9 @@ export default function CustomDateTimeField({ name, label, placeholder, value, r
         paddingL-8
         style={{
           height: 60,
-          width: "100%",
+          width: '100%',
           borderWidth: 0.5,
-          borderColor: "#D3D3D3",
+          borderColor: '#D3D3D3',
         }}
       >
         <DateTimePicker
@@ -64,13 +68,9 @@ export default function CustomDateTimeField({ name, label, placeholder, value, r
           }}
           mode={dateMode}
           dateTimeFormatter={getDateFormatter()}
-          value={
-            value == undefined
-              ? new Date()
-              : new Date(value)
-          }
+          value={value == undefined ? new Date() : new Date(value)}
         />
       </View>
     </Pressable>
-  )
+  );
 }

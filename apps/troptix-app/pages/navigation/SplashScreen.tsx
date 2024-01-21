@@ -4,12 +4,21 @@ import { Image } from 'react-native-ui-lib';
 
 export default function SplashScreen() {
   return (
-    <View style={{ height: "100%", width: "100%", justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+    <View
+      style={{
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'white',
+      }}
+    >
       <Image
-        resizeMode='cover'
+        resizeMode="cover"
         height={150}
         width={150}
-        source={require('../../assets/logo/logo_v1.png')} />
+        source={require('../../assets/logo/logo_v1.png')}
+      />
     </View>
   );
 }

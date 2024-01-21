@@ -1,5 +1,5 @@
-import { User } from "@/hooks/types/User";
-import { SignUpFields } from "@/pages/auth/signup";
+import { User } from '@/hooks/types/User';
+import { SignUpFields } from '@/pages/auth/signup';
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
@@ -7,16 +7,14 @@ import {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
-  updateProfile
-} from "firebase/auth";
-import { addUser } from "troptix-api";
-import { auth } from "../config";
+  updateProfile,
+} from 'firebase/auth';
+import { addUser } from 'troptix-api';
+import { auth } from '../config';
 
-export async function signUpWithEmail(
-  signUpFields: SignUpFields,
-) {
+export async function signUpWithEmail(signUpFields: SignUpFields) {
   let result: any, error: any;
-  const displayName = signUpFields.firstName + " " + signUpFields.lastName;
+  const displayName = signUpFields.firstName + ' ' + signUpFields.lastName;
   try {
     await createUserWithEmailAndPassword(
       auth,
@@ -30,7 +28,7 @@ export async function signUpWithEmail(
         id: userResult.uid,
         firstName: signUpFields.firstName,
         lastName: signUpFields.lastName,
-        email: signUpFields.email
+        email: signUpFields.email,
       };
 
       await addUser(user);
@@ -73,13 +71,13 @@ export async function signInWithGoogle() {
     result = await signInWithPopup(auth, new GoogleAuthProvider()).then(
       async (result) => {
         const userResult = result.user;
-        const userEmail = userResult.email ? userResult.email : "";
+        const userEmail = userResult.email ? userResult.email : '';
         const additionalInfo = getAdditionalUserInfo(result);
 
         if (additionalInfo?.isNewUser) {
           const user: User = {
             id: userResult.uid,
-            email: userResult.email as string
+            email: userResult.email as string,
           };
 
           await addUser(user);

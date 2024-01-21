@@ -1,6 +1,6 @@
-import { generateId } from "@/lib/utils";
-import { Checkout, CheckoutTicket } from "./Checkout";
-import { createTicket } from "./Ticket";
+import { generateId } from '@/lib/utils';
+import { Checkout, CheckoutTicket } from './Checkout';
+import { createTicket } from './Ticket';
 
 type Ticket = {
   // Define the properties of the Ticket type here
@@ -29,21 +29,30 @@ export type Order = {
   ticketsLink?: string;
 };
 
-export function createOrder(checkout: Checkout, paymentId: string, stripeCustomerId: string, userId: string): Order {
+export function createOrder(
+  checkout: Checkout,
+  paymentId: string,
+  stripeCustomerId: string,
+  userId: string
+): Order {
   const id = generateId();
   const tickets: Ticket[] = [];
   const url = window.location.origin + `/tickets?orderId=${id}`;
 
-  Array.from(checkout.tickets.keys()).forEach(checkoutItem => {
+  Array.from(checkout.tickets.keys()).forEach((checkoutItem) => {
     const checkoutTicket = checkout.tickets.get(checkoutItem);
     const quantity = checkoutTicket?.quantitySelected as number;
     if (quantity > 0) {
       for (let i = 0; i < quantity; i++) {
-        let ticket = createTicket(checkoutTicket as CheckoutTicket, id, checkout);
+        let ticket = createTicket(
+          checkoutTicket as CheckoutTicket,
+          id,
+          checkout
+        );
         tickets.push(ticket);
       }
     }
-  })
+  });
 
   let order: Order = {
     id: id,
@@ -65,8 +74,8 @@ export function createOrder(checkout: Checkout, paymentId: string, stripeCustome
     billingCity: checkout.billingCity,
     billingCountry: checkout.billingCountry,
     billingState: checkout.billingState,
-    billingZip: checkout.billingZip
-  }
+    billingZip: checkout.billingZip,
+  };
 
   return order;
 }
@@ -81,7 +90,7 @@ export type ComplementaryOrder = {
   total?: number;
   ticketsLink?: string;
   tickets?: ComplementaryTicket[];
-}
+};
 
 export function generateComplementaryOrder(event): ComplementaryOrder {
   const id = generateId();
@@ -93,8 +102,8 @@ export function generateComplementaryOrder(event): ComplementaryOrder {
     eventName: event.name,
     total: 0,
     ticketsLink: url,
-    tickets: []
-  }
+    tickets: [],
+  };
 
   return order;
 }
@@ -107,4 +116,4 @@ export type ComplementaryTicket = {
   firstName?: string;
   lastName?: string;
   email?: string;
-}
+};

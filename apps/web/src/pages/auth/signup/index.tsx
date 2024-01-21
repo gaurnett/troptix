@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
 export const metadata = {
-  title: "Sign Up - Simple",
-  description: "Page description",
+  title: 'Sign Up - Simple',
+  description: 'Page description',
 };
 
-import { TropTixContext } from "@/components/WebNavigator";
-import { CustomInput } from "@/components/ui/input";
-import { signInWithGoogle, signUpWithEmail } from "@/firebase/auth";
-import { isInputBad, isValidEmail } from "@/lib/utils";
-import { Button, Form, message } from "antd";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { TropTixContext } from '@/components/WebNavigator';
+import { CustomInput } from '@/components/ui/input';
+import { signInWithGoogle, signUpWithEmail } from '@/firebase/auth';
+import { isInputBad, isValidEmail } from '@/lib/utils';
+import { Button, Form, message } from 'antd';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from 'react';
 
 export type SignUpFields = {
   firstName: string;
@@ -28,11 +28,11 @@ export default function SignUpPage() {
   const { user } = useContext(TropTixContext);
 
   const [signUpFields, setSignUpFields] = useState<SignUpFields>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    confirmEmail: "",
-    password: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    confirmEmail: '',
+    password: '',
   });
 
   useEffect(() => {
@@ -56,26 +56,31 @@ export default function SignUpPage() {
   }
 
   function areSignUpFieldsBad(): boolean {
-    return isInputBad(signUpFields.firstName)
-      || isInputBad(signUpFields.lastName)
-      || isInputBad(signUpFields.email)
-      || isInputBad(signUpFields.confirmEmail)
-      || isInputBad(signUpFields.password);
+    return (
+      isInputBad(signUpFields.firstName) ||
+      isInputBad(signUpFields.lastName) ||
+      isInputBad(signUpFields.email) ||
+      isInputBad(signUpFields.confirmEmail) ||
+      isInputBad(signUpFields.password)
+    );
   }
 
   async function onFinish(values: any) {
     if (!isValidEmail(signUpFields.email)) {
       messageApi.open({
-        type: "error",
-        content: "Please Enter a valid email",
+        type: 'error',
+        content: 'Please Enter a valid email',
       });
       return;
     }
 
-    if (String(signUpFields.email).toLowerCase() !== String(signUpFields.confirmEmail).toLowerCase()) {
+    if (
+      String(signUpFields.email).toLowerCase() !==
+      String(signUpFields.confirmEmail).toLowerCase()
+    ) {
       messageApi.open({
-        type: "error",
-        content: "Emails do not match",
+        type: 'error',
+        content: 'Emails do not match',
       });
       return;
     }
@@ -83,8 +88,8 @@ export default function SignUpPage() {
 
     if (areSignUpFieldsBad()) {
       messageApi.open({
-        type: "error",
-        content: "There is an issue signing up. Please try again",
+        type: 'error',
+        content: 'There is an issue signing up. Please try again',
       });
       return;
     }
@@ -93,13 +98,13 @@ export default function SignUpPage() {
 
     if (error) {
       messageApi.open({
-        type: "error",
-        content: "There is an issue signing up. Please try again",
+        type: 'error',
+        content: 'There is an issue signing up. Please try again',
       });
     }
   }
 
-  const onFinishFailed = (errorInfo: any) => { };
+  const onFinishFailed = (errorInfo: any) => {};
 
   return (
     <div>
@@ -159,11 +164,11 @@ export default function SignUpPage() {
                     <div className="w-full px-3">
                       <CustomInput
                         value={signUpFields.firstName}
-                        name={"firstName"}
-                        id={"firstName"}
-                        label={"First Name *"}
-                        type={"text"}
-                        placeholder={"John"}
+                        name={'firstName'}
+                        id={'firstName'}
+                        label={'First Name *'}
+                        type={'text'}
+                        placeholder={'John'}
                         handleChange={handleChange}
                         required={true}
                       />
@@ -171,11 +176,11 @@ export default function SignUpPage() {
                     <div className="w-full px-3">
                       <CustomInput
                         value={signUpFields.lastName}
-                        name={"lastName"}
-                        id={"lastName"}
-                        label={"Last Name"}
-                        type={"text"}
-                        placeholder={"Doe"}
+                        name={'lastName'}
+                        id={'lastName'}
+                        label={'Last Name'}
+                        type={'text'}
+                        placeholder={'Doe'}
                         handleChange={handleChange}
                         required={true}
                       />
@@ -185,11 +190,11 @@ export default function SignUpPage() {
                     <div className="w-full px-3 mb-2">
                       <CustomInput
                         value={signUpFields.email}
-                        name={"email"}
-                        id={"email"}
-                        label={"Email Address *"}
-                        type={"text"}
-                        placeholder={"johndoe@gmail.com"}
+                        name={'email'}
+                        id={'email'}
+                        label={'Email Address *'}
+                        type={'text'}
+                        placeholder={'johndoe@gmail.com'}
                         handleChange={handleChange}
                         required={true}
                       />
@@ -197,11 +202,11 @@ export default function SignUpPage() {
                     <div className="w-full px-3">
                       <CustomInput
                         value={signUpFields.confirmEmail}
-                        name={"confirmEmail"}
-                        id={"confirmEmail"}
-                        label={"Re-type Email Address *"}
-                        type={"text"}
-                        placeholder={"johndoe@gmail.com"}
+                        name={'confirmEmail'}
+                        id={'confirmEmail'}
+                        label={'Re-type Email Address *'}
+                        type={'text'}
+                        placeholder={'johndoe@gmail.com'}
                         handleChange={handleChange}
                         required={true}
                       />
@@ -211,11 +216,11 @@ export default function SignUpPage() {
                     <div className="w-full px-3">
                       <CustomInput
                         value={signUpFields.password}
-                        name={"password"}
-                        id={"password"}
-                        label={"Password *"}
-                        type={"text"}
-                        placeholder={"Enter your password"}
+                        name={'password'}
+                        id={'password'}
+                        label={'Password *'}
+                        type={'text'}
+                        placeholder={'Enter your password'}
                         handleChange={handleChange}
                         required={true}
                         password={true}
@@ -234,11 +239,11 @@ export default function SignUpPage() {
                     </div>
                   </div>
                   <div className="text-sm text-gray-500 text-center mt-3">
-                    By creating an account, you agree to the{" "}
+                    By creating an account, you agree to the{' '}
                     <Link className="underline" href="/terms">
                       terms & conditions
                     </Link>
-                    , and our{" "}
+                    , and our{' '}
                     <Link className="underline" href="/privacypolicy">
                       privacy policy
                     </Link>
@@ -246,7 +251,7 @@ export default function SignUpPage() {
                   </div>
                 </div>
                 <div className="text-gray-600 text-center mt-6">
-                  Already using TropTix?{" "}
+                  Already using TropTix?{' '}
                   <Link
                     href="/auth/signin"
                     className="text-blue-600 hover:underline transition duration-150 ease-in-out"

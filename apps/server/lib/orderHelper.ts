@@ -1,5 +1,10 @@
 import { buffer } from 'micro';
-import { PrismaClient, Prisma, OrderStatus, TicketStatus } from '@prisma/client';
+import {
+  PrismaClient,
+  Prisma,
+  OrderStatus,
+  TicketStatus,
+} from '@prisma/client';
 
 export const config = {
   api: {
@@ -22,15 +27,14 @@ export function updateSuccessfulOrder(paymentMethod) {
     tickets: {
       updateMany: {
         where: {
-          status: TicketStatus.NOT_AVAILABLE
+          status: TicketStatus.NOT_AVAILABLE,
         },
         data: {
-          status: TicketStatus.AVAILABLE
-        }
-      }
-    }
-  }
-
+          status: TicketStatus.AVAILABLE,
+        },
+      },
+    },
+  };
 
   return orderUpdate;
 }
@@ -40,9 +44,9 @@ export function updateTicketTypeQuantitySold(quantitySold) {
 
   ticketTypeUpdate = {
     quantitySold: {
-      increment: quantitySold
+      increment: quantitySold,
     },
-  }
+  };
 
   return ticketTypeUpdate;
 }

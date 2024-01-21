@@ -1,33 +1,39 @@
 import { format } from 'date-fns';
 import { Image } from 'expo-image';
 import _ from 'lodash';
-import { Platform, ScrollView, StyleSheet } from "react-native";
+import { Platform, ScrollView, StyleSheet } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Carousel, Colors, Text, View } from "react-native-ui-lib";
+import { Carousel, Colors, Text, View } from 'react-native-ui-lib';
 
 export default function TicketDetailsScreen({ route }) {
   const { summary } = route.params;
 
   function getDateFormatted(date, time) {
-    return format(date, 'MMM dd, yyyy') + ", " + format(time, 'hh:mm a');
+    return format(date, 'MMM dd, yyyy') + ', ' + format(time, 'hh:mm a');
   }
 
   function renderTicket(ticket, index, total) {
     return (
-      <View key={index} style={{
-        borderRadius: 15,
-        backgroundColor: ticket.status === "NOT_AVAILABLE" ? Colors.red50 : Colors.green50,
-        width: '100%', height: '100%'
-      }}>
-
+      <View
+        key={index}
+        style={{
+          borderRadius: 15,
+          backgroundColor:
+            ticket.status === 'NOT_AVAILABLE' ? Colors.red50 : Colors.green50,
+          width: '100%',
+          height: '100%',
+        }}
+      >
         <View marginT-16 style={{ alignSelf: 'center' }}>
           <QRCode
             value={ticket.id}
             size={120}
             logo={require('../../assets/logo/logo_v1.png')}
           />
-          <Text style={{ alignSelf: 'center' }} marginT-8>Ticket {index + 1} of {total}</Text>
+          <Text style={{ alignSelf: 'center' }} marginT-8>
+            Ticket {index + 1} of {total}
+          </Text>
         </View>
 
         <View margin-16>
@@ -58,15 +64,23 @@ export default function TicketDetailsScreen({ route }) {
             </Text>
           </View>
 
-          <View marginT-16 >
+          <View marginT-16>
             <Text style={[styles.itemTitle]} marginB-8 $textDefault>
               Date
             </Text>
             <Text style={[styles.itemBody]} $textDefault>
-              Start: {getDateFormatted(new Date(summary.event.startDate), new Date(summary.event.startTime))}
+              Start:{' '}
+              {getDateFormatted(
+                new Date(summary.event.startDate),
+                new Date(summary.event.startTime)
+              )}
             </Text>
             <Text style={[styles.itemBody]} $textDefault>
-              End: {getDateFormatted(new Date(summary.event.endDate), new Date(summary.event.endTime))}
+              End:{' '}
+              {getDateFormatted(
+                new Date(summary.event.endDate),
+                new Date(summary.event.endTime)
+              )}
             </Text>
           </View>
 
@@ -108,48 +122,56 @@ export default function TicketDetailsScreen({ route }) {
               {summary.event.organizer}
             </Text>
           </View>
-
         </View>
-
       </View>
-    )
+    );
   }
 
   return (
     <View style={styles.container}>
       <Image
         source={{
-          uri: summary.event.imageUrl
+          uri: summary.event.imageUrl,
         }}
         blurRadius={Platform.OS === 'ios' ? 8 : 3}
         contentFit="cover"
-        style={styles.image}>
-
+        style={styles.image}
+      >
         <SafeAreaView>
           <View style={styles.root}>
             <View style={styles.background}>
-              <View style={[styles.eventImage, { zIndex: 2 }]} >
+              <View style={[styles.eventImage, { zIndex: 2 }]}>
                 <Image
-                  contentFit='cover'
+                  contentFit="cover"
                   height={350}
-                  width='100%'
+                  width="100%"
                   source={{
-                    uri: summary.event.imageUrl
-                  }} />
+                    uri: summary.event.imageUrl,
+                  }}
+                />
               </View>
 
-              <View style={[styles.ticketDetailsArea, { borderRadius: 15, marginTop: -48, zIndex: 3, height: '80%' }]}>
+              <View
+                style={[
+                  styles.ticketDetailsArea,
+                  {
+                    borderRadius: 15,
+                    marginTop: -48,
+                    zIndex: 3,
+                    height: '80%',
+                  },
+                ]}
+              >
                 <ScrollView>
                   <Carousel
                     showCounter={true}
                     containerStyle={{
-                      height: '100%'
+                      height: '100%',
                     }}
-                    onChangePage={() => console.log('page changed')}>
+                    onChangePage={() => console.log('page changed')}
+                  >
                     {_.map(summary.tickets, (ticket, i) => {
-                      return (
-                        renderTicket(ticket, i, summary.tickets.length)
-                      )
+                      return renderTicket(ticket, i, summary.tickets.length);
                     })}
                   </Carousel>
                 </ScrollView>
@@ -157,21 +179,19 @@ export default function TicketDetailsScreen({ route }) {
             </View>
           </View>
         </SafeAreaView>
-
-
       </Image>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 14,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   itemBody: {
     fontSize: 18,
-    fontWeight: '200'
+    fontWeight: '200',
   },
   container: {
     flex: 1,

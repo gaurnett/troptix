@@ -1,17 +1,17 @@
-import { CustomInput, CustomTextArea } from "@/components/ui/input";
-import { ContactUsForm } from "@/hooks/types/Contact";
-import { PostContactRequest, useCreateContact } from "@/hooks/usePostContact";
-import { Button, message } from "antd";
-import { useState } from "react";
+import { CustomInput, CustomTextArea } from '@/components/ui/input';
+import { ContactUsForm } from '@/hooks/types/Contact';
+import { PostContactRequest, useCreateContact } from '@/hooks/usePostContact';
+import { Button, message } from 'antd';
+import { useState } from 'react';
 
 export default function ContactFormPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const mutation = useCreateContact();
 
   const [contactForm, setContactForm] = useState<ContactUsForm>({
-    name: "",
-    email: "",
-    message: "",
+    name: '',
+    email: '',
+    message: '',
   });
 
   function handleChange(event: any) {
@@ -22,38 +22,36 @@ export default function ContactFormPage() {
   }
 
   function sendContactForm() {
-
-    messageApi
-      .open({
-        key: 'send-message-loading',
-        type: 'loading',
-        content: 'Sending Message..',
-        duration: 0,
-      });
+    messageApi.open({
+      key: 'send-message-loading',
+      type: 'loading',
+      content: 'Sending Message..',
+      duration: 0,
+    });
 
     const postContactRequest: PostContactRequest = {
-      requestType: "CONTACT_US",
-      contactUsForm: contactForm
-    }
+      requestType: 'CONTACT_US',
+      contactUsForm: contactForm,
+    };
 
     mutation.mutate(postContactRequest, {
       onSuccess: () => {
         messageApi.destroy('send-message-loading');
         messageApi.open({
-          type: "success",
-          content: "Successfully sent message.",
+          type: 'success',
+          content: 'Successfully sent message.',
         });
         setContactForm({
-          name: "",
-          email: "",
-          message: "",
+          name: '',
+          email: '',
+          message: '',
         });
       },
       onError: (error) => {
         messageApi.destroy('send-message-loading');
         messageApi.open({
-          type: "error",
-          content: "Failed to send message event, please try again.",
+          type: 'error',
+          content: 'Failed to send message event, please try again.',
         });
       },
     });
@@ -81,11 +79,11 @@ export default function ContactFormPage() {
             <div className="w-full px-3">
               <CustomInput
                 value={contactForm.name}
-                name={"name"}
-                id={"name"}
-                label={"Name *"}
-                type={"text"}
-                placeholder={"John Doe"}
+                name={'name'}
+                id={'name'}
+                label={'Name *'}
+                type={'text'}
+                placeholder={'John Doe'}
                 handleChange={handleChange}
                 required={true}
               />
@@ -95,11 +93,11 @@ export default function ContactFormPage() {
             <div className="w-full px-3">
               <CustomInput
                 value={contactForm.email}
-                name={"email"}
-                id={"email"}
-                label={"Email *"}
-                type={"text"}
-                placeholder={"johndoe@gmail.com"}
+                name={'email'}
+                id={'email'}
+                label={'Email *'}
+                type={'text'}
+                placeholder={'johndoe@gmail.com'}
                 handleChange={handleChange}
                 required={true}
               />
@@ -110,11 +108,11 @@ export default function ContactFormPage() {
             <div className="w-full px-3">
               <CustomTextArea
                 value={contactForm.message}
-                name={"message"}
-                id={"message"}
-                label={"Message *"}
+                name={'message'}
+                id={'message'}
+                label={'Message *'}
                 rows={6}
-                placeholder={"Give us your thoughts..."}
+                placeholder={'Give us your thoughts...'}
                 handleChange={handleChange}
                 required={true}
               />

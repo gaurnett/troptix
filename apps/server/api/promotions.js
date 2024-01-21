@@ -1,24 +1,26 @@
-import { allowCors } from "../lib/auth";
-import { getPrismaUpdatePromotionQuery } from "../lib/promotionHelper";
-import prisma from "../prisma/prisma";
+import { allowCors } from '../lib/auth';
+import { getPrismaUpdatePromotionQuery } from '../lib/promotionHelper';
+import prisma from '../prisma/prisma';
 
 async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
-    return response.status(500).json({ error: 'No method found for promotion endpoint' });
+    return response
+      .status(500)
+      .json({ error: 'No method found for promotion endpoint' });
   }
 
   switch (method) {
-    case "POST":
+    case 'POST':
       return await updatePromotion(body, response);
-    case "GET":
+    case 'GET':
       return await getPromotions(request, response);
-    case "PUT":
+    case 'PUT':
       return await updatePromotion(body, response);
-    case "DELETE":
+    case 'DELETE':
       break;
-    case "OPTIONS":
+    case 'OPTIONS':
       return response.status(200).end();
     default:
       break;
@@ -43,7 +45,9 @@ async function getAllPromotions(request, response) {
   const eventId = request.query.eventId;
 
   if (eventId === undefined || eventId === null) {
-    return response.status(500).json({ error: 'No event ID set in get promotions' });
+    return response
+      .status(500)
+      .json({ error: 'No event ID set in get promotions' });
   }
 
   try {
@@ -67,19 +71,19 @@ async function getPromotionByCode(request, response) {
     const promotion = await prisma.promotions.findFirst({
       where: {
         eventId: eventId,
-        code: code
+        code: code,
       },
     });
     return response.status(200).json(promotion);
   } catch (e) {
     console.error('Request error', e);
-    return response.status(500).json({ error: 'Error fetching promotion by code' });
+    return response
+      .status(500)
+      .json({ error: 'Error fetching promotion by code' });
   }
 }
 
-
 async function updatePromotion(body, response) {
-
   if (body === undefined) {
     return response.status(500).json({ error: 'No body found in PUT request' });
   }
@@ -93,7 +97,9 @@ async function updatePromotion(body, response) {
       create: getPrismaUpdatePromotionQuery(body),
     });
 
-    return response.status(200).json({ error: null, message: "Successfully updated promotion" });
+    return response
+      .status(200)
+      .json({ error: null, message: 'Successfully updated promotion' });
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error updating promotion' });

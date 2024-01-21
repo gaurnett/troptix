@@ -4,5 +4,5 @@ export function formatPrice(price) {
     currency: 'USD',
   });
 
-  return formatter.format(price)
+  return formatter.format(price);
 }

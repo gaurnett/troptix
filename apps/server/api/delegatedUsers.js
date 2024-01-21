@@ -1,32 +1,37 @@
-import { allowCors, verifyUser } from "../lib/auth";
-import { deleteDelegatedUserQuery, getPrismaUpdateDelegatedUserQuery } from "../lib/delegationHelper";
-import prisma from "../prisma/prisma";
+import { allowCors, verifyUser } from '../lib/auth';
+import {
+  deleteDelegatedUserQuery,
+  getPrismaUpdateDelegatedUserQuery,
+} from '../lib/delegationHelper';
+import prisma from '../prisma/prisma';
 
 async function handler(request, response) {
   const { body, method } = request;
 
   if (!method) {
-    return response.status(500).json({ error: 'No method found for delegated users endpoint' });
+    return response
+      .status(500)
+      .json({ error: 'No method found for delegated users endpoint' });
   }
 
   const { userId, email } = await verifyUser(request);
 
   if (!userId) {
-    return response.status(401).json({ error: "Unauthorized" });
+    return response.status(401).json({ error: 'Unauthorized' });
   }
 
   switch (method) {
-    case "POST":
+    case 'POST':
       return await updateDelegatedUser(body, response);
-    case "GET":
+    case 'GET':
       const eventId = request.query.eventId;
       return await getDelegatedUsers(eventId, response);
-    case "PUT":
+    case 'PUT':
       return await updateDelegatedUser(body, response);
-    case "DELETE":
+    case 'DELETE':
       const id = body.id;
       return await deleteDelegatedUser(id, response);
-    case "OPTIONS":
+    case 'OPTIONS':
       return response.status(200).end();
     default:
       break;
@@ -45,12 +50,13 @@ async function getDelegatedUsers(eventId, response) {
     return response.status(200).json(users);
   } catch (e) {
     console.error('Request error', e);
-    return response.status(500).json({ error: 'Error fetching delegated users' });
+    return response
+      .status(500)
+      .json({ error: 'Error fetching delegated users' });
   }
 }
 
 async function updateDelegatedUser(body, response) {
-
   if (body === undefined) {
     return response.status(500).json({ error: 'No body found in PUT request' });
   }
@@ -77,13 +83,17 @@ async function updateDelegatedUser(body, response) {
     return response.status(200).json(insertedUser);
   } catch (e) {
     console.error('Request error', e);
-    return response.status(500).json({ error: 'Error updating delegated user' });
+    return response
+      .status(500)
+      .json({ error: 'Error updating delegated user' });
   }
 }
 
 async function deleteDelegatedUser(userId, response) {
   if (!userId) {
-    return response.status(500).json({ error: 'No userId found in DELETE request' });
+    return response
+      .status(500)
+      .json({ error: 'No userId found in DELETE request' });
   }
 
   try {
@@ -91,6 +101,8 @@ async function deleteDelegatedUser(userId, response) {
     return response.status(200).json(deletedUser);
   } catch (e) {
     console.error('Request error', e);
-    return response.status(500).json({ error: 'Error updating delegated user' });
+    return response
+      .status(500)
+      .json({ error: 'Error updating delegated user' });
   }
 }
