@@ -1,20 +1,20 @@
-import { TropTixContext } from "@/components/WebNavigator";
-import TicketDrawer from "@/components/pages/event/ticket-drawer";
-import TicketModal from "@/components/pages/event/ticket-modal";
-import { Spinner } from "@/components/ui/spinner";
-import { MetaHead } from "@/components/utils/MetaHead";
+import { TropTixContext } from '@/components/WebNavigator';
+import TicketDrawer from '@/components/pages/event/ticket-drawer';
+import TicketModal from '@/components/pages/event/ticket-modal';
+import { Spinner } from '@/components/ui/spinner';
+import { MetaHead } from '@/components/utils/MetaHead';
 import {
   RequestType,
   eventFetcher,
   useFetchEventsById,
-} from "@/hooks/useFetchEvents";
-import { getDateFormatter, getFormattedCurrency } from "@/lib/utils";
-import { Button, Modal, Result, Typography } from "antd";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
-import { IoTicket } from "react-icons/io5";
+} from '@/hooks/useFetchEvents';
+import { getDateFormatter, getFormattedCurrency } from '@/lib/utils';
+import { Button, Modal, Result, Typography } from 'antd';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from 'react';
+import { IoTicket } from 'react-icons/io5';
 const { Paragraph } = Typography;
 
 export async function getStaticPaths() {
@@ -30,7 +30,7 @@ export async function getStaticPaths() {
 
   // We'll pre-render only these paths at build time.
   // { fallback: false } means other routes should 404.
-  return { paths, fallback: "blocking" };
+  return { paths, fallback: 'blocking' };
 }
 
 // This also gets called at build time
@@ -57,7 +57,7 @@ export default function EventDetailPage(props) {
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" && window.innerWidth < 768
+    typeof window !== 'undefined' && window.innerWidth < 768
   );
 
   useEffect(() => {
@@ -65,13 +65,13 @@ export default function EventDetailPage(props) {
       setIsMobile(window.innerWidth < 768);
     }
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       handleResize();
     }
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, [isMobile]);
 
@@ -108,15 +108,15 @@ export default function EventDetailPage(props) {
   if (isPending || !event) {
     return (
       <div className="mt-32">
-        <Spinner text={"Fetching Event"} />
+        <Spinner text={'Fetching Event'} />
       </div>
     );
   }
 
   let lowest = Number.MAX_VALUE;
-  let priceString = "";
+  let priceString = '';
   if (!event.ticketTypes || event.ticketTypes.length === 0) {
-    priceString = "No tickets available";
+    priceString = 'No tickets available';
   } else {
     event.ticketTypes.forEach((ticket) => {
       const price = ticket.price;
@@ -125,7 +125,7 @@ export default function EventDetailPage(props) {
       }
     });
 
-    priceString = "From " + getFormattedCurrency(lowest) + " USD";
+    priceString = 'From ' + getFormattedCurrency(lowest) + ' USD';
   }
 
   return (
@@ -140,11 +140,11 @@ export default function EventDetailPage(props) {
         style={{
           backgroundImage: `url("${
             event?.imageUrl ??
-            "https://placehold.co/400x400?text=Add+Event+Flyer"
+            'https://placehold.co/400x400?text=Add+Event+Flyer'
           }")`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          WebkitBackgroundSize: "cover",
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+          WebkitBackgroundSize: 'cover',
         }}
       >
         {isMobile ? (
@@ -171,12 +171,12 @@ export default function EventDetailPage(props) {
           <Result
             title="Please log in/sign up to buy tickets"
             extra={[
-              <Link href={{ pathname: "/auth/signin" }} key={"tickets"}>
+              <Link href={{ pathname: '/auth/signin' }} key={'tickets'}>
                 <Button className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
                   Log in
                 </Button>
               </Link>,
-              <Link href={{ pathname: "/auth/signup" }} key={"tickets"}>
+              <Link href={{ pathname: '/auth/signup' }} key={'tickets'}>
                 <Button
                   type="primary"
                   className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
@@ -196,7 +196,7 @@ export default function EventDetailPage(props) {
                   width={500}
                   src={
                     event.imageUrl ??
-                    "https://placehold.co/600x600.png?text=Add+Event+Flyer"
+                    'https://placehold.co/600x600.png?text=Add+Event+Flyer'
                   }
                   alt={event.name}
                   className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg"
@@ -219,8 +219,8 @@ export default function EventDetailPage(props) {
                       <div className="w-full ml-4 mr-2">
                         <Link
                           className=""
-                          href={{ pathname: "/auth/signin" }}
-                          key={"tickets"}
+                          href={{ pathname: '/auth/signin' }}
+                          key={'tickets'}
                         >
                           <Button className="w-full p-5 shadow-md items-center justify-center font-medium inline-flex">
                             Log in
@@ -229,8 +229,8 @@ export default function EventDetailPage(props) {
                       </div>
                       <div className="w-full mr-4 ml-2">
                         <Link
-                          href={{ pathname: "/auth/signup" }}
-                          key={"tickets"}
+                          href={{ pathname: '/auth/signup' }}
+                          key={'tickets'}
                         >
                           <Button
                             type="primary"
@@ -285,12 +285,12 @@ export default function EventDetailPage(props) {
                     Description
                   </h2>
                   <Paragraph
-                    style={{ whiteSpace: "pre-line" }}
+                    style={{ whiteSpace: 'pre-line' }}
                     className="mt-2 text-justify text-base"
                     ellipsis={{
                       rows: 2,
                       expandable: true,
-                      symbol: "see more details",
+                      symbol: 'see more details',
                     }}
                   >
                     {event.description}

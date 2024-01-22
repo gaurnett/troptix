@@ -2,9 +2,9 @@ import {
   CustomDateField,
   CustomInput,
   CustomTimeField,
-} from "@/components/ui/input";
-import { Button, Form, message } from "antd";
-import Autocomplete from "react-google-autocomplete";
+} from '@/components/ui/input';
+import { Button, Form, message } from 'antd';
+import Autocomplete from 'react-google-autocomplete';
 
 export default function BasicInfoPage({ event, setEvent, updateEvent }) {
   const [messageApi, contextHolder] = message.useMessage();
@@ -24,22 +24,22 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
     const startDate = new Date(event.startDate);
     const endDate = new Date(event.endDate);
 
-    if (name === "startDate") {
+    if (name === 'startDate') {
       if (value.toDate().getTime() > endDate.getTime()) {
         const newEndDate = value.toDate();
         newEndDate.setHours(newEndDate.getHours() + 4);
 
         setEvent((previousEvent) => ({
           ...previousEvent,
-          ["endDate"]: newEndDate,
+          ['endDate']: newEndDate,
         }));
       }
     }
 
-    if (name === "endDate" && value.toDate().getTime() < startDate.getTime()) {
+    if (name === 'endDate' && value.toDate().getTime() < startDate.getTime()) {
       messageApi.open({
-        type: "error",
-        content: "End time cannot be before start time",
+        type: 'error',
+        content: 'End time cannot be before start time',
       });
       return;
     }
@@ -62,13 +62,13 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
     if (place === null || place === undefined) {
       return;
     }
-    let country = "";
-    let countryCode = "";
+    let country = '';
+    let countryCode = '';
     let lat = 0;
     let lng = 0;
     if (place.address_components !== undefined) {
       place.address_components.forEach((component) => {
-        if (component.types.includes("country")) {
+        if (component.types.includes('country')) {
           country = component.long_name;
           countryCode = component.short_name;
         }
@@ -82,16 +82,16 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
 
     setEvent((previousEvent: any) => ({
       ...previousEvent,
-      ["address"]: getValueOrDefault(place.formatted_address, ""),
-      ["country"]: getValueOrDefault(country, ""),
-      ["country_code"]: getValueOrDefault(countryCode, ""),
-      ["latitude"]: getValueOrDefault(lat, 0),
-      ["longitude"]: getValueOrDefault(lng, 0),
+      ['address']: getValueOrDefault(place.formatted_address, ''),
+      ['country']: getValueOrDefault(country, ''),
+      ['country_code']: getValueOrDefault(countryCode, ''),
+      ['latitude']: getValueOrDefault(lat, 0),
+      ['longitude']: getValueOrDefault(lng, 0),
     }));
   }
 
   if (!event) {
-    return (<></>)
+    return <></>;
   }
 
   return (
@@ -109,11 +109,11 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
           <div className="w-full px-3">
             <CustomInput
               value={event.name}
-              name={"name"}
-              id={"name"}
-              label={"Event Title"}
-              type={"text"}
-              placeholder={"TropTix Beach Party"}
+              name={'name'}
+              id={'name'}
+              label={'Event Title'}
+              type={'text'}
+              placeholder={'TropTix Beach Party'}
               handleChange={handleChange}
               required={true}
             />
@@ -123,11 +123,11 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
           <div className="w-full px-3">
             <CustomInput
               value={event.organizer}
-              name={"organizer"}
-              id={"organizer"}
-              label={"Event Organizer"}
-              type={"text"}
-              placeholder={"TropTix"}
+              name={'organizer'}
+              id={'organizer'}
+              label={'Event Organizer'}
+              type={'text'}
+              placeholder={'TropTix'}
               handleChange={handleChange}
               required={true}
             />
@@ -137,11 +137,11 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
           <div className="w-full px-3">
             <CustomInput
               value={event.venue}
-              name={"venue"}
-              id={"venue"}
-              label={"Event Venue *"}
-              type={"text"}
-              placeholder={"Brooklyn Museum"}
+              name={'venue'}
+              id={'venue'}
+              label={'Event Venue *'}
+              type={'text'}
+              placeholder={'Brooklyn Museum'}
               handleChange={handleChange}
               required={true}
             />
@@ -151,7 +151,7 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
           <div className="w-full px-3">
             <label
               className="block text-gray-800 text-sm font-medium mb-1"
-              htmlFor={"location"}
+              htmlFor={'location'}
             >
               Event Location
             </label>
@@ -179,22 +179,22 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
           <div className="mb-4 md:mr-4 w-full">
             <CustomDateField
               value={event.startDate}
-              name={"startDate"}
-              id={"startDate"}
-              label={"Start Date"}
-              placeholder={"Start Date"}
-              handleChange={(value) => updateDate("startDate", value)}
+              name={'startDate'}
+              id={'startDate'}
+              label={'Start Date'}
+              placeholder={'Start Date'}
+              handleChange={(value) => updateDate('startDate', value)}
               required={true}
             />
           </div>
           <div className="mb-4 md:ml-4 w-full">
             <CustomTimeField
               value={event.startDate}
-              name={"startDate"}
-              id={"startTime"}
-              label={"Start Time"}
-              placeholder={"Start Time"}
-              handleChange={(value) => updateDate("startDate", value)}
+              name={'startDate'}
+              id={'startTime'}
+              label={'Start Time'}
+              placeholder={'Start Time'}
+              handleChange={(value) => updateDate('startDate', value)}
               required={true}
             />
           </div>
@@ -203,22 +203,22 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
           <div className="mb-4 md:mr-4 w-full">
             <CustomDateField
               value={event.endDate}
-              name={"endDate"}
-              id={"endDate"}
-              label={"End Date"}
-              placeholder={"End Date"}
-              handleChange={(value) => updateDate("endDate", value)}
+              name={'endDate'}
+              id={'endDate'}
+              label={'End Date'}
+              placeholder={'End Date'}
+              handleChange={(value) => updateDate('endDate', value)}
               required={true}
             />
           </div>
           <div className="mb-4 md:ml-4 w-full">
             <CustomTimeField
               value={event.endDate}
-              name={"endDate"}
-              id={"endTime"}
-              label={"End Time"}
-              placeholder={"End Time"}
-              handleChange={(value) => updateDate("endDate", value)}
+              name={'endDate'}
+              id={'endTime'}
+              label={'End Time'}
+              placeholder={'End Time'}
+              handleChange={(value) => updateDate('endDate', value)}
               required={true}
             />
           </div>

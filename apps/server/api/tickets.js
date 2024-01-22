@@ -1,33 +1,39 @@
-import { allowCors, verifyUser } from "../lib/auth";
-import { getPrismaUpdateTicketQuery, getPrismaUpdateTicketStatusQuery, updateScannedTicketStatus } from '../lib/ticketHelper';
-import prisma from "../prisma/prisma";
+import { allowCors, verifyUser } from '../lib/auth';
+import {
+  getPrismaUpdateTicketQuery,
+  getPrismaUpdateTicketStatusQuery,
+  updateScannedTicketStatus,
+} from '../lib/ticketHelper';
+import prisma from '../prisma/prisma';
 
 async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
-    return response.status(500).json({ error: 'No method found for tickets endpoint' });
+    return response
+      .status(500)
+      .json({ error: 'No method found for tickets endpoint' });
   }
 
-  if (method === "OPTIONS") {
+  if (method === 'OPTIONS') {
     return response.status(200).end();
   }
 
   const { userId, email } = await verifyUser(request);
 
   if (!userId) {
-    return response.status(401).json({ error: "Unauthorized" });
+    return response.status(401).json({ error: 'Unauthorized' });
   }
 
   switch (method) {
-    case "POST":
+    case 'POST':
       break;
-    case "GET":
+    case 'GET':
       const userId = request.query.userId;
       return await getTicketsForUser(userId, response);
-    case "PUT":
+    case 'PUT':
       return await putTicket(body, response);
-    case "DELETE":
+    case 'DELETE':
       break;
     default:
       break;
@@ -38,11 +44,11 @@ module.exports = allowCors(handler);
 
 async function putTicket(body, response) {
   switch (body.type) {
-    case "UPDATE_STATUS":
+    case 'UPDATE_STATUS':
       return updateStatus(body, response);
-    case "UPDATE_NAME":
+    case 'UPDATE_NAME':
       return updateName(body, response);
-    case "SCAN_TICKET":
+    case 'SCAN_TICKET':
       return scanTicket(body, response);
     default:
       response.status(500).json('No put type set on ticket');
@@ -106,8 +112,8 @@ async function getTicketsForUser(userId, response) {
       },
       include: {
         event: true,
-        ticketType: true
-      }
+        ticketType: true,
+      },
     });
     return response.status(200).json(tickets);
   } catch (e) {
@@ -115,4 +121,3 @@ async function getTicketsForUser(userId, response) {
     return response.status(500).json({ error: 'Error fetching users' });
   }
 }
-

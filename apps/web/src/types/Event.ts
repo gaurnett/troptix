@@ -1,4 +1,4 @@
-import { TicketType } from "./TicketType";
+import { TicketType } from './TicketType';
 export type EventType = {
   id: string;
   createdAt: string;

@@ -1,4 +1,4 @@
-import ManageEventsPage from "./manage-events";
+import ManageEventsPage from './manage-events';
 
 export default function AdminPage({ children }) {
   return (

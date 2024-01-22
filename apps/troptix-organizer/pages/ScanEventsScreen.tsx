@@ -14,7 +14,7 @@ export default function ScanEventsScreen({ navigation }) {
   const { isLoading, isError, data, error } = useFetchEventsById({
     requestType: RequestType.GET_EVENTS_SCANNABLE_BY_ORGANIZER,
     id: user?.id,
-    jwtToken: user?.jwtToken
+    jwtToken: user?.jwtToken,
   });
 
   const onRefresh = useCallback(async () => {
@@ -24,12 +24,12 @@ export default function ScanEventsScreen({ navigation }) {
 
   function onEventClick(event) {
     navigation.navigate('ScanEventScreen', {
-      event: event
-    })
+      event: event,
+    });
   }
 
   function getDateFormatted(date, time) {
-    return format(date, 'MMM dd, yyyy') + " at " + format(time, 'hh:mm a');
+    return format(date, 'MMM dd, yyyy') + ' at ' + format(time, 'hh:mm a');
   }
 
   function renderEvents() {
@@ -45,70 +45,108 @@ export default function ScanEventsScreen({ navigation }) {
         >
           <View style={{ height: '100%' }}>
             <Image
-              contentFit='cover'
+              contentFit="cover"
               style={{
                 height: 120,
-                width: 120
+                width: 120,
               }}
               source={{
-                uri: event.imageUrl
-              }} />
+                uri: event.imageUrl,
+              }}
+            />
           </View>
 
-          <View marginL-12 flex style={{ width: '100%', justifyContent: 'center' }}>
+          <View
+            marginL-12
+            flex
+            style={{ width: '100%', justifyContent: 'center' }}
+          >
             <View paddingR-8>
               <Text style={{ fontWeight: 'bold' }} text70 $textDefault>
                 {event.name}
               </Text>
               <View style={{ flexDirection: 'row' }}>
-                <Text text70 $textDefault numberOfLines={1} style={{ flex: 1, flexWrap: 'wrap' }}>
+                <Text
+                  text70
+                  $textDefault
+                  numberOfLines={1}
+                  style={{ flex: 1, flexWrap: 'wrap' }}
+                >
                   {event.venue}
                 </Text>
               </View>
               <View style={{ flexDirection: 'row' }}>
-                <Text text70 $textDefault numberOfLines={1} style={{ flex: 1, flexWrap: 'wrap' }}>
+                <Text
+                  text70
+                  $textDefault
+                  numberOfLines={1}
+                  style={{ flex: 1, flexWrap: 'wrap' }}
+                >
                   {event.address}
                 </Text>
               </View>
               <Text text70 $textDefault>
-                {getDateFormatted(new Date(event.startDate), new Date(event.startTime))}
+                {getDateFormatted(
+                  new Date(event.startDate),
+                  new Date(event.startTime)
+                )}
               </Text>
             </View>
           </View>
         </Card>
       );
     });
-  };
+  }
 
   return (
     <View style={{ height: '100%', backgroundColor: 'white' }}>
-      {
-        isLoading ?
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <LoaderScreen message={'Fetching scannable events'} color={Colors.grey40} />
-          </View>
-          :
-          <View>
-            {
-              data.length === 0 ?
-                <View style={{ alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%" }}>
-                  <Image source={require('../assets/icons/empty-scan.png')} width={120} height={120} />
-                  <Text marginT-24 style={{ fontSize: 24 }}>No events scannable</Text>
+      {isLoading ? (
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <LoaderScreen
+            message={'Fetching scannable events'}
+            color={Colors.grey40}
+          />
+        </View>
+      ) : (
+        <View>
+          {data.length === 0 ? (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                width: '100%',
+              }}
+            >
+              <Image
+                source={require('../assets/icons/empty-scan.png')}
+                width={120}
+                height={120}
+              />
+              <Text marginT-24 style={{ fontSize: 24 }}>
+                No events scannable
+              </Text>
+            </View>
+          ) : (
+            <View style={{ height: '100%' }}>
+              <ScrollView
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }
+              >
+                <View flex padding-20>
+                  {renderEvents()}
                 </View>
-                :
-                <View style={{ height: "100%" }}>
-                  <ScrollView
-                    refreshControl={
-                      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                    }>
-                    <View flex padding-20>
-                      {renderEvents()}
-                    </View>
-                  </ScrollView>
-                </View>
-            }
-          </View>
-      }
+              </ScrollView>
+            </View>
+          )}
+        </View>
+      )}
     </View>
   );
 }

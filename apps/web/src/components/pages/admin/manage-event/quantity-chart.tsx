@@ -25,7 +25,7 @@ export const options = {
   plugins: {
     legend: {
       position: 'top' as const,
-      display: false
+      display: false,
     },
     title: {
       display: true,
@@ -43,11 +43,15 @@ export default function QuantityChart({ orders }) {
       let orderCounts = new Map<string, number>();
       orders
         .sort((a: any, b: any) => {
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         })
         .forEach((order: any) => {
           const date = format(new Date(order.createdAt), 'MMM dd');
-          const currentTicketCount = orderCounts.has(date) ? orderCounts.get(date) : 0;
+          const currentTicketCount = orderCounts.has(date)
+            ? orderCounts.get(date)
+            : 0;
           orderCounts.set(date, currentTicketCount + order.tickets.length);
         });
 
@@ -60,19 +64,20 @@ export default function QuantityChart({ orders }) {
             backgroundColor: '#607D8B',
           },
         ],
-      })
+      });
       setIsSettingData(false);
     }
 
     mapOrdersToDateCount(orders);
-  }, [orders])
+  }, [orders]);
 
   return (
     <div>
-      {
-        data !== null && !isSettingData ?
-          <Bar options={options} data={data} /> : <></>
-      }
+      {data !== null && !isSettingData ? (
+        <Bar options={options} data={data} />
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

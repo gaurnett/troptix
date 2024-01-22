@@ -18,28 +18,27 @@ export async function sendContactUsForm(contact) {
 }
 
 export async function sendEmailToUser(order, orderMap) {
-
   const templateData = {
     id: order.id,
     eventTitle: order.event.name,
     subtotal: order.subtotal,
     totalFees: order.fees,
     totalPrice: order.total,
-    username: order.firstName + " " + order.lastName,
+    username: order.firstName + ' ' + order.lastName,
     cardType: order.cardType,
     cardLast4: order.cardLast4,
     ticketsPurchased: order.tickets.length,
     ticketsLink: order?.ticketsLink,
     orderNumber: String(order.id),
     orderDate: new Date(order.createdAt).toLocaleDateString(),
-    orders: Array.from(orderMap.values())
-  }
+    orders: Array.from(orderMap.values()),
+  };
 
   const msg = {
     to: order.email,
     from: {
       name: 'TropTix',
-      email: 'info@usetroptix.com'
+      email: 'info@usetroptix.com',
     },
     subject: 'TropTix Confirmation',
     templateId: 'd-658d88a06f0b443ca36d12d5e47e9275',
@@ -50,21 +49,20 @@ export async function sendEmailToUser(order, orderMap) {
 }
 
 export async function sendComplementaryTicketEmailToUser(order, orderMap) {
-
   const templateData = {
     id: order.id,
     eventTitle: order.eventName,
     orderNumber: order.id,
     orderDate: new Date().toLocaleDateString(),
     ticketsLink: order?.ticketsLink,
-    orders: Array.from(orderMap.values())
-  }
+    orders: Array.from(orderMap.values()),
+  };
 
   const msg = {
     to: order.email,
     from: {
       name: 'TropTix',
-      email: 'info@usetroptix.com'
+      email: 'info@usetroptix.com',
     },
     subject: 'TropTix Confirmation',
     templateId: 'd-925a204fa5b7431db20d7fe93e8d7ec0',

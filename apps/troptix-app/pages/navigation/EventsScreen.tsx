@@ -1,32 +1,44 @@
 import _ from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { Text, View, Card, Colors, CardProps, Button, LoaderScreen } from 'react-native-ui-lib';
+import {
+  Text,
+  View,
+  Card,
+  Colors,
+  CardProps,
+  Button,
+  LoaderScreen,
+} from 'react-native-ui-lib';
 import { Event, getEventsFromRequest } from 'troptix-models';
-import { TropTixResponse, getEvents, GetEventsType, GetEventsRequest } from 'troptix-api';
+import {
+  TropTixResponse,
+  getEvents,
+  GetEventsType,
+  GetEventsRequest,
+} from 'troptix-api';
 import { Image } from 'expo-image';
 
 const cardImage = require('../../assets/favicon.png');
 
 export default function EventsScreen({ navigation }) {
-
   const [isFetchingEvents, setIsFetchingEvents] = useState(true);
   const [events, setEvents] = useState<Event[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchEvents = async () => {
     const getEventsRequest: GetEventsRequest = {
-      getEventsType: GetEventsType.GET_EVENTS_ALL
-    }
+      getEventsType: GetEventsType.GET_EVENTS_ALL,
+    };
 
     try {
       const response = await getEvents(getEventsRequest);
       if (response !== undefined) {
         setEvents(getEventsFromRequest(response));
       }
-      console.log("[EventsScreen fetchEvents] response: " + response);
+      console.log('[EventsScreen fetchEvents] response: ' + response);
     } catch (error) {
-      console.log("[EventsScreen fetchEvents] error: " + error);
+      console.log('[EventsScreen fetchEvents] error: ' + error);
     }
 
     setIsFetchingEvents(false);
@@ -49,8 +61,8 @@ export default function EventsScreen({ navigation }) {
 
   function onEventClick(event) {
     navigation.navigate('EventDetailsScreen', {
-      event: event
-    })
+      event: event,
+    });
   }
 
   function renderEvents() {
@@ -66,21 +78,24 @@ export default function EventsScreen({ navigation }) {
           onPress={() => onEventClick(event)}
         >
           <Image
-            contentFit='cover'
+            contentFit="cover"
             style={{
               height: 200,
-              width: '100%'
+              width: '100%',
             }}
             source={{
-              uri: event.imageUrl
-            }} />
+              uri: event.imageUrl,
+            }}
+          />
 
           <View padding-20>
             <Text text50 $textDefault>
               {event.name}
             </Text>
             <View row>
-              <Text text70 $textDefault>{formatDate(new Date(event.startDate))} | </Text>
+              <Text text70 $textDefault>
+                {formatDate(new Date(event.startDate))} |{' '}
+              </Text>
               <Text text70 color={Colors.$textMajor}>
                 {event.organizer}
               </Text>
@@ -97,34 +112,49 @@ export default function EventsScreen({ navigation }) {
         </Card>
       );
     });
-  };
+  }
 
   return (
-    <View style={{ backgroundColor: 'white', height: '100%', }}>
-      {
-        isFetchingEvents ?
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <LoaderScreen message={'Fetching events'} color={Colors.grey40} />
-          </View> :
-          <View>
-            {
-              events.length === 0 ?
-                <View style={{ alignItems: 'center', justifyContent: 'center', height: "100%", width: "100%" }}>
-                  <Image source={require('../../assets/icons/empty-events.png')} width={120} height={120} />
-                  <Text marginT-24 style={{ fontSize: 24 }}>No events nearby</Text>
-                </View>
-                :
-                <ScrollView
-                  refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                  }>
-                  <View flex padding-20>
-                    {renderEvents()}
-                  </View>
-                </ScrollView>
-            }
-          </View>
-      }
+    <View style={{ backgroundColor: 'white', height: '100%' }}>
+      {isFetchingEvents ? (
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <LoaderScreen message={'Fetching events'} color={Colors.grey40} />
+        </View>
+      ) : (
+        <View>
+          {events.length === 0 ? (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                height: '100%',
+                width: '100%',
+              }}
+            >
+              <Image
+                source={require('../../assets/icons/empty-events.png')}
+                width={120}
+                height={120}
+              />
+              <Text marginT-24 style={{ fontSize: 24 }}>
+                No events nearby
+              </Text>
+            </View>
+          ) : (
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+            >
+              <View flex padding-20>
+                {renderEvents()}
+              </View>
+            </ScrollView>
+          )}
+        </View>
+      )}
     </View>
   );
 }

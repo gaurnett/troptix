@@ -1,36 +1,33 @@
+import React from 'react';
+import { Pressable } from 'react-native';
+import { View, TextField, Colors } from 'react-native-ui-lib';
 
-import React from "react";
-import {
-  Pressable,
-} from "react-native";
-import {
-  View,
-  TextField,
-  Colors,
-} from "react-native-ui-lib";
-
-export default function CustomTextField({ name, label, placeholder, value, reference, handleChange, secureTextEntry = false }) {
-
+export default function CustomTextField({
+  name,
+  label,
+  placeholder,
+  value,
+  reference,
+  handleChange,
+  secureTextEntry = false,
+}) {
   function setTextFieldFocused(ref) {
-    if (ref === undefined || ref.current === undefined)
-      return;
+    if (ref === undefined || ref.current === undefined) return;
 
     ref.current.focus();
   }
 
   return (
-    <Pressable
-      onPress={() => setTextFieldFocused(reference)}
-    >
+    <Pressable onPress={() => setTextFieldFocused(reference)}>
       <View
         marginT-16
         paddingT-6
         paddingL-8
         style={{
           height: 60,
-          width: "100%",
+          width: '100%',
           borderWidth: 0.5,
-          borderColor: "#D3D3D3",
+          borderColor: '#D3D3D3',
         }}
       >
         <TextField
@@ -49,5 +46,5 @@ export default function CustomTextField({ name, label, placeholder, value, refer
         />
       </View>
     </Pressable>
-  )
+  );
 }

@@ -1,6 +1,13 @@
 import { useContext } from 'react';
 import { StyleSheet, Alert, FlatList, ScrollView } from 'react-native';
-import { View, Text, Colors, ListItem, Image, BorderRadiuses } from 'react-native-ui-lib';
+import {
+  View,
+  Text,
+  Colors,
+  ListItem,
+  Image,
+  BorderRadiuses,
+} from 'react-native-ui-lib';
 import orders, { OrderType } from '../../data/orders';
 import { auth } from 'troptix-firebase';
 import { TropTixContext } from '../../App';
@@ -10,12 +17,12 @@ const styles = StyleSheet.create({
   image: {
     width: 24,
     height: 24,
-    marginRight: 16
+    marginRight: 16,
   },
   border: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: Colors.grey70
-  }
+    borderColor: Colors.grey70,
+  },
 });
 enum SettingsType {
   TICKETS,
@@ -25,7 +32,7 @@ enum SettingsType {
   CONTACT_US,
   SUGGEST_IMPROVEMENTS,
   TERMS_OF_SERVICE,
-  PRIVACY
+  PRIVACY,
 }
 
 export default function SettingsScreen({ navigation }) {
@@ -39,10 +46,10 @@ export default function SettingsScreen({ navigation }) {
     switch (type) {
       case SettingsType.TICKETS:
         navigation.navigate('TicketsScreen', {
-          user: user
-        })
+          user: user,
+        });
       case SettingsType.ORDERS:
-        setUser(prevUser => ({ ...prevUser, ["name"]: "Hello" }));
+        setUser((prevUser) => ({ ...prevUser, ['name']: 'Hello' }));
         break;
       case SettingsType.MANAGE_ACCOUNT:
         break;
@@ -54,7 +61,7 @@ export default function SettingsScreen({ navigation }) {
       case SettingsType.TERMS_OF_SERVICE:
       case SettingsType.PRIVACY:
       default:
-        () => Alert.alert(`pressed on order #`)
+        () => Alert.alert(`pressed on order #`);
     }
   }
 
@@ -67,29 +74,45 @@ export default function SettingsScreen({ navigation }) {
       >
         <ListItem.Part left>
           <Image
-            resizeMode='cover'
+            resizeMode="cover"
             source={icon}
             style={styles.image}
-            tintColor={color} />
+            tintColor={color}
+          />
         </ListItem.Part>
         <ListItem.Part containerStyle={[styles.border, { paddingRight: 17 }]}>
           <ListItem.Part>
-            <Text grey10 text70 style={{ flex: 1, marginRight: 10 }} numberOfLines={1}>
+            <Text
+              grey10
+              text70
+              style={{ flex: 1, marginRight: 10 }}
+              numberOfLines={1}
+            >
               {title}
             </Text>
           </ListItem.Part>
         </ListItem.Part>
       </ListItem>
     );
-  };
+  }
 
   return (
     <View style={{ backgroundColor: 'white' }}>
       <View>
         <ScrollView style={{ height: '100%' }}>
-          <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
-            <Text style={{ fontSize: 28, fontWeight: "500" }} marginL-10>Hi {user !== undefined ? user.name : ""}</Text>
-            <Text style={{ fontSize: 20, fontWeight: "200" }} marginL-10>{user !== undefined ? user.email : ""}</Text>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'white',
+            }}
+          >
+            <Text style={{ fontSize: 28, fontWeight: '500' }} marginL-10>
+              Hi {user !== undefined ? user.name : ''}
+            </Text>
+            <Text style={{ fontSize: 20, fontWeight: '200' }} marginL-10>
+              {user !== undefined ? user.email : ''}
+            </Text>
           </View>
 
           <View marginL-16>
@@ -98,10 +121,20 @@ export default function SettingsScreen({ navigation }) {
                 Events
               </Text>
               <View>
-                {renderSettingsRow(SettingsType.TICKETS, "My Tickets", require('../../assets/icons/ticket.png'), Colors.green50)}
+                {renderSettingsRow(
+                  SettingsType.TICKETS,
+                  'My Tickets',
+                  require('../../assets/icons/ticket.png'),
+                  Colors.green50
+                )}
               </View>
               <View>
-                {renderSettingsRow(SettingsType.ORDERS, "Orders", require('../../assets/icons/order.png'), Colors.purple50)}
+                {renderSettingsRow(
+                  SettingsType.ORDERS,
+                  'Orders',
+                  require('../../assets/icons/order.png'),
+                  Colors.purple50
+                )}
               </View>
             </View>
 
@@ -110,10 +143,20 @@ export default function SettingsScreen({ navigation }) {
                 Settings
               </Text>
               <View>
-                {renderSettingsRow(SettingsType.MANAGE_ACCOUNT, "Manage Account", require('../../assets/icons/person.png'), Colors.blue50)}
+                {renderSettingsRow(
+                  SettingsType.MANAGE_ACCOUNT,
+                  'Manage Account',
+                  require('../../assets/icons/person.png'),
+                  Colors.blue50
+                )}
               </View>
               <View>
-                {renderSettingsRow(SettingsType.SIGN_OUT, "Sign Out", require('../../assets/icons/logout.png'), Colors.red50)}
+                {renderSettingsRow(
+                  SettingsType.SIGN_OUT,
+                  'Sign Out',
+                  require('../../assets/icons/logout.png'),
+                  Colors.red50
+                )}
               </View>
             </View>
 
@@ -122,16 +165,36 @@ export default function SettingsScreen({ navigation }) {
                 Support
               </Text>
               <View>
-                {renderSettingsRow(SettingsType.CONTACT_US, "Contact Us", require('../../assets/icons/contact.png'), Colors.orange50)}
+                {renderSettingsRow(
+                  SettingsType.CONTACT_US,
+                  'Contact Us',
+                  require('../../assets/icons/contact.png'),
+                  Colors.orange50
+                )}
               </View>
               <View>
-                {renderSettingsRow(SettingsType.SUGGEST_IMPROVEMENTS, "Suggest Improvements", require('../../assets/icons/edit.png'), Colors.violet50)}
+                {renderSettingsRow(
+                  SettingsType.SUGGEST_IMPROVEMENTS,
+                  'Suggest Improvements',
+                  require('../../assets/icons/edit.png'),
+                  Colors.violet50
+                )}
               </View>
               <View>
-                {renderSettingsRow(SettingsType.TERMS_OF_SERVICE, "Terms of Service", require('../../assets/icons/verified.png'), Colors.grey50)}
+                {renderSettingsRow(
+                  SettingsType.TERMS_OF_SERVICE,
+                  'Terms of Service',
+                  require('../../assets/icons/verified.png'),
+                  Colors.grey50
+                )}
               </View>
               <View>
-                {renderSettingsRow(SettingsType.PRIVACY, "Privacy", require('../../assets/icons/lock.png'), Colors.red50)}
+                {renderSettingsRow(
+                  SettingsType.PRIVACY,
+                  'Privacy',
+                  require('../../assets/icons/lock.png'),
+                  Colors.red50
+                )}
               </View>
             </View>
           </View>

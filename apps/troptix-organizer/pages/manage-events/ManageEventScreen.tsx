@@ -7,7 +7,7 @@ import {
   TabController,
   TabControllerImperativeMethods,
   TabControllerItemProps,
-  View
+  View,
 } from 'react-native-ui-lib';
 import { useFetchEventOrders } from '../../hooks/useOrders';
 import EventDashboardScreen from './EventDashboardScreen';
@@ -17,8 +17,8 @@ const TABS = ['Dashboard', 'Orders'];
 
 export default function ManageEventScreen({ route, navigation }) {
   const { event } = route.params;
-  const [key, setKey] = useState(Date.now())
-  const [items, setItems] = useState(generateTabItems())
+  const [key, setKey] = useState(Date.now());
+  const [items, setItems] = useState(generateTabItems());
   const tabController = createRef<TabControllerImperativeMethods>();
   const { isLoading, isError, data, error } = useFetchEventOrders(event.id);
 
@@ -30,15 +30,20 @@ export default function ManageEventScreen({ route, navigation }) {
 
   function generateTabItems(): TabControllerItemProps[] {
     // @ts-expect-error
-    const items: TabControllerItemProps[] = _.flow(tabs => _.take(tabs, 2),
+    const items: TabControllerItemProps[] = _.flow(
+      (tabs) => _.take(tabs, 2),
       (tabs: TabControllerItemProps[]) =>
-        _.map<TabControllerItemProps>(tabs, (tab: TabControllerItemProps, index: number) => ({
-          label: tab,
-          key: tab,
-        })))(TABS);
+        _.map<TabControllerItemProps>(
+          tabs,
+          (tab: TabControllerItemProps, index: number) => ({
+            label: tab,
+            key: tab,
+          })
+        )
+    )(TABS);
 
     return items;
-  };
+  }
 
   function renderTabPages() {
     const Container = View;
@@ -46,7 +51,11 @@ export default function ManageEventScreen({ route, navigation }) {
     return (
       <Container {...containerProps}>
         <TabController.TabPage index={0}>
-          <EventDashboardScreen eventObject={event} navigation={navigation} orders={data} />
+          <EventDashboardScreen
+            eventObject={event}
+            navigation={navigation}
+            orders={data}
+          />
         </TabController.TabPage>
         <TabController.TabPage index={1}>
           <Orders orders={data} />
@@ -57,21 +66,27 @@ export default function ManageEventScreen({ route, navigation }) {
 
   if (isLoading) {
     return (
-      <View paddingR-16 paddingL-16 style={{ height: "100%" }} backgroundColor='white'>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <LoaderScreen message={'Fetching Order Summary'} color={Colors.grey40} />
+      <View
+        paddingR-16
+        paddingL-16
+        style={{ height: '100%' }}
+        backgroundColor="white"
+      >
+        <View
+          style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <LoaderScreen
+            message={'Fetching Order Summary'}
+            color={Colors.grey40}
+          />
         </View>
       </View>
-    )
+    );
   }
 
   return (
     <View flex bg-$backgroundDefault>
-      <TabController
-        key={key}
-        ref={tabController}
-        items={items}
-      >
+      <TabController key={key} ref={tabController} items={items}>
         <TabController.TabBar
           key={key}
           spreadItems={true}
@@ -90,9 +105,9 @@ export default function ManageEventScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   labelStyle: {
-    fontSize: 16
+    fontSize: 16,
   },
   selectedLabelStyle: {
-    fontSize: 16
-  }
+    fontSize: 16,
+  },
 });

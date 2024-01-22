@@ -1,7 +1,7 @@
-import { TropTixResponse, prodUrl } from "./api";
+import { TropTixResponse, prodUrl } from './api';
 
 export enum GetTicketTypesType {
-  GET_TICKET_TYPES_BY_EVENT = 'GET_TICKET_TYPES_BY_EVENT'
+  GET_TICKET_TYPES_BY_EVENT = 'GET_TICKET_TYPES_BY_EVENT',
 }
 
 export interface GetTicketTypesRequest {
@@ -10,11 +10,13 @@ export interface GetTicketTypesRequest {
 }
 
 export async function getTicketTypes(request: GetTicketTypesRequest) {
-  let url = prodUrl + `/api/ticketTypes?getTicketTypesType=${request.getTicketTypesType}`
+  let url =
+    prodUrl +
+    `/api/ticketTypes?getTicketTypesType=${request.getTicketTypesType}`;
 
   switch (request.getTicketTypesType) {
     case GetTicketTypesType.GET_TICKET_TYPES_BY_EVENT:
-      url += `&eventId=${request.eventId}`
+      url += `&eventId=${request.eventId}`;
       break;
   }
 
@@ -28,10 +30,13 @@ export async function getTicketTypes(request: GetTicketTypesRequest) {
   return json;
 }
 
-export async function saveTicketType(ticketType, editTicketType): Promise<TropTixResponse> {
+export async function saveTicketType(
+  ticketType,
+  editTicketType
+): Promise<TropTixResponse> {
   let tropTixResponse: TropTixResponse = new TropTixResponse();
   let url = prodUrl + `/api/ticketTypes`;
-  let method = editTicketType ? "PUT" : "POST";
+  let method = editTicketType ? 'PUT' : 'POST';
 
   return await fetch(url, {
     method: method,
@@ -41,13 +46,15 @@ export async function saveTicketType(ticketType, editTicketType): Promise<TropTi
     },
     body: JSON.stringify({
       ticketType: ticketType,
-    })
-  }).then(async response => {
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    }
-  }).catch(error => {
-    return error;
+    }),
   })
+    .then(async (response) => {
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+    })
+    .catch((error) => {
+      return error;
+    });
 }

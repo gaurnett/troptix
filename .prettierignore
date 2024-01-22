@@ -1,0 +1,12 @@
+# Ignore artifacts:
+**/dist
+**/build
+
+**/node_modules
+
+.cache
+.next
+
+*.log
+yarn.lock
+package-lock.json

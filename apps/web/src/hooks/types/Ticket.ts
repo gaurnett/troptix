@@ -1,15 +1,15 @@
-import { generateId } from "@/lib/utils";
-import { Checkout, CheckoutTicket } from "./Checkout";
+import { generateId } from '@/lib/utils';
+import { Checkout, CheckoutTicket } from './Checkout';
 
 export enum TicketStatus {
   AVAILABLE = 'AVAILABLE',
-  NOT_AVAILABLE = 'NOT_AVAILABLE'
+  NOT_AVAILABLE = 'NOT_AVAILABLE',
 }
 
 export enum TicketsType {
   FREE = 'FREE',
   PAID = 'PAID',
-  COMPLEMENTARY = 'COMPLEMENTARY'
+  COMPLEMENTARY = 'COMPLEMENTARY',
 }
 
 export type Ticket = {
@@ -60,10 +60,13 @@ export type TicketType = {
   // Price Details
   price?: number;
   ticketingFees?: TicketFeeStructure;
-}
+};
 
-
-export function createTicket(checkoutTicket: CheckoutTicket, orderId: string, checkout: Checkout): Ticket {
+export function createTicket(
+  checkoutTicket: CheckoutTicket,
+  orderId: string,
+  checkout: Checkout
+): Ticket {
   const ticket: Ticket = {
     id: generateId(),
     eventId: checkoutTicket.eventId,
@@ -75,7 +78,7 @@ export function createTicket(checkoutTicket: CheckoutTicket, orderId: string, ch
     total: checkoutTicket.total,
     firstName: checkout.firstName,
     lastName: checkout.lastName,
-    email: checkout.email
+    email: checkout.email,
   };
 
   return ticket;

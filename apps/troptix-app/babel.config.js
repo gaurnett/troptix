@@ -4,13 +4,13 @@ module.exports = function (api) {
     presets: ['babel-preset-expo'],
     plugins: [
       [
-        "module-resolver",
+        'module-resolver',
         {
-          extensions: [".tsx", ".ts", ".js", ".json"],
+          extensions: ['.tsx', '.ts', '.js', '.json'],
         },
       ],
-      "@babel/plugin-proposal-export-namespace-from",
-      "react-native-reanimated/plugin",
+      '@babel/plugin-proposal-export-namespace-from',
+      'react-native-reanimated/plugin',
     ],
   };
 };

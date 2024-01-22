@@ -1,11 +1,11 @@
-import { TropTixContext } from "@/components/WebNavigator";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useContext } from "react";
-import { SocialMediaAccount, User } from "./types/User";
-import { prodUrl } from "./useFetchEvents";
+import { TropTixContext } from '@/components/WebNavigator';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useContext } from 'react';
+import { SocialMediaAccount, User } from './types/User';
+import { prodUrl } from './useFetchEvents';
 
 export enum GetUsersType {
-  GET_USERS_BY_ID = "GET_USERS_BY_ID",
+  GET_USERS_BY_ID = 'GET_USERS_BY_ID',
 }
 
 export type GetUsersRequest = {
@@ -14,8 +14,8 @@ export type GetUsersRequest = {
 };
 
 export enum PutUsersType {
-  PUT_USERS_USER_DETAILS = "PUT_USERS_USER_DETAILS",
-  PUT_USERS_SOCIAL_MEDIA = "PUT_USERS_SOCIAL_MEDIA",
+  PUT_USERS_USER_DETAILS = 'PUT_USERS_USER_DETAILS',
+  PUT_USERS_SOCIAL_MEDIA = 'PUT_USERS_SOCIAL_MEDIA',
 }
 
 export type PutUsersRequest = {
@@ -25,7 +25,7 @@ export type PutUsersRequest = {
 };
 
 export enum PostUsersType {
-  POST_USERS_NEW_USER = "POST_USERS_NEW_USER",
+  POST_USERS_NEW_USER = 'POST_USERS_NEW_USER',
 }
 
 export type PostUsersRequest = {
@@ -35,7 +35,7 @@ export type PostUsersRequest = {
 
 export function useFetchUserById(userId: string) {
   return useQuery({
-    queryKey: ["user", userId],
+    queryKey: ['user', userId],
     queryFn: () => fetchUserById(userId),
     enabled: !!userId,
   });
@@ -64,18 +64,18 @@ export async function fetchUserById(userId: string) {
 
   try {
     const response = await fetch(url, {
-      method: "GET",
-      cache: "no-cache",
+      method: 'GET',
+      cache: 'no-cache',
     });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch users");
+      throw new Error('Failed to fetch users');
     }
 
     const json = await response.json();
     return json;
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.error('Error fetching users:', error);
     throw error;
   }
 }
@@ -83,32 +83,32 @@ export async function fetchUserById(userId: string) {
 export function useCreateUser(user: User) {
   const request: PostUsersRequest = {
     postUsersType: PostUsersType.POST_USERS_NEW_USER,
-    user: user
-  }
+    user: user,
+  };
   return useMutation({ mutationFn: () => addUser(request) });
 }
 
 export async function addUser(request: PostUsersRequest) {
-  const url = prodUrl + "/api/users";
+  const url = prodUrl + '/api/users';
 
   try {
     const response = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
 
     if (!response.ok) {
-      throw new Error("Failed to add user");
+      throw new Error('Failed to add user');
     }
 
     const json = await response.json();
     return json;
   } catch (error) {
-    console.error("Error adding user:", error);
+    console.error('Error adding user:', error);
     throw error;
   }
 }
@@ -142,22 +142,22 @@ export async function putUsers({
 
   try {
     const response = await fetch(url, {
-      method: "PUT",
+      method: 'PUT',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
 
     if (!response.ok) {
-      throw new Error("Failed to update user");
+      throw new Error('Failed to update user');
     }
 
     const json = await response.json();
     return json;
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error('Error updating user:', error);
     throw error;
   }
 }

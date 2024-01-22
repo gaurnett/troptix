@@ -1,33 +1,38 @@
-import { allowCors, verifyUser } from "../lib/auth";
-import { sendComplementaryTicketEmailToUser } from "../lib/emailHelper";
-import { getPrismaCreateComplementaryOrderQuery, getPrismaCreateOrderQuery } from "../lib/eventHelper";
-import prisma from "../prisma/prisma";
+import { allowCors, verifyUser } from '../lib/auth';
+import { sendComplementaryTicketEmailToUser } from '../lib/emailHelper';
+import {
+  getPrismaCreateComplementaryOrderQuery,
+  getPrismaCreateOrderQuery,
+} from '../lib/eventHelper';
+import prisma from '../prisma/prisma';
 
 async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
-    return response.status(500).json({ error: 'No method found for users endpoint' });
+    return response
+      .status(500)
+      .json({ error: 'No method found for users endpoint' });
   }
 
-  if (method === "OPTIONS") {
+  if (method === 'OPTIONS') {
     return response.status(200).end();
   }
 
   const { userId, email } = await verifyUser(request);
 
   if (!userId) {
-    return response.status(401).json({ error: "Unauthorized" });
+    return response.status(401).json({ error: 'Unauthorized' });
   }
 
   switch (method) {
-    case "POST":
+    case 'POST':
       return postOrders(request, response);
-    case "GET":
+    case 'GET':
       return getOrders(email, request, response);
-    case "PUT":
+    case 'PUT':
       break;
-    case "DELETE":
+    case 'DELETE':
       break;
     default:
       break;
@@ -40,7 +45,9 @@ async function postOrders(request, response) {
   const { body, headers } = request;
 
   if (body === undefined || body.type === undefined) {
-    return response.status(500).json({ error: 'No body found in post orders request' });
+    return response
+      .status(500)
+      .json({ error: 'No body found in post orders request' });
   }
 
   const postOrderType = body.type;
@@ -59,7 +66,9 @@ async function createOrder(body, response) {
   const order = body.order;
 
   if (order === undefined) {
-    return response.status(500).json({ error: 'No order found in create order request' });
+    return response
+      .status(500)
+      .json({ error: 'No order found in create order request' });
   }
 
   try {
@@ -67,22 +76,25 @@ async function createOrder(body, response) {
       data: getPrismaCreateOrderQuery(order),
       include: {
         tickets: true,
-      }
+      },
     });
 
-    return response.status(200).json({ error: null, message: "Successfully added order" });
+    return response
+      .status(200)
+      .json({ error: null, message: 'Successfully added order' });
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error adding order' });
   }
-
 }
 
 async function createComplementaryOrder(body, response) {
   const order = body.complementaryOrder;
 
   if (order === undefined) {
-    return response.status(500).json({ error: 'No order found in create complementary order request' });
+    return response
+      .status(500)
+      .json({ error: 'No order found in create complementary order request' });
   }
 
   try {
@@ -90,11 +102,11 @@ async function createComplementaryOrder(body, response) {
       data: getPrismaCreateComplementaryOrderQuery(order),
       include: {
         tickets: true,
-      }
+      },
     });
 
     const orderMap = new Map();
-    order.tickets.forEach(ticket => {
+    order.tickets.forEach((ticket) => {
       const ticketId = ticket.id;
       if (orderMap.has(ticketId)) {
         const order = orderMap.get(ticketId);
@@ -106,23 +118,27 @@ async function createComplementaryOrder(body, response) {
         orderMap.set(ticketId, {
           ticketQuantity: 1,
           ticketName: ticket.name,
-          ticketTotalPaid: order.total
+          ticketTotalPaid: order.total,
         });
       }
     });
 
     console.log(orderMap);
 
-    const mailResponse = await sendComplementaryTicketEmailToUser(order, orderMap);
+    const mailResponse = await sendComplementaryTicketEmailToUser(
+      order,
+      orderMap
+    );
 
-    console.log("Added complementary order: " + order.id);
+    console.log('Added complementary order: ' + order.id);
 
     return response.status(200).json(prismaOrder);
   } catch (e) {
     console.error('Request error', e);
-    return response.status(500).json({ error: 'Error adding complementary order' });
+    return response
+      .status(500)
+      .json({ error: 'Error adding complementary order' });
   }
-
 }
 
 async function getOrders(email, request, response) {
@@ -148,15 +164,15 @@ async function getOrdersForUser(response, userEmail) {
     const orders = await prisma.orders.findMany({
       where: {
         email: userEmail,
-        status: 'COMPLETED'
+        status: 'COMPLETED',
       },
       include: {
         tickets: {
           include: {
             ticketType: true,
-          }
+          },
         },
-        event: true
+        event: true,
       },
     });
     return response.status(200).json(orders);
@@ -172,15 +188,15 @@ async function getOrderById(response, orderId, userEmail) {
       where: {
         id: orderId,
         email: userEmail,
-        status: 'COMPLETED'
+        status: 'COMPLETED',
       },
       include: {
         tickets: {
           include: {
             ticketType: true,
-          }
+          },
         },
-        event: true
+        event: true,
       },
     });
     return response.status(200).json(order);
@@ -195,16 +211,16 @@ async function getOrdersForEvent(response, eventId) {
     const orders = await prisma.orders.findMany({
       where: {
         eventId: eventId,
-        status: 'COMPLETED'
+        status: 'COMPLETED',
       },
       include: {
         tickets: {
           include: {
             ticketType: true,
-          }
+          },
         },
         event: true,
-        user: true
+        user: true,
       },
     });
     return response.status(200).json(orders);

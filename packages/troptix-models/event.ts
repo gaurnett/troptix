@@ -1,5 +1,5 @@
-import { generateId } from "./idHelper";
-import { TicketType } from "./ticketType";
+import { generateId } from './idHelper';
+import { TicketType } from './ticketType';
 import uuid from 'react-native-uuid';
 
 export class Event {
@@ -20,17 +20,17 @@ export class Event {
   endDate: Date;
 
   // Location Details
-  venue: string
-  address: string
-  country: string
-  countryCode: string
-  latitude: number
-  longitude: number
+  venue: string;
+  address: string;
+  country: string;
+  countryCode: string;
+  latitude: number;
+  longitude: number;
 
   // Ticket Details
   ticketTypes: TicketType[];
 
-  constructor(organizerUserId: string = "") {
+  constructor(organizerUserId: string = '') {
     this.id = generateId();
     this.organizerUserId = organizerUserId;
 
@@ -58,7 +58,7 @@ export function getEventsFromRequest(e: Object[]): Event[] {
   e.forEach((event) => {
     let eventObject = Object.assign(new Event(), event);
     events.push(eventObject);
-  })
+  });
 
   return events;
 }

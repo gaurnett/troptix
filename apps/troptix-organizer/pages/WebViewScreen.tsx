@@ -5,10 +5,8 @@ export default function WebViewScreen({ route }) {
   const { url } = route.params;
 
   return (
-    <View style={{ backgroundColor: 'white', height: '100%', }}>
-      <WebView
-        source={{ uri: url }}
-      />
+    <View style={{ backgroundColor: 'white', height: '100%' }}>
+      <WebView source={{ uri: url }} />
     </View>
-  )
+  );
 }

@@ -1,11 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import { prodUrl } from "./constants";
+import { useQuery } from '@tanstack/react-query';
+import { prodUrl } from './constants';
 
 export enum RequestType {
-  GET_EVENTS_ALL = "GET_EVENTS_ALL",
-  GET_EVENTS_BY_ID = "GET_EVENTS_BY_ID",
-  GET_EVENTS_BY_ORGANIZER = "GET_EVENTS_BY_ORGANIZER",
-  GET_EVENTS_SCANNABLE_BY_ORGANIZER = "GET_EVENTS_SCANNABLE_BY_ORGANIZER",
+  GET_EVENTS_ALL = 'GET_EVENTS_ALL',
+  GET_EVENTS_BY_ID = 'GET_EVENTS_BY_ID',
+  GET_EVENTS_BY_ORGANIZER = 'GET_EVENTS_BY_ORGANIZER',
+  GET_EVENTS_SCANNABLE_BY_ORGANIZER = 'GET_EVENTS_SCANNABLE_BY_ORGANIZER',
 }
 export type GetEventsRequestType = {
   requestType: keyof typeof RequestType;
@@ -16,21 +16,23 @@ export type GetEventsRequestType = {
 export async function eventFetcher({
   requestType,
   id,
-  jwtToken
+  jwtToken,
 }: GetEventsRequestType): Promise<any> {
   let url = prodUrl + `/api/events?getEventsType=${requestType}`;
 
-  if (requestType === RequestType.GET_EVENTS_BY_ID
-    || requestType === RequestType.GET_EVENTS_BY_ORGANIZER
-    || requestType === RequestType.GET_EVENTS_SCANNABLE_BY_ORGANIZER) {
+  if (
+    requestType === RequestType.GET_EVENTS_BY_ID ||
+    requestType === RequestType.GET_EVENTS_BY_ORGANIZER ||
+    requestType === RequestType.GET_EVENTS_SCANNABLE_BY_ORGANIZER
+  ) {
     url += `&id=${id}`;
   }
 
   return await fetch(url, {
-    method: "GET",
+    method: 'GET',
     headers: {
       Authorization: `Bearer ${jwtToken}`,
-    }
+    },
   })
     .then(async (response) => {
       if (response.ok) {

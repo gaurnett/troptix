@@ -1,9 +1,25 @@
 import { useRef, useState } from 'react';
-import { Keyboard, SafeAreaView, ScrollView, TouchableWithoutFeedback } from 'react-native';
-import { Button, Colors, Image, Text, TextField, View } from 'react-native-ui-lib';
+import {
+  Keyboard,
+  SafeAreaView,
+  ScrollView,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import {
+  Button,
+  Colors,
+  Image,
+  Text,
+  TextField,
+  View,
+} from 'react-native-ui-lib';
 import { auth } from 'troptix-firebase';
-import { GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
-import * as authentication from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  createUserWithEmailAndPassword,
+} from 'firebase/auth';
+import * as authentication from 'firebase/auth';
 import CustomTextField from '../../components/CustomTextField';
 import { TropTixResponse, addUser } from 'troptix-api';
 import { User } from 'troptix-models';
@@ -40,31 +56,40 @@ export default function SignUpWithEmailScreen({ route, navigation }) {
       .then(async (result) => {
         const userResult = result.user;
         const user = new User();
-        user.id = userResult.uid
+        user.id = userResult.uid;
         user.name = name;
         user.email = userResult.email;
         const response = await addUser(user);
-        console.log("[createUserWithEmailAndPassword] response: ", response);
-      }).catch((error) => {
+        console.log('[createUserWithEmailAndPassword] response: ', response);
+      })
+      .catch((error) => {
         // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log("[createUserWithEmailAndPassword] ", errorCode, " ", errorMessage)
-      })
+        console.log(
+          '[createUserWithEmailAndPassword] ',
+          errorCode,
+          ' ',
+          errorMessage
+        );
+      });
   }
 
   return (
-    <TouchableWithoutFeedback
-      onPress={Keyboard.dismiss}
-      accessible={false}>
-      <View paddingR-32 paddingL-32 style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View
+        paddingR-32
+        paddingL-32
+        style={{ flex: 1, alignItems: 'center', backgroundColor: 'white' }}
+      >
         <Image
-          resizeMode='cover'
+          resizeMode="cover"
           height={150}
           width={150}
-          source={require('../../assets/logo/logo_v1.png')} />
+          source={require('../../assets/logo/logo_v1.png')}
+        />
 
-        <View width={"100%"}>
+        <View width={'100%'}>
           <CustomTextField
             name="name"
             label="Name"
@@ -75,7 +100,7 @@ export default function SignUpWithEmailScreen({ route, navigation }) {
           />
         </View>
 
-        <View width={"100%"}>
+        <View width={'100%'}>
           <CustomTextField
             name="email"
             label="Email Address"
@@ -86,7 +111,7 @@ export default function SignUpWithEmailScreen({ route, navigation }) {
           />
         </View>
 
-        <View width={"100%"}>
+        <View width={'100%'}>
           <CustomTextField
             name="password"
             label="Password"
@@ -98,7 +123,7 @@ export default function SignUpWithEmailScreen({ route, navigation }) {
           />
         </View>
 
-        <View width={"100%"}>
+        <View width={'100%'}>
           <CustomTextField
             name="confirmPassword"
             label="Confirm Password"
@@ -115,8 +140,11 @@ export default function SignUpWithEmailScreen({ route, navigation }) {
           marginT-16
           borderRadius={25}
           color={Colors.white}
-          style={{ backgroundColor: '#FF7043', height: 50, width: '100%' }}>
-          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>Sign up</Text>
+          style={{ backgroundColor: '#FF7043', height: 50, width: '100%' }}
+        >
+          <Text style={{ color: '#ffffff', fontSize: 16 }} marginL-10>
+            Sign up
+          </Text>
         </Button>
       </View>
     </TouchableWithoutFeedback>

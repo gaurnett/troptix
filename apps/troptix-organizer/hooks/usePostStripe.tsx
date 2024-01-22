@@ -1,10 +1,10 @@
-import { useMutation } from "@tanstack/react-query";
-import { prodUrl } from "./constants";
-import { Charge } from "./types/Charge";
-import { Checkout } from "./types/Checkout";
+import { useMutation } from '@tanstack/react-query';
+import { prodUrl } from './constants';
+import { Charge } from './types/Charge';
+import { Checkout } from './types/Checkout';
 
 export enum PostStripeType {
-  CREATE_CHARGE = "CREATE_CHARGE",
+  CREATE_CHARGE = 'CREATE_CHARGE',
 }
 
 export interface PostStripeRequest {
@@ -21,51 +21,45 @@ export interface PaymentIntent {
 
 export function useCreatePaymentIntent() {
   return useMutation({
-    mutationFn: ({
-      checkout,
-    }: {
-      checkout: Checkout;
-    }) => createPaymentIntent({ checkout })
+    mutationFn: ({ checkout }: { checkout: Checkout }) =>
+      createPaymentIntent({ checkout }),
   });
 }
 
 function createCharge(checkout: Checkout): Charge {
   const discount = checkout?.discountedTotal as number;
   const totalPrice = checkout?.total as number;
-  const total = checkout.promotionApplied
-    ? discount * 100
-    : totalPrice * 100;
+  const total = checkout.promotionApplied ? discount * 100 : totalPrice * 100;
 
   const charge: Charge = {
     total,
     userId: checkout.userId as string,
-    name: checkout?.firstName + " " + checkout?.lastName,
-    email: checkout.email
+    name: checkout?.firstName + ' ' + checkout?.lastName,
+    email: checkout.email,
   };
   return charge;
 }
 
-async function createPaymentIntent({
-  checkout,
-}: {
-  checkout: Checkout;
-}) {
+async function createPaymentIntent({ checkout }: { checkout: Checkout }) {
   return postStripe({
     type: PostStripeType.CREATE_CHARGE,
     charge: createCharge(checkout),
   });
 }
 
-export async function postStripe({ type, charge }: PostStripeRequest): Promise<PaymentIntent> {
+export async function postStripe({
+  type,
+  charge,
+}: PostStripeRequest): Promise<PaymentIntent> {
   try {
     let url = prodUrl + `/api/stripe`;
     const request = { type, charge };
 
     const response = await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),
     });
@@ -77,7 +71,7 @@ export async function postStripe({ type, charge }: PostStripeRequest): Promise<P
     const json = await response.json();
     return json;
   } catch (error) {
-    console.error("Error in postStripe:", error);
+    console.error('Error in postStripe:', error);
     throw error;
   }
 }

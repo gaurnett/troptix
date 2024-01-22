@@ -1,12 +1,12 @@
-import { TropTixContext } from "@/components/WebNavigator";
-import { Spinner } from "@/components/ui/spinner";
-import { useFetchOrderById } from "@/hooks/useOrders";
-import { getDateFormatter, getFormattedCurrency } from "@/lib/utils";
-import { Button, Result, Table, Typography } from "antd";
-import { ColumnsType } from "antd/es/table";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import { TropTixContext } from '@/components/WebNavigator';
+import { Spinner } from '@/components/ui/spinner';
+import { useFetchOrderById } from '@/hooks/useOrders';
+import { getDateFormatter, getFormattedCurrency } from '@/lib/utils';
+import { Button, Result, Table, Typography } from 'antd';
+import { ColumnsType } from 'antd/es/table';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { GetOrdersType } from 'troptix-api';
 
@@ -39,16 +39,22 @@ export default function OrderConfirmationPage() {
   } = useFetchOrderById({
     getOrdersType: GetOrdersType.GET_ORDER_BY_ID,
     id: orderId,
-    jwtToken: user?.jwtToken
+    jwtToken: user?.jwtToken,
   });
 
   useEffect(() => {
     if (!order || !user?.jwtToken) return;
 
     const orderMap = new Map<string, any>();
-    order.tickets.forEach(ticket => {
-      const ticketId = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.id;
-      const ticketName = ticket.ticketsType === "COMPLEMENTARY" ? "Complementary" : ticket.ticketType.name;
+    order.tickets.forEach((ticket) => {
+      const ticketId =
+        ticket.ticketsType === 'COMPLEMENTARY'
+          ? 'Complementary'
+          : ticket.ticketType.id;
+      const ticketName =
+        ticket.ticketsType === 'COMPLEMENTARY'
+          ? 'Complementary'
+          : ticket.ticketType.name;
 
       if (orderMap.has(ticketId)) {
         const orderRow = orderMap.get(ticketId);
@@ -71,16 +77,18 @@ export default function OrderConfirmationPage() {
       }
     });
 
-    setData(Array.from(orderMap.values()).map((value) => {
-      return {
-        ...value,
-        formattedTotal: getFormattedCurrency(value.total) + " USD",
-        formattedFee: getFormattedCurrency(value.fee),
-        formattedSubtotal: getFormattedCurrency(value.subtotal),
-      } as any
-    }));
+    setData(
+      Array.from(orderMap.values()).map((value) => {
+        return {
+          ...value,
+          formattedTotal: getFormattedCurrency(value.total) + ' USD',
+          formattedFee: getFormattedCurrency(value.fee),
+          formattedSubtotal: getFormattedCurrency(value.subtotal),
+        } as any;
+      })
+    );
     setIsFetchingOrders(false);
-  }, [order])
+  }, [order]);
 
   const columns: ColumnsType<DataType> = [
     {
@@ -108,18 +116,20 @@ export default function OrderConfirmationPage() {
   function renderTicketRow(label, value) {
     return (
       <div className="mt-2 mb-2">
-        <label className="block text-gray-800 text-base font-bold">{label}</label>
+        <label className="block text-gray-800 text-base font-bold">
+          {label}
+        </label>
         <p className="text-base">{value}</p>
       </div>
-    )
+    );
   }
 
   if (isPending) {
     return (
       <div className="mt-32">
-        <Spinner text={"Fetching Tickets"} />
+        <Spinner text={'Fetching Tickets'} />
       </div>
-    )
+    );
   }
 
   if (showSignInError) {
@@ -133,27 +143,24 @@ export default function OrderConfirmationPage() {
                 height={75}
                 className="w-auto"
                 style={{ objectFit: 'contain', width: 100 }}
-                src={"/icons/tickets.png"}
-                alt={"tickets image"} />
+                src={'/icons/tickets.png'}
+                alt={'tickets image'}
+              />
             </div>
           }
           title="Please sign in or sign up with the email used to view order confirmation"
           extra={
             <div>
-              <Link
-                href={{ pathname: "/auth/signin" }}
-                key={"login"}>
-                <Button
-                  className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+              <Link href={{ pathname: '/auth/signin' }} key={'login'}>
+                <Button className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
                   Log in
                 </Button>
               </Link>
-              <Link
-                href={{ pathname: "/auth/signup" }}
-                key={"signup"}>
+              <Link href={{ pathname: '/auth/signup' }} key={'signup'}>
                 <Button
-                  type='primary'
-                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
+                  type="primary"
+                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
+                >
                   Sign up
                 </Button>
               </Link>
@@ -172,23 +179,34 @@ export default function OrderConfirmationPage() {
         className="mt-32"
         subTitle="No order found with that Order ID."
       />
-    )
+    );
   }
 
   return (
     <div className="mt-32 md:mb-8 w-full md:max-w-3xl mx-auto">
       <div className="border px-4">
-        <div className='flex w-full md:max-w-2xl md:mx-auto my-6'>
+        <div className="flex w-full md:max-w-2xl md:mx-auto my-6">
           <div>
             {/* <Image src={"/logos/logo_v1.png"} width={75} height={75} alt='troptix-logo' /> */}
           </div>
           <div className="w-full text-right my-auto">
-            <div className="text-sm md:text-md font-bold">Order #{String(orderId).toUpperCase()}</div>
+            <div className="text-sm md:text-md font-bold">
+              Order #{String(orderId).toUpperCase()}
+            </div>
             <div className="text-sm md:text-md font-bold">{order.name}</div>
-            <div className="text-sm md:text-md font-bold">{new Date(order.createdAt).toDateString()}</div>
+            <div className="text-sm md:text-md font-bold">
+              {new Date(order.createdAt).toDateString()}
+            </div>
           </div>
         </div>
-        <div className="mx-4 text-center text-4xl font-extrabold leading-tighter tracking-tighter mb-8" data-aos="zoom-y-out"><span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">{order.event.name}</span></div>
+        <div
+          className="mx-4 text-center text-4xl font-extrabold leading-tighter tracking-tighter mb-8"
+          data-aos="zoom-y-out"
+        >
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400">
+            {order.event.name}
+          </span>
+        </div>
 
         <div className="w-full md:max-w-2xl mx-auto">
           <div className="md:flex">
@@ -199,13 +217,20 @@ export default function OrderConfirmationPage() {
                 className="w-auto"
                 style={{ objectFit: 'cover', maxWidth: 250, maxHeight: 250 }}
                 src={order.event.imageUrl}
-                alt={"event flyer image"} />
+                alt={'event flyer image'}
+              />
             </div>
             <div className="w-full md:ml-8 mt-8 md:mt-0">
-              {renderTicketRow("Start Date", getDateFormatter(new Date(order.event.startDate)))}
-              {renderTicketRow("End Date", getDateFormatter(new Date(order.event.endDate)))}
-              {renderTicketRow("Event Venue", order.event.venue)}
-              {renderTicketRow("Event Address", order.event.address)}
+              {renderTicketRow(
+                'Start Date',
+                getDateFormatter(new Date(order.event.startDate))
+              )}
+              {renderTicketRow(
+                'End Date',
+                getDateFormatter(new Date(order.event.endDate))
+              )}
+              {renderTicketRow('Event Venue', order.event.venue)}
+              {renderTicketRow('Event Address', order.event.address)}
             </div>
           </div>
         </div>
@@ -214,19 +239,22 @@ export default function OrderConfirmationPage() {
           <div className="mx-auto">
             <div className="flex justify-center mt-8 mx-auto w-full">
               <div className="text-center justify-center">
-                <Link className="mx-auto text-center" href={{ pathname: '/tickets', query: { orderId: orderId } }}>
+                <Link
+                  className="mx-auto text-center"
+                  href={{ pathname: '/tickets', query: { orderId: orderId } }}
+                >
                   <div className="w-full flex justify-center text-center">
                     <Image
                       width={50}
                       height={50}
                       className="w-auto"
                       style={{ objectFit: 'contain' }}
-                      src={"/icons/tickets.png"}
-                      alt={"tickets image"} />
+                      src={'/icons/tickets.png'}
+                      alt={'tickets image'}
+                    />
                   </div>
                   <div className="mt-2">View your tickets</div>
                 </Link>
-
               </div>
             </div>
           </div>
@@ -244,8 +272,8 @@ export default function OrderConfirmationPage() {
                   summary={(pageData) => {
                     let totalSubtotal = 0;
                     let totalFees = 0;
-                    let total = 0
-                    let totalQuantity = 0
+                    let total = 0;
+                    let totalQuantity = 0;
 
                     pageData.forEach(({ quantity, subtotal, fee }) => {
                       totalQuantity += quantity;
@@ -257,7 +285,9 @@ export default function OrderConfirmationPage() {
                     return (
                       <>
                         <Table.Summary.Row>
-                          <Table.Summary.Cell className="font-bold" index={0}>Total</Table.Summary.Cell>
+                          <Table.Summary.Cell className="font-bold" index={0}>
+                            Total
+                          </Table.Summary.Cell>
                           <Table.Summary.Cell className="font-bold" index={1}>
                             <Text>{totalQuantity}</Text>
                           </Table.Summary.Cell>
@@ -283,7 +313,9 @@ export default function OrderConfirmationPage() {
         <div className="w-full md:max-w-2xl mx-auto">
           <div className="md:flex md:justify-between">
             <div className="mb-4 md:mr-4 w-full">
-              <p className="block text-gray-800 text-base font-base">Email: {order.email}</p>
+              <p className="block text-gray-800 text-base font-base">
+                Email: {order.email}
+              </p>
             </div>
           </div>
         </div>

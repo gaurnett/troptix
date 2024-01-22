@@ -1,20 +1,22 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { DelegatedUser } from "./types/DelegatedUser";
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { DelegatedUser } from './types/DelegatedUser';
 
 export const prodUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
 
 export interface PostDelegatedUserRequest {
   user?: DelegatedUser;
-  jwtToken?: string
-  editingUser?: boolean
+  jwtToken?: string;
+  editingUser?: boolean;
 }
 
 export interface DeleteDelegatedUserRequest {
   id?: string;
-  jwtToken?: string
+  jwtToken?: string;
 }
 
-export async function mutateDelegatedUser(request: PostDelegatedUserRequest): Promise<any> {
+export async function mutateDelegatedUser(
+  request: PostDelegatedUserRequest
+): Promise<any> {
   const url = prodUrl + '/api/delegatedUsers';
 
   return await fetch(url, {
@@ -24,9 +26,9 @@ export async function mutateDelegatedUser(request: PostDelegatedUserRequest): Pr
       'Content-Type': 'application/json',
       Authorization: `Bearer ${request.jwtToken}`,
     },
-    body: JSON.stringify(request.user)
+    body: JSON.stringify(request.user),
   })
-    .then(async response => {
+    .then(async (response) => {
       const message = await response.json();
       if (!response.ok) {
         throw new Error(message.error);
@@ -34,12 +36,14 @@ export async function mutateDelegatedUser(request: PostDelegatedUserRequest): Pr
 
       return message;
     })
-    .catch(error => {
+    .catch((error) => {
       throw error;
     });
 }
 
-export async function deleteDelegatedUser(request: DeleteDelegatedUserRequest): Promise<any> {
+export async function deleteDelegatedUser(
+  request: DeleteDelegatedUserRequest
+): Promise<any> {
   const url = prodUrl + `/api/delegatedUsers?id=${request.id}`;
 
   return await fetch(url, {
@@ -48,9 +52,9 @@ export async function deleteDelegatedUser(request: DeleteDelegatedUserRequest): 
       'Content-Type': 'application/json',
       Authorization: `Bearer ${request.jwtToken}`,
     },
-    body: JSON.stringify({ id: request.id })
+    body: JSON.stringify({ id: request.id }),
   })
-    .then(async response => {
+    .then(async (response) => {
       const message = await response.json();
       if (!response.ok) {
         throw new Error(message.error);
@@ -58,33 +62,33 @@ export async function deleteDelegatedUser(request: DeleteDelegatedUserRequest): 
 
       return message;
     })
-    .catch(error => {
+    .catch((error) => {
       throw error;
     });
 }
 
-
 export function usePostDelegatedUser() {
   return useMutation({
-    mutationFn: (
-      request: PostDelegatedUserRequest
-    ) => mutateDelegatedUser(request)
+    mutationFn: (request: PostDelegatedUserRequest) =>
+      mutateDelegatedUser(request),
   });
 }
 
 export function useDeleteDelegatedUser() {
   return useMutation({
-    mutationFn: (
-      request: DeleteDelegatedUserRequest
-    ) => deleteDelegatedUser(request)
+    mutationFn: (request: DeleteDelegatedUserRequest) =>
+      deleteDelegatedUser(request),
   });
 }
 
-export async function delegatedUserFetcher(eventId: string, jwtToken: string): Promise<any> {
+export async function delegatedUserFetcher(
+  eventId: string,
+  jwtToken: string
+): Promise<any> {
   const url = prodUrl + `/api/delegatedUsers?eventId=${eventId}`;
 
   return await fetch(url, {
-    method: "GET",
+    method: 'GET',
     headers: {
       Authorization: `Bearer ${jwtToken}`,
     },

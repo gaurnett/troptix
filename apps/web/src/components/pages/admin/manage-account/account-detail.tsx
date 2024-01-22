@@ -1,5 +1,5 @@
-import { CustomInput } from "@/components/ui/input";
-import { Button, Form } from "antd";
+import { CustomInput } from '@/components/ui/input';
+import { Button, Form } from 'antd';
 
 export default function AccountDetails({ adminUser, setAdminUser }) {
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -9,9 +9,9 @@ export default function AccountDetails({ adminUser, setAdminUser }) {
     }));
   }
 
-  async function onFinish(values: any) { }
+  async function onFinish(values: any) {}
 
-  const onFinishFailed = (errorInfo: any) => { };
+  const onFinishFailed = (errorInfo: any) => {};
 
   return (
     <div className="w-full md:max-w-2xl mx-auto">
@@ -21,22 +21,22 @@ export default function AccountDetails({ adminUser, setAdminUser }) {
             <div className="mb-4 md:mr-4 w-full">
               <CustomInput
                 value={adminUser.firstName}
-                name={"firstName"}
-                id={"firstName"}
-                label={"First Name"}
-                type={"text"}
-                placeholder={"John"}
+                name={'firstName'}
+                id={'firstName'}
+                label={'First Name'}
+                type={'text'}
+                placeholder={'John'}
                 handleChange={handleChange}
               />
             </div>
             <div className="mb-4 md:ml-4 w-full">
               <CustomInput
                 value={adminUser.lastName}
-                name={"lastName"}
-                id={"lastName"}
-                label={"Last Name"}
-                type={"text"}
-                placeholder={"Doe"}
+                name={'lastName'}
+                id={'lastName'}
+                label={'Last Name'}
+                type={'text'}
+                placeholder={'Doe'}
                 handleChange={handleChange}
               />
             </div>
@@ -46,11 +46,11 @@ export default function AccountDetails({ adminUser, setAdminUser }) {
               <CustomInput
                 value={adminUser.email}
                 disabled={true}
-                name={"organizer"}
-                id={"organizer"}
-                label={"Email"}
-                type={"text"}
-                placeholder={"johndoe@gmail.com"}
+                name={'organizer'}
+                id={'organizer'}
+                label={'Email'}
+                type={'text'}
+                placeholder={'johndoe@gmail.com'}
                 handleChange={handleChange}
                 required={true}
               />
@@ -60,11 +60,11 @@ export default function AccountDetails({ adminUser, setAdminUser }) {
             <div className="w-full px-3">
               <CustomInput
                 value={adminUser.telephoneNumber}
-                name={"organizer"}
-                id={"organizer"}
-                label={"Telephone Number"}
-                type={"text"}
-                placeholder={"1234567890"}
+                name={'organizer'}
+                id={'organizer'}
+                label={'Telephone Number'}
+                type={'text'}
+                placeholder={'1234567890'}
                 handleChange={handleChange}
                 required={true}
               />

@@ -1,28 +1,37 @@
-import { allowCors } from "../lib/auth";
-import { getAllEventsQuery, getEventByIdQuery, getEventsByOrganizerIdQuery, getEventsScannableByOrganizerIdQuery, getPrismaCreateStarterEventQuery, getPrismaUpdateEventQuery } from "../lib/eventHelper";
-import prisma from "../prisma/prisma";
+import { allowCors } from '../lib/auth';
+import {
+  getAllEventsQuery,
+  getEventByIdQuery,
+  getEventsByOrganizerIdQuery,
+  getEventsScannableByOrganizerIdQuery,
+  getPrismaCreateStarterEventQuery,
+  getPrismaUpdateEventQuery,
+} from '../lib/eventHelper';
+import prisma from '../prisma/prisma';
 
 async function handler(request, response) {
   const { body, method } = request;
 
   if (method === undefined) {
-    return response.status(500).json({ error: 'No method found for events endpoint' });
+    return response
+      .status(500)
+      .json({ error: 'No method found for events endpoint' });
   }
 
-  if (method === "OPTIONS") {
+  if (method === 'OPTIONS') {
     return response.status(200).end();
   }
 
   switch (method) {
-    case "POST":
+    case 'POST':
       return await addEvent(body, response);
-    case "GET":
+    case 'GET':
       const getEventType = request.query.getEventsType;
       const id = request.query.id;
       return await getEvents(getEventType, id, request, response);
-    case "PUT":
+    case 'PUT':
       return await updateEvent(body, response);
-    case "DELETE":
+    case 'DELETE':
       break;
     default:
       break;
@@ -75,7 +84,9 @@ async function getEventsByOrganizerId(request, response) {
     return response.status(200).json(events);
   } catch (e) {
     console.error('Request error', e);
-    return response.status(500).json({ error: 'Error fetching organizer events' });
+    return response
+      .status(500)
+      .json({ error: 'Error fetching organizer events' });
   }
 }
 
@@ -93,7 +104,9 @@ async function getEventsScannableByOrganizerId(request, response) {
 
 async function addEvent(body, response) {
   if (body === undefined || body.event === undefined) {
-    return response.status(500).json({ error: 'No event body found in POST request' });
+    return response
+      .status(500)
+      .json({ error: 'No event body found in POST request' });
   }
 
   try {
@@ -101,7 +114,9 @@ async function addEvent(body, response) {
       data: getPrismaCreateStarterEventQuery(body.event),
     });
 
-    return response.status(200).json({ error: null, message: "Successfully added event" });
+    return response
+      .status(200)
+      .json({ error: null, message: 'Successfully added event' });
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error adding event' });
@@ -110,7 +125,9 @@ async function addEvent(body, response) {
 
 async function updateEvent(body, response) {
   if (body === undefined || body.event === undefined) {
-    return response.status(500).json({ error: 'No body found in POST request' });
+    return response
+      .status(500)
+      .json({ error: 'No body found in POST request' });
   }
 
   try {
@@ -121,7 +138,9 @@ async function updateEvent(body, response) {
       data: getPrismaUpdateEventQuery(body.event),
     });
 
-    return response.status(200).json({ error: null, message: "Successfully updated event and tickets" });
+    return response
+      .status(200)
+      .json({ error: null, message: 'Successfully updated event and tickets' });
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error updating event' });

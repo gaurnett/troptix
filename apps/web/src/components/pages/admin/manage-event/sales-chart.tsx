@@ -27,7 +27,7 @@ export const options = {
   plugins: {
     legend: {
       position: 'top' as const,
-      display: false
+      display: false,
     },
     title: {
       display: true,
@@ -45,11 +45,15 @@ export default function SalesChart({ orders }) {
       let orderCounts = new Map<string, number>();
       orders
         .sort((a: any, b: any) => {
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          return (
+            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
         })
         .forEach((order: any) => {
           const date = format(new Date(order.createdAt), 'MMM dd');
-          const currentSalesTotal = orderCounts.has(date) ? orderCounts.get(date) : 0;
+          const currentSalesTotal = orderCounts.has(date)
+            ? orderCounts.get(date)
+            : 0;
           orderCounts.set(date, currentSalesTotal + order.total);
         });
 
@@ -63,19 +67,20 @@ export default function SalesChart({ orders }) {
             backgroundColor: '#388E3C',
           },
         ],
-      })
+      });
       setIsSettingData(false);
     }
 
     mapOrdersToDateSales(orders);
-  }, [orders])
+  }, [orders]);
 
   return (
     <div>
-      {
-        data !== null && !isSettingData ?
-          <Line options={options} data={data} /> : <></>
-      }
+      {data !== null && !isSettingData ? (
+        <Line options={options} data={data} />
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

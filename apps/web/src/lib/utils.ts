@@ -1,15 +1,15 @@
-import { clsx, type ClassValue } from "clsx";
+import { clsx, type ClassValue } from 'clsx';
 import { formatInTimeZone } from 'date-fns-tz';
-import DOMPurify from "dompurify";
+import DOMPurify from 'dompurify';
 import ShortUniqueId from 'short-unique-id';
-import { twMerge } from "tailwind-merge";
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function getDateFormatter(date: Date) {
-  return `${formatInTimeZone(date, 'America/New_York', "MMM dd, yyyy, h:mm a")}`;
+  return `${formatInTimeZone(date, 'America/New_York', 'MMM dd, yyyy, h:mm a')}`;
 }
 
 export function getFormattedCurrency(price) {
@@ -24,7 +24,7 @@ export function getFormattedCurrency(price) {
 export function generateId() {
   const uid = new ShortUniqueId({
     dictionary: 'alphanum_upper',
-    length: 12
+    length: 12,
   });
 
   return uid.rnd();
@@ -42,7 +42,7 @@ export function isValidEmail(email) {
     .match(
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
-};
+}
 
 export function isInputBad(value: string): boolean {
   const cleanValue = DOMPurify.sanitize(value);

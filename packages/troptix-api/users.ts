@@ -1,4 +1,4 @@
-import { TropTixResponse, prodUrl } from "./api";
+import { TropTixResponse, prodUrl } from './api';
 import { SocialMediaAccount, User } from '../troptix-models';
 
 export enum GetUsersType {
@@ -20,8 +20,12 @@ export interface PutUsersRequest {
   user?: User;
 }
 
-export async function getUsers(request: GetUsersRequest): Promise<TropTixResponse> {
-  const url = prodUrl + `/api/users?getUsersType=${request.getUsersType}&id=${request.userId}`;
+export async function getUsers(
+  request: GetUsersRequest
+): Promise<TropTixResponse> {
+  const url =
+    prodUrl +
+    `/api/users?getUsersType=${request.getUsersType}&id=${request.userId}`;
 
   const response = await fetch(url, {
     method: 'GET',
@@ -43,7 +47,7 @@ export async function addUser(user) {
     },
     body: JSON.stringify({
       user: user,
-    })
+    }),
   });
   const json = await response.text();
 
@@ -59,7 +63,7 @@ export async function putUsers(request: PutUsersRequest) {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(request)
+    body: JSON.stringify(request),
   });
 
   const json = await response.json();

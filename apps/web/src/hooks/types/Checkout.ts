@@ -1,4 +1,4 @@
-import { TicketsType } from "./Ticket";
+import { TicketsType } from './Ticket';
 
 export interface Checkout {
   id?: string;
@@ -26,7 +26,7 @@ export interface Checkout {
 
 export function initializeCheckout(user: any, eventId: string): Checkout {
   const checkout: Checkout = {
-    id: "",
+    id: '',
     eventId: eventId,
     userId: user?.id,
     firstName: user?.firstName,
@@ -39,15 +39,15 @@ export function initializeCheckout(user: any, eventId: string): Checkout {
     discountedTotal: 0,
     discountedFees: 0,
     promotionApplied: false,
-    telephoneNumber: "",
-    billingAddress1: "",
-    billingAddress2: "",
-    billingCity: "",
-    billingZip: "",
-    billingState: "",
-    billingCountry: "",
-    tickets: new Map()
-  }
+    telephoneNumber: '',
+    billingAddress1: '',
+    billingAddress2: '',
+    billingCity: '',
+    billingZip: '',
+    billingState: '',
+    billingCountry: '',
+    tickets: new Map(),
+  };
 
   return checkout;
 }
@@ -67,7 +67,7 @@ export interface CheckoutTicket {
 
 export function initializeCheckoutTicket(ticket): CheckoutTicket {
   const checkoutTicket: CheckoutTicket = {
-    id: "",
+    id: '',
     ticketTypeId: ticket.id,
     eventId: ticket.eventId,
     name: ticket.name,
@@ -76,8 +76,8 @@ export function initializeCheckoutTicket(ticket): CheckoutTicket {
     fees: 0,
     subtotal: 0,
     total: 0,
-    ticketType: TicketsType.PAID
-  }
+    ticketType: TicketsType.PAID,
+  };
 
   return checkoutTicket;
 }

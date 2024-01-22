@@ -1,9 +1,9 @@
-import SocialMedia from "@/components/pages/admin/manage-account/social-media";
-import { Spinner } from "@/components/ui/spinner";
-import { useFetchUser } from "@/hooks/useUser";
-import { Tabs, TabsProps, message } from "antd";
-import { useEffect, useState } from "react";
-import AccountDetails from "../../../components/pages/admin/manage-account/account-detail";
+import SocialMedia from '@/components/pages/admin/manage-account/social-media';
+import { Spinner } from '@/components/ui/spinner';
+import { useFetchUser } from '@/hooks/useUser';
+import { Tabs, TabsProps, message } from 'antd';
+import { useEffect, useState } from 'react';
+import AccountDetails from '../../../components/pages/admin/manage-account/account-detail';
 
 export default function ManageAccountPage() {
   const [messageApi, contextHolder] = message.useMessage();
@@ -17,17 +17,17 @@ export default function ManageAccountPage() {
     }
   }, [user]);
 
-  const items: TabsProps["items"] = [
+  const items: TabsProps['items'] = [
     {
-      key: "0",
-      label: "Account Details",
+      key: '0',
+      label: 'Account Details',
       children: (
         <AccountDetails adminUser={adminUser} setAdminUser={setAdminUser} />
       ),
     },
     {
-      key: "1",
-      label: "Social Media",
+      key: '1',
+      label: 'Social Media',
       children: (
         <SocialMedia adminUser={adminUser} setAdminUser={setAdminUser} />
       ),
@@ -52,7 +52,7 @@ export default function ManageAccountPage() {
           </div>
         ) : (
           <div className="mt-8">
-            <Spinner text={"Fetching User"} />
+            <Spinner text={'Fetching User'} />
           </div>
         )}
       </div>

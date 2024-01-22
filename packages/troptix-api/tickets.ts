@@ -1,4 +1,4 @@
-import { TropTixResponse, prodUrl } from "./api";
+import { TropTixResponse, prodUrl } from './api';
 
 export async function getTicketsForUser(userId) {
   const url = prodUrl + `/api/tickets?userId=${userId}`;
@@ -15,7 +15,7 @@ export async function getTicketsForUser(userId) {
 
 export async function scanTicket(id): Promise<TropTixResponse> {
   const tropTixResponse: TropTixResponse = new TropTixResponse();
-  var url = prodUrl + "/api/tickets";
+  var url = prodUrl + '/api/tickets';
 
   try {
     const response = await fetch(url, {
@@ -26,7 +26,7 @@ export async function scanTicket(id): Promise<TropTixResponse> {
       },
       body: JSON.stringify({
         id: id,
-      })
+      }),
     });
     const json = await response.json();
     tropTixResponse.response = json;

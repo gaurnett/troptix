@@ -1,12 +1,12 @@
-import { TropTixContext } from "@/components/WebNavigator";
-import { useQuery } from "@tanstack/react-query";
-import { useContext } from "react";
+import { TropTixContext } from '@/components/WebNavigator';
+import { useQuery } from '@tanstack/react-query';
+import { useContext } from 'react';
 
 export enum RequestType {
-  GET_EVENTS_ALL = "GET_EVENTS_ALL",
-  GET_EVENTS_BY_ID = "GET_EVENTS_BY_ID",
-  GET_EVENTS_BY_ORGANIZER = "GET_EVENTS_BY_ORGANIZER",
-  GET_EVENTS_SCANNABLE_BY_ORGANIZER = "GET_EVENTS_SCANNABLE_BY_ORGANIZER",
+  GET_EVENTS_ALL = 'GET_EVENTS_ALL',
+  GET_EVENTS_BY_ID = 'GET_EVENTS_BY_ID',
+  GET_EVENTS_BY_ORGANIZER = 'GET_EVENTS_BY_ORGANIZER',
+  GET_EVENTS_SCANNABLE_BY_ORGANIZER = 'GET_EVENTS_SCANNABLE_BY_ORGANIZER',
 }
 export type GetEventsRequestType = {
   requestType: keyof typeof RequestType;
@@ -21,7 +21,7 @@ export async function eventFetcher({
   requestType,
   id,
   jwtToken,
-  userId
+  userId,
 }: GetEventsRequestType): Promise<any> {
   let url = prodUrl + `/api/events?getEventsType=${requestType}`;
 
@@ -31,16 +31,19 @@ export async function eventFetcher({
   //   jwtToken = jwt.sign(generateJwtId(), jwtSecretKey as string);
   // }
 
-  if (requestType === RequestType.GET_EVENTS_BY_ID || requestType === RequestType.GET_EVENTS_BY_ORGANIZER) {
+  if (
+    requestType === RequestType.GET_EVENTS_BY_ID ||
+    requestType === RequestType.GET_EVENTS_BY_ORGANIZER
+  ) {
     url += `&id=${id}`;
   }
 
   if (userId) {
-    url += `&userId=${userId}`
+    url += `&userId=${userId}`;
   }
 
   return await fetch(url, {
-    method: "GET",
+    method: 'GET',
     // headers: {
     //   Authorization: `Bearer ${jwtToken}`,
     // }
@@ -60,7 +63,11 @@ export function useFetchAllEvents(initialData?) {
   const { user } = useContext(TropTixContext);
   const { isPending, isError, data, error } = useQuery({
     queryKey: [RequestType.GET_EVENTS_ALL],
-    queryFn: () => eventFetcher({ requestType: RequestType.GET_EVENTS_ALL, userId: user.id }),
+    queryFn: () =>
+      eventFetcher({
+        requestType: RequestType.GET_EVENTS_ALL,
+        userId: user.id,
+      }),
     initialData: initialData,
   });
 

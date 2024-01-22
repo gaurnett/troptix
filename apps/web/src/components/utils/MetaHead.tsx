@@ -1,5 +1,5 @@
-import Head from "next/head";
-import { ReactNode } from "react";
+import Head from 'next/head';
+import { ReactNode } from 'react';
 type MetaHeadProps = {
   title?: string;
   url?: string;
@@ -15,10 +15,10 @@ export const MetaHead = ({
   image,
   children,
 }: MetaHeadProps) => {
-  const defaultTitle = "Troptix";
-  const defaultDescription = "Troptix is a better way to get tickets";
+  const defaultTitle = 'Troptix';
+  const defaultDescription = 'Troptix is a better way to get tickets';
   const defaultImage =
-    "https://firebasestorage.googleapis.com/v0/b/troptix-prod.appspot.com/o/images%2Flogo_v1.png?alt=media&token=b4c2970f-1344-46b9-80d1-f5565ed93882"; // Replace with your default image path
+    'https://firebasestorage.googleapis.com/v0/b/troptix-prod.appspot.com/o/images%2Flogo_v1.png?alt=media&token=b4c2970f-1344-46b9-80d1-f5565ed93882'; // Replace with your default image path
 
   return (
     <Head>
@@ -42,7 +42,7 @@ export const MetaHead = ({
       <meta property="og:type" content="website" />
       <meta property="og:image" content={image || defaultImage} key="image" />
       <meta property="twitter:domain" content="usetroptix.com" />
-      <meta property="twitter:url" content={url || "usetroptix.com"} />
+      <meta property="twitter:url" content={url || 'usetroptix.com'} />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title || defaultTitle} />
       <meta
