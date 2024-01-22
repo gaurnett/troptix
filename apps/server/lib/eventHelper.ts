@@ -6,8 +6,8 @@ import {
   TicketStatus,
   TicketType,
 } from '@prisma/client';
-import prisma from '../prisma/prisma';
-import { adminUserIds } from './experimentHelper';
+import prisma from '../prisma/prisma.js';
+import { adminUserIds } from './experimentHelper.js';
 
 const prismaClient = prisma as PrismaClient;
 
@@ -64,7 +64,7 @@ export async function getEventsScannableByOrganizerIdQuery(userId: string) {
     },
   });
 
-  let scannedEvents = [];
+  let scannedEvents: any = [];
   if (scannableEvents.length !== 0) {
     scannableEvents.forEach((scannableEvent) => {
       scannedEvents.push(scannableEvent.event);
@@ -94,7 +94,7 @@ export async function getEventsByOrganizerIdQuery(userId: string) {
     },
   });
 
-  let ownerEvents = [];
+  let ownerEvents: any = [];
   if (ownedEvents.length !== 0) {
     ownedEvents.forEach((event) => {
       ownerEvents.push(event.event);
