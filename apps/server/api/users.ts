@@ -1,12 +1,13 @@
-import { allowCors } from '../lib/auth';
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import { allowCors } from '../lib/auth.js';
 import {
   getPrismaCreateUserQuery,
   getPrismaUpdateSocialMediaQuery,
   getPrismaUpdateUserQuery,
-} from '../lib/userHelper';
-import prisma from '../prisma/prisma';
+} from '../lib/userHelper.js';
+import prisma from '../prisma/prisma.js';
 
-async function handler(request, response) {
+async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -33,7 +34,7 @@ async function handler(request, response) {
   }
 }
 
-module.exports = allowCors(handler);
+export default allowCors(handler);
 
 async function addUser(body, response) {
   if (body === undefined || body.user === undefined) {

@@ -1,8 +1,9 @@
-import { allowCors } from '../lib/auth';
-import { getPrismaTicketTypeQuery } from '../lib/eventHelper';
-import prisma from '../prisma/prisma';
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import { allowCors } from '../lib/auth.js';
+import { getPrismaTicketTypeQuery } from '../lib/eventHelper.js';
+import prisma from '../prisma/prisma.js';
 
-async function handler(request, response) {
+async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -28,7 +29,7 @@ async function handler(request, response) {
   }
 }
 
-module.exports = allowCors(handler);
+export default allowCors(handler);
 
 async function getTicketTypes(request, response) {
   const getTicketTypesType = request.query.getTicketTypesType;
@@ -84,4 +85,4 @@ async function updateTicket(body, response) {
   }
 }
 
-async function scanTicket() {}
+async function scanTicket() { }

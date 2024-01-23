@@ -1,11 +1,12 @@
-import { allowCors, verifyUser } from '../lib/auth';
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import { allowCors, verifyUser } from '../lib/auth.js';
 import {
   deleteDelegatedUserQuery,
   getPrismaUpdateDelegatedUserQuery,
-} from '../lib/delegationHelper';
-import prisma from '../prisma/prisma';
+} from '../lib/delegationHelper.js';
+import prisma from '../prisma/prisma.js';
 
-async function handler(request, response) {
+async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
 
   if (!method) {
@@ -38,7 +39,7 @@ async function handler(request, response) {
   }
 }
 
-module.exports = allowCors(handler);
+export default allowCors(handler);
 
 async function getDelegatedUsers(eventId, response) {
   try {

@@ -62,7 +62,7 @@ export function useFetchUserOrders() {
 
   return {
     ...query,
-    showSignInError: !user,
+    showSignInError: !user.id,
   };
 }
 

@@ -1,9 +1,8 @@
-const sgMail = require('@sendgrid/mail');
+import SendGrid from '@sendgrid/mail';
 
-// stripe trigger payment_intent.succeeded
-// stripe listen --forward-to localhost:3001/api/orders
-
-sgMail.setApiKey(process.env.RESEND_DYNAMIC_TEMPLATE_API);
+const apiKey = process.env.RESEND_DYNAMIC_TEMPLATE_API as string;
+const sgMail = SendGrid;
+sgMail.setApiKey(apiKey);
 
 export async function sendContactUsForm(contact) {
   const msg = {
