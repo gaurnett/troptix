@@ -48,3 +48,13 @@ export function isInputBad(value: string): boolean {
   const cleanValue = DOMPurify.sanitize(value);
   return value !== cleanValue;
 }
+
+export function calculateFees(price) {
+  const fee = price * 0.06 + 0.3;
+  const tax = fee * 0.15;
+  return normalizePrice(fee + tax);
+}
+
+export function normalizePrice(price): number {
+  return Math.round(price * 100) / 100;
+}

@@ -1,11 +1,15 @@
 import { TropTixContext } from '@/components/WebNavigator';
-import { Checkout, initializeCheckout } from '@/hooks/types/Checkout';
-import { useCreateOrder } from '@/hooks/useOrders';
+import { Spinner } from '@/components/ui/spinner';
+import { Checkout, CheckoutTicket, initializeCheckout } from '@/hooks/types/Checkout';
+import { TicketType } from '@/hooks/types/Ticket';
+import { GetOrdersRequest, GetOrdersType, getOrders, useCreateOrder, useFetchPendingEventOrders } from '@/hooks/useOrders';
 import { useCreatePaymentIntent } from '@/hooks/usePostStripe';
+import { calculateFees, normalizePrice } from '@/lib/utils';
 import { ShoppingCartOutlined } from '@ant-design/icons';
-import { Button, Drawer, List, Steps, message } from 'antd';
+import { Button, Drawer, List, Steps, message, notification } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import CheckoutForm from './checkout';
+import { TicketOrders } from './ticket-modal';
 import TicketsCheckoutForm from './tickets-checkout-forms';
 
 export default function TicketDrawer({
@@ -13,12 +17,14 @@ export default function TicketDrawer({
   isTicketModalOpen,
   handleCancel,
 }) {
+  const eventId = event.id;
   const { user } = useContext(TropTixContext);
   const [messageApi, contextHolder] = message.useMessage();
 
   const [checkout, setCheckout] = useState<Checkout>(
-    initializeCheckout(user, event.id)
+    initializeCheckout(user, eventId)
   );
+  const [pendingOrders, setPendingOrders] = useState<Map<string, TicketOrders>>();
   const [checkoutPreviousButtonClicked, setCheckoutPreviousButtonClicked] =
     useState(false);
   const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);
@@ -28,13 +34,22 @@ export default function TicketDrawer({
   const [canShowMessage, setCanShowMessage] = useState(true);
   const [orderId, setOrderId] = useState('');
   const [clientSecret, setClientSecret] = useState<any>();
+  const [promotion, setPromotion] = useState<any>();
 
   const createPaymentIntent = useCreatePaymentIntent();
   const createOrder = useCreateOrder();
 
   useEffect(() => {
-    setCheckout(initializeCheckout(user, event.id));
-  }, [user, event.id]);
+    setCheckout(initializeCheckout(user, eventId));
+  }, [user, eventId]);
+
+  const { isPending: isFetchingPendingOrdersPending, data: ordersPending } = useFetchPendingEventOrders(eventId);
+
+  useEffect(() => {
+    if (!isFetchingPendingOrdersPending) {
+      setPendingOrders(ordersPending);
+    }
+  }, [isFetchingPendingOrdersPending, ordersPending]);
 
   const checkoutSteps = [
     {
@@ -42,6 +57,8 @@ export default function TicketDrawer({
       content: (
         <TicketsCheckoutForm
           event={event}
+          promotion={promotion}
+          setPromotion={setPromotion}
           checkout={checkout}
           setCheckout={setCheckout}
         />
@@ -75,6 +92,105 @@ export default function TicketDrawer({
       document.body.style.overflow = 'unset';
     }
   }, [isTicketModalOpen]);
+
+  async function checkOrderValidity(): Promise<boolean> {
+    const pendingOrderRequest: GetOrdersRequest = {
+      getOrdersType: GetOrdersType.GET_PENDING_ORDERS_FOR_EVENT,
+      id: eventId,
+      jwtToken: user.jwtToken
+    }
+
+    return getOrders(pendingOrderRequest)
+      .then((orders: [string, TicketOrders][]) => {
+        let validOrder = true;
+        for (let [key, value] of orders) {
+          const quantitySold = value.quantitySold as number;
+          const pendingOrder = value.pendingOrders as number;
+          const quantity = value.quantity as number;
+          const selectedTicket = checkout.tickets.get(key);
+
+          if (selectedTicket) {
+            const quantitySelected = selectedTicket.quantitySelected;
+            const currentPendingAndSoldTotal = pendingOrder + quantitySold;
+            if (currentPendingAndSoldTotal === quantity) {
+              validOrder = false;
+              updateTicketQuantities(value.ticket, quantitySelected);
+            }
+
+            if (currentPendingAndSoldTotal + quantitySelected > quantity) {
+              validOrder = false;
+              updateTicketQuantities(value.ticket, (currentPendingAndSoldTotal + quantitySelected) - quantity);
+            }
+          }
+        }
+
+        return validOrder;
+      }).catch(error => {
+        return false;
+      });
+  }
+
+  function getPromotionPrice(price) {
+    if (checkout.promotionApplied && promotion) {
+      switch (promotion.promotionType) {
+        case 'PERCENTAGE':
+          return price - price * (promotion.value / 100);
+        case 'DOLLAR_AMOUNT':
+          return price - promotion.value;
+      }
+    }
+
+    return price;
+  }
+
+  function updateTicketQuantities(ticket, quantity) {
+    const ticketTypeId = ticket.ticketTypeId;
+    const ticketTypes = event.ticketTypes as TicketType[];
+    const ticketType = ticketTypes.find(value => value.id = ticketTypeId);
+
+    if (!ticketType) {
+      return;
+    }
+
+    const price = normalizePrice(ticketType.price);
+    var ticketSubtotal = price;
+    var ticketFees =
+      ticketType.ticketingFees === 'PASS_TICKET_FEES' ? calculateFees(price) : 0;
+
+    const updatedTickets = checkout.tickets;
+    if (checkout.tickets.has(ticketTypeId)) {
+      const checkoutTicket = checkout.tickets.get(ticketTypeId) as CheckoutTicket;
+      const quantitySelected = checkoutTicket.quantitySelected;
+      checkoutTicket.quantitySelected = quantitySelected - quantity;
+
+      if (checkoutTicket.quantitySelected === 0) {
+        updatedTickets.delete(ticketTypeId);
+      } else {
+        updatedTickets.set(ticketTypeId, checkoutTicket);
+      }
+    }
+
+    var checkoutSubtotal = normalizePrice(checkout.subtotal) - (ticketSubtotal * quantity);
+    var checkoutFees = normalizePrice(checkout.fees) - (ticketFees * quantity);
+    var checkoutTotal = normalizePrice(checkoutSubtotal + checkoutFees);
+
+    setCheckout((previousOrder) => ({
+      ...previousOrder,
+      tickets: updatedTickets,
+      total: checkoutTotal,
+      fees: checkoutFees,
+      subtotal: checkoutSubtotal,
+    }));
+
+    if (checkout.promotionApplied) {
+      setCheckout((previousOrder) => ({
+        ...previousOrder,
+        ['discountedSubtotal']: getPromotionPrice(checkoutSubtotal),
+        ['discountedFees']: getPromotionPrice(checkoutFees),
+        ['discountedTotal']: getPromotionPrice(checkoutTotal),
+      }));
+    }
+  }
 
   async function initializeStripeDetails() {
     createPaymentIntent.mutate(
@@ -142,9 +258,20 @@ export default function TicketDrawer({
       return;
     }
 
-    initializeStripeDetails();
+    const isOrderValid = await checkOrderValidity();
 
-    setCurrent(current + 1);
+    if (isOrderValid) {
+      console.log("Success!")
+      initializeStripeDetails();
+      setCurrent(current + 1);
+    } else {
+      notification.error({
+        message: `Updated Quantity`,
+        description: 'Your order has been updated due to ticket availabilities. Please check and verify your updated cart.',
+        placement: 'bottom',
+        duration: 0,
+      });
+    }
   }
 
   const prev = () => {
@@ -169,7 +296,7 @@ export default function TicketDrawer({
   }
 
   function closeModal() {
-    setCheckout(initializeCheckout(user, event.id));
+    setCheckout(initializeCheckout(user, eventId));
     setCurrent(0);
     handleCancel();
   }
@@ -335,7 +462,14 @@ export default function TicketDrawer({
             />
           </div>
           <div className="flex-1 overflow-y-auto px-4">
-            <div className="">{checkoutSteps[current].content}</div>
+            {
+              isFetchingPendingOrdersPending ?
+                <div className="mt-32">
+                  <Spinner text={'Initializing Checkout'} />
+                </div>
+                :
+                <div className="grow">{checkoutSteps[current].content}</div>
+            }
           </div>
           <footer className="border-t px-6 pb-6">
             <div className="flex mt-4">

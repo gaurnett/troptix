@@ -257,7 +257,6 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
         },
         data: updateTicketTypeQuantitySold(value.ticketQuantity),
       });
-      console.log(updatedTicket);
     }
 
     const mailResponse = await sendEmailToUser(order, orderMap);

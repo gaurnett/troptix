@@ -9,9 +9,8 @@ import { getDateFormatter } from '@/lib/utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 const { Paragraph } = Typography;
 
-export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
+export default function TicketsCheckoutForm({ event, checkout, setCheckout, promotion, setPromotion }) {
   const [promotionCode, setPromotionCode] = useState<any>();
-  const [promotion, setPromotion] = useState<any>();
   const [promotionApplied, setPromotionApplied] = useState(false);
   const [canShowMessage, setCanShowMessage] = useState(true);
 
@@ -29,7 +28,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
     if (
       promotionApplied &&
       String(promotion.code).toUpperCase() ===
-        String(promotionCode).toUpperCase()
+      String(promotionCode).toUpperCase()
     ) {
       if (canShowMessage) {
         setCanShowMessage(false);
@@ -86,7 +85,7 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
       } else {
         message.error('There was a problem applying promotion code.');
       }
-    } catch (error) {}
+    } catch (error) { }
   }
 
   function getPromotionPriceFromResponse(price, response) {
@@ -202,18 +201,18 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
 
     setCheckout((previousOrder) => ({
       ...previousOrder,
-      ['tickets']: updatedTickets,
-      ['total']: checkoutTotal,
-      ['fees']: checkoutFees,
-      ['subtotal']: checkoutSubtotal,
+      tickets: updatedTickets,
+      total: checkoutTotal,
+      fees: checkoutFees,
+      subtotal: checkoutSubtotal,
     }));
 
     if (checkout.promotionApplied) {
       setCheckout((previousOrder) => ({
         ...previousOrder,
-        ['discountedSubtotal']: getPromotionPrice(checkoutSubtotal),
-        ['discountedFees']: getPromotionPrice(checkoutFees),
-        ['discountedTotal']: getPromotionPrice(checkoutTotal),
+        discountedSubtotal: getPromotionPrice(checkoutSubtotal),
+        discountedFees: getPromotionPrice(checkoutFees),
+        discountedTotal: getPromotionPrice(checkoutTotal),
       }));
     }
   }
@@ -240,8 +239,9 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
       return 'Sale ended';
     }
 
-    if (ticket.quantitySold !== null && ticket.quantitySold !== undefined) {
-      quantityRemaining = ticket.quantity - ticket.quantitySold;
+    if (ticket.quantitySold && ticket.pendingOrders) {
+      // quantityRemaining = ticket.quantity - ticket.quantitySold;
+      quantityRemaining = ticket.quantity - (ticket.quantitySold + ticket.pendingOrders);
       if (quantityRemaining <= 0) {
         return 'Sold Out';
       }
@@ -395,10 +395,10 @@ export default function TicketsCheckoutForm({ checkout, event, setCheckout }) {
                                   disabled={
                                     checkoutTicket &&
                                     checkoutTicket.quantitySelected ===
-                                      Math.min(
-                                        ticket.quantity - ticket.quantitySold,
-                                        ticket.maxPurchasePerUser
-                                      )
+                                    Math.min(
+                                      ticket.quantity - (ticket.quantitySold + ticket.pendingOrders),
+                                      ticket.maxPurchasePerUser
+                                    )
                                   }
                                   icon={
                                     <PlusOutlined className="text-white items-center justify-center" />

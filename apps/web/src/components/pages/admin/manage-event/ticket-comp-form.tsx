@@ -94,6 +94,13 @@ export default function TicketCompForm({ event, ticketTypes, onClose }) {
       return;
     }
 
+    messageApi.open({
+      key: 'sending-complementary-ticket',
+      type: 'loading',
+      content: 'Sending complementary ticket...',
+      duration: 0,
+    });
+
     const postOrdersRequest: PostOrdersRequest = {
       type: PostOrdersType.POST_ORDERS_CREATE_COMPLEMENTARY_ORDER,
       complementaryOrder: complementaryOrder,
@@ -102,6 +109,7 @@ export default function TicketCompForm({ event, ticketTypes, onClose }) {
 
     createOrder.mutate(postOrdersRequest, {
       onSuccess: (data) => {
+        messageApi.destroy('sending-complementary-ticket');
         messageApi.open({
           type: 'success',
           content: 'Successfully sent complementary ticket.',
@@ -111,6 +119,7 @@ export default function TicketCompForm({ event, ticketTypes, onClose }) {
         setSelectedTicket(undefined);
       },
       onError: (error) => {
+        messageApi.destroy('sending-complementary-ticket');
         messageApi.open({
           type: 'error',
           content: 'Failed to create complementary ticket, please try again.',

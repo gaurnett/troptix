@@ -1,11 +1,21 @@
+import { PrismaClient } from "@prisma/client";
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import { allowCors, verifyUser } from '../lib/auth.js';
 import { sendComplementaryTicketEmailToUser } from '../lib/emailHelper.js';
 import {
   getPrismaCreateComplementaryOrderQuery,
   getPrismaCreateOrderQuery,
-} from '../lib/eventHelper.js';
+} from '../lib/orderHelper.js';
 import prisma from '../prisma/prisma.js';
+
+const prismaClient = prisma as PrismaClient;
+
+type TicketOrders = {
+  quantity?: number;
+  quantitySold?: number;
+  pendingOrders?: number;
+  ticket?: any;
+}
 
 async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
@@ -58,6 +68,8 @@ async function postOrders(request, response) {
       return createOrder(body, response);
     case 'POST_ORDERS_CREATE_COMPLEMENTARY_ORDER':
       return createComplementaryOrder(body, response);
+    case 'POST_ORDERS_UPDATE_PENDING_TICKETS':
+      return updatePendingTickets(body, response);
     default:
       return response.status(500).json({ error: 'No post order type set' });
   }
@@ -124,14 +136,10 @@ async function createComplementaryOrder(body, response) {
       }
     });
 
-    console.log(orderMap);
-
     const mailResponse = await sendComplementaryTicketEmailToUser(
       order,
       orderMap
     );
-
-    console.log('Added complementary order: ' + order.id);
 
     return response.status(200).json(prismaOrder);
   } catch (e) {
@@ -139,6 +147,35 @@ async function createComplementaryOrder(body, response) {
     return response
       .status(500)
       .json({ error: 'Error adding complementary order' });
+  }
+}
+
+async function updatePendingTickets(body, response: VercelResponse) {
+  if (!body.checkoutTickets) {
+    return response.status(500).json({ error: 'No checkout tickets sent' });
+  }
+
+  try {
+    const checkoutTickets = body.checkoutTickets as [string, any][];
+    for (let [key, value] of checkoutTickets) {
+      await prismaClient.ticketTypes.update({
+        where: {
+          id: key
+        },
+        data: {
+          pendingOrders: {
+            increment: value.quantitySelected
+          }
+        }
+      });
+    }
+
+    return response.status(200).json({ message: "Successfully updated pending tickets" });
+  } catch (error) {
+    console.error('Request error', error);
+    return response
+      .status(500)
+      .json({ error: 'Error updating pending tickets' });
   }
 }
 
@@ -155,6 +192,8 @@ async function getOrders(email, request, response) {
     case 'GET_ORDERS_FOR_EVENT': // GetOrdersType.GET_ORDERS_FOR_EVENT
       const eventId = request.query.id;
       return getOrdersForEvent(response, eventId);
+    case 'GET_PENDING_ORDERS_FOR_EVENT': // GetOrdersType.GET_ORDERS_FOR_EVENT
+      return getPendingOrdersForEvent(request, response);
     default:
       return response.status(500).json({ error: 'No get order type set' });
   }
@@ -230,3 +269,51 @@ async function getOrdersForEvent(response, eventId) {
     return response.status(500).json({ error: 'Error fetching orders' });
   }
 }
+
+async function getPendingOrdersForEvent(request: VercelRequest, response: VercelResponse) {
+  const eventId = request.query.id as string;
+
+  try {
+    const orders = await prismaClient.orders.findMany({
+      where: {
+        eventId: eventId,
+        status: 'PENDING',
+      },
+      include: {
+        tickets: {
+          include: {
+            ticketType: true,
+          },
+        },
+      },
+    });
+
+    const pendingOrdersMap = new Map<string, TicketOrders>();
+    orders.forEach(order => {
+      order.tickets.forEach(ticket => {
+        const ticketType = ticket.ticketType;
+        const ticketTypeId = ticketType?.id as string;
+        if (pendingOrdersMap.has(ticketTypeId)) {
+          const currentOrder = pendingOrdersMap.get(ticketTypeId);
+          pendingOrdersMap.set(ticketTypeId, {
+            ...currentOrder,
+            pendingOrders: currentOrder?.pendingOrders as number + 1
+          })
+        } else {
+          pendingOrdersMap.set(ticketTypeId, {
+            quantity: ticketType?.quantity,
+            quantitySold: ticketType?.quantitySold as number,
+            pendingOrders: 1,
+            ticket: ticket
+          });
+        }
+      });
+    });
+
+    return response.status(200).json(Array.from(pendingOrdersMap));
+  } catch (e) {
+    console.error('Request error', e);
+    return response.status(500).json({ error: 'Error fetching orders' });
+  }
+}
+
