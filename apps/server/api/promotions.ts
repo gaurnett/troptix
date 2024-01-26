@@ -1,8 +1,9 @@
-import { allowCors } from '../lib/auth';
-import { getPrismaUpdatePromotionQuery } from '../lib/promotionHelper';
-import prisma from '../prisma/prisma';
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import { allowCors } from '../lib/auth.js';
+import { getPrismaUpdatePromotionQuery } from '../lib/promotionHelper.js';
+import prisma from '../prisma/prisma.js';
 
-async function handler(request, response) {
+async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -26,7 +27,8 @@ async function handler(request, response) {
       break;
   }
 }
-module.exports = allowCors(handler);
+
+export default allowCors(handler);
 
 async function getPromotions(request, response) {
   const getPromotionsType = request.query.getPromotionsType;

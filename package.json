@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.5.9",
-    "prettier": "3.2.4",
+    "prettier": "^3.2.4",
     "ts-node": "^10.9.1"
   },
   "private": true

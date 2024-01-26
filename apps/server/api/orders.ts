@@ -1,12 +1,13 @@
-import { allowCors, verifyUser } from '../lib/auth';
-import { sendComplementaryTicketEmailToUser } from '../lib/emailHelper';
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import { allowCors, verifyUser } from '../lib/auth.js';
+import { sendComplementaryTicketEmailToUser } from '../lib/emailHelper.js';
 import {
   getPrismaCreateComplementaryOrderQuery,
   getPrismaCreateOrderQuery,
-} from '../lib/eventHelper';
-import prisma from '../prisma/prisma';
+} from '../lib/eventHelper.js';
+import prisma from '../prisma/prisma.js';
 
-async function handler(request, response) {
+async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -39,7 +40,7 @@ async function handler(request, response) {
   }
 }
 
-module.exports = allowCors(handler);
+export default allowCors(handler);
 
 async function postOrders(request, response) {
   const { body, headers } = request;
