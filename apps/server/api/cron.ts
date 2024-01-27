@@ -1,4 +1,4 @@
-import { invalidateOrders } from '../lib/invalidateOrdersHelper';
+import { invalidateOrders } from '../lib/invalidateOrdersHelper.js';
 // import type { Request, Response } from 'express';
 
 const cronJobType = {
@@ -24,7 +24,7 @@ export default async function handler(request, response) {
     }
 
     response.status(200).json({ message: resultMessage });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
     response.status(500).json({
       message: `An error occurred while running cron job: ${error.message}`,
