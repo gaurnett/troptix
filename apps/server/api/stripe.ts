@@ -4,7 +4,8 @@ import { allowCors } from '../lib/auth.js';
 import { sendEmailToUser } from '../lib/emailHelper.js';
 import {
   getBuffer,
-  updateSuccessfulOrder
+  updateSuccessfulOrder,
+  updateTicketTypeQuantitySold,
 } from '../lib/orderHelper.js';
 import prisma from '../prisma/prisma.js';
 
@@ -244,6 +245,15 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
         });
       }
     });
+
+    for (let [key, value] of orderMap) {
+      const updatedTicket = await prisma.ticketTypes.update({
+        where: {
+          id: key,
+        },
+        data: updateTicketTypeQuantitySold(value.ticketQuantity),
+      });
+    }
 
     const mailResponse = await sendEmailToUser(order, orderMap);
 
