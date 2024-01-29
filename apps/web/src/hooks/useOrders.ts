@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { message } from 'antd';
 import { useContext } from 'react';
 import { Charge } from './types/Charge';
-import { Checkout } from './types/Checkout';
+import { Checkout, CheckoutTicket } from './types/Checkout';
 import { ComplementaryOrder, Order, createOrder } from './types/Order';
 import { prodUrl } from './useFetchEvents';
 
@@ -11,6 +11,7 @@ export enum GetOrdersType {
   GET_ORDERS_FOR_USER = 'GET_ORDERS_FOR_USER',
   GET_ORDER_BY_ID = 'GET_ORDER_BY_ID',
   GET_ORDERS_FOR_EVENT = 'GET_ORDERS_FOR_EVENT',
+  GET_PENDING_ORDERS_FOR_EVENT = 'GET_PENDING_ORDERS_FOR_EVENT',
 }
 
 export interface GetOrdersRequest {
@@ -30,6 +31,7 @@ export interface PostOrdersRequest {
   type: keyof typeof PostOrdersType;
   order?: Order;
   charge?: Charge;
+  checkoutTickets?: [string, CheckoutTicket][],
   complementaryOrder?: ComplementaryOrder;
   jwtToken?: string;
 }
@@ -70,6 +72,19 @@ export function useFetchUserOrders() {
 export function useFetchEventOrders(eventId: string) {
   const { user } = useContext(TropTixContext);
   const getOrdersType = GetOrdersType.GET_ORDERS_FOR_EVENT;
+  const id = eventId;
+  const jwtToken = user.jwtToken;
+
+  return useQuery({
+    queryKey: ['order', getOrdersType, id],
+    queryFn: () => getOrders({ getOrdersType, id, jwtToken }),
+  });
+}
+
+// fetch the events for a specific event currently
+export function useFetchPendingEventOrders(eventId: string) {
+  const { user } = useContext(TropTixContext);
+  const getOrdersType = GetOrdersType.GET_PENDING_ORDERS_FOR_EVENT;
   const id = eventId;
   const jwtToken = user.jwtToken;
 
@@ -140,6 +155,7 @@ export function useCreateOrder() {
       }
 
       const order = createOrder(checkout, paymentId, customerId, userId);
+
       await postOrders({
         type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
         order: order,
@@ -164,11 +180,12 @@ export async function postOrders({
   order,
   charge,
   complementaryOrder,
+  checkoutTickets,
   jwtToken,
 }: PostOrdersRequest) {
   try {
     let url = prodUrl + `/api/orders`;
-    const request = { type, order, charge, complementaryOrder };
+    const request = { type, order, charge, complementaryOrder, checkoutTickets };
 
     const response = await fetch(url, {
       method: 'POST',

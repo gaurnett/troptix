@@ -1,9 +1,13 @@
 import { TropTixContext } from '@/components/WebNavigator';
+import { Spinner } from '@/components/ui/spinner';
 import { Checkout, initializeCheckout } from '@/hooks/types/Checkout';
+import { TicketType } from '@/hooks/types/Ticket';
 import { useCreateOrder } from '@/hooks/useOrders';
 import { useCreatePaymentIntent } from '@/hooks/usePostStripe';
+import { checkOrderValidity, useFetchTicketTypesForCheckout } from '@/hooks/useTicketType';
+import { getFormattedCurrency } from '@/lib/utils';
 import { ShoppingCartOutlined } from '@ant-design/icons';
-import { Button, Drawer, List, Steps, message } from 'antd';
+import { Button, Drawer, List, Steps, message, notification } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import CheckoutForm from './checkout';
 import TicketsCheckoutForm from './tickets-checkout-forms';
@@ -13,12 +17,14 @@ export default function TicketDrawer({
   isTicketModalOpen,
   handleCancel,
 }) {
+  const eventId = event.id;
   const { user } = useContext(TropTixContext);
   const [messageApi, contextHolder] = message.useMessage();
 
   const [checkout, setCheckout] = useState<Checkout>(
-    initializeCheckout(user, event.id)
+    initializeCheckout(user, eventId)
   );
+  const [ticketTypes, setTicketTypes] = useState<TicketType[]>();
   const [checkoutPreviousButtonClicked, setCheckoutPreviousButtonClicked] =
     useState(false);
   const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);
@@ -28,13 +34,22 @@ export default function TicketDrawer({
   const [canShowMessage, setCanShowMessage] = useState(true);
   const [orderId, setOrderId] = useState('');
   const [clientSecret, setClientSecret] = useState<any>();
+  const [promotion, setPromotion] = useState<any>();
 
   const createPaymentIntent = useCreatePaymentIntent();
   const createOrder = useCreateOrder();
 
   useEffect(() => {
-    setCheckout(initializeCheckout(user, event.id));
-  }, [user, event.id]);
+    setCheckout(initializeCheckout(user, eventId));
+  }, [user, eventId]);
+
+  const { isPending: isFetchingTicketTypesForCheckout, data: ticketTypesWithPendingOrders } = useFetchTicketTypesForCheckout(eventId);
+
+  useEffect(() => {
+    if (!isFetchingTicketTypesForCheckout) {
+      setTicketTypes(ticketTypesWithPendingOrders);
+    }
+  }, [isFetchingTicketTypesForCheckout, ticketTypesWithPendingOrders]);
 
   const checkoutSteps = [
     {
@@ -42,6 +57,9 @@ export default function TicketDrawer({
       content: (
         <TicketsCheckoutForm
           event={event}
+          ticketTypes={ticketTypes}
+          promotion={promotion}
+          setPromotion={setPromotion}
           checkout={checkout}
           setCheckout={setCheckout}
         />
@@ -142,26 +160,33 @@ export default function TicketDrawer({
       return;
     }
 
-    initializeStripeDetails();
+    messageApi.open({
+      key: 'creating-order-loading',
+      type: 'loading',
+      content: 'Creating Order..',
+      duration: 0,
+    });
 
-    setCurrent(current + 1);
+    const { valid, checkout: orderCheckout, ticketTypes } = await checkOrderValidity(eventId, user?.jwtToken, checkout, promotion);
+
+    messageApi.destroy('creating-order-loading');
+    if (valid) {
+      initializeStripeDetails();
+      setCurrent(current + 1);
+    } else {
+      setTicketTypes(ticketTypes);
+      setCheckout(orderCheckout as Checkout);
+      notification.error({
+        message: `Updated Quantity`,
+        description: 'Your order has been updated due to ticket availabilities. Please check and verify your updated cart.',
+        placement: 'bottom',
+        duration: 0,
+      });
+    }
   }
-
-  const prev = () => {
-    setCurrent(current - 1);
-  };
 
   async function completeStripePayment() {
     setCompletePurchaseClicked(true);
-  }
-
-  function getFormattedCurrency(price) {
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    });
-
-    return formatter.format(price);
   }
 
   function closeSummary() {
@@ -169,7 +194,7 @@ export default function TicketDrawer({
   }
 
   function closeModal() {
-    setCheckout(initializeCheckout(user, event.id));
+    setCheckout(initializeCheckout(user, eventId));
     setCurrent(0);
     handleCancel();
   }
@@ -335,7 +360,14 @@ export default function TicketDrawer({
             />
           </div>
           <div className="flex-1 overflow-y-auto px-4">
-            <div className="">{checkoutSteps[current].content}</div>
+            {
+              isFetchingTicketTypesForCheckout ?
+                <div className="mt-32">
+                  <Spinner text={'Initializing Checkout'} />
+                </div>
+                :
+                <div className="grow">{checkoutSteps[current].content}</div>
+            }
           </div>
           <footer className="border-t px-6 pb-6">
             <div className="flex mt-4">

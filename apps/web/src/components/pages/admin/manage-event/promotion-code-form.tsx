@@ -1,6 +1,6 @@
 import { CustomInput, CustomNumberInput } from '@/components/ui/input';
+import { PromotionType } from '@/hooks/types/Promotion';
 import { Button, Form, Select } from 'antd';
-import { PromotionType } from 'troptix-models';
 
 export default function PromotionCodeForm({
   onClose,
@@ -25,7 +25,7 @@ export default function PromotionCodeForm({
   function handleSelectChange(value: string) {
     setSelectedPromotion((previousPromotion) => ({
       ...previousPromotion,
-      ['ticketingFees']: value,
+      promotionType: value,
     }));
   }
 
@@ -74,7 +74,6 @@ export default function PromotionCodeForm({
             <Select
               className="sm:w-screen w-full md:w-52 h-12 text-gray-800"
               id="promotionType"
-              defaultValue={PromotionType.PERCENTAGE}
               onChange={handleSelectChange}
               value={selectedPromotion.promotionType}
               options={[

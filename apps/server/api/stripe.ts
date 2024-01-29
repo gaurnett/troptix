@@ -227,8 +227,6 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
       },
     });
 
-    console.log(order);
-
     const orderMap = new Map();
     order.tickets.forEach((ticket) => {
       const ticketId = ticket.ticketType.id;
@@ -248,8 +246,6 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
       }
     });
 
-    console.log(orderMap);
-
     for (let [key, value] of orderMap) {
       const updatedTicket = await prisma.ticketTypes.update({
         where: {
@@ -257,7 +253,6 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
         },
         data: updateTicketTypeQuantitySold(value.ticketQuantity),
       });
-      console.log(updatedTicket);
     }
 
     const mailResponse = await sendEmailToUser(order, orderMap);
