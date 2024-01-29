@@ -1,6 +1,7 @@
 import { TropTixContext } from '@/components/WebNavigator';
 import EditTicketForm from '@/components/pages/order-details/edit-ticket-form';
 import { Spinner } from '@/components/ui/spinner';
+import { OrderStatus } from '@/hooks/types/Order';
 import { Ticket } from '@/hooks/types/Ticket';
 import { useFetchOrderById } from '@/hooks/useOrders';
 import {
@@ -9,6 +10,7 @@ import {
   useCreateTicket,
 } from '@/hooks/useTicket';
 import { getDateFormatter, getFormattedCurrency } from '@/lib/utils';
+import { RedoOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, Drawer, List, Result, Typography, message } from 'antd';
 import Image from 'next/image';
@@ -162,6 +164,19 @@ export default function OrderDetailsPage() {
           title="No Order Found"
           className="mt-32"
           subTitle="No order found with that Order ID. Your order may still be processing so keep an eye out for your email confirmation and check back later. Please contact us if you have any further questions."
+        />
+      </div>
+    );
+  }
+
+  if (order.status === OrderStatus.PENDING) {
+    return (
+      <div className="md:w-1/2 mx-auto">
+        <Result
+          icon={<RedoOutlined />}
+          title="Processing Order"
+          className="mt-32"
+          subTitle="Your order is currently processing so keep an eye out for your email confirmation and check back later. Please contact us if you have any further questions."
         />
       </div>
     );

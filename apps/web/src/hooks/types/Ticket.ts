@@ -52,6 +52,8 @@ export type TicketType = {
   maxPurchasePerUser?: number;
   quantity?: number;
   quantitySold?: number;
+  pendingOrders?: number;
+  completedOrders?: number;
 
   // Sale Date Details
   saleStartDate?: Date;

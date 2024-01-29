@@ -46,9 +46,6 @@ export function updateTicketTypeQuantitySold(quantitySold) {
     quantitySold: {
       increment: quantitySold,
     },
-    pendingOrders: {
-      decrement: quantitySold
-    }
   };
 
   return ticketTypeUpdate;

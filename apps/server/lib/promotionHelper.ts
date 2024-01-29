@@ -17,3 +17,21 @@ export function getPrismaUpdatePromotionQuery(promo) {
 
   return promotion;
 }
+
+export function getPrismaCreatePromotionQuery(promo) {
+  let promotion: Prisma.PromotionsCreateInput;
+
+  promotion = {
+    id: promo.id,
+    promotionType: promo.promotionType,
+    value: promo.value,
+    code: promo.code,
+    event: {
+      connect: {
+        id: promo.eventId,
+      },
+    },
+  };
+
+  return promotion;
+}

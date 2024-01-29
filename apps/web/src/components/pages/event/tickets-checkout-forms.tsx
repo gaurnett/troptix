@@ -1,18 +1,21 @@
 import { Button, Input, List, Typography, message } from 'antd';
 import { format } from 'date-fns';
-import { useState } from 'react';
-import { GetPromotionsType, getPromotions } from 'troptix-api';
+import { useContext, useState } from 'react';
 
+import { TropTixContext } from '@/components/WebNavigator';
 import { CustomInput } from '@/components/ui/input';
 import { initializeCheckoutTicket } from '@/hooks/types/Checkout';
-import { getDateFormatter } from '@/lib/utils';
+import { TicketType } from '@/hooks/types/Ticket';
+import { GetPromotionsRequest, GetPromotionsType, getPromotions } from '@/hooks/usePromotions';
+import { calculateFees, getDateFormatter } from '@/lib/utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 const { Paragraph } = Typography;
 
-export default function TicketsCheckoutForm({ event, checkout, setCheckout, promotion, setPromotion }) {
+export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setCheckout, promotion, setPromotion }) {
   const [promotionCode, setPromotionCode] = useState<any>();
   const [promotionApplied, setPromotionApplied] = useState(false);
   const [canShowMessage, setCanShowMessage] = useState(true);
+  const { user } = useContext(TropTixContext);
 
   async function applyPromotion() {
     if (promotionCode === undefined) {
@@ -39,53 +42,60 @@ export default function TicketsCheckoutForm({ event, checkout, setCheckout, prom
       return;
     }
 
-    const getPromotionsRequest = {
-      getPromotionsType: GetPromotionsType.GET_PROMOTIONS_BY_EVENT,
+    const getPromotionsRequest: GetPromotionsRequest = {
+      getPromotionsType: GetPromotionsType.GET_PROMOTIONS_BY_CODE,
       eventId: event.id,
       code: String(promotionCode).toUpperCase(),
+      jwtToken: user.jwtToken
     };
 
-    try {
-      const response = await getPromotions(getPromotionsRequest);
+    return getPromotions(getPromotionsRequest)
+      .then((promotion) => {
+        if (promotion) {
+          let subtotal = 0;
+          let fees = 0;
+          setPromotion(promotion);
+          setPromotionApplied(true);
 
-      if (response !== null && response !== undefined) {
-        setPromotion(response);
-        setPromotionApplied(true);
+          const updatedTickets = checkout.tickets;
+          Array.from(checkout.tickets.keys()).forEach((key, i) => {
+            const item = checkout.tickets.get(key);
+            const promotedPrice = getPromotionPriceFromResponse(item.subtotal, promotion);
+            const promotedFee = calculateFees(promotedPrice);
 
-        const updatedTickets = checkout.tickets;
-        Array.from(checkout.tickets.keys()).forEach((key, i) => {
-          const item = checkout.tickets.get(key);
-          updatedTickets.set(key, {
-            ...item,
-            subtotal: getPromotionPriceFromResponse(item.subtotal, response),
-            fees: getPromotionPriceFromResponse(item.fees, response),
-            total: getPromotionPriceFromResponse(item.total, response),
+            subtotal += normalizePrice(promotedPrice) * item.quantitySelected;
+            fees += normalizePrice(promotedFee) * item.quantitySelected;
+
+            updatedTickets.set(key, {
+              ...item,
+              subtotal: promotedPrice,
+              fees: promotedFee,
+              total: normalizePrice(promotedFee + promotedPrice),
+            });
           });
-        });
 
-        setCheckout((previousOrder) => ({
-          ...previousOrder,
-          ['promotionApplied']: true,
-          ['tickets']: updatedTickets,
-          ['discountedSubtotal']: getPromotionPriceFromResponse(
-            checkout.subtotal,
-            response
-          ),
-          ['discountedFees']: getPromotionPriceFromResponse(
-            checkout.fees,
-            response
-          ),
-          ['discountedTotal']: getPromotionPriceFromResponse(
-            checkout.total,
-            response
-          ),
-        }));
+          if (checkout.subtotal > 0) {
+            setCheckout((previousOrder) => ({
+              ...previousOrder,
+              subtotal: subtotal,
+              fees: fees,
+              total: normalizePrice(subtotal + fees),
+            }));
+          }
 
-        message.success('Promotion code applied');
-      } else {
-        message.error('There was a problem applying promotion code.');
-      }
-    } catch (error) { }
+          setCheckout((previousOrder) => ({
+            ...previousOrder,
+            promotionApplied: true,
+            tickets: updatedTickets
+          }));
+
+          message.success('Promotion code applied');
+        } else {
+          message.error('There was a problem applying promotion code.');
+        }
+      }).catch(error => {
+
+      })
   }
 
   function getPromotionPriceFromResponse(price, response) {
@@ -136,24 +146,19 @@ export default function TicketsCheckoutForm({ event, checkout, setCheckout, prom
     return formatter.format(price);
   }
 
-  function calculateFees(price) {
-    const fee = price * 0.06 + 0.3;
-    const tax = fee * 0.15;
-    return normalizePrice(fee + tax);
-  }
-
   function getFormattedFeesCurrency(price) {
-    price = calculateFees(price);
+    let fees = calculateFees(price);
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     });
 
     if (promotionApplied) {
-      return formatter.format(getPromotionPrice(price));
+      const promotedPrice = getPromotionPrice(price);
+      return formatter.format(calculateFees(promotedPrice));
     }
 
-    return formatter.format(price);
+    return formatter.format(fees);
   }
 
   function normalizePrice(price): number {
@@ -162,9 +167,9 @@ export default function TicketsCheckoutForm({ event, checkout, setCheckout, prom
 
   function updateCost(ticket, reduce = false) {
     const price = normalizePrice(ticket.price);
-    var ticketSubtotal = price;
+    var ticketSubtotal = checkout.promotionApplied ? getPromotionPrice(price) : price;
     var ticketFees =
-      ticket.ticketingFees === 'PASS_TICKET_FEES' ? calculateFees(price) : 0;
+      ticket.ticketingFees === 'PASS_TICKET_FEES' ? calculateFees(ticketSubtotal) : 0;
     var ticketTotal = normalizePrice(ticketFees + ticketSubtotal);
 
     const updatedTickets = checkout.tickets;
@@ -206,15 +211,6 @@ export default function TicketsCheckoutForm({ event, checkout, setCheckout, prom
       fees: checkoutFees,
       subtotal: checkoutSubtotal,
     }));
-
-    if (checkout.promotionApplied) {
-      setCheckout((previousOrder) => ({
-        ...previousOrder,
-        discountedSubtotal: getPromotionPrice(checkoutSubtotal),
-        discountedFees: getPromotionPrice(checkoutFees),
-        discountedTotal: getPromotionPrice(checkoutTotal),
-      }));
-    }
   }
 
   function reduceCost(ticket, index) {
@@ -239,9 +235,8 @@ export default function TicketsCheckoutForm({ event, checkout, setCheckout, prom
       return 'Sale ended';
     }
 
-    if (ticket.quantitySold && ticket.pendingOrders) {
-      // quantityRemaining = ticket.quantity - ticket.quantitySold;
-      quantityRemaining = ticket.quantity - (ticket.quantitySold + ticket.pendingOrders);
+    if (ticket.completedOrders && ticket.pendingOrders) {
+      quantityRemaining = ticket.quantity - (ticket.completedOrders + ticket.pendingOrders);
       if (quantityRemaining <= 0) {
         return 'Sold Out';
       }
@@ -340,14 +335,19 @@ export default function TicketsCheckoutForm({ event, checkout, setCheckout, prom
         <List
           itemLayout="vertical"
           size="large"
-          dataSource={event.ticketTypes}
+          dataSource={ticketTypes}
           split={false}
-          renderItem={(ticket: any, index: number) => {
+          renderItem={(ticket: TicketType, index: number) => {
             let checkoutTicket: any;
             if (checkout.tickets && checkout.tickets.has(ticket.id)) {
               checkoutTicket = checkout.tickets.get(ticket.id);
             }
             let ticketState = getTicketStateMessage(ticket);
+
+            const quantity = ticket.quantity as number;
+            const pendingOrders = ticket.pendingOrders as number;
+            const maxPurchasePerUser = ticket.maxPurchasePerUser as number;
+            const completedOrders = ticket.completedOrders as number;
 
             return (
               <List.Item className="mb-4" style={{ padding: 0 }}>
@@ -396,8 +396,8 @@ export default function TicketsCheckoutForm({ event, checkout, setCheckout, prom
                                     checkoutTicket &&
                                     checkoutTicket.quantitySelected ===
                                     Math.min(
-                                      ticket.quantity - (ticket.quantitySold + ticket.pendingOrders),
-                                      ticket.maxPurchasePerUser
+                                      quantity - (completedOrders + pendingOrders),
+                                      maxPurchasePerUser
                                     )
                                   }
                                   icon={
@@ -447,7 +447,7 @@ export default function TicketsCheckoutForm({ event, checkout, setCheckout, prom
                       </div>
                       <div className="text-sm">
                         Sale ends:{' '}
-                        {getDateFormatter(new Date(ticket.saleEndDate))}
+                        {getDateFormatter(new Date(ticket.saleEndDate as Date))}
                       </div>
                       <div>
                         <Paragraph

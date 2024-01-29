@@ -68,8 +68,6 @@ async function postOrders(request, response) {
       return createOrder(body, response);
     case 'POST_ORDERS_CREATE_COMPLEMENTARY_ORDER':
       return createComplementaryOrder(body, response);
-    case 'POST_ORDERS_UPDATE_PENDING_TICKETS':
-      return updatePendingTickets(body, response);
     default:
       return response.status(500).json({ error: 'No post order type set' });
   }
@@ -150,35 +148,6 @@ async function createComplementaryOrder(body, response) {
   }
 }
 
-async function updatePendingTickets(body, response: VercelResponse) {
-  if (!body.checkoutTickets) {
-    return response.status(500).json({ error: 'No checkout tickets sent' });
-  }
-
-  try {
-    const checkoutTickets = body.checkoutTickets as [string, any][];
-    for (let [key, value] of checkoutTickets) {
-      await prismaClient.ticketTypes.update({
-        where: {
-          id: key
-        },
-        data: {
-          pendingOrders: {
-            increment: value.quantitySelected
-          }
-        }
-      });
-    }
-
-    return response.status(200).json({ message: "Successfully updated pending tickets" });
-  } catch (error) {
-    console.error('Request error', error);
-    return response
-      .status(500)
-      .json({ error: 'Error updating pending tickets' });
-  }
-}
-
 async function getOrders(email, request, response) {
   const getOrderType = request.query.getOrdersType;
 
@@ -228,7 +197,6 @@ async function getOrderById(response, orderId, userEmail) {
       where: {
         id: orderId,
         email: userEmail,
-        status: 'COMPLETED',
       },
       include: {
         tickets: {

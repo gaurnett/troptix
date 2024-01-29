@@ -24,7 +24,6 @@ export interface GetOrdersRequest {
 export enum PostOrdersType {
   POST_ORDERS_CREATE_CHARGE = 'POST_ORDERS_CREATE_CHARGE',
   POST_ORDERS_CREATE_ORDER = 'POST_ORDERS_CREATE_ORDER',
-  POST_ORDERS_UPDATE_PENDING_TICKETS = 'POST_ORDERS_UPDATE_PENDING_TICKETS',
   POST_ORDERS_CREATE_COMPLEMENTARY_ORDER = 'POST_ORDERS_CREATE_COMPLEMENTARY_ORDER',
 }
 
@@ -161,12 +160,6 @@ export function useCreateOrder() {
         type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
         order: order,
         jwtToken: jwtToken,
-      });
-
-      await postOrders({
-        type: PostOrdersType.POST_ORDERS_UPDATE_PENDING_TICKETS,
-        jwtToken: jwtToken,
-        checkoutTickets: Array.from(checkout.tickets)
       });
 
       return order.id;
