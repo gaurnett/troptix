@@ -76,7 +76,7 @@ async function createCharge(body, response) {
   try {
     var customerId = '';
 
-    if (charge.userId === undefined) {
+    if (!charge.userId) {
       const customer = await stripe.customers.create({
         name: charge?.name,
         email: charge?.email,

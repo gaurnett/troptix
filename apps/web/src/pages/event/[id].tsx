@@ -138,10 +138,9 @@ export default function EventDetailPage(props) {
       />
       <div
         style={{
-          backgroundImage: `url("${
-            event?.imageUrl ??
+          backgroundImage: `url("${event?.imageUrl ??
             'https://placehold.co/400x400?text=Add+Event+Flyer'
-          }")`,
+            }")`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           WebkitBackgroundSize: 'cover',
@@ -194,55 +193,26 @@ export default function EventDetailPage(props) {
                 <Image
                   height={500}
                   width={500}
+                  style={{
+                    maxHeight: 350,
+                    maxWidth: 350,
+                    objectFit: 'fill',
+                  }}
                   src={
                     event.imageUrl ??
                     'https://placehold.co/600x600.png?text=Add+Event+Flyer'
                   }
                   alt={event.name}
-                  className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg"
+                  className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg mx-auto"
                 />
-                {user.id ? (
-                  <Button
-                    type="primary"
-                    onClick={openModal}
-                    className="w-full px-6 py-6 shadow-md items-center text-base bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
-                    icon={<IoTicket className="text-base" />}
-                  >
-                    Buy Tickets
-                  </Button>
-                ) : (
-                  <div className="w-5/6 md:w-full mx-auto bg-white bg-opacity-80 py-4 rounded-lg">
-                    <div className="text-center text-base font-extrabold">
-                      You must have a TropTix account to purchase tickets.
-                    </div>
-                    <div className="flex mx-auto text-center mt-4">
-                      <div className="w-full ml-4 mr-2">
-                        <Link
-                          className=""
-                          href={{ pathname: '/auth/signin' }}
-                          key={'tickets'}
-                        >
-                          <Button className="w-full p-5 shadow-md items-center justify-center font-medium inline-flex">
-                            Log in
-                          </Button>
-                        </Link>
-                      </div>
-                      <div className="w-full mr-4 ml-2">
-                        <Link
-                          href={{ pathname: '/auth/signup' }}
-                          key={'tickets'}
-                        >
-                          <Button
-                            type="primary"
-                            className="w-full bg-blue-600 hover:bg-blue-700 p-5 shadow-md items-center justify-center font-medium inline-flex"
-                          >
-                            Sign up
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <Button
+                  type="primary"
+                  onClick={openModal}
+                  className="w-full px-6 py-6 shadow-md items-center text-base bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
+                  icon={<IoTicket className="text-base" />}
+                >
+                  Buy Tickets
+                </Button>
               </aside>
               <div className="w-full md:ml-8 bg-white bg-opacity-80 p-6 rounded-lg">
                 <div className="mb-8">

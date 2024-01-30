@@ -111,7 +111,7 @@ export function getPrismaCreateOrderQuery(order) {
     },
   };
 
-  if (order.userId !== undefined) {
+  if (order.userId) {
     orderInput = {
       ...orderInput,
       user: {

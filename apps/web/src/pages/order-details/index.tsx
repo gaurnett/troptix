@@ -13,7 +13,6 @@ import { getDateFormatter, getFormattedCurrency } from '@/lib/utils';
 import { RedoOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, Drawer, List, Result, Typography, message } from 'antd';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
@@ -113,45 +112,6 @@ export default function OrderDetailsPage() {
     return (
       <div className="mt-32">
         <Spinner text={'Fetching Order Details'} />
-      </div>
-    );
-  }
-
-  if (showSignInError) {
-    return (
-      <div className="mt-24">
-        <Result
-          icon={
-            <div className="w-full flex justify-center text-center">
-              <Image
-                width={75}
-                height={75}
-                className="w-auto"
-                style={{ objectFit: 'contain', width: 100 }}
-                src={'/icons/tickets.png'}
-                alt={'tickets image'}
-              />
-            </div>
-          }
-          title="Please sign in or sign up with the email used to view order details"
-          extra={
-            <div>
-              <Link href={{ pathname: '/auth/signin' }} key={'login'}>
-                <Button className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
-                  Log in
-                </Button>
-              </Link>
-              <Link href={{ pathname: '/auth/signup' }} key={'signup'}>
-                <Button
-                  type="primary"
-                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
-                >
-                  Sign up
-                </Button>
-              </Link>
-            </div>
-          }
-        />
       </div>
     );
   }

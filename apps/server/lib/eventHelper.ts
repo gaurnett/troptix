@@ -29,11 +29,6 @@ export async function getAllEventsQuery(userId: string) {
     },
     where: {
       isDraft: false,
-      NOT: {
-        organizerUserId: {
-          in: adminUserIds,
-        },
-      },
       startDate: {
         gte: new Date(),
       },

@@ -7,6 +7,7 @@ export interface Checkout {
   firstName?: string;
   lastName?: string;
   email?: string;
+  confirmEmail?: string;
   total?: number;
   subtotal?: number;
   fees?: number;

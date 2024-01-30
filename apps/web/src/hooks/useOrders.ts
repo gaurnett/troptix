@@ -100,10 +100,6 @@ export async function getOrders({
   email,
   jwtToken,
 }: GetOrdersRequest) {
-  if (!jwtToken) {
-    return {};
-  }
-
   let url = prodUrl + `/api/orders?getOrdersType=${getOrdersType}`;
 
   if (getOrdersType === GetOrdersType.GET_ORDERS_FOR_USER) {

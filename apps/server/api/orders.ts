@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { VercelRequest, VercelResponse } from "@vercel/node";
-import { allowCors, verifyUser } from '../lib/auth.js';
+import { allowCors } from '../lib/auth.js';
 import { sendComplementaryTicketEmailToUser } from '../lib/emailHelper.js';
 import {
   getPrismaCreateComplementaryOrderQuery,
@@ -30,17 +30,11 @@ async function handler(request: VercelRequest, response: VercelResponse) {
     return response.status(200).end();
   }
 
-  const { userId, email } = await verifyUser(request);
-
-  if (!userId) {
-    return response.status(401).json({ error: 'Unauthorized' });
-  }
-
   switch (method) {
     case 'POST':
       return postOrders(request, response);
     case 'GET':
-      return getOrders(email, request, response);
+      return getOrders(request, response);
     case 'PUT':
       break;
     case 'DELETE':
@@ -148,7 +142,7 @@ async function createComplementaryOrder(body, response) {
   }
 }
 
-async function getOrders(email, request, response) {
+async function getOrders(request, response) {
   const getOrderType = request.query.getOrdersType;
 
   switch (String(getOrderType)) {
@@ -157,7 +151,7 @@ async function getOrders(email, request, response) {
       return getOrdersForUser(response, userEmail);
     case 'GET_ORDER_BY_ID': // GetOrdersType.GET_ORDER_BY_ID
       const orderId = request.query.id;
-      return getOrderById(response, orderId, email);
+      return getOrderById(response, orderId);
     case 'GET_ORDERS_FOR_EVENT': // GetOrdersType.GET_ORDERS_FOR_EVENT
       const eventId = request.query.id;
       return getOrdersForEvent(response, eventId);
@@ -191,12 +185,11 @@ async function getOrdersForUser(response, userEmail) {
   }
 }
 
-async function getOrderById(response, orderId, userEmail) {
+async function getOrderById(response, orderId) {
   try {
     const order = await prisma.orders.findUnique({
       where: {
         id: orderId,
-        email: userEmail,
       },
       include: {
         tickets: {
