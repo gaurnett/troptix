@@ -4,7 +4,6 @@ import { GetOrdersType, useFetchOrderById } from '@/hooks/useOrders';
 import { getDateFormatter } from '@/lib/utils';
 import { Button, Carousel, Divider, QRCode, Result } from 'antd';
 import JsPDF from 'jspdf';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useRef } from 'react';
@@ -120,6 +119,10 @@ export default function TicketsPage() {
                 'Order number',
                 `#${String(order.id).toUpperCase()}`
               )}
+              {renderTicketRow(
+                'Ticket ID',
+                `#${String(ticket.id).toUpperCase()}`
+              )}
               {renderTicketRow('Event Organizer', event.organizer)}
               <div className="mb-4"></div>
             </div>
@@ -140,45 +143,6 @@ export default function TicketsPage() {
     return (
       <div className="mt-32">
         <Spinner text={'Fetching Tickets'} />
-      </div>
-    );
-  }
-
-  if (showSignInError) {
-    return (
-      <div className="mt-24">
-        <Result
-          icon={
-            <div className="w-full flex justify-center text-center">
-              <Image
-                width={75}
-                height={75}
-                className="w-auto"
-                style={{ objectFit: 'contain', width: 100 }}
-                src={'/icons/tickets.png'}
-                alt={'tickets image'}
-              />
-            </div>
-          }
-          title="Please sign in or sign up with the email used to view tickets"
-          extra={
-            <div>
-              <Link href={{ pathname: '/auth/signin' }} key={'login'}>
-                <Button className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
-                  Log in
-                </Button>
-              </Link>
-              <Link href={{ pathname: '/auth/signup' }} key={'signup'}>
-                <Button
-                  type="primary"
-                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
-                >
-                  Sign up
-                </Button>
-              </Link>
-            </div>
-          }
-        />
       </div>
     );
   }

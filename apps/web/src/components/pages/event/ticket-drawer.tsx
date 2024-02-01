@@ -106,8 +106,8 @@ export default function TicketDrawer({
               checkout,
               paymentId,
               customerId,
-              userId: user.id,
-              jwtToken: user.jwtToken as string,
+              userId: user?.id,
+              jwtToken: user?.jwtToken as string,
             },
             {
               onSuccess: (data) => {
@@ -130,6 +130,16 @@ export default function TicketDrawer({
   }
 
   async function next() {
+    if (checkout.email !== checkout.confirmEmail) {
+      if (canShowMessage) {
+        setCanShowMessage(false);
+        message
+          .warning('Email addresses do not match')
+          .then(() => setCanShowMessage(true));
+      }
+      return;
+    }
+
     if (!checkout.firstName || !checkout.lastName || !checkout.email) {
       if (canShowMessage) {
         setCanShowMessage(false);
@@ -145,16 +155,6 @@ export default function TicketDrawer({
         setCanShowMessage(false);
         message
           .warning('Please select a ticket quantity')
-          .then(() => setCanShowMessage(true));
-      }
-      return;
-    }
-
-    if (!user || !user.id) {
-      if (canShowMessage) {
-        setCanShowMessage(false);
-        message
-          .warning('There was an error initializing order. Please try again')
           .then(() => setCanShowMessage(true));
       }
       return;

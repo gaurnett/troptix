@@ -280,10 +280,10 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
             />
           </div>
         </div>
-        <div className="flex justify-between">
-          <div className="mb-4 w-full">
+
+        <div className="md:flex justify-between">
+          <div className="mb-4 md:mr-4 w-full">
             <CustomInput
-              disabled={true}
               value={checkout.email}
               name={'email'}
               id={'email'}
@@ -292,9 +292,24 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
               placeholder={'johndoe@gmail.com'}
               handleChange={handleChange}
               required={true}
+              disabled={!!user.id}
+            />
+          </div>
+          <div className="mb-4 md:ml-4 w-full">
+            <CustomInput
+              value={checkout.confirmEmail}
+              name={'confirmEmail'}
+              id={'confirmEmail'}
+              label={'Confirm Email *'}
+              type={'text'}
+              placeholder={'johndoe@gmail.com'}
+              handleChange={handleChange}
+              required={true}
+              disabled={!!user.id}
             />
           </div>
         </div>
+
 
         <h2
           className="text-xl font-bold leading-tighter tracking-tighter mb-4"
