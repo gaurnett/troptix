@@ -280,32 +280,52 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
             />
           </div>
         </div>
-        <div className="md:flex justify-between">
-          <div className="mb-4 md:mr-4 w-full">
-            <CustomInput
-              value={checkout.email}
-              name={'email'}
-              id={'email'}
-              label={'Email *'}
-              type={'text'}
-              placeholder={'johndoe@gmail.com'}
-              handleChange={handleChange}
-              required={true}
-            />
-          </div>
-          <div className="mb-4 md:ml-4 w-full">
-            <CustomInput
-              value={checkout.confirmEmail}
-              name={'confirmEmail'}
-              id={'confirmEmail'}
-              label={'Confirm Email *'}
-              type={'text'}
-              placeholder={'johndoe@gmail.com'}
-              handleChange={handleChange}
-              required={true}
-            />
-          </div>
-        </div>
+        {
+          user.id ?
+            <div className="md:flex justify-between">
+              <div className="mb-4 w-full">
+                <CustomInput
+                  disabled={true}
+                  value={checkout.email}
+                  name={'email'}
+                  id={'email'}
+                  label={'Email *'}
+                  type={'text'}
+                  placeholder={'johndoe@gmail.com'}
+                  handleChange={handleChange}
+                  required={true}
+                />
+              </div>
+            </div>
+            :
+            <div className="md:flex justify-between">
+              <div className="mb-4 md:mr-4 w-full">
+                <CustomInput
+                  value={checkout.email}
+                  name={'email'}
+                  id={'email'}
+                  label={'Email *'}
+                  type={'text'}
+                  placeholder={'johndoe@gmail.com'}
+                  handleChange={handleChange}
+                  required={true}
+                />
+              </div>
+              <div className="mb-4 md:ml-4 w-full">
+                <CustomInput
+                  value={checkout.confirmEmail}
+                  name={'confirmEmail'}
+                  id={'confirmEmail'}
+                  label={'Confirm Email *'}
+                  type={'text'}
+                  placeholder={'johndoe@gmail.com'}
+                  handleChange={handleChange}
+                  required={true}
+                />
+              </div>
+            </div>
+        }
+
 
         <h2
           className="text-xl font-bold leading-tighter tracking-tighter mb-4"

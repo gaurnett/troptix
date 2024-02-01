@@ -33,6 +33,7 @@ export function initializeCheckout(user: any, eventId: string): Checkout {
     firstName: user?.firstName,
     lastName: user?.lastName,
     email: user?.email,
+    confirmEmail: user?.email,
     total: 0,
     subtotal: 0,
     fees: 0,
