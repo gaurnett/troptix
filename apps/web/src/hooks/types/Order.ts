@@ -6,8 +6,15 @@ type Ticket = {
   // Define the properties of the Ticket type here
 };
 
+export enum OrderStatus {
+  PENDING = 'PENDING',
+  CANCELLED = 'CANCELLED',
+  COMPLETED = 'COMPLETED'
+}
+
 export type Order = {
   id?: string;
+  status?: OrderStatus;
   stripeCustomerId?: string;
   stripePaymentId?: string;
   eventId?: string;

@@ -1,20 +1,26 @@
-import { allowCors } from '../lib/auth';
-import { sendEmailToUser } from '../lib/emailHelper';
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import Stripe from 'stripe';
+import { allowCors } from '../lib/auth.js';
+import { sendEmailToUser } from '../lib/emailHelper.js';
 import {
   getBuffer,
   updateSuccessfulOrder,
   updateTicketTypeQuantitySold,
-} from '../lib/orderHelper';
-import prisma from '../prisma/prisma';
+} from '../lib/orderHelper.js';
+import prisma from '../prisma/prisma.js';
 
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const secretKey = process.env.STRIPE_SECRET_KEY as string;
+const stripe = new Stripe(secretKey, {
+  apiVersion: "2023-08-16"
+});
 const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
-// const endpointSecret = 'whsec_570f36e545a3bc4d66bf9501ae42327ebb200303a4d9068d39bb7821e48b50ff';
 
+// To run webhook locally:
+// const endpointSecret = 'whsec_a8784c76287c9e3b902c309b328f8014687f73be0982e60dc4eb0b286a98556a';
 // stripe trigger payment_intent.succeeded
 // stripe listen --forward-to localhost:3001/api/stripe
 
-async function handler(request, response) {
+async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -33,7 +39,7 @@ async function handler(request, response) {
   }
 }
 
-module.exports = allowCors(handler);
+export default allowCors(handler);
 
 async function postOrders(request, response) {
   const { body, headers } = request;
@@ -70,7 +76,7 @@ async function createCharge(body, response) {
   try {
     var customerId = '';
 
-    if (charge.userId === undefined) {
+    if (!charge.userId) {
       const customer = await stripe.customers.create({
         name: charge?.name,
         email: charge?.email,
@@ -143,7 +149,7 @@ async function stripePaymentIntentSucceeded(body, headers, request, response) {
     const buf = await getBuffer(request);
     try {
       event = stripe.webhooks.constructEvent(buf, signature, endpointSecret);
-    } catch (err) {
+    } catch (err: any) {
       console.log(`⚠️  Webhook signature verification failed.`, err.message);
       return response.status(400).json({ error: 'Web failed: ' + err.message });
     }
@@ -221,8 +227,6 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
       },
     });
 
-    console.log(order);
-
     const orderMap = new Map();
     order.tickets.forEach((ticket) => {
       const ticketId = ticket.ticketType.id;
@@ -242,8 +246,6 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
       }
     });
 
-    console.log(orderMap);
-
     for (let [key, value] of orderMap) {
       const updatedTicket = await prisma.ticketTypes.update({
         where: {
@@ -251,7 +253,6 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
         },
         data: updateTicketTypeQuantitySold(value.ticketQuantity),
       });
-      console.log(updatedTicket);
     }
 
     const mailResponse = await sendEmailToUser(order, orderMap);

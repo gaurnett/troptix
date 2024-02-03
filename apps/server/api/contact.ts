@@ -1,7 +1,8 @@
-import { allowCors } from '../lib/auth';
-import { sendContactUsForm } from '../lib/emailHelper';
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import { allowCors } from '../lib/auth.js';
+import { sendContactUsForm } from '../lib/emailHelper.js';
 
-async function handler(request, response) {
+async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -25,7 +26,7 @@ async function handler(request, response) {
   }
 }
 
-module.exports = allowCors(handler);
+export default allowCors(handler);
 
 function postContact(body, response) {
   if (body === undefined || body.requestType === undefined) {

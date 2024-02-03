@@ -1,92 +1,109 @@
+import { TropTixContext } from '@/components/WebNavigator';
 import { Spinner } from '@/components/ui/spinner';
+import { Promotion, createPromotion } from '@/hooks/types/Promotion';
+import { DeletePromotionRequest, PostPromotionRequest, useDeletePromotion, useFetchPromotionsForEvent, usePostPromotion } from '@/hooks/usePromotions';
+import { useQueryClient } from '@tanstack/react-query';
 import { Button, Drawer, List, Popconfirm, message } from 'antd';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { GetPromotionsType, addPromotion, getPromotions } from 'troptix-api';
-import { Promotion } from 'troptix-models';
+import { useContext, useState } from 'react';
 import PromotionCodeForm from './promotion-code-form';
 
 export default function PromotionCodesPage() {
   const router = useRouter();
-  const eventId = router.query.eventId;
+  const { user } = useContext(TropTixContext);
+  const eventId = router.query.eventId as string;
 
   const [messageApi, contextHolder] = message.useMessage();
-  const [promotions, setPromotions] = useState<any[]>([]);
-  const [isFetchingPromotions, setIsFetchingPromotions] = useState(true);
   const [open, setOpen] = useState(false);
-  const [selectedPromotion, setSelectedPromotion] = useState<any>();
+  const [selectedPromotion, setSelectedPromotion] = useState<Promotion>();
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  useEffect(() => {
-    async function fetchPromotions() {
-      const getPromotionsRequest: any = {
-        getPromotionsType: GetPromotionsType.GET_PROMOTIONS_ALL,
-        eventId: eventId,
-      };
-
-      try {
-        const response = await getPromotions(getPromotionsRequest);
-
-        if (
-          (response.error === undefined || response.error === undefined) &&
-          response.length !== 0
-        ) {
-          setPromotions(response);
-        }
-      } catch (error) {}
-      setIsFetchingPromotions(false);
-    }
-
-    fetchPromotions();
-  }, [eventId]);
+  const { isPending, data: promotions } = useFetchPromotionsForEvent(eventId);
+  const postPromotion = usePostPromotion();
+  const deleteEventPromotion = useDeletePromotion();
+  const queryClient = useQueryClient();
 
   async function savePromotion() {
-    const response = await addPromotion(
-      selectedPromotion,
-      selectedIndex !== -1
-    );
-
-    if (
-      response === null ||
-      response === undefined ||
-      response.error !== null
-    ) {
-      messageApi.open({
-        type: 'error',
-        content: 'Failed to save promotion code, please try again.',
-      });
-      return;
-    }
-
     messageApi.open({
-      type: 'success',
-      content: 'Successfully saved promotion code.',
+      key: 'update-promotions-loading',
+      type: 'loading',
+      content: 'Updating Promotions..',
+      duration: 0,
     });
 
-    if (selectedIndex === -1) {
-      setPromotions([...promotions, selectedPromotion]);
-    } else {
-      const updatedPromotions = promotions.map((promotion, i) => {
-        if (promotion.id === selectedPromotion.id) {
-          return selectedPromotion;
-        } else {
-          return promotion;
-        }
-      });
-      setPromotions(updatedPromotions);
+    const request: PostPromotionRequest = {
+      editingPromotion: selectedIndex !== -1,
+      promotion: selectedPromotion,
+      jwtToken: user.jwtToken
     }
 
-    setOpen(false);
+    postPromotion.mutate(request, {
+      onSuccess: (data) => {
+        console.log(data);
+        const updatedList: Promotion[] = promotions;
+        if (selectedIndex >= 0) {
+          updatedList[selectedIndex] = data;
+        } else {
+          updatedList.push(data);
+        }
+        queryClient.setQueryData([eventId], updatedList);
+
+        messageApi.destroy('update-promotions-loading');
+        messageApi.open({
+          type: 'success',
+          content: 'Successfully saved promotion.',
+        });
+        setOpen(false);
+      },
+      onError: (error) => {
+        messageApi.destroy('update-promotions-loading');
+        messageApi.open({
+          type: 'error',
+          content: "Error saving promotion",
+        });
+        return;
+      }
+    });
   }
 
-  function deletePromotion() {
-    setPromotions(
-      promotions.filter((promotion) => promotion.id !== selectedPromotion.id)
-    );
+  function deletePromotion(deletedPromotion: Promotion) {
+    messageApi.open({
+      key: 'delete-promotion-loading',
+      type: 'loading',
+      content: 'Deleting Promotion...',
+      duration: 0,
+    });
+    const request: DeletePromotionRequest = {
+      id: deletedPromotion?.id,
+      jwtToken: user.jwtToken,
+    };
+
+    deleteEventPromotion.mutate(request, {
+      onSuccess: (data: Promotion) => {
+        const updatedList: Promotion[] = promotions.filter(
+          (promotion) => promotion.id !== data?.id
+        );
+        queryClient.setQueryData([eventId], updatedList);
+
+        messageApi.destroy('delete-promotion-loading');
+        messageApi.open({
+          type: 'success',
+          content: 'Successfully deleted promotion.',
+        });
+        setOpen(false);
+      },
+      onError: (error) => {
+        messageApi.destroy('delete-promotion-loading');
+        messageApi.open({
+          type: 'error',
+          content: 'There was an error deleting the promotion, please try again',
+        });
+      },
+    });
   }
 
-  function showDrawer(ticket: any, index: number) {
-    setSelectedPromotion(ticket);
+  function showDrawer(promotion: Promotion, index: number) {
+    setSelectedPromotion(promotion);
     setSelectedIndex(index);
     setOpen(true);
   }
@@ -99,7 +116,7 @@ export default function PromotionCodesPage() {
     <div className="">
       {contextHolder}
       <div className="w-full md:max-w-md mr-8">
-        {isFetchingPromotions ? (
+        {isPending ? (
           <div className="mt-4">
             <Spinner text={'Fetching Promotions'} />
           </div>
@@ -113,7 +130,7 @@ export default function PromotionCodesPage() {
             </h2>
 
             <Button
-              onClick={() => showDrawer(new Promotion(eventId), -1)}
+              onClick={() => showDrawer(createPromotion(eventId), -1)}
               type="primary"
               className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
             >
@@ -124,7 +141,7 @@ export default function PromotionCodesPage() {
               className="demo-loadmore-list"
               itemLayout="horizontal"
               dataSource={promotions}
-              renderItem={(item, index) => (
+              renderItem={(item: Promotion, index) => (
                 <List.Item
                   actions={[
                     <Button onClick={() => showDrawer(item, index)} key="edit">
@@ -135,7 +152,7 @@ export default function PromotionCodesPage() {
                       title="Delete this promotion"
                       description="Are you sure to delete this promotion?"
                       className="time-picker-button"
-                      onConfirm={deletePromotion}
+                      onConfirm={() => deletePromotion(item)}
                       okText="Yes"
                       cancelText="No"
                     >

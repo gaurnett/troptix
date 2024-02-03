@@ -1,12 +1,23 @@
-import { allowCors, verifyUser } from '../lib/auth';
-import { sendComplementaryTicketEmailToUser } from '../lib/emailHelper';
+import { PrismaClient } from "@prisma/client";
+import { VercelRequest, VercelResponse } from "@vercel/node";
+import { allowCors } from '../lib/auth.js';
+import { sendComplementaryTicketEmailToUser } from '../lib/emailHelper.js';
 import {
   getPrismaCreateComplementaryOrderQuery,
   getPrismaCreateOrderQuery,
-} from '../lib/eventHelper';
-import prisma from '../prisma/prisma';
+} from '../lib/orderHelper.js';
+import prisma from '../prisma/prisma.js';
 
-async function handler(request, response) {
+const prismaClient = prisma as PrismaClient;
+
+type TicketOrders = {
+  quantity?: number;
+  quantitySold?: number;
+  pendingOrders?: number;
+  ticket?: any;
+}
+
+async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
 
   if (method === undefined) {
@@ -19,17 +30,11 @@ async function handler(request, response) {
     return response.status(200).end();
   }
 
-  const { userId, email } = await verifyUser(request);
-
-  if (!userId) {
-    return response.status(401).json({ error: 'Unauthorized' });
-  }
-
   switch (method) {
     case 'POST':
       return postOrders(request, response);
     case 'GET':
-      return getOrders(email, request, response);
+      return getOrders(request, response);
     case 'PUT':
       break;
     case 'DELETE':
@@ -39,7 +44,7 @@ async function handler(request, response) {
   }
 }
 
-module.exports = allowCors(handler);
+export default allowCors(handler);
 
 async function postOrders(request, response) {
   const { body, headers } = request;
@@ -123,14 +128,10 @@ async function createComplementaryOrder(body, response) {
       }
     });
 
-    console.log(orderMap);
-
     const mailResponse = await sendComplementaryTicketEmailToUser(
       order,
       orderMap
     );
-
-    console.log('Added complementary order: ' + order.id);
 
     return response.status(200).json(prismaOrder);
   } catch (e) {
@@ -141,7 +142,7 @@ async function createComplementaryOrder(body, response) {
   }
 }
 
-async function getOrders(email, request, response) {
+async function getOrders(request, response) {
   const getOrderType = request.query.getOrdersType;
 
   switch (String(getOrderType)) {
@@ -150,10 +151,12 @@ async function getOrders(email, request, response) {
       return getOrdersForUser(response, userEmail);
     case 'GET_ORDER_BY_ID': // GetOrdersType.GET_ORDER_BY_ID
       const orderId = request.query.id;
-      return getOrderById(response, orderId, email);
+      return getOrderById(response, orderId);
     case 'GET_ORDERS_FOR_EVENT': // GetOrdersType.GET_ORDERS_FOR_EVENT
       const eventId = request.query.id;
       return getOrdersForEvent(response, eventId);
+    case 'GET_PENDING_ORDERS_FOR_EVENT': // GetOrdersType.GET_ORDERS_FOR_EVENT
+      return getPendingOrdersForEvent(request, response);
     default:
       return response.status(500).json({ error: 'No get order type set' });
   }
@@ -182,13 +185,11 @@ async function getOrdersForUser(response, userEmail) {
   }
 }
 
-async function getOrderById(response, orderId, userEmail) {
+async function getOrderById(response, orderId) {
   try {
     const order = await prisma.orders.findUnique({
       where: {
         id: orderId,
-        email: userEmail,
-        status: 'COMPLETED',
       },
       include: {
         tickets: {
@@ -229,3 +230,51 @@ async function getOrdersForEvent(response, eventId) {
     return response.status(500).json({ error: 'Error fetching orders' });
   }
 }
+
+async function getPendingOrdersForEvent(request: VercelRequest, response: VercelResponse) {
+  const eventId = request.query.id as string;
+
+  try {
+    const orders = await prismaClient.orders.findMany({
+      where: {
+        eventId: eventId,
+        status: 'PENDING',
+      },
+      include: {
+        tickets: {
+          include: {
+            ticketType: true,
+          },
+        },
+      },
+    });
+
+    const pendingOrdersMap = new Map<string, TicketOrders>();
+    orders.forEach(order => {
+      order.tickets.forEach(ticket => {
+        const ticketType = ticket.ticketType;
+        const ticketTypeId = ticketType?.id as string;
+        if (pendingOrdersMap.has(ticketTypeId)) {
+          const currentOrder = pendingOrdersMap.get(ticketTypeId);
+          pendingOrdersMap.set(ticketTypeId, {
+            ...currentOrder,
+            pendingOrders: currentOrder?.pendingOrders as number + 1
+          })
+        } else {
+          pendingOrdersMap.set(ticketTypeId, {
+            quantity: ticketType?.quantity,
+            quantitySold: ticketType?.quantitySold as number,
+            pendingOrders: 1,
+            ticket: ticket
+          });
+        }
+      });
+    });
+
+    return response.status(200).json(Array.from(pendingOrdersMap));
+  } catch (e) {
+    console.error('Request error', e);
+    return response.status(500).json({ error: 'Error fetching orders' });
+  }
+}
+

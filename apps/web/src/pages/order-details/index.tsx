@@ -1,6 +1,7 @@
 import { TropTixContext } from '@/components/WebNavigator';
 import EditTicketForm from '@/components/pages/order-details/edit-ticket-form';
 import { Spinner } from '@/components/ui/spinner';
+import { OrderStatus } from '@/hooks/types/Order';
 import { Ticket } from '@/hooks/types/Ticket';
 import { useFetchOrderById } from '@/hooks/useOrders';
 import {
@@ -9,9 +10,9 @@ import {
   useCreateTicket,
 } from '@/hooks/useTicket';
 import { getDateFormatter, getFormattedCurrency } from '@/lib/utils';
+import { RedoOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, Drawer, List, Result, Typography, message } from 'antd';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
@@ -115,45 +116,6 @@ export default function OrderDetailsPage() {
     );
   }
 
-  if (showSignInError) {
-    return (
-      <div className="mt-24">
-        <Result
-          icon={
-            <div className="w-full flex justify-center text-center">
-              <Image
-                width={75}
-                height={75}
-                className="w-auto"
-                style={{ objectFit: 'contain', width: 100 }}
-                src={'/icons/tickets.png'}
-                alt={'tickets image'}
-              />
-            </div>
-          }
-          title="Please sign in or sign up with the email used to view order details"
-          extra={
-            <div>
-              <Link href={{ pathname: '/auth/signin' }} key={'login'}>
-                <Button className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
-                  Log in
-                </Button>
-              </Link>
-              <Link href={{ pathname: '/auth/signup' }} key={'signup'}>
-                <Button
-                  type="primary"
-                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
-                >
-                  Sign up
-                </Button>
-              </Link>
-            </div>
-          }
-        />
-      </div>
-    );
-  }
-
   if (!order) {
     return (
       <div className="md:w-1/2 mx-auto">
@@ -162,6 +124,19 @@ export default function OrderDetailsPage() {
           title="No Order Found"
           className="mt-32"
           subTitle="No order found with that Order ID. Your order may still be processing so keep an eye out for your email confirmation and check back later. Please contact us if you have any further questions."
+        />
+      </div>
+    );
+  }
+
+  if (order.status === OrderStatus.PENDING) {
+    return (
+      <div className="md:w-1/2 mx-auto">
+        <Result
+          icon={<RedoOutlined />}
+          title="Processing Order"
+          className="mt-32"
+          subTitle="Your order is currently processing so keep an eye out for your email confirmation and check back later. Please contact us if you have any further questions."
         />
       </div>
     );

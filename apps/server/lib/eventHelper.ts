@@ -1,13 +1,10 @@
 import {
   DelegatedAccess,
-  OrderStatus,
   Prisma,
-  PrismaClient,
-  TicketStatus,
-  TicketType,
+  PrismaClient
 } from '@prisma/client';
-import prisma from '../prisma/prisma';
-import { adminUserIds } from './experimentHelper';
+import prisma from '../prisma/prisma.js';
+import { adminUserIds } from './experimentHelper.js';
 
 const prismaClient = prisma as PrismaClient;
 
@@ -64,7 +61,7 @@ export async function getEventsScannableByOrganizerIdQuery(userId: string) {
     },
   });
 
-  let scannedEvents = [];
+  let scannedEvents: any = [];
   if (scannableEvents.length !== 0) {
     scannableEvents.forEach((scannableEvent) => {
       scannedEvents.push(scannableEvent.event);
@@ -94,7 +91,7 @@ export async function getEventsByOrganizerIdQuery(userId: string) {
     },
   });
 
-  let ownerEvents = [];
+  let ownerEvents: any = [];
   if (ownedEvents.length !== 0) {
     ownedEvents.forEach((event) => {
       ownerEvents.push(event.event);
@@ -113,6 +110,28 @@ export async function getEventByIdQuery(id: string) {
       ticketTypes: true,
     },
   });
+}
+
+export function getPrismaCreateTicketTypeQuery(ticket) {
+  let ticketInput: Prisma.TicketTypesCreateInput;
+  ticketInput = {
+    id: ticket.id,
+    name: ticket.name,
+    description: ticket.description,
+    maxPurchasePerUser: ticket.maxPurchasePerUser,
+    quantity: ticket.quantity,
+    saleStartDate: ticket.saleStartDate,
+    saleEndDate: ticket.saleEndDate,
+    price: ticket.price,
+    ticketingFees: ticket.ticketingFees,
+    event: {
+      connect: {
+        id: ticket.eventId,
+      },
+    },
+  };
+
+  return ticketInput;
 }
 
 export function getPrismaTicketTypeQuery(ticket) {
@@ -180,134 +199,4 @@ export function getPrismaCreateStarterEventQuery(event) {
   };
 
   return eventInput;
-}
-
-export function getPrismaCreateOrderQuery(order) {
-  let orderInput: Prisma.OrdersCreateInput;
-  let orderTickets: Prisma.TicketsCreateManyOrderInput[] = [];
-
-  for (const ticket of order.tickets) {
-    let ticketInput: Prisma.TicketsCreateManyOrderInput = {
-      id: ticket.id,
-      eventId: ticket.eventId,
-      ticketTypeId: ticket.ticketTypeId,
-      status: TicketStatus.NOT_AVAILABLE,
-      ticketsType: TicketType.PAID,
-      fees: ticket.fees,
-      subtotal: ticket.subtotal,
-      total: ticket.total,
-      firstName: order.firstName,
-      lastName: order.lastName,
-      email: order.email,
-    };
-
-    if (order.userId) {
-      ticketInput = {
-        ...ticketInput,
-        userId: order.userId,
-      };
-    }
-
-    orderTickets.push(ticketInput);
-  }
-
-  orderInput = {
-    id: order.id,
-    stripePaymentId: order.stripePaymentId,
-    stripeCustomerId: order.stripeCustomerId,
-    total: order.total,
-    fees: order.fees,
-    subtotal: order.subtotal,
-    name: order.name,
-    firstName: order.firstName,
-    lastName: order.lastName,
-    email: order.email,
-    telephoneNumber: order.telephoneNumber,
-    billingAddress1: order.billingAddress1,
-    billingAddress2: order.billingAddress2,
-    billingCity: order.billingCity,
-    billingCountry: order.billingCountry,
-    billingZip: order.billingZip,
-    billingState: order.billingState,
-    ticketsLink: order.ticketsLink,
-    event: {
-      connect: {
-        id: order.eventId,
-      },
-    },
-    tickets: {
-      createMany: {
-        data: orderTickets,
-      },
-    },
-  };
-
-  if (order.userId !== undefined) {
-    orderInput = {
-      ...orderInput,
-      user: {
-        connect: {
-          id: order.userId,
-        },
-      },
-    };
-  }
-
-  return orderInput;
-}
-
-export function getPrismaCreateComplementaryOrderQuery(order) {
-  let orderInput: Prisma.OrdersCreateInput;
-  let orderTickets: Prisma.TicketsCreateManyOrderInput[] = [];
-
-  for (const ticket of order.tickets) {
-    orderTickets.push({
-      id: ticket.id,
-      eventId: order.eventId,
-      ticketTypeId: ticket.ticketTypeId,
-      status: TicketStatus.AVAILABLE,
-      ticketsType: TicketType.COMPLEMENTARY,
-      total: 0,
-      fees: 0,
-      subtotal: 0,
-      firstName: order.firstName,
-      lastName: order.lastName,
-      email: order.email,
-    });
-  }
-
-  orderInput = {
-    id: order.id,
-    status: OrderStatus.COMPLETED,
-    total: 0,
-    subtotal: 0,
-    fees: 0,
-    firstName: order.firstName,
-    lastName: order.lastName,
-    ticketsLink: order.ticketsLink,
-    email: order.email,
-    event: {
-      connect: {
-        id: order.eventId,
-      },
-    },
-    tickets: {
-      createMany: {
-        data: orderTickets,
-      },
-    },
-  };
-
-  if (order.userId !== undefined) {
-    orderInput = {
-      ...orderInput,
-      user: {
-        connect: {
-          id: order.userId,
-        },
-      },
-    };
-  }
-
-  return orderInput;
 }
