@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "engines": {
     "node": "20.x"
@@ -62,5 +64,8 @@
     "troptix-api": "*",
     "troptix-models": "*",
     "typescript": "5.2.2"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^14.2.0"
   }
 }

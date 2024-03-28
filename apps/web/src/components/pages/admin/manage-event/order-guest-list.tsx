@@ -1,3 +1,4 @@
+import { TropTixContext } from '@/components/WebNavigator';
 import { Ticket, TicketStatus } from '@/hooks/types/Ticket';
 import {
   PostTicketRequest,
@@ -5,7 +6,7 @@ import {
   useCreateTicket,
 } from '@/hooks/useTicket';
 import { Button, Input, List, Popconfirm, message } from 'antd';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { CSVLink } from 'react-csv';
 
 type GuestListRow = {
@@ -16,6 +17,7 @@ type GuestListRow = {
 };
 
 export default function OrderGuestListPage({ orders }) {
+  const { user } = useContext(TropTixContext);
   const [searchValue, setSearchValue] = useState('');
   const [guests, setGuests] = useState<Ticket[]>([]);
   const [originalList, setOriginalList] = useState<Ticket[]>([]);
@@ -102,6 +104,7 @@ export default function OrderGuestListPage({ orders }) {
     const request: PostTicketRequest = {
       type: PostTicketType.UPDATE_STATUS,
       ticket: updatedTicket,
+      jwtToken: user.jwtToken
     };
 
     createTicket.mutate(request, {
