@@ -1,7 +1,7 @@
 datasource db {
-  provider     = "mysql"
-  url          = env("DATABASE_URL")
-  relationMode = "prisma"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // relationMode = "prisma"
 }
 
 generator client {
@@ -38,6 +38,7 @@ model Users {
 }
 
 enum SocialMediaAccountType {
+  UNKNOWN
   FACEBOOK
   INSTAGRAM
   TIKTOK
@@ -46,8 +47,8 @@ enum SocialMediaAccountType {
 
 model SocialMediaAccounts {
   id                     String                 @id @default(uuid())
-  socialMediaAccountType SocialMediaAccountType
-  link                   String
+  socialMediaAccountType SocialMediaAccountType @default(UNKNOWN)
+  link                   String?
   user                   Users?                 @relation(fields: [userId], references: [id])
   userId                 String?
 
@@ -173,6 +174,7 @@ model Events {
 }
 
 enum PromotionType {
+  UNKNOWN
   PERCENTAGE
   DOLLAR_AMOUNT
 }
@@ -183,7 +185,7 @@ model Promotions {
   updatedAt DateTime @updatedAt
 
   code          String
-  promotionType PromotionType
+  promotionType PromotionType @default(UNKNOWN)
   value         Float
   event         Events?       @relation(fields: [eventId], references: [id])
   eventId       String?
