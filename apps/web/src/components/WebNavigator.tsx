@@ -15,7 +15,6 @@ import {
 import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/router';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { app, auth } from '../config';
 import Header from './ui/header';
@@ -37,11 +36,11 @@ export const TropTixContext = createContext({
 
 export const useTropTixContext = () => useContext(TropTixContext);
 
-export default function WebNavigator({ Component, pageProps }: AppProps) {
+export default function WebNavigator({ Component, pageProps, router }: AppProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {
     if (
@@ -136,7 +135,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
                 </div>
               ) : (
                 <div>
-                  {user && <AdminDashboard Component={Component} pageProps={pageProps} />}
+                  {user && <AdminDashboard Component={Component} pageProps={pageProps} router={router} />}
                 </div>
               )}
             </div>
