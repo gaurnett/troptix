@@ -4,12 +4,12 @@ import {
   CustomTextArea,
   CustomTimeField,
 } from '@/components/ui/input';
-import Autocomplete from 'react-google-autocomplete';
-import { Button, message, Form } from 'antd';
-import { useRouter } from 'next/router';
 import { RequestType } from '@/hooks/useFetchEvents';
 import { useCreateEvent } from '@/hooks/usePostEvent';
 import { useQueryClient } from '@tanstack/react-query';
+import { Button, Form, message } from 'antd';
+import { useRouter } from 'next/router';
+import Autocomplete from 'react-google-autocomplete';
 
 export default function AddEventFormPage({ event, setEvent }) {
   const [messageApi, contextHolder] = message.useMessage();
@@ -141,7 +141,7 @@ export default function AddEventFormPage({ event, setEvent }) {
   }
 
   return (
-    <div className="w-full md:max-w-xl mx-auto">
+    <div className="w-full md:max-w-xl">
       {contextHolder}
       <Form name="basic" onFinish={onFinish} className="mx-4">
         <h2

@@ -16,74 +16,62 @@ export default function ManageEventsPage() {
   });
 
   return (
-    <div className="w-full md:max-w-2xl mx-auto">
-      <div>
-        <h1
-          className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
-          data-aos="zoom-y-out"
-        >
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">
-            Manage Events
-          </span>
-        </h1>
-        {!isPending ? (
-          <div className="gap-8 pb-16 mt-8">
-            <List
-              itemLayout="vertical"
-              size="large"
-              dataSource={data}
-              renderItem={(event: any) => (
-                <List.Item>
-                  <Link
-                    key={event.id}
-                    href={{
-                      pathname: '/admin/manage-event',
-                      query: { eventId: event.id },
-                    }}
-                  >
-                    <div className="flex">
-                      <div>
-                        <Image
-                          width={110}
-                          height={110}
-                          className="w-auto"
-                          style={{
-                            objectFit: 'cover',
-                            width: 150,
-                            height: 150,
-                          }}
-                          src={
-                            event.imageUrl !== null
-                              ? event.imageUrl
-                              : 'https://placehold.co/400x400?text=Add+Event+Flyer'
-                          }
-                          alt={'event flyer image'}
-                        />
+    <div className='w-full md:max-w-2xl'>
+      {!isPending ? (
+        <div className="gap-8 pb-16">
+          <List
+            itemLayout="vertical"
+            size="large"
+            dataSource={data}
+            renderItem={(event: any) => (
+              <List.Item style={{ width: 325 }}>
+                <Link
+                  key={event.id}
+                  href={{
+                    pathname: '/admin/manage-event',
+                    query: { eventId: event.id },
+                  }}
+                >
+                  <div className="border rounded-md">
+                    <Image
+                      width={1150}
+                      height={110}
+                      className="w-auto rounded"
+                      style={{
+                        objectFit: 'cover',
+                        width: 350,
+                        height: 250,
+                      }}
+                      src={
+                        event.imageUrl !== null
+                          ? event.imageUrl
+                          : 'https://placehold.co/400x400?text=Add+Event+Flyer'
+                      }
+                      alt={'event flyer image'}
+                    />
+                    <div className="m-2">
+                      <div className="font-bold text-xl">{event.name}</div>
+                      <div className="text-base">{event.address}</div>
+                      <div className="text-blue-500 text-base">
+                        {new Date(event.startDate).toDateString()}
                       </div>
-                      <div className="ml-4 my-auto">
-                        <div className="font-bold text-xl">{event.name}</div>
-                        <div className="text-base">{event.address}</div>
-                        <div className="text-blue-500 text-base">
-                          {new Date(event.startDate).toDateString()}
-                        </div>
-                        <div
-                          className={`${event.isDraft ? 'text-amber-900' : 'text-green-600'} text-amber-900 text-base`}
-                        >
-                          Status: {event.isDraft ? 'Draft' : 'Published'}
-                        </div>
+                      <div
+                        className={`${event.isDraft ? 'text-amber-900' : 'text-green-600'} text-amber-900 text-base`}
+                      >
+                        Status: {event.isDraft ? 'Draft' : 'Published'}
                       </div>
                     </div>
-                  </Link>
-                </List.Item>
-              )}
-            />
-          </div>
-        ) : (
-          <div className="mt-8">
-            <Spinner text={'Fetching Events'} />
-          </div>
-        )}
-      </div>
+                  </div>
+                </Link>
+              </List.Item>
+            )}
+          />
+        </div>
+      ) : (
+        <div className="mt-8">
+          <Spinner text={'Fetching Events'} />
+        </div>
+      )}
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { TROPTIX_ORGANIZER_ALLOW_LIST } from '@/firebase/remoteConfig';
 import { User, initializeUser } from '@/hooks/types/User';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Analytics } from '@vercel/analytics/react';
 import { Spin } from 'antd';
@@ -17,7 +18,6 @@ import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/router';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { app, auth } from '../config';
-import AdminHeader from './ui/admin-header';
 import Header from './ui/header';
 
 const inter = Inter({
@@ -136,16 +136,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
                 </div>
               ) : (
                 <div>
-                  {user === null ? (
-                    <></>
-                  ) : (
-                    <>
-                      <AdminHeader />
-                      <div className="flex-grow mt-32">
-                        <Component {...pageProps} />
-                      </div>
-                    </>
-                  )}
+                  {user && <AdminDashboard Component={Component} pageProps={pageProps} />}
                 </div>
               )}
             </div>
