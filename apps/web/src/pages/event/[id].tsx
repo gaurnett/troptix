@@ -3,6 +3,7 @@ import TicketDrawer from '@/components/pages/event/ticket-drawer';
 import TicketModal from '@/components/pages/event/ticket-modal';
 import { Spinner } from '@/components/ui/spinner';
 import { MetaHead } from '@/components/utils/MetaHead';
+import { useEvent } from '@/hooks/useEvents';
 import {
   RequestType,
   eventFetcher,
@@ -80,13 +81,7 @@ export default function EventDetailPage(props) {
     isError,
     data: event,
     error,
-  } = useFetchEventsById(
-    {
-      requestType: RequestType.GET_EVENTS_BY_ID,
-      id: eventId,
-    },
-    props.event
-  );
+  } = useEvent(eventId, props.event);
 
   function closeSignInModal() {
     setIsSignInModalOpen(false);
@@ -138,9 +133,10 @@ export default function EventDetailPage(props) {
       />
       <div
         style={{
-          backgroundImage: `url("${event?.imageUrl ??
+          backgroundImage: `url("${
+            event?.imageUrl ??
             'https://placehold.co/400x400?text=Add+Event+Flyer'
-            }")`,
+          }")`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           WebkitBackgroundSize: 'cover',

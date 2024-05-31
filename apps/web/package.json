@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "postinstall": "prisma generate"
   },
   "engines": {
     "node": "20.x"
@@ -16,6 +17,7 @@
   "dependencies": {
     "@headlessui/react": "^1.7.17",
     "@nextui-org/react": "^2.1.13",
+    "@prisma/client": "^5.14.0",
     "@radix-ui/react-slot": "^1.0.2",
     "@react-google-maps/api": "^2.19.2",
     "@react-pdf/renderer": "^3.1.14",
@@ -28,6 +30,7 @@
     "@vercel/analytics": "^1.1.1",
     "antd": "^5.11.1",
     "autoprefixer": "10.4.15",
+    "axios": "^1.7.2",
     "chart.js": "^4.4.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
@@ -66,6 +69,7 @@
     "typescript": "5.2.2"
   },
   "devDependencies": {
-    "@testing-library/react": "^14.2.0"
+    "@testing-library/react": "^14.2.0",
+    "prisma": "^5.14.0"
   }
 }
