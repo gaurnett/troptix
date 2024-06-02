@@ -37,7 +37,7 @@ export default function AdminSidebar() {
       {renderItem({
         path: "/admin/manage-events",
         title: "Manage Events",
-        isCurrent: pathname.includes('/manage-event'),
+        isCurrent: pathname.includes('/manage-event') || pathname === "/admin",
         icon: <SquareGanttChart className="h-5 w-5" />
       })}
 

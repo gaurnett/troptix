@@ -24,7 +24,7 @@ export default function ManageEventsPage() {
             size="large"
             dataSource={data}
             renderItem={(event: any) => (
-              <List.Item style={{ width: 325 }}>
+              <List.Item className='xs:w-full md:w-80'>
                 <Link
                   key={event.id}
                   href={{
@@ -32,11 +32,11 @@ export default function ManageEventsPage() {
                     query: { eventId: event.id },
                   }}
                 >
-                  <div className="border rounded-md">
+                  <div className="border rounded-xl">
                     <Image
-                      width={1150}
+                      width={110}
                       height={110}
-                      className="w-auto rounded"
+                      className="w-auto rounded-t-xl"
                       style={{
                         objectFit: 'cover',
                         width: 350,
