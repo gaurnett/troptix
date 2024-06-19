@@ -6,8 +6,7 @@ import { MetaHead } from '@/components/utils/MetaHead';
 import { useEvent } from '@/hooks/useEvents';
 import {
   RequestType,
-  eventFetcher,
-  useFetchEventsById,
+  eventFetcher
 } from '@/hooks/useFetchEvents';
 import { getDateFormatter, getFormattedCurrency } from '@/lib/utils';
 import { Button, Modal, Result, Typography } from 'antd';
@@ -133,10 +132,9 @@ export default function EventDetailPage(props) {
       />
       <div
         style={{
-          backgroundImage: `url("${
-            event?.imageUrl ??
+          backgroundImage: `url("${event?.imageUrl ??
             'https://placehold.co/400x400?text=Add+Event+Flyer'
-          }")`,
+            }")`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           WebkitBackgroundSize: 'cover',

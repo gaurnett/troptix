@@ -1,7 +1,7 @@
 import { TropTixContext } from '@/components/WebNavigator';
 import { FetchEventOptions } from '@/pages/api/events/[[...slug]]';
 import { Prisma } from '@prisma/client';
-import { useQuery, useMutation, QueryClient } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useContext } from 'react';
 
