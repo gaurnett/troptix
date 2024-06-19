@@ -2,6 +2,7 @@
 
 import { TROPTIX_ORGANIZER_ALLOW_LIST } from '@/firebase/remoteConfig';
 import { User, initializeUser } from '@/hooks/types/User';
+import { cn } from '@/lib/utils';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Analytics } from '@vercel/analytics/react';
@@ -120,9 +121,12 @@ export default function WebNavigator({ Component, pageProps, router }: AppProps)
           />
         </>
       ) : (
-        <div className="mx-auto ">
+        <div className={cn(
+          "min-h-screen font-sans antialiased mx-auto",
+          inter.variable
+        )}>
           <div
-            className={`${inter.variable} font-inter antialiased bg-white text-gray-900 tracking-tight`}
+            className={`${inter.variable} font-inter antialiased text-gray-900 tracking-tight`}
           >
             <div className="flex flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
               <Analytics />

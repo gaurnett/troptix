@@ -2,39 +2,64 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 import {
+  Input as AntdInput,
   DatePicker,
-  DatePickerProps,
-  Form,
-  Input,
   InputNumber,
-  TimePicker,
+  TimePicker
 } from 'antd';
-import { DatePickerType, RangePickerProps } from 'antd/es/date-picker';
+import { RangePickerProps } from 'antd/es/date-picker';
 import { format } from 'date-fns';
 import dayjs from 'dayjs';
+import { Label } from './label';
 // import TextArea from "antd/es/input/TextArea";
 
-const { TextArea } = Input;
+const { TextArea } = AntdInput;
 
 export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {}
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  labelValue?: string;
+  containerClass?: string;
+}
 
-const Input2 = React.forwardRef<HTMLInputElement, InputProps>(
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
       <input
         type={type}
         className={cn(
-          'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
         ref={ref}
         {...props}
       />
-    );
+    )
   }
-);
-Input2.displayName = 'Input';
+)
+Input.displayName = "Input"
+
+const InputWithLabel = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ id, labelValue, containerClass, className, type, ...props }, ref) => {
+    return (
+      <div className={containerClass}>
+        <Label htmlFor={id}>
+          {labelValue}
+        </Label>
+        <input
+          id={id}
+          type={type}
+          className={cn(
+            "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+            className
+          )}
+          ref={ref}
+          {...props}
+        />
+      </div>
+    )
+  }
+)
+InputWithLabel.displayName = "InputWithLabel"
 
 function CustomInput({
   name,
@@ -50,7 +75,7 @@ function CustomInput({
   prefix = '',
 }) {
   return (
-    <div>
+    <div className="grid w-full max-w-sm items-center gap-1.5">
       <label
         className="block text-gray-800 text-sm font-medium mb-1"
         htmlFor={id}
@@ -58,7 +83,7 @@ function CustomInput({
         {label}
       </label>
       {password ? (
-        <Input.Password
+        <AntdInput.Password
           onChange={handleChange}
           name={name}
           value={value}
@@ -70,7 +95,7 @@ function CustomInput({
           required={required}
         />
       ) : (
-        <Input
+        <AntdInput
           onChange={handleChange}
           name={name}
           value={value}
@@ -254,10 +279,8 @@ function CustomTimeField({
 }
 
 export {
-  Input,
-  CustomInput,
+  CustomDateField, CustomInput,
   CustomNumberInput,
-  CustomTextArea,
-  CustomDateField,
-  CustomTimeField,
+  CustomTextArea, CustomTimeField, Input, InputWithLabel
 };
+

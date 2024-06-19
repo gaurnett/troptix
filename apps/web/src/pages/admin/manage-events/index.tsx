@@ -32,7 +32,7 @@ export default function ManageEventsPage() {
                     query: { eventId: event.id },
                   }}
                 >
-                  <div className="border rounded-xl">
+                  <div className="border border-gray-200 rounded-xl">
                     <Image
                       width={110}
                       height={110}

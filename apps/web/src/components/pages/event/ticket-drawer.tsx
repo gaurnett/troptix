@@ -1,4 +1,5 @@
 import { TropTixContext } from '@/components/WebNavigator';
+import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { Checkout, initializeCheckout } from '@/hooks/types/Checkout';
 import { TicketType } from '@/hooks/types/Ticket';
@@ -7,7 +8,7 @@ import { useCreatePaymentIntent } from '@/hooks/usePostStripe';
 import { checkOrderValidity, useFetchTicketTypesForCheckout } from '@/hooks/useTicketType';
 import { getFormattedCurrency } from '@/lib/utils';
 import { ShoppingCartOutlined } from '@ant-design/icons';
-import { Button, Drawer, List, Steps, message, notification } from 'antd';
+import { Drawer, List, Steps, message, notification } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import CheckoutForm from './checkout';
 import TicketsCheckoutForm from './tickets-checkout-forms';
@@ -330,12 +331,11 @@ export default function TicketDrawer({
                 )}
               </div>
             </div>
-            <footer className="border-t">
+            <footer className="border-t border-gray-200">
               <div className="flex flex-end content-end items-end self-end mt-4">
                 <Button
-                  type="primary"
                   onClick={closeSummary}
-                  className="w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
+                  className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
                 >
                   Close
                 </Button>
@@ -369,9 +369,9 @@ export default function TicketDrawer({
                 <div className="grow">{checkoutSteps[current].content}</div>
             }
           </div>
-          <footer className="border-t px-6 pb-6">
+          <footer className="border-t border-gray-200 px-6 pb-6">
             <div className="flex mt-4">
-              <div className="text-xl mr-2">
+              <div className="text-xl mr-2 my-auto">
                 {getFormattedCurrency(
                   checkout.promotionApplied
                     ? checkout.discountedTotal
@@ -381,7 +381,7 @@ export default function TicketDrawer({
               <div>
                 <Button
                   onClick={() => setSummaryDrawerOpen(true)}
-                  type="text"
+                  variant={'ghost'}
                   className="text-blue-500"
                 >
                   Order Summary
@@ -391,9 +391,8 @@ export default function TicketDrawer({
             <div className="flex flex-end content-end items-end self-end mt-4">
               {current === 0 && (
                 <Button
-                  type="primary"
                   onClick={next}
-                  className="w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
+                  className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
                 >
                   Continue
                 </Button>
@@ -401,10 +400,9 @@ export default function TicketDrawer({
               {current === 1 && (
                 <div className="flex w-full">
                   <Button
-                    type="primary"
                     onClick={completeStripePayment}
                     disabled={!clientSecret}
-                    className="ml-2 w-full px-6 py-6 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
+                    className="ml-2 w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
                   >
                     Complete Purchase
                   </Button>
