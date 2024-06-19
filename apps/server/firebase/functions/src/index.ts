@@ -4,7 +4,7 @@ import { defineString } from 'firebase-functions/params';
 import axios from 'axios';
 
 // Set the default URL for production
-const defaultUrl = 'https://troptix-web-s5n5-git-main-troptix.vercel.app';
+const defaultUrl = 'https://troptix-p8zh-git-main-troptix.vercel.app';
 
 // Set the URL based on the environment
 const url = defineString('URL') || defaultUrl;
