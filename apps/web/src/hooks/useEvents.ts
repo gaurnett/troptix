@@ -1,7 +1,7 @@
 import { TropTixContext } from '@/components/WebNavigator';
 import { FetchEventOptions } from '@/pages/api/events/[[...slug]]';
 import { Prisma } from '@prisma/client';
-import { useQuery, useMutation, QueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { useContext } from 'react';
 
@@ -44,7 +44,7 @@ export const useEvent = (id: string, intialData) => {
 
 // Create a new event
 export const useCreateEvent = () => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (event: Prisma.EventsCreateInput) => {
       const response = await axios.post('/api/events', event, {
@@ -63,7 +63,7 @@ export const useCreateEvent = () => {
 
 // Update an event
 export const useUpdateEvent = () => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (event: Prisma.EventsUpdateInput) => {
       const response = await axios.put(`/api/events/${event.id}`, event, {
@@ -83,7 +83,7 @@ export const useUpdateEvent = () => {
 
 // Delete an event
 export const useDeleteEvent = () => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
       const response = await axios.delete(`/api/events/${id}`);
