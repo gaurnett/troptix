@@ -5,10 +5,10 @@ import { ButtonWithIcon } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
 import { DividerWithText, TypographyH1, TypographyH4, TypographyP } from '@/components/ui/typography';
 import { MetaHead } from '@/components/utils/MetaHead';
+import { useEvent } from '@/hooks/useEvents';
 import {
   RequestType,
-  eventFetcher,
-  useFetchEventsById,
+  eventFetcher
 } from '@/hooks/useFetchEvents';
 import { getDateRangeFormatter, getFormattedCurrency, getTimeRangeFormatter } from '@/lib/utils';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
@@ -82,13 +82,7 @@ export default function EventDetailPage(props) {
     isError,
     data: event,
     error,
-  } = useFetchEventsById(
-    {
-      requestType: RequestType.GET_EVENTS_BY_ID,
-      id: eventId,
-    },
-    props.event
-  );
+  } = useEvent(eventId, props.event);
 
   function handleCancel() {
     console.log("Hello World 2");
