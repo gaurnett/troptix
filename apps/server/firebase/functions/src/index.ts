@@ -3,7 +3,7 @@ import { logger } from 'firebase-functions';
 import { defineString } from 'firebase-functions/params';
 import axios from 'axios';
 
-// Set the default URL for production
+// Set the default URL if there's an error with the url it will default to the development endpoint
 const defaultUrl = 'https://troptix-p8zh-git-main-troptix.vercel.app';
 
 // Set the URL based on the environment
