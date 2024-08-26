@@ -50,7 +50,7 @@ export function isInputBad(value: string): boolean {
 }
 
 export function calculateFees(price) {
-  const fee = price * 0.045 + 0.3;
+  const fee = price * 0.04 + 0.3;
   const tax = fee * 0.15;
   return normalizePrice(fee + tax);
 }
