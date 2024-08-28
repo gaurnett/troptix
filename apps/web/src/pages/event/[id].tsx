@@ -9,12 +9,13 @@ import {
   eventFetcher,
   useFetchEventsById,
 } from '@/hooks/useFetchEvents';
+import { useScreenSize } from '@/hooks/useScreenSize';
 import { getDateFormatter, getFormattedCurrency } from '@/lib/utils';
 import { Button, Modal, Result, Typography } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { IoTicket } from 'react-icons/io5';
 const { Paragraph } = Typography;
 
@@ -57,25 +58,7 @@ export default function EventDetailPage(props) {
   const eventId = router.query.id as string;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' && window.innerWidth < 768
-  );
-
-  useEffect(() => {
-    function handleResize() {
-      setIsMobile(window.innerWidth < 768);
-    }
-
-    if (typeof window !== 'undefined') {
-      handleResize();
-    }
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [isMobile]);
-
+  const { isMobile } = useScreenSize();
   const {
     isPending,
     isError,
