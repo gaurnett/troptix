@@ -65,7 +65,6 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
             <SheetTrigger asChild>
               <Button
                 variant="outline"
-                size="icon"
                 className="shrink-0 md:hidden"
               >
                 <Menu className="h-5 w-5" />
@@ -78,7 +77,7 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
           </Sheet>
           <div className="w-full flex-1">
           </div>
-          <div>
+          <div className="mr-2">
             <ul className="flex justify-end">
               <Dropdown className="cursor-pointer" menu={{ items }}>
                 <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
@@ -88,27 +87,6 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
               </Dropdown>
             </ul>
           </div>
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex cursor-pointer">
-                <span className="mr-4 my-auto">
-                  {user.email}
-                </span>
-                <Button variant="secondary" size="icon" className="rounded-full">
-                  <CircleUser className="h-5 w-5" />
-                  <span className="sr-only">Toggle user menu</span>
-                </Button>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
         </header>
         <main className="flex flex-1 flex-col gap-4 lg:gap-6 lg:p-6">
           <Component {...pageProps} />
