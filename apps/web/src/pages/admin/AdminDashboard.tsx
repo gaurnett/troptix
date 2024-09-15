@@ -10,7 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps } from 'antd';
 import { AppProps } from 'next/app';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import Logo from "../../components/ui/logo";
 import { auth } from '../../config';
 
@@ -64,7 +64,6 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
           <Sheet>
             <SheetTrigger asChild>
               <Button
-                variant="outline"
                 className="shrink-0 md:hidden"
               >
                 <Menu className="h-5 w-5" />
