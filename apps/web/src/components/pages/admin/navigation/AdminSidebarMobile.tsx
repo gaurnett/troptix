@@ -6,8 +6,8 @@ import {
 import Link from "next/link";
 
 import { usePathname } from "next/navigation";
+import React from 'react';
 import Logo from "../../../ui/logo";
-import React = require("react");
 
 interface Item {
   path: string;

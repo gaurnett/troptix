@@ -10,10 +10,9 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps } from 'antd';
 import { AppProps } from 'next/app';
-import { useContext } from "react";
+import React, { useContext } from 'react';
 import Logo from "../../components/ui/logo";
 import { auth } from '../../config';
-import React = require("react");
 
 export default function AdminDashboard({ Component, pageProps }: AppProps) {
   const { user } = useContext(TropTixContext);
