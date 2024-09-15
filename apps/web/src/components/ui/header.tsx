@@ -10,6 +10,7 @@ import { usePathname } from 'next/navigation';
 import { auth } from '../../config';
 import { TropTixContext } from '../WebNavigator';
 import MobileMenu from './mobile-menu';
+import React = require('react');
 
 export default function Header() {
   const [top, setTop] = useState<boolean>(true);

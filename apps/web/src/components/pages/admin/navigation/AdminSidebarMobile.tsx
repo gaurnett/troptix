@@ -1,14 +1,13 @@
 
 import {
-  AreaChart,
   Plus,
-  ShoppingCart,
-  SquareGanttChart,
-  Users
+  SquareGanttChart
 } from "lucide-react";
 import Link from "next/link";
 
 import { usePathname } from "next/navigation";
+import Logo from "../../../ui/logo";
+import React = require("react");
 
 interface Item {
   path: string;
@@ -19,6 +18,7 @@ interface Item {
 
 export default function AdminSidebarMobile() {
   const pathname = usePathname();
+  const logoSize = 40;
 
   function renderItem(item: Item) {
     return (
@@ -34,11 +34,9 @@ export default function AdminSidebarMobile() {
 
   return (
     <nav className="grid gap-2 text-lg font-medium">
-      <Link
-        href="/"
-        className="flex items-center gap-2 text-lg font-semibold"
-      >
-        <span>TropTix</span>
+      <Link href="/" className="flex items-center gap-2 font-semibold">
+        <Logo width={logoSize} height={logoSize} />
+        <span className="">TropTix Admin</span>
       </Link>
 
       {renderItem({
@@ -53,27 +51,6 @@ export default function AdminSidebarMobile() {
         title: "Add Event",
         isCurrent: pathname.includes('add-event'),
         icon: <Plus className="h-5 w-5" />
-      })}
-
-      {renderItem({
-        path: "/admin/orders",
-        title: "Orders",
-        isCurrent: pathname.includes('orders'),
-        icon: <ShoppingCart className="h-5 w-5" />
-      })}
-
-      {renderItem({
-        path: "/admin/finances",
-        title: "Finances",
-        isCurrent: pathname.includes('finances'),
-        icon: <AreaChart className="h-5 w-5" />
-      })}
-
-      {renderItem({
-        path: "/admin/organization-settings",
-        title: "Organization Settings",
-        isCurrent: pathname.includes('organization-settings'),
-        icon: <Users className="h-5 w-5" />
       })}
     </nav>
   )

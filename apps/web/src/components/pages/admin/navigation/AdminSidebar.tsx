@@ -1,10 +1,7 @@
 
 import {
-  AreaChart,
   Plus,
-  ShoppingCart,
-  SquareGanttChart,
-  Users
+  SquareGanttChart
 } from "lucide-react";
 import Link from "next/link";
 
@@ -48,7 +45,7 @@ export default function AdminSidebar() {
         icon: <Plus className="h-5 w-5" />
       })}
 
-      {renderItem({
+      {/* {renderItem({
         path: "/admin/orders",
         title: "Orders",
         isCurrent: pathname.includes('orders'),
@@ -67,7 +64,7 @@ export default function AdminSidebar() {
         title: "Organization Settings",
         isCurrent: pathname.includes('organization-settings'),
         icon: <Users className="h-5 w-5" />
-      })}
+      })} */}
 
     </nav>
   )

@@ -1,38 +1,49 @@
-
-// export default function AdminPage({ children }) {
-//   return (
-//     <div>
-//       <ManageEventsPage />
-//     </div>
-//   );
-// }
-
 import {
-  Bell,
-  CircleUser,
-  Menu,
-  Package2
+  Menu
 } from "lucide-react";
 import Link from "next/link";
 
 import { TropTixContext } from "@/components/WebNavigator";
 import AdminSidebar from "@/components/pages/admin/navigation/AdminSidebar";
 import AdminSidebarMobile from "@/components/pages/admin/navigation/AdminSidebarMobile";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { DownOutlined } from '@ant-design/icons';
+import { Button, Dropdown, MenuProps } from 'antd';
 import { AppProps } from 'next/app';
 import { useContext } from "react";
+import Logo from "../../components/ui/logo";
+import { auth } from '../../config';
+import React = require("react");
 
 export default function AdminDashboard({ Component, pageProps }: AppProps) {
   const { user } = useContext(TropTixContext);
+  const logoSize = 40;
+
+  let items: MenuProps['items'];
+
+  async function signOut() {
+    auth
+    await auth.signOut();
+  }
+
+  items = [
+    {
+      key: '1',
+      label: (
+        <Link rel="noopener noreferrer" href="/">
+          Return to TropTix
+        </Link>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <a onClick={signOut} rel="noopener noreferrer">
+          Sign Out
+        </a>
+      ),
+    },
+  ];
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -40,13 +51,9 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b border-gray-200 px-4 lg:h-[60px] lg:px-6">
             <Link href="/" className="flex items-center gap-2 font-semibold">
-              <Package2 className="h-6 w-6" />
-              <span className="">TropTix</span>
+              <Logo width={logoSize} height={logoSize} />
+              <span className="">TropTix Admin</span>
             </Link>
-            <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
-              <Bell className="h-4 w-4" />
-              <span className="sr-only">Toggle notifications</span>
-            </Button>
           </div>
           <div className="flex-1">
             <AdminSidebar />
@@ -72,7 +79,17 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
           </Sheet>
           <div className="w-full flex-1">
           </div>
-          <DropdownMenu>
+          <div>
+            <ul className="flex justify-end">
+              <Dropdown className="cursor-pointer" menu={{ items }}>
+                <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
+                  <div style={{ fontSize: '16px' }}>{user.email}</div>
+                  <DownOutlined className="ml-1 text-xs" />
+                </a>
+              </Dropdown>
+            </ul>
+          </div>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex cursor-pointer">
                 <span className="mr-4 my-auto">
@@ -92,7 +109,7 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
               <DropdownMenuSeparator />
               <DropdownMenuItem>Logout</DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </header>
         <main className="flex flex-1 flex-col gap-4 lg:gap-6 lg:p-6">
           <Component {...pageProps} />
