@@ -7,10 +7,10 @@ import { Button, Dropdown, MenuProps } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import React from 'react';
 import { auth } from '../../config';
 import { TropTixContext } from '../WebNavigator';
 import MobileMenu from './mobile-menu';
-import React = require('react');
 
 export default function Header() {
   const [top, setTop] = useState<boolean>(true);
