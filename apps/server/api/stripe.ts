@@ -67,6 +67,8 @@ async function postOrders(request, response) {
 async function createCharge(body, response) {
   const charge = body.charge;
 
+  console.log("Creating charge for " + JSON.stringify(charge));
+
   if (charge === undefined || charge.total === undefined) {
     return response
       .status(500)

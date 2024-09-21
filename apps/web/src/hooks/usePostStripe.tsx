@@ -38,6 +38,8 @@ function createCharge(checkout: Checkout): Charge {
   const totalPrice = checkout?.total as number;
   const total = totalPrice * 100;
 
+  console.log("Charing: $" + total);
+
   const charge: Charge = {
     total: Math.round(total),
     userId: checkout.userId as string,
