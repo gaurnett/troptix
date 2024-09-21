@@ -11,9 +11,6 @@ export interface Checkout {
   total?: number;
   subtotal?: number;
   fees?: number;
-  discountedSubtotal?: number;
-  discountedTotal?: number;
-  discountedFees?: number;
   promotionApplied?: boolean;
   telephoneNumber?: string;
   billingAddress1?: string;
@@ -37,9 +34,6 @@ export function initializeCheckout(user: any, eventId: string): Checkout {
     total: 0,
     subtotal: 0,
     fees: 0,
-    discountedSubtotal: 0,
-    discountedTotal: 0,
-    discountedFees: 0,
     promotionApplied: false,
     telephoneNumber: '',
     billingAddress1: '',
