@@ -288,18 +288,10 @@ export default function TicketDrawer({
                       <div className="ml-4">
                         <div className="ml-4">
                           <div className="text-base text-end">
-                            {getFormattedCurrency(
-                              checkout.promotionApplied
-                                ? checkout.discountedSubtotal
-                                : checkout.subtotal
-                            )}
+                            {getFormattedCurrency(checkout.subtotal)}
                           </div>
                           <div className="text-base text-end">
-                            {getFormattedCurrency(
-                              checkout.promotionApplied
-                                ? checkout.discountedFees
-                                : checkout.fees
-                            )}
+                            {getFormattedCurrency(checkout.fees)}
                           </div>
                         </div>
                       </div>
@@ -316,11 +308,7 @@ export default function TicketDrawer({
                       <div className="ml-4">
                         <div className="ml-4">
                           <div className="text-2xl font-bold">
-                            {getFormattedCurrency(
-                              checkout.promotionApplied
-                                ? checkout.discountedTotal
-                                : checkout.total
-                            )}{' '}
+                            {getFormattedCurrency(checkout.total)}{' '}
                             USD
                           </div>
                         </div>
@@ -372,11 +360,7 @@ export default function TicketDrawer({
           <footer className="border-t px-6 pb-6">
             <div className="flex mt-4">
               <div className="text-xl mr-2">
-                {getFormattedCurrency(
-                  checkout.promotionApplied
-                    ? checkout.discountedTotal
-                    : checkout.total
-                )}
+                {getFormattedCurrency(checkout.total)}
               </div>
               <div>
                 <Button

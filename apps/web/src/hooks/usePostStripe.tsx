@@ -35,9 +35,8 @@ export function useCreatePaymentIntent() {
 }
 
 function createCharge(checkout: Checkout): Charge {
-  const discount = checkout?.discountedTotal as number;
   const totalPrice = checkout?.total as number;
-  const total = checkout.promotionApplied ? discount * 100 : totalPrice * 100;
+  const total = totalPrice * 100;
 
   const charge: Charge = {
     total: Math.round(total),
