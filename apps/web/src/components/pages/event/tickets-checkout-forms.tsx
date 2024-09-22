@@ -46,7 +46,6 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
       getPromotionsType: GetPromotionsType.GET_PROMOTIONS_BY_CODE,
       eventId: event.id,
       code: String(promotionCode).toUpperCase(),
-      jwtToken: user.jwtToken
     };
 
     return getPromotions(getPromotionsRequest)
