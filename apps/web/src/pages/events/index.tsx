@@ -5,11 +5,11 @@ import { Spinner } from '@/components/ui/spinner';
 import { useEvents } from '@/hooks/useEvents';
 import {
   RequestType,
-  eventFetcher,
-  useFetchAllEvents,
+  eventFetcher
 } from '@/hooks/useFetchEvents';
 import Image from 'next/image';
 import Link from 'next/link';
+import * as React from 'react';
 
 export async function getStaticProps() {
   const events = await eventFetcher({

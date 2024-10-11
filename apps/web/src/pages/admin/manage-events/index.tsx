@@ -1,10 +1,10 @@
 import { TropTixContext } from '@/components/WebNavigator';
 import { Spinner } from '@/components/ui/spinner';
 import { RequestType, useFetchEventsById } from '@/hooks/useFetchEvents';
-import { List } from 'antd';
-import Image from 'next/image';
 import Link from 'next/link';
+import * as React from 'react';
 import { useContext } from 'react';
+import ManageEventCard from '../../../components/ManageEventCard';
 
 export default function ManageEventsPage() {
   const { user } = useContext(TropTixContext);
@@ -18,54 +18,25 @@ export default function ManageEventsPage() {
   return (
     <div className='w-full md:max-w-2xl'>
       {!isPending ? (
-        <div className="gap-8 pb-16">
-          <List
-            itemLayout="vertical"
-            size="large"
-            dataSource={data}
-            renderItem={(event: any) => (
-              <List.Item className='xs:w-full md:w-80'>
-                <Link
-                  key={event.id}
-                  href={{
-                    pathname: '/admin/manage-event',
-                    query: { eventId: event.id },
-                  }}
-                >
-                  <div className="border border-gray-200 rounded-xl">
-                    <Image
-                      width={110}
-                      height={110}
-                      className="w-auto rounded-t-xl"
-                      style={{
-                        objectFit: 'cover',
-                        width: 350,
-                        height: 250,
-                      }}
-                      src={
-                        event.imageUrl !== null
-                          ? event.imageUrl
-                          : 'https://placehold.co/400x400?text=Add+Event+Flyer'
-                      }
-                      alt={'event flyer image'}
-                    />
-                    <div className="m-2">
-                      <div className="font-bold text-xl">{event.name}</div>
-                      <div className="text-base">{event.address}</div>
-                      <div className="text-blue-500 text-base">
-                        {new Date(event.startDate).toDateString()}
-                      </div>
-                      <div
-                        className={`${event.isDraft ? 'text-amber-900' : 'text-green-600'} text-amber-900 text-base`}
-                      >
-                        Status: {event.isDraft ? 'Draft' : 'Published'}
-                      </div>
-                    </div>
-                  </div>
+        <div className="flex flex-wrap">
+          {data.map((event, index: any) => {
+            return (
+              <div
+                key={index}
+                className="w-full sm:w-1/2 md:w-1/2 lg:w-1/3 px-2 mb-4"
+              >
+                <Link href={{
+                  pathname: '/admin/manage-event',
+                  query: { eventId: event.id },
+                }}>
+                  <ManageEventCard
+                    event={event}
+                    showDivider={index < data.length - 1}
+                  />
                 </Link>
-              </List.Item>
-            )}
-          />
+              </div>
+            );
+          })}
         </div>
       ) : (
         <div className="mt-8">
