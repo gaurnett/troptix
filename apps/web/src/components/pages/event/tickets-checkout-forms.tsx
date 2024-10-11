@@ -1,9 +1,11 @@
-import { Button, Input, List, Typography, message } from 'antd';
+import { List, Typography, message } from 'antd';
 import { format } from 'date-fns';
 import { useContext, useState } from 'react';
 
 import { TropTixContext } from '@/components/WebNavigator';
-import { CustomInput } from '@/components/ui/input';
+import { Button, ButtonWithIcon } from '@/components/ui/button';
+import { InputWithLabel } from '@/components/ui/input';
+import { TypographyH3 } from '@/components/ui/typography';
 import { initializeCheckoutTicket } from '@/hooks/types/Checkout';
 import { TicketType } from '@/hooks/types/Ticket';
 import { GetPromotionsRequest, GetPromotionsType, getPromotions } from '@/hooks/usePromotions';
@@ -245,245 +247,230 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
   }
 
   return (
-    <div className="w-full">
-      <div>
-        <h2
-          className="text-xl font-bold leading-tighter tracking-tighter mb-4"
-          data-aos="zoom-y-out"
-        >
-          Contact Information
-        </h2>
-        <div className="flex justify-between">
-          <div className="mb-4 mr-1 md:mr-4 w-full">
-            <CustomInput
-              value={checkout.firstName}
-              name={'firstName'}
-              id={'firstName'}
-              label={'First Name *'}
-              type={'text'}
-              placeholder={'John'}
-              handleChange={handleChange}
-              required={true}
-            />
-          </div>
-          <div className="mb-4 ml-1 md:ml-4 w-full">
-            <CustomInput
-              value={checkout.lastName}
-              name={'lastName'}
-              id={'lastName'}
-              label={'Last Name *'}
-              type={'text'}
-              placeholder={'Doe'}
-              handleChange={handleChange}
-              required={true}
-            />
-          </div>
+    <div className="md:px-4">
+      <TypographyH3 text={"Contact Information"} classes='mb-2' />
+      <div className="flex justify-between">
+        <div className="mb-4 mr-1 md:mr-4 w-full">
+          <InputWithLabel
+            value={checkout.firstName}
+            name={'firstName'}
+            id={'firstName'}
+            labelValue={'First Name *'}
+            type={'text'}
+            placeholder={'John'}
+            onChange={handleChange}
+            required={true} />
         </div>
-
-        <div className="md:flex justify-between">
-          <div className="mb-4 md:mr-4 w-full">
-            <CustomInput
-              value={checkout.email}
-              name={'email'}
-              id={'email'}
-              label={'Email *'}
-              type={'text'}
-              placeholder={'johndoe@gmail.com'}
-              handleChange={handleChange}
-              required={true}
-              disabled={!!user.id}
-            />
-          </div>
-          <div className="mb-4 md:ml-4 w-full">
-            <CustomInput
-              value={checkout.confirmEmail}
-              name={'confirmEmail'}
-              id={'confirmEmail'}
-              label={'Confirm Email *'}
-              type={'text'}
-              placeholder={'johndoe@gmail.com'}
-              handleChange={handleChange}
-              required={true}
-              disabled={!!user.id}
-            />
-          </div>
+        <div className="mb-4 ml-1 md:ml-4 w-full">
+          <InputWithLabel
+            value={checkout.lastName}
+            name={'lastName'}
+            id={'lastName'}
+            labelValue={'Last Name *'}
+            type={'text'}
+            placeholder={'Doe'}
+            onChange={handleChange}
+            required={true}
+          />
         </div>
+      </div>
 
-
-        <h2
-          className="text-xl font-bold leading-tighter tracking-tighter mb-4"
-          data-aos="zoom-y-out"
-        >
-          Tickets
-        </h2>
-
-        <div className="mb-4">
-          <div className="w-full">
-            <label
-              className="block text-gray-800 text-sm font-medium mb-1"
-              htmlFor={'promotionCode'}
-            >
-              Promotion Code
-            </label>
-          </div>
-          <div className="flex w-full">
-            <Input
-              onChange={handlePromotionChange}
-              name={'promotionCode'}
-              value={promotionCode}
-              id={'promotionCode'}
-              type={'text'}
-              classNames={{ input: 'form-input w-full text-gray-800' }}
-              placeholder={'SAVE15'}
-            />
-            <Button
-              onClick={applyPromotion}
-              className="my-auto ml-2"
-              type="text"
-            >
-              Apply
-            </Button>
-          </div>
+      <div className="md:flex justify-between">
+        <div className="mb-4 md:mr-4 w-full">
+          <InputWithLabel
+            value={checkout.email}
+            name={'email'}
+            id={'email'}
+            labelValue={'Email *'}
+            type={'text'}
+            placeholder={'johndoe@gmail.com'}
+            onChange={handleChange}
+            required={true}
+            disabled={!!user.id}
+          />
         </div>
+        <div className="mb-4 md:ml-4 w-full">
+          <InputWithLabel
+            value={checkout.confirmEmail}
+            name={'confirmEmail'}
+            id={'confirmEmail'}
+            labelValue={'Confirm Email *'}
+            type={'text'}
+            placeholder={'johndoe@gmail.com'}
+            onChange={handleChange}
+            required={true}
+            disabled={!!user.id}
+          />
+        </div>
+      </div>
 
-        <List
-          itemLayout="vertical"
-          size="large"
-          dataSource={ticketTypes}
-          split={false}
-          renderItem={(ticket: TicketType, index: number) => {
-            let checkoutTicket: any;
-            if (checkout.tickets && checkout.tickets.has(ticket.id)) {
-              checkoutTicket = checkout.tickets.get(ticket.id);
-            }
-            let ticketState = getTicketStateMessage(ticket);
+      <TypographyH3 text={"Tickets"} classes='mb-2' />
+      <div className="mb-4">
+        <div className="w-full">
+          <label
+            className="block text-gray-800 text-sm font-medium mb-1"
+            htmlFor={'promotionCode'}
+          >
+            Promotion Code
+          </label>
+        </div>
+        <div className="flex w-full">
+          <InputWithLabel
+            onChange={handlePromotionChange}
+            name={'promotionCode'}
+            value={promotionCode}
+            id={'promotionCode'}
+            type={'text'}
+            placeholder={'SAVE15'}
+            containerClass='w-full'
+          />
+          <Button
+            onClick={applyPromotion}
+            className="my-auto ml-2"
+          >
+            Apply
+          </Button>
+        </div>
+      </div>
 
-            const quantity = ticket.quantity as number;
-            const pendingOrders = ticket.pendingOrders as number;
-            const maxPurchasePerUser = ticket.maxPurchasePerUser as number;
-            const completedOrders = ticket.completedOrders as number;
+      <List
+        itemLayout="vertical"
+        size="large"
+        dataSource={ticketTypes}
+        split={false}
+        renderItem={(ticket: TicketType, index: number) => {
+          let checkoutTicket: any;
+          if (checkout.tickets && checkout.tickets.has(ticket.id)) {
+            checkoutTicket = checkout.tickets.get(ticket.id);
+          }
+          let ticketState = getTicketStateMessage(ticket);
 
-            return (
-              <List.Item className="mb-4" style={{ padding: 0 }}>
-                <div
-                  className="px-4 w-full"
-                  style={{
-                    borderWidth: 1,
-                    borderRadius: 10,
-                    borderColor: '#D3D3D3',
-                  }}
-                >
-                  <div>
-                    <div className="my-auto">
-                      <div className="flex h-16">
-                        <div className="md:w-4/5 grow my-auto">
-                          {ticket.name}
-                        </div>
-                        <div className="md:w-1/5 flex my-auto justify-center items-center">
-                          <div>
-                            {ticketState !== undefined ? (
-                              <div className="text-center text-md font-bold">
-                                {ticketState}
-                              </div>
-                            ) : (
-                              <div className="flex">
-                                <Button
-                                  onClick={() => reduceCost(ticket, index)}
-                                  className="bg-blue-500 rounded"
-                                  disabled={
-                                    !checkoutTicket ||
-                                    checkoutTicket.quantitySelected === 0
-                                  }
-                                  icon={
-                                    <MinusOutlined className="text-white items-center justify-center" />
-                                  }
-                                ></Button>
-                                <div className="mx-4" style={{ fontSize: 20 }}>
-                                  {!checkoutTicket
-                                    ? 0
-                                    : checkoutTicket.quantitySelected}
-                                </div>
-                                <Button
-                                  onClick={() => increaseCost(ticket, index)}
-                                  className="bg-blue-500 rounded"
-                                  disabled={
-                                    checkoutTicket &&
-                                    checkoutTicket.quantitySelected ===
-                                    Math.min(
-                                      quantity - (completedOrders + pendingOrders),
-                                      maxPurchasePerUser
-                                    )
-                                  }
-                                  icon={
-                                    <PlusOutlined className="text-white items-center justify-center" />
-                                  }
-                                ></Button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
+          const quantity = ticket.quantity as number;
+          const pendingOrders = ticket.pendingOrders as number;
+          const maxPurchasePerUser = ticket.maxPurchasePerUser as number;
+          const completedOrders = ticket.completedOrders as number;
+
+          return (
+            <List.Item className="mb-4" style={{ padding: 0 }}>
+              <div
+                className="px-4 w-full"
+                style={{
+                  borderWidth: 1,
+                  borderRadius: 10,
+                  borderColor: '#D3D3D3',
+                }}
+              >
+                <div>
+                  <div className="my-auto">
+                    <div className="flex h-16">
+                      <div className="md:w-4/5 grow my-auto">
+                        {ticket.name}
                       </div>
-                    </div>
-                  </div>
-                  <div
-                    key={index}
-                    style={{ width: '100%', borderColor: '#D3D3D3' }}
-                  >
-                    <div
-                      style={{ flex: 1, height: 1, backgroundColor: '#D3D3D3' }}
-                    />
-                    <div className="my-4">
-                      <div className="flex">
-                        {promotionApplied ? (
-                          <div className="flex">
-                            <div
-                              className="text-base"
-                              style={{ textDecorationLine: 'line-through' }}
-                            >
-                              {getFormattedCurrency(ticket.price)}
+                      <div className="md:w-1/5 flex my-auto justify-center items-center">
+                        <div>
+                          {ticketState !== undefined ? (
+                            <div className="text-center text-md font-bold">
+                              {ticketState}
                             </div>
-                            <div className="ml-1 text-base font-bold">
-                              {getFormattedCurrency(ticket.price, true)}
+                          ) : (
+                            <div className="flex">
+                              <ButtonWithIcon
+                                onClick={() => reduceCost(ticket, index)}
+                                className="bg-blue-500 rounded h-8 w-8"
+                                size={'sm'}
+                                disabled={
+                                  !checkoutTicket ||
+                                  checkoutTicket.quantitySelected === 0
+                                }
+                                icon={
+                                  <MinusOutlined className="text-white items-center justify-center" />
+                                }
+                              ></ButtonWithIcon>
+                              <div className="mx-4" style={{ fontSize: 20 }}>
+                                {!checkoutTicket
+                                  ? 0
+                                  : checkoutTicket.quantitySelected}
+                              </div>
+                              <ButtonWithIcon
+                                onClick={() => increaseCost(ticket, index)}
+                                className="bg-blue-500 rounded h-8 w-8"
+                                disabled={
+                                  checkoutTicket &&
+                                  checkoutTicket.quantitySelected ===
+                                  Math.min(
+                                    quantity - (completedOrders + pendingOrders),
+                                    maxPurchasePerUser
+                                  )
+                                }
+                                icon={
+                                  <PlusOutlined className="text-white items-center justify-center" />
+                                }
+                              ></ButtonWithIcon>
                             </div>
-                          </div>
-                        ) : (
-                          <div className="text-base font-bold">
-                            {getFormattedCurrency(ticket.price)}
-                          </div>
-                        )}
-                        <div className="my-auto text-gray-500">
-                          &nbsp;+{' '}
-                          {ticket.ticketingFees === 'PASS_TICKET_FEES'
-                            ? getFormattedFeesCurrency(ticket.price)
-                            : getFormattedCurrency(0)}{' '}
-                          fees
+                          )}
                         </div>
                       </div>
-                      <div className="text-sm">
-                        Sale ends:{' '}
-                        {getDateFormatter(new Date(ticket.saleEndDate as Date))}
-                      </div>
-                      <div>
-                        <Paragraph
-                          className="text-justify text-sm"
-                          ellipsis={{
-                            rows: 2,
-                            expandable: true,
-                            symbol: 'see more details',
-                          }}
-                        >
-                          {ticket.description}
-                        </Paragraph>
-                      </div>
-                      <div></div>
                     </div>
                   </div>
                 </div>
-              </List.Item>
-            );
-          }}
-        />
-      </div>
+                <div
+                  key={index}
+                  style={{ width: '100%', borderColor: '#D3D3D3' }}
+                >
+                  <div
+                    style={{ flex: 1, height: 1, backgroundColor: '#D3D3D3' }}
+                  />
+                  <div className="my-4">
+                    <div className="flex">
+                      {promotionApplied ? (
+                        <div className="flex">
+                          <div
+                            className="text-base"
+                            style={{ textDecorationLine: 'line-through' }}
+                          >
+                            {getFormattedCurrency(ticket.price)}
+                          </div>
+                          <div className="ml-1 text-base font-bold">
+                            {getFormattedCurrency(ticket.price, true)}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-base font-bold">
+                          {getFormattedCurrency(ticket.price)}
+                        </div>
+                      )}
+                      <div className="my-auto text-gray-500">
+                        &nbsp;+{' '}
+                        {ticket.ticketingFees === 'PASS_TICKET_FEES'
+                          ? getFormattedFeesCurrency(ticket.price)
+                          : getFormattedCurrency(0)}{' '}
+                        fees
+                      </div>
+                    </div>
+                    <div className="text-sm">
+                      Sale ends:{' '}
+                      {getDateFormatter(new Date(ticket.saleEndDate as Date))}
+                    </div>
+                    <div>
+                      <Paragraph
+                        className="text-justify text-sm"
+                        ellipsis={{
+                          rows: 2,
+                          expandable: true,
+                          symbol: 'see more details',
+                        }}
+                      >
+                        {ticket.description}
+                      </Paragraph>
+                    </div>
+                    <div></div>
+                  </div>
+                </div>
+              </div>
+            </List.Item>
+          );
+        }}
+      />
     </div>
   );
 }

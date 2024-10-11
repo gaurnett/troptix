@@ -13,7 +13,7 @@ export default function CheckoutForm({
 }) {
   if (!clientSecret) {
     return (
-      <div className="mt-32">
+      <div className="h-full mt-32">
         <Spinner text={'Initializing Card Detail'} />
       </div>
     );

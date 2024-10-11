@@ -2,13 +2,14 @@ import EventCard from '@/components/EventCard';
 
 import Footer from '@/components/ui/footer';
 import { Spinner } from '@/components/ui/spinner';
+import { useEvents } from '@/hooks/useEvents';
 import {
   RequestType,
-  eventFetcher,
-  useFetchAllEvents,
+  eventFetcher
 } from '@/hooks/useFetchEvents';
 import Image from 'next/image';
 import Link from 'next/link';
+import * as React from 'react';
 
 export async function getStaticProps() {
   const events = await eventFetcher({
@@ -23,7 +24,7 @@ export async function getStaticProps() {
 }
 
 export default function ManageEventsPage(props) {
-  const { isPending, isError, data, error } = useFetchAllEvents(props.events);
+  const { isPending, isError, data, error } = useEvents(props.events);
   const events = data as any[];
 
   return (

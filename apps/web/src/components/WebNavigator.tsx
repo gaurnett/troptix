@@ -2,6 +2,8 @@
 
 import { TROPTIX_ORGANIZER_ALLOW_LIST } from '@/firebase/remoteConfig';
 import { User, initializeUser } from '@/hooks/types/User';
+import { cn } from '@/lib/utils';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Analytics } from '@vercel/analytics/react';
 import { Spin } from 'antd';
@@ -14,10 +16,8 @@ import {
 import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 import { usePathname } from 'next/navigation';
-import { useRouter } from 'next/router';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { app, auth } from '../config';
-import AdminHeader from './ui/admin-header';
 import Header from './ui/header';
 
 const inter = Inter({
@@ -37,11 +37,11 @@ export const TropTixContext = createContext({
 
 export const useTropTixContext = () => useContext(TropTixContext);
 
-export default function WebNavigator({ Component, pageProps }: AppProps) {
+export default function WebNavigator({ Component, pageProps, router }: AppProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  // const router = useRouter();
 
   useEffect(() => {
     if (
@@ -121,9 +121,12 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
           />
         </>
       ) : (
-        <div className="mx-auto ">
+        <div className={cn(
+          "min-h-screen font-sans antialiased mx-auto",
+          inter.variable
+        )}>
           <div
-            className={`${inter.variable} font-inter antialiased bg-white text-gray-900 tracking-tight`}
+            className={`${inter.variable} font-inter antialiased text-gray-900 tracking-tight`}
           >
             <div className="flex flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
               <Analytics />
@@ -136,16 +139,7 @@ export default function WebNavigator({ Component, pageProps }: AppProps) {
                 </div>
               ) : (
                 <div>
-                  {user === null ? (
-                    <></>
-                  ) : (
-                    <>
-                      <AdminHeader />
-                      <div className="flex-grow mt-32">
-                        <Component {...pageProps} />
-                      </div>
-                    </>
-                  )}
+                  {user && <AdminDashboard Component={Component} pageProps={pageProps} router={router} />}
                 </div>
               )}
             </div>
