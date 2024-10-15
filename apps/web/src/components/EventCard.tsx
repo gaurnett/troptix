@@ -1,28 +1,11 @@
+import { useScreenSize } from '@/hooks/useScreenSize';
 import { getFormattedCurrency } from '@/lib/utils';
 import { Divider } from 'antd';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
 
 export default function EventCard({ event, showDivider = false }) {
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' && window.innerWidth < 768
-  );
+  const { isMobile } = useScreenSize();
   const imageSize = 125;
-
-  useEffect(() => {
-    function handleResize() {
-      setIsMobile(window.innerWidth < 768);
-    }
-
-    if (typeof window !== 'undefined') {
-      handleResize();
-    }
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [isMobile]);
 
   let lowest = Number.MAX_VALUE;
   let priceString = '';
