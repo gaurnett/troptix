@@ -66,6 +66,9 @@ async function getTicketTypesForCheckout(request: VercelRequest, response: Verce
       where: {
         eventId: eventId,
       },
+      orderBy: {
+        price: 'asc'
+      }
     });
 
     const orders = await prismaClient.orders.findMany({
