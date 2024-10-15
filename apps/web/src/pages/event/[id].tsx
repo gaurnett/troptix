@@ -3,20 +3,30 @@ import TicketDrawer from '@/components/pages/event/ticket-drawer';
 import TicketModal from '@/components/pages/event/ticket-modal';
 import { ButtonWithIcon } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { DividerWithText, TypographyH1, TypographyH4, TypographyP } from '@/components/ui/typography';
+import {
+  DividerWithText,
+  TypographyH1,
+  TypographyH4,
+  TypographyP,
+} from '@/components/ui/typography';
 import { MetaHead } from '@/components/utils/MetaHead';
 import { useEvent } from '@/hooks/useEvents';
-import {
-  RequestType,
-  eventFetcher
-} from '@/hooks/useFetchEvents';
-import { getDateRangeFormatter, getFormattedCurrency, getTimeRangeFormatter } from '@/lib/utils';
-import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
+import { RequestType, eventFetcher } from '@/hooks/useFetchEvents';
+import { useScreenSize } from '@/hooks/useScreenSize';
+
 import { Typography } from 'antd';
+import {
+  getDateRangeFormatter,
+  getFormattedCurrency,
+  getTimeRangeFormatter,
+} from '@/lib/utils';
+import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
+
 import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useContext, useEffect, useState } from 'react';
+import { IoTicket } from 'react-icons/io5';
+import { useContext, useState } from 'react';
 
 const { Paragraph } = Typography;
 
@@ -58,36 +68,13 @@ export default function EventDetailPage(props) {
   const { user } = useContext(TropTixContext);
   const eventId = router.query.id as string;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' && window.innerWidth < 768
-  );
-
-  useEffect(() => {
-    function handleResize() {
-      setIsMobile(window.innerWidth < 768);
-    }
-
-    if (typeof window !== 'undefined') {
-      handleResize();
-    }
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [isMobile]);
-
-  const {
-    isPending,
-    isError,
-    data: event,
-    error,
-  } = useEvent(eventId, props.event);
+  const { isMobile } = useScreenSize();
+  const { isPending, data: event } = useEvent(eventId, props.event);
 
   function handleCancel() {
-    console.log("Hello World 2");
+    console.log('Hello World 2');
     setIsTicketModalOpen(false);
-  };
+  }
 
   function openModal() {
     setIsTicketModalOpen(true);
@@ -127,9 +114,10 @@ export default function EventDetailPage(props) {
       <div
         style={{
           // backgroundColor: '#455A64',
-          backgroundImage: `url("${event?.imageUrl ??
+          backgroundImage: `url("${
+            event?.imageUrl ??
             'https://placehold.co/400x400?text=Add+Event+Flyer'
-            }")`,
+          }")`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           WebkitBackgroundSize: 'cover',
@@ -167,42 +155,59 @@ export default function EventDetailPage(props) {
                   alt={event.name}
                   className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg mx-auto"
                 />
-                <ButtonWithIcon text={"Buy Tickets"} icon={<Ticket className="mr-2 h-4 w-4" />} onClick={openModal} className={"w-full px-6 py-6 text-base"} />
+                <ButtonWithIcon
+                  text={'Buy Tickets'}
+                  icon={<Ticket className="mr-2 h-4 w-4" />}
+                  onClick={openModal}
+                  className={'w-full px-6 py-6 text-base'}
+                />
               </aside>
               <div className="w-full md:mx-8 md:p-6 p-4 bg-gray-800 bg-opacity-80 rounded-lg ">
                 <div className="mb-4">
-                  <TypographyH1 text={event.name} classes='mb-4 text-white' />
-                  <div className='flex items-center mb-2'>
-                    <div className='mr-4'>
-                      <div className='border border-white rounded border-spacing-1 w-min my-auto'>
-                        <Calendar className='m-2 w-5 h-5 text-white' />
+                  <TypographyH1 text={event.name} classes="mb-4 text-white" />
+                  <div className="flex items-center mb-2">
+                    <div className="mr-4">
+                      <div className="border border-white rounded border-spacing-1 w-min my-auto">
+                        <Calendar className="m-2 w-5 h-5 text-white" />
                       </div>
                     </div>
                     <div>
-                      <TypographyH4 text={getDateRangeFormatter(new Date(event.startDate), new Date(event.endDate))} classes='text-white' />
-                      <TypographyP text={getTimeRangeFormatter(new Date(event.startDate), new Date(event.endDate))} classes='text-white' />
+                      <TypographyH4
+                        text={getDateRangeFormatter(
+                          new Date(event.startDate),
+                          new Date(event.endDate)
+                        )}
+                        classes="text-white"
+                      />
+                      <TypographyP
+                        text={getTimeRangeFormatter(
+                          new Date(event.startDate),
+                          new Date(event.endDate)
+                        )}
+                        classes="text-white"
+                      />
                     </div>
                   </div>
-                  <div className='flex items-center mb-2'>
-                    <div className='mr-4'>
-                      <div className='border border-white rounded border-spacing-1 w-min my-auto'>
-                        <MapPin className='m-2 w-5 h-5 text-white' />
+                  <div className="flex items-center mb-2">
+                    <div className="mr-4">
+                      <div className="border border-white rounded border-spacing-1 w-min my-auto">
+                        <MapPin className="m-2 w-5 h-5 text-white" />
                       </div>
                     </div>
                     <div>
-                      <TypographyH4 text={event.venue} classes='text-white' />
-                      <TypographyP text={event.address} classes='text-white' />
+                      <TypographyH4 text={event.venue} classes="text-white" />
+                      <TypographyP text={event.address} classes="text-white" />
                     </div>
                   </div>
-                  <div className='flex items-center mb-2'>
-                    <div className='mr-4'>
-                      <div className='border border-white rounded border-spacing-1 w-min my-auto'>
-                        <DollarSign className='m-2 w-5 h-5 text-white' />
+                  <div className="flex items-center mb-2">
+                    <div className="mr-4">
+                      <div className="border border-white rounded border-spacing-1 w-min my-auto">
+                        <DollarSign className="m-2 w-5 h-5 text-white" />
                       </div>
                     </div>
                     <div>
-                      <TypographyH4 text={"Tickets"} classes='text-white' />
-                      <TypographyP text={priceString} classes='text-white' />
+                      <TypographyH4 text={'Tickets'} classes="text-white" />
+                      <TypographyP text={priceString} classes="text-white" />
                     </div>
                   </div>
 
@@ -212,7 +217,7 @@ export default function EventDetailPage(props) {
                 </div>
 
                 <div>
-                  <DividerWithText text={"About"} classes='text-white' />
+                  <DividerWithText text={'About'} classes="text-white" />
                   <Paragraph
                     style={{ whiteSpace: 'pre-line' }}
                     className="mt-2 text-justify text-base text-white"
@@ -227,23 +232,26 @@ export default function EventDetailPage(props) {
                 </div>
 
                 <div>
-                  <DividerWithText text={"Venue"} classes='text-white' />
-                  <TypographyH4 text={event.venue} classes='text-white' />
-                  <TypographyP text={event.address} classes='text-white' />
+                  <DividerWithText text={'Venue'} classes="text-white" />
+                  <TypographyH4 text={event.venue} classes="text-white" />
+                  <TypographyP text={event.address} classes="text-white" />
                   <APIProvider apiKey={googleMapsKey!}>
                     <Map
-                      className='mt-4 w-full h-60'
+                      className="mt-4 w-full h-60"
                       defaultCenter={{
                         lat: event.latitude,
-                        lng: event.longitude
+                        lng: event.longitude,
                       }}
                       defaultZoom={15}
                       gestureHandling={'none'}
-                      disableDefaultUI={true}>
-                      <Marker position={{
-                        lat: event.latitude,
-                        lng: event.longitude
-                      }} />
+                      disableDefaultUI={true}
+                    >
+                      <Marker
+                        position={{
+                          lat: event.latitude,
+                          lng: event.longitude,
+                        }}
+                      />
                     </Map>
                   </APIProvider>
                 </div>

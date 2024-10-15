@@ -4,28 +4,8 @@ import { getDateFormatter } from '@/lib/utils';
 import { Button, Divider, Empty, Result } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 
 export default function OrdersPage() {
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== 'undefined' && window.innerWidth < 768
-  );
-
-  useEffect(() => {
-    function handleResize() {
-      setIsMobile(window.innerWidth < 768);
-    }
-
-    if (typeof window !== 'undefined') {
-      handleResize();
-    }
-
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [isMobile]);
-
   const {
     showSignInError,
     isPending,
