@@ -1,6 +1,4 @@
-import { TropTixContext } from "@/components/WebNavigator";
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useContext } from "react";
 import { Promotion } from "./types/Promotion";
 import { prodUrl } from './useFetchEvents';
 
@@ -28,14 +26,12 @@ export interface DeletePromotionRequest {
 }
 
 export function useFetchPromotionsForEvent(eventId: string) {
-  const { user } = useContext(TropTixContext);
   const getPromotionsType = GetPromotionsType.GET_ALL_PROMOTIONS_FOR_EVENT;
   const id = eventId;
-  const jwtToken = user.jwtToken;
 
   return useQuery({
     queryKey: ['order', getPromotionsType, id],
-    queryFn: () => getPromotions({ getPromotionsType, eventId, jwtToken }),
+    queryFn: () => getPromotions({ getPromotionsType, eventId }),
   });
 }
 
@@ -43,12 +39,7 @@ export async function getPromotions({
   getPromotionsType,
   eventId,
   code,
-  jwtToken,
 }: GetPromotionsRequest) {
-  if (!jwtToken) {
-    return {};
-  }
-
   let url =
     prodUrl + `/api/promotions?getPromotionsType=${getPromotionsType}`;
 

@@ -1,21 +1,33 @@
 import { TropTixContext } from '@/components/WebNavigator';
 import TicketDrawer from '@/components/pages/event/ticket-drawer';
 import TicketModal from '@/components/pages/event/ticket-modal';
+import { ButtonWithIcon } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import {
+  DividerWithText,
+  TypographyH1,
+  TypographyH4,
+  TypographyP,
+} from '@/components/ui/typography';
 import { MetaHead } from '@/components/utils/MetaHead';
 import { useEvent } from '@/hooks/useEvents';
-import {
-  RequestType,
-  eventFetcher
-} from '@/hooks/useFetchEvents';
+import { RequestType, eventFetcher } from '@/hooks/useFetchEvents';
 import { useScreenSize } from '@/hooks/useScreenSize';
-import { getDateFormatter, getFormattedCurrency } from '@/lib/utils';
-import { Button, Modal, Result, Typography } from 'antd';
+
+import { Typography } from 'antd';
+import {
+  getDateRangeFormatter,
+  getFormattedCurrency,
+  getTimeRangeFormatter,
+} from '@/lib/utils';
+import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
+
+import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
 import { IoTicket } from 'react-icons/io5';
+import { useContext, useState } from 'react';
+
 const { Paragraph } = Typography;
 
 export async function getStaticPaths() {
@@ -56,29 +68,15 @@ export default function EventDetailPage(props) {
   const { user } = useContext(TropTixContext);
   const eventId = router.query.id as string;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
-  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
   const { isMobile } = useScreenSize();
-  const {
-    isPending,
-    isError,
-    data: event,
-    error,
-  } = useEvent(eventId, props.event);
+  const { isPending, data: event } = useEvent(eventId, props.event);
 
-  function closeSignInModal() {
-    setIsSignInModalOpen(false);
+  function handleCancel() {
+    console.log('Hello World 2');
+    setIsTicketModalOpen(false);
   }
 
-  const handleCancel = () => {
-    setIsTicketModalOpen(false);
-  };
-
   function openModal() {
-    if (!user) {
-      setIsSignInModalOpen(true);
-      return;
-    }
-
     setIsTicketModalOpen(true);
   }
 
@@ -115,9 +113,11 @@ export default function EventDetailPage(props) {
       />
       <div
         style={{
-          backgroundImage: `url("${event?.imageUrl ??
+          // backgroundColor: '#455A64',
+          backgroundImage: `url("${
+            event?.imageUrl ??
             'https://placehold.co/400x400?text=Add+Event+Flyer'
-            }")`,
+          }")`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           WebkitBackgroundSize: 'cover',
@@ -136,33 +136,6 @@ export default function EventDetailPage(props) {
             handleCancel={handleCancel}
           />
         )}
-        <Modal
-          open={isSignInModalOpen}
-          title=""
-          centered
-          onCancel={closeSignInModal}
-          okButtonProps={{ hidden: true }}
-          cancelButtonProps={{ hidden: true }}
-        >
-          <Result
-            title="Please log in/sign up to buy tickets"
-            extra={[
-              <Link href={{ pathname: '/auth/signin' }} key={'tickets'}>
-                <Button className="mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex">
-                  Log in
-                </Button>
-              </Link>,
-              <Link href={{ pathname: '/auth/signup' }} key={'tickets'}>
-                <Button
-                  type="primary"
-                  className="bg-blue-600 hover:bg-blue-700 mr-2 px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
-                >
-                  Sign up
-                </Button>
-              </Link>,
-            ]}
-          />
-        </Modal>
         <div className="w-full md:min-h-screen flex backdrop-blur-3xl">
           <div className={`max-w-5xl mx-auto p-4 sm:p-8`}>
             <div className="md:flex mt-32">
@@ -182,60 +155,74 @@ export default function EventDetailPage(props) {
                   alt={event.name}
                   className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg mx-auto"
                 />
-                <Button
-                  type="primary"
+                <ButtonWithIcon
+                  text={'Buy Tickets'}
+                  icon={<Ticket className="mr-2 h-4 w-4" />}
                   onClick={openModal}
-                  className="w-full px-6 py-6 shadow-md items-center text-base bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
-                  icon={<IoTicket className="text-base" />}
-                >
-                  Buy Tickets
-                </Button>
+                  className={'w-full px-6 py-6 text-base'}
+                />
               </aside>
-              <div className="w-full md:ml-8 bg-white bg-opacity-80 p-6 rounded-lg">
-                <div className="mb-8">
-                  <h1
-                    className="text-5xl md:text-5xl font-bold leading-tighter tracking-tighter mb-8"
-                    data-aos="zoom-y-out"
-                  >
-                    {event.name}
-                  </h1>
-                  <div className="text-xl font-extrabold">
-                    {event.organizer}
+              <div className="w-full md:mx-8 md:p-6 p-4 bg-gray-800 bg-opacity-80 rounded-lg ">
+                <div className="mb-4">
+                  <TypographyH1 text={event.name} classes="mb-4 text-white" />
+                  <div className="flex items-center mb-2">
+                    <div className="mr-4">
+                      <div className="border border-white rounded border-spacing-1 w-min my-auto">
+                        <Calendar className="m-2 w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <TypographyH4
+                        text={getDateRangeFormatter(
+                          new Date(event.startDate),
+                          new Date(event.endDate)
+                        )}
+                        classes="text-white"
+                      />
+                      <TypographyP
+                        text={getTimeRangeFormatter(
+                          new Date(event.startDate),
+                          new Date(event.endDate)
+                        )}
+                        classes="text-white"
+                      />
+                    </div>
                   </div>
-                  <div className="text-xl">{event.venue}</div>
-                  <div className="text-xl text-blue-500">
-                    {getDateFormatter(new Date(event.startDate))}
+                  <div className="flex items-center mb-2">
+                    <div className="mr-4">
+                      <div className="border border-white rounded border-spacing-1 w-min my-auto">
+                        <MapPin className="m-2 w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <TypographyH4 text={event.venue} classes="text-white" />
+                      <TypographyP text={event.address} classes="text-white" />
+                    </div>
                   </div>
-                  <div className="text-xl text-green-600">{priceString}</div>
+                  <div className="flex items-center mb-2">
+                    <div className="mr-4">
+                      <div className="border border-white rounded border-spacing-1 w-min my-auto">
+                        <DollarSign className="m-2 w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <TypographyH4 text={'Tickets'} classes="text-white" />
+                      <TypographyP text={priceString} classes="text-white" />
+                    </div>
+                  </div>
+
+                  <div className="text-xl font-extrabold text-white">
+                    by {event.organizer}
+                  </div>
                 </div>
 
                 <div>
-                  <h2
-                    className="text-xl font-bold leading-tighter tracking-tighter mt-4"
-                    data-aos="zoom-y-out"
-                  >
-                    About
-                  </h2>
-                  <div className="text-base">
-                    Starts: {getDateFormatter(new Date(event.startDate))}
-                  </div>
-                  <div className="text-base">
-                    Ends: {getDateFormatter(new Date(event.endDate))}
-                  </div>
-                </div>
-
-                <div>
-                  <h2
-                    className="text-xl font-bold leading-tighter tracking-tighter mt-4"
-                    data-aos="zoom-y-out"
-                  >
-                    Description
-                  </h2>
+                  <DividerWithText text={'About'} classes="text-white" />
                   <Paragraph
                     style={{ whiteSpace: 'pre-line' }}
-                    className="mt-2 text-justify text-base"
+                    className="mt-2 text-justify text-base text-white"
                     ellipsis={{
-                      rows: 2,
+                      rows: 4,
                       expandable: true,
                       symbol: 'see more details',
                     }}
@@ -245,34 +232,28 @@ export default function EventDetailPage(props) {
                 </div>
 
                 <div>
-                  <h2
-                    className="text-xl font-bold leading-tighter tracking-tighter mt-4"
-                    data-aos="zoom-y-out"
-                  >
-                    Venue
-                  </h2>
-                  <div className="text-base">{event.venue}</div>
-                  <div className="text-base">{event.address}</div>
-                  {/* <div style={{ height: 300 }} className="w-full h-150 mt-2">
-                        <GoogleMapReact
-                          bootstrapURLKeys={{ key: googleMapsKey }}
-                          defaultCenter={{
-                            lat: event.latitude,
-                            lng: event.longitude
-                          }}
-                          defaultZoom={14}
-                          yesIWantToUseGoogleMapApiInternals
-                          onGoogleApiLoaded={({ map, maps }) => {
-                            setShowLocationPin(true)
-                          }
-                          }
-                        >
-                          {
-                            showLocationPin && (<div>hello</div>)
-                          }
-                          <MdLocationOn className="text-4xl" />
-                        </GoogleMapReact>
-                      </div> */}
+                  <DividerWithText text={'Venue'} classes="text-white" />
+                  <TypographyH4 text={event.venue} classes="text-white" />
+                  <TypographyP text={event.address} classes="text-white" />
+                  <APIProvider apiKey={googleMapsKey!}>
+                    <Map
+                      className="mt-4 w-full h-60"
+                      defaultCenter={{
+                        lat: event.latitude,
+                        lng: event.longitude,
+                      }}
+                      defaultZoom={15}
+                      gestureHandling={'none'}
+                      disableDefaultUI={true}
+                    >
+                      <Marker
+                        position={{
+                          lat: event.latitude,
+                          lng: event.longitude,
+                        }}
+                      />
+                    </Map>
+                  </APIProvider>
                 </div>
               </div>
             </div>

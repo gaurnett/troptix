@@ -5,11 +5,12 @@ import PromotionCodesPage from '@/components/pages/admin/manage-event/promotions
 import TicketsPage from '@/components/pages/admin/manage-event/tickets';
 import UserDelegationPage from '@/components/pages/admin/manage-event/user-delegation';
 import { Spinner } from '@/components/ui/spinner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RequestType, useFetchEventsById } from '@/hooks/useFetchEvents';
 import { useEditEvent } from '@/hooks/usePostEvent';
 import { useQueryClient } from '@tanstack/react-query';
 import type { TabsProps } from 'antd';
-import { Button, Tabs, message } from 'antd';
+import { Button, message } from 'antd';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { IoMdArrowRoundBack } from 'react-icons/io';
@@ -160,12 +161,13 @@ export default function ManageEventPage() {
   ];
 
   return (
-    <div className="w-full md:max-w-2xl mx-auto">
+    // <div className="w-full xs:max-w-screen md:max-w-2xl">
+    <div className="w-screen md:max-w-2xl">
       {contextHolder}
       {!isPending ? (
         <div className="mx-4">
           <h1
-            className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
+            className="text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
             data-aos="zoom-y-out"
           >
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-teal-400">
@@ -175,7 +177,7 @@ export default function ManageEventPage() {
 
           <div className="">
             <div className="flow-root">
-              <div className="flex my-2">
+              <div className="flex">
                 <div className="flex">
                   <a
                     className="justify-center align-middle my-auto mr-4"
@@ -196,13 +198,50 @@ export default function ManageEventPage() {
                 </div>
               </div>
 
-              <div className="float-right w-full mb-8">
-                <Tabs
+              <div className="w-full mb-8 mt-4">
+                <Tabs defaultValue="basic-info">
+                  <div className='overflow-auto'>
+                    <TabsList>
+                      <TabsTrigger value="basic-info">Basic Info</TabsTrigger>
+                      <TabsTrigger value="details">Details</TabsTrigger>
+                      <TabsTrigger value="orders">Orders</TabsTrigger>
+                      <TabsTrigger value="tickets">Tickets</TabsTrigger>
+                      <TabsTrigger value="promotion-codes">Promotion Codes</TabsTrigger>
+                      <TabsTrigger value="user-delegation">User Delegation</TabsTrigger>
+                    </TabsList>
+                  </div>
+
+                  <TabsContent value="basic-info">
+                    <BasicInfoPage
+                      event={eventForm}
+                      setEvent={setEventForm}
+                      updateEvent={updateEvent} />
+                  </TabsContent>
+                  <TabsContent value="details">
+                    <DetailsPage
+                      event={eventForm}
+                      setEvent={setEventForm}
+                      updateEvent={updateEvent} />
+                  </TabsContent>
+                  <TabsContent value="orders">
+                    <OrdersPage />
+                  </TabsContent>
+                  <TabsContent value="tickets">
+                    <TicketsPage event={eventForm} />
+                  </TabsContent>
+                  <TabsContent value="promotion-codes">
+                    <PromotionCodesPage />
+                  </TabsContent>
+                  <TabsContent value="user-delegation">
+                    <UserDelegationPage />
+                  </TabsContent>
+                </Tabs>
+                {/* <Tabs
                   defaultActiveKey="0"
                   activeKey={activeKey}
                   items={items}
                   onChange={onChange}
-                />
+                /> */}
               </div>
             </div>
           </div>

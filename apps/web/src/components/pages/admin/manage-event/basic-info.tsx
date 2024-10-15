@@ -95,7 +95,7 @@ export default function BasicInfoPage({ event, setEvent, updateEvent }) {
   }
 
   return (
-    <div className="w-full md:max-w-md mr-8">
+    <div className="w-full md:max-w-md">
       {contextHolder}
       <Form className="" name="basic" onFinish={() => updateEvent(event)}>
         <h2

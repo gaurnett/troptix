@@ -5,8 +5,12 @@ import type { UploadProps } from 'antd';
 import { Button, Form, Image, Upload, message } from 'antd';
 import { RcFile } from 'antd/es/upload';
 import { getDownloadURL } from 'firebase/storage';
+import React from 'react';
+import { prodUrl } from '../../../../hooks/useFetchEvents';
 
 export default function DetailsPage({ event, setEvent, updateEvent }) {
+  const fileUploadUrl = prodUrl + "/api/fileupload";
+
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setEvent((previousEvent) => ({
       ...previousEvent,
@@ -19,7 +23,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
     multiple: false,
     listType: 'picture',
     maxCount: 1,
-    action: '/api/noop',
+    action: fileUploadUrl,
     async onChange(info) {
       const { status } = info.file;
       if (status === 'done') {
@@ -64,7 +68,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    onDrop(e) {},
+    onDrop(e) { },
   };
 
   return (
