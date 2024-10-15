@@ -222,7 +222,7 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
     updateCost(ticket, false);
   }
 
-  function getTicketStateMessage(ticket) {
+  function getTicketStateMessage(ticket: TicketType) {
     let quantityRemaining = ticket.quantity;
 
     if (new Date().getTime() < new Date(ticket.saleStartDate).getTime()) {
@@ -236,7 +236,7 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
       return 'Sale ended';
     }
 
-    if (ticket.completedOrders && ticket.pendingOrders) {
+    if (ticket.completedOrders !== null && ticket.pendingOrders !== null) {
       quantityRemaining = ticket.quantity - (ticket.completedOrders + ticket.pendingOrders);
       if (quantityRemaining <= 0) {
         return 'Sold Out';
