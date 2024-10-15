@@ -222,7 +222,7 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
     updateCost(ticket, false);
   }
 
-  function getTicketStateMessage(ticket: TicketType) {
+  function getTicketStateMessage(ticket) {
     let quantityRemaining = ticket.quantity;
 
     if (new Date().getTime() < new Date(ticket.saleStartDate).getTime()) {
