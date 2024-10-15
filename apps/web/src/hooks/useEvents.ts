@@ -38,7 +38,7 @@ export const useEvent = (id: string, intialData) => {
       if (response.status !== 200) throw new Error(response.statusText);
       return response.data;
     },
-    // initialData: initialData,
+    initialData: intialData,
   });
 };
 
