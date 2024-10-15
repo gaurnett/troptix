@@ -72,7 +72,6 @@ export default function EventDetailPage(props) {
   const { isPending, data: event } = useEvent(eventId, props.event);
 
   function handleCancel() {
-    console.log('Hello World 2');
     setIsTicketModalOpen(false);
   }
 
