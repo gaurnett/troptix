@@ -77,55 +77,60 @@ export default function OrdersPage() {
             <Empty description={<span>No Tickets Found</span>} />
           </div>
         ) : (
-          orders.map((order, index: any) => {
-            return (
-              <div key={index} className="w-full mb-4">
-                <Link
-                  key={index}
-                  href={{
-                    pathname: '/order-details',
-                    query: { orderId: order.id },
-                  }}
-                >
-                  <div className="w-full" key={order.id}>
-                    <div className="flex">
-                      <div className="my-auto">
-                        <Image
-                          width={150}
-                          height={150}
-                          className="w-auto rounded"
-                          style={{
-                            objectFit: 'cover',
-                            width: 150,
-                            height: 150,
-                            maxHeight: 150,
-                            maxWidth: 150,
-                          }}
-                          src={order.event.imageUrl}
-                          alt={'event flyer image'}
-                        />
-                      </div>
-                      <div className="ml-4 my-auto grow w-full ">
-                        <div className="font-bold text-xl">
-                          {order.event.name}
+          orders
+            .sort(
+              (a, b) =>
+                new Date(b.event.createdAt) > new Date(a.event.createdAt)
+            )
+            .map((order, index: any) => {
+              return (
+                <div key={index} className="w-full mb-4">
+                  <Link
+                    key={index}
+                    href={{
+                      pathname: '/order-details',
+                      query: { orderId: order.id },
+                    }}
+                  >
+                    <div className="w-full" key={order.id}>
+                      <div className="flex">
+                        <div className="my-auto">
+                          <Image
+                            width={150}
+                            height={150}
+                            className="w-auto rounded"
+                            style={{
+                              objectFit: 'cover',
+                              width: 150,
+                              height: 150,
+                              maxHeight: 150,
+                              maxWidth: 150,
+                            }}
+                            src={order.event.imageUrl}
+                            alt={'event flyer image'}
+                          />
                         </div>
-                        <div className="text-base">{order.event.venue}</div>
-                        <p className="text-base text-clip overflow-hidden">
-                          {order.event.address}
-                        </p>
-                        <div className="text-base text-blue-500">
-                          {getDateFormatter(new Date(order.event.startDate))}
+                        <div className="ml-4 my-auto grow w-full ">
+                          <div className="font-bold text-xl">
+                            {order.event.name}
+                          </div>
+                          <div className="text-base">{order.event.venue}</div>
+                          <p className="text-base text-clip overflow-hidden">
+                            {order.event.address}
+                          </p>
+                          <div className="text-base text-blue-500">
+                            {getDateFormatter(new Date(order.event.startDate))}
+                          </div>
                         </div>
                       </div>
                     </div>
+                  </Link>
+                  <div className="px-6">
+                    <Divider dashed />
                   </div>
-                </Link>
-                <div className="px-6">
-                  <Divider dashed />
                 </div>
-              </div>
-            );
-          })
+              );
+            })
         )}
       </div>
     </div>
