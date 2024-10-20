@@ -15,11 +15,6 @@ const stripe = new Stripe(secretKey, {
 });
 const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
 
-// To run webhook locally:
-// const endpointSecret = 'whsec_a8784c76287c9e3b902c309b328f8014687f73be0982e60dc4eb0b286a98556a';
-// stripe trigger payment_intent.succeeded
-// stripe listen --forward-to localhost:3001/api/stripe
-
 async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
 
