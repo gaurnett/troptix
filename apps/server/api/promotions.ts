@@ -1,7 +1,10 @@
-import { PrismaClient } from "@prisma/client";
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { PrismaClient } from '@prisma/client';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import { allowCors } from '../lib/auth.js';
-import { getPrismaCreatePromotionQuery, getPrismaUpdatePromotionQuery } from '../lib/promotionHelper.js';
+import {
+  getPrismaCreatePromotionQuery,
+  getPrismaUpdatePromotionQuery,
+} from '../lib/promotionHelper.js';
 import prisma from '../prisma/prisma.js';
 
 const prismaClient = prisma as PrismaClient;
@@ -80,7 +83,6 @@ async function getPromotionByCode(request, response) {
       },
     });
 
-    console.log(promotion);
     return response.status(200).json(promotion);
   } catch (e) {
     console.error('Request error', e);
@@ -97,12 +99,10 @@ async function createPromotion(body, response) {
 
   try {
     const promotion = await prismaClient.promotions.create({
-      data: getPrismaCreatePromotionQuery(body)
+      data: getPrismaCreatePromotionQuery(body),
     });
 
-    return response
-      .status(200)
-      .json(promotion);
+    return response.status(200).json(promotion);
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error updating promotion' });
@@ -123,9 +123,7 @@ async function updatePromotion(body, response) {
       create: getPrismaUpdatePromotionQuery(body),
     });
 
-    return response
-      .status(200)
-      .json(promotion);
+    return response.status(200).json(promotion);
   } catch (e) {
     console.error('Request error', e);
     return response.status(500).json({ error: 'Error updating promotion' });

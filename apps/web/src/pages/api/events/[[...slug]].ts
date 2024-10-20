@@ -144,10 +144,8 @@ async function getAllEvents(userId?: string) {
         },
       },
     });
-    console.log("Hello World: " + events);
     return events;
   } catch (e: any) {
-    console.log("Hello World: " + e);
     throw new Error(e);
   }
 }
@@ -171,11 +169,11 @@ async function getEventsByOrganizerIdQuery(userId: string, scanable?: boolean) {
       // Fetch events that are scannable by the user if scanable is true, else fetch all events the user owns
       ...(scanable
         ? {
-          OR: [
-            { delegatedAccess: DelegatedAccess.OWNER },
-            { delegatedAccess: DelegatedAccess.TICKET_SCANNER },
-          ],
-        }
+            OR: [
+              { delegatedAccess: DelegatedAccess.OWNER },
+              { delegatedAccess: DelegatedAccess.TICKET_SCANNER },
+            ],
+          }
         : { delegatedAccess: DelegatedAccess.OWNER }),
     },
   });
