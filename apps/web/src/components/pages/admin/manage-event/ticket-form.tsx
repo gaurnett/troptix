@@ -5,7 +5,9 @@ import {
   CustomTextArea,
   CustomTimeField,
 } from '@/components/ui/input';
-import { Button, Form, Select } from 'antd';
+import { TicketType } from '@/hooks/types/Ticket';
+import { Button, Checkbox, Form, Select } from 'antd';
+import { Dispatch } from 'react';
 import { TicketFeeStructure } from 'troptix-models';
 
 export default function TicketForm({
@@ -13,6 +15,11 @@ export default function TicketForm({
   setSelectedTicket,
   saveTicket,
   onClose,
+}: {
+  selectedTicket: TicketType,
+  setSelectedTicket: Dispatch<any>,
+  saveTicket: () => void,
+  onClose: () => void
 }) {
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedTicket((previousTicket) => ({
@@ -22,6 +29,8 @@ export default function TicketForm({
   }
 
   function updateDate(name, value) {
+    if (!value) return;
+
     setSelectedTicket((previousTicket) => ({
       ...previousTicket,
       [name]: value.toDate(),
@@ -41,6 +50,13 @@ export default function TicketForm({
       ['ticketingFees']: value,
     }));
   }
+
+  function onChange(e) {
+    setSelectedTicket((previousTicket) => ({
+      ...previousTicket,
+      ['requiredDiscountCode']: e.target.checked
+    }))
+  };
 
   return (
     <div className="md:max-w-md">
@@ -203,6 +219,28 @@ export default function TicketForm({
               required={true}
             />
           </div>
+        </div>
+
+        <div>
+          <div className="mb-4 md:mr-4 w-full">
+            <Checkbox onChange={onChange}>Does this ticket require a discount code</Checkbox>
+          </div>
+          {
+            selectedTicket.requiredDiscountCode &&
+            <div className="mb-4 w-full">
+              <CustomInput
+                value={selectedTicket.discountCode}
+                name={'discountCode'}
+                id={'discountCode'}
+                label={'Discount Code'}
+                type={'text'}
+                placeholder={'FAMILY_TICKET'}
+                handleChange={handleChange}
+                required={true}
+              />
+            </div>
+          }
+
         </div>
 
         <div className="flex flex-wrap -mx-3 mb-4 mt-4">
