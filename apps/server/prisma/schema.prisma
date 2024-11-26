@@ -1,17 +1,10 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-  // relationMode = "prisma"
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-enum Role {
-  PATRON
-  ORGANIZER
-  PROMOTER
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Users {
@@ -24,80 +17,53 @@ model Users {
   lastName            String?
   stripeId            String?
   role                Role                  @default(PATRON)
-  tickets             Tickets[]
+  telephoneNumber     String?
+  billingAddress1     String?
+  billingAddress2     String?
+  billingCity         String?
+  billingCountry      String?
+  billingZip          String?
+  billingState        String?
   orders              Orders[]
   socialMediaAccounts SocialMediaAccounts[]
-
-  telephoneNumber String?
-  billingAddress1 String?
-  billingAddress2 String?
-  billingCity     String?
-  billingCountry  String?
-  billingZip      String?
-  billingState    String?
-}
-
-enum SocialMediaAccountType {
-  UNKNOWN
-  FACEBOOK
-  INSTAGRAM
-  TIKTOK
-  TWITTER
+  tickets             Tickets[]
 }
 
 model SocialMediaAccounts {
   id                     String                 @id @default(uuid())
   socialMediaAccountType SocialMediaAccountType @default(UNKNOWN)
   link                   String?
-  user                   Users?                 @relation(fields: [userId], references: [id])
   userId                 String?
+  user                   Users?                 @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
 
-enum TicketStatus {
-  AVAILABLE
-  NOT_AVAILABLE
-}
-
-enum TicketType {
-  FREE
-  PAID
-  COMPLEMENTARY
-}
-
 model Tickets {
-  id          String       @id @default(uuid())
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime?    @updatedAt
-  status      TicketStatus @default(NOT_AVAILABLE)
-  ticketsType TicketType?  @default(PAID)
-  fees        Float?
-  subtotal    Float?
-  total       Float?
-  firstName   String?
-  lastName    String?
-  email       String?
-
-  event        Events       @relation(fields: [eventId], references: [id])
+  id           String       @id @default(uuid())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime?    @updatedAt
+  status       TicketStatus @default(NOT_AVAILABLE)
+  ticketsType  TicketType?  @default(PAID)
+  fees         Float?
+  subtotal     Float?
+  total        Float?
+  firstName    String?
+  lastName     String?
+  email        String?
   eventId      String
-  order        Orders       @relation(fields: [orderId], references: [id])
   orderId      String
-  ticketType   TicketTypes? @relation(fields: [ticketTypeId], references: [id])
   ticketTypeId String?
-  user         Users?       @relation(fields: [userId], references: [id])
   userId       String?
+  event        Events       @relation(fields: [eventId], references: [id])
+  order        Orders       @relation(fields: [orderId], references: [id])
+  ticketType   TicketTypes? @relation(fields: [ticketTypeId], references: [id])
+  user         Users?       @relation(fields: [userId], references: [id])
 
   @@index([eventId])
   @@index([orderId])
   @@index([ticketTypeId])
   @@index([userId])
-}
-
-enum OrderStatus {
-  PENDING
-  CANCELLED
-  COMPLETED
 }
 
 model Orders {
@@ -122,55 +88,125 @@ model Orders {
   billingCountry   String?
   billingZip       String?
   billingState     String?
-  tickets          Tickets[]
   ticketsLink      String?
   status           OrderStatus @default(PENDING)
-
-  user    Users?  @relation(fields: [userId], references: [id])
-  userId  String?
-  event   Events  @relation(fields: [eventId], references: [id])
-  eventId String
+  userId           String?
+  eventId          String
+  event            Events      @relation(fields: [eventId], references: [id])
+  user             Users?      @relation(fields: [userId], references: [id])
+  tickets          Tickets[]
 
   @@index([eventId])
   @@index([userId])
 }
 
 model Events {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isDraft   Boolean  @default(true)
-
-  // Event Details
-  imageUrl        String? @db.VarChar(2000)
+  id              String           @id @default(uuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  isDraft         Boolean          @default(true)
+  imageUrl        String?          @db.VarChar(2000)
   name            String
-  description     String  @db.VarChar(2000)
+  description     String           @db.VarChar(2000)
   summary         String?
   organizer       String
   organizerUserId String
+  startDate       DateTime
+  startTime       DateTime?
+  endDate         DateTime
+  endTime         DateTime?
+  venue           String?
+  address         String
+  country         String?
+  countryCode     String?
+  latitude        Float?
+  longitude       Float?
+  delegatedUsers  DelegatedUsers[]
+  orders          Orders[]
+  promotions      Promotions[]
+  ticketTypes     TicketTypes[]
+  tickets         Tickets[]
+}
 
-  // Date and Time Details
-  startDate DateTime
-  startTime DateTime?
-  endDate   DateTime
-  endTime   DateTime?
+model Promotions {
+  id            String        @id @default(uuid())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  code          String
+  promotionType PromotionType @default(UNKNOWN)
+  value         Float
+  eventId       String?
+  event         Events?       @relation(fields: [eventId], references: [id])
 
-  // Location Details
-  venue       String?
-  address     String
-  country     String?
-  countryCode String?
-  latitude    Float?
-  longitude   Float?
+  @@index([eventId])
+}
 
-  // Ticket Details
-  tickets     Tickets[]
-  ticketTypes TicketTypes[]
-  orders      Orders[]
-  promotions  Promotions[]
+model TicketTypes {
+  id                 String             @id @default(uuid())
+  ticketType         TicketType?        @default(PAID)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  name               String
+  description        String
+  maxPurchasePerUser Int
+  quantity           Int
+  quantitySold       Int?               @default(0)
+  saleStartDate      DateTime
+  saleStartTime      DateTime?
+  saleEndDate        DateTime
+  saleEndTime        DateTime?
+  price              Float
+  ticketingFees      TicketFeeStructure @default(PASS_TICKET_FEES)
+  eventId            String
+  event              Events             @relation(fields: [eventId], references: [id])
+  tickets            Tickets[]
+  discountCode       String?
 
-  // Delegated User
-  delegatedUsers DelegatedUsers[]
+  @@index([eventId])
+}
+
+model DelegatedUsers {
+  id              String          @id @default(uuid())
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  delegatedAccess DelegatedAccess
+  email           String
+  userId          String
+  eventId         String
+  event           Events          @relation(fields: [eventId], references: [id])
+
+  @@index([eventId])
+}
+
+enum Role {
+  PATRON
+  ORGANIZER
+  PROMOTER
+}
+
+enum SocialMediaAccountType {
+  UNKNOWN
+  FACEBOOK
+  INSTAGRAM
+  TIKTOK
+  TWITTER
+}
+
+enum TicketStatus {
+  AVAILABLE
+  NOT_AVAILABLE
+}
+
+enum TicketType {
+  FREE
+  PAID
+  COMPLEMENTARY
+}
+
+enum OrderStatus {
+  PENDING
+  CANCELLED
+  COMPLETED
 }
 
 enum PromotionType {
@@ -179,74 +215,12 @@ enum PromotionType {
   DOLLAR_AMOUNT
 }
 
-model Promotions {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  code          String
-  promotionType PromotionType @default(UNKNOWN)
-  value         Float
-  event         Events?       @relation(fields: [eventId], references: [id])
-  eventId       String?
-
-  @@index([eventId])
-}
-
 enum TicketFeeStructure {
-  // Fees to be included in the ticket price you set. 
-  // Fees will be deducted from your sales at the time of your payout.
   ABSORB_TICKET_FEES
-  // Attendees to pay the fees on top of the ticket price you set. 
-  // Fees will be collected off the top of your ticket sales at the time of your payout.
   PASS_TICKET_FEES
-}
-
-model TicketTypes {
-  id         String      @id @default(uuid())
-  ticketType TicketType? @default(PAID)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-
-  // Ticket Details
-  name               String
-  description        String
-  maxPurchasePerUser Int
-  quantity           Int
-  quantitySold       Int?   @default(0)
-
-  // Sale Date Details
-  saleStartDate DateTime
-  saleStartTime DateTime?
-  saleEndDate   DateTime
-  saleEndTime   DateTime?
-
-  // Price Details
-  price         Float
-  ticketingFees TicketFeeStructure @default(PASS_TICKET_FEES)
-
-  event   Events    @relation(fields: [eventId], references: [id])
-  eventId String
-  tickets Tickets[]
-
-  @@index([eventId])
 }
 
 enum DelegatedAccess {
   OWNER
   TICKET_SCANNER
-}
-
-model DelegatedUsers {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  delegatedAccess DelegatedAccess
-  email           String
-  userId          String
-  event           Events          @relation(fields: [eventId], references: [id])
-  eventId         String
-
-  @@index([eventId])
 }

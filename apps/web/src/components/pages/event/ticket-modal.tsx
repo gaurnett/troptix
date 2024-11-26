@@ -69,7 +69,7 @@ export default function TicketModal({
       content: (
         <TicketsCheckoutForm
           event={event}
-          ticketTypes={ticketTypes}
+          ticketTypes={ticketTypes as TicketType[]}
           promotion={promotion}
           setPromotion={setPromotion}
           checkout={checkout}

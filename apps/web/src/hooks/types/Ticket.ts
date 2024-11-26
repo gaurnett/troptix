@@ -62,6 +62,8 @@ export type TicketType = {
   // Price Details
   price?: number;
   ticketingFees?: TicketFeeStructure;
+  requiredDiscountCode?: boolean;
+  discountCode?: string;
 };
 
 export function createTicket(
