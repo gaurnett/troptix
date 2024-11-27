@@ -13,13 +13,26 @@ import { calculateFees, getDateFormatter } from '@/lib/utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 const { Paragraph } = Typography;
 
-export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setCheckout, promotion, setPromotion }) {
-  const [promotionCode, setPromotionCode] = useState<any>();
+export default function TicketsCheckoutForm(
+  { event, ticketTypes, checkout, setCheckout, promotion, setPromotion }:
+    { event: any, ticketTypes: TicketType[], promotion: any, setPromotion: any, checkout: any, setCheckout: any }) {
+  const [promotionCode, setPromotionCode] = useState<string>();
   const [promotionApplied, setPromotionApplied] = useState(false);
   const [canShowMessage, setCanShowMessage] = useState(true);
   const { user } = useContext(TropTixContext);
 
   async function applyPromotion() {
+    let ticketDiscountApplied = false;
+    ticketTypes.forEach(ticket => {
+      if (String(ticket.discountCode).toUpperCase() === String(promotionCode).toUpperCase()) {
+        message.success('Tickets unlocked');
+        ticketDiscountApplied = true;
+        setPromotionApplied(true);
+      }
+    });
+
+    if (ticketDiscountApplied) return;
+
     if (promotionCode === undefined) {
       if (canShowMessage) {
         setCanShowMessage(false);
@@ -246,6 +259,14 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
     return undefined;
   }
 
+  let filteredTickets = ticketTypes
+
+  if (filteredTickets !== null && filteredTickets !== undefined) {
+    filteredTickets = filteredTickets.filter(ticket => {
+      return (promotionApplied && String(ticket.discountCode).toUpperCase() === String(promotionCode).toUpperCase()) || !ticket.discountCode;
+    });
+  }
+
   return (
     <div className="md:px-4">
       <TypographyH3 text={"Contact Information"} classes='mb-2' />
@@ -336,7 +357,7 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
       <List
         itemLayout="vertical"
         size="large"
-        dataSource={ticketTypes}
+        dataSource={filteredTickets}
         split={false}
         renderItem={(ticket: TicketType, index: number) => {
           let checkoutTicket: any;
@@ -349,6 +370,7 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
           const pendingOrders = ticket.pendingOrders as number;
           const maxPurchasePerUser = ticket.maxPurchasePerUser as number;
           const completedOrders = ticket.completedOrders as number;
+          const isPromotionPriceSame = getFormattedCurrency(ticket.price) === getFormattedCurrency(ticket.price, true);
 
           return (
             <List.Item className="mb-4" style={{ padding: 0 }}>
@@ -422,7 +444,7 @@ export default function TicketsCheckoutForm({ event, ticketTypes, checkout, setC
                   />
                   <div className="my-4">
                     <div className="flex">
-                      {promotionApplied ? (
+                      {promotionApplied && !ticket.discountCode && !isPromotionPriceSame ? (
                         <div className="flex">
                           <div
                             className="text-base"

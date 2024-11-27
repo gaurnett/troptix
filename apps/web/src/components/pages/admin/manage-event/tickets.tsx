@@ -1,5 +1,6 @@
 import { Spinner } from '@/components/ui/spinner';
-import { getFormattedCurrency } from '@/lib/utils';
+import { TicketFeeStructure, TicketType } from '@/hooks/types/Ticket';
+import { generateId, getFormattedCurrency } from '@/lib/utils';
 import { Button, Drawer, List, Popconfirm, Typography, message } from 'antd';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -8,7 +9,6 @@ import {
   getTicketTypes,
   saveTicketType,
 } from 'troptix-api';
-import { TicketType } from 'troptix-models';
 import TicketCompForm from './ticket-comp-form';
 import TicketForm from './ticket-form';
 const { Paragraph } = Typography;
@@ -20,7 +20,7 @@ export default function TicketsPage({ event }) {
   const [messageApi, contextHolder] = message.useMessage();
   const [open, setOpen] = useState(false);
   const [compTicketModalOpen, setCompTicketModalOpen] = useState(false);
-  const [ticketTypes, setTicketTypes] = useState<any[]>([]);
+  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<any>();
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [isFetchingTicketTypes, setIsFetchingTicketTypes] = useState(true);
@@ -41,7 +41,7 @@ export default function TicketsPage({ event }) {
         ) {
           setTicketTypes(response);
         }
-      } catch (error) {}
+      } catch (error) { }
       setIsFetchingTicketTypes(false);
     }
 
@@ -131,7 +131,21 @@ export default function TicketsPage({ event }) {
 
             <div className="flex mb-18">
               <Button
-                onClick={() => showDrawer(new TicketType(eventId), -1)}
+                onClick={() => {
+                  const startDate = new Date();
+                  startDate.setMinutes(0, 0, 0);
+                  const endDate = new Date();
+                  endDate.setHours(startDate.getHours() + 4);
+                  endDate.setMinutes(0, 0, 0);
+                  const ticket: TicketType = {
+                    id: generateId(),
+                    eventId: eventId as string,
+                    saleEndDate: endDate,
+                    saleStartDate: startDate,
+                    ticketingFees: TicketFeeStructure.PASS_TICKET_FEES
+                  }
+                  showDrawer(ticket, -1)
+                }}
                 type="primary"
                 className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
               >
@@ -196,8 +210,8 @@ export default function TicketsPage({ event }) {
         <TicketForm
           selectedTicket={selectedTicket}
           setSelectedTicket={setSelectedTicket}
-          onClose={onClose}
           saveTicket={saveTicket}
+          onClose={onClose}
         />
       </Drawer>
 

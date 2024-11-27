@@ -124,6 +124,7 @@ export function getPrismaCreateTicketTypeQuery(ticket) {
     saleEndDate: ticket.saleEndDate,
     price: ticket.price,
     ticketingFees: ticket.ticketingFees,
+    discountCode: ticket.discountCode,
     event: {
       connect: {
         id: ticket.eventId,
@@ -146,6 +147,7 @@ export function getPrismaTicketTypeQuery(ticket) {
     saleEndDate: ticket.saleEndDate,
     price: ticket.price,
     ticketingFees: ticket.ticketingFees,
+    discountCode: ticket.discountCode,
     event: {
       connect: {
         id: ticket.eventId,

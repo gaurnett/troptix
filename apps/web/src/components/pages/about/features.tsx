@@ -1,6 +1,3 @@
-import EventCard from '@/components/EventCard';
-import { EventType } from '@/types/Event';
-import { useRouter } from 'next/navigation';
 import { Collapse, Divider } from 'antd';
 
 export default function AboutFeatures() {
