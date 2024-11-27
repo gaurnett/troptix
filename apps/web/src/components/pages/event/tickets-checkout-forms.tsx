@@ -16,7 +16,7 @@ const { Paragraph } = Typography;
 export default function TicketsCheckoutForm(
   { event, ticketTypes, checkout, setCheckout, promotion, setPromotion }:
     { event: any, ticketTypes: TicketType[], promotion: any, setPromotion: any, checkout: any, setCheckout: any }) {
-  const [promotionCode, setPromotionCode] = useState<any>();
+  const [promotionCode, setPromotionCode] = useState<string>();
   const [promotionApplied, setPromotionApplied] = useState(false);
   const [canShowMessage, setCanShowMessage] = useState(true);
   const { user } = useContext(TropTixContext);
@@ -25,7 +25,7 @@ export default function TicketsCheckoutForm(
     let ticketDiscountApplied = false;
     ticketTypes.forEach(ticket => {
       if (String(ticket.discountCode).toUpperCase() === String(promotionCode).toUpperCase()) {
-        message.success('Promotion code applied');
+        message.success('Tickets unlocked');
         ticketDiscountApplied = true;
         setPromotionApplied(true);
       }
@@ -261,9 +261,9 @@ export default function TicketsCheckoutForm(
 
   let filteredTickets = ticketTypes
 
-  if (filteredTickets !== null || filteredTickets !== undefined) {
+  if (filteredTickets !== null && filteredTickets !== undefined) {
     filteredTickets = filteredTickets.filter(ticket => {
-      return (promotionApplied && ticket.discountCode === promotionCode) || !ticket.discountCode;
+      return (promotionApplied && String(ticket.discountCode).toUpperCase() === String(promotionCode).toUpperCase()) || !ticket.discountCode;
     });
   }
 
@@ -370,6 +370,7 @@ export default function TicketsCheckoutForm(
           const pendingOrders = ticket.pendingOrders as number;
           const maxPurchasePerUser = ticket.maxPurchasePerUser as number;
           const completedOrders = ticket.completedOrders as number;
+          const isPromotionPriceSame = getFormattedCurrency(ticket.price) === getFormattedCurrency(ticket.price, true);
 
           return (
             <List.Item className="mb-4" style={{ padding: 0 }}>
@@ -443,7 +444,7 @@ export default function TicketsCheckoutForm(
                   />
                   <div className="my-4">
                     <div className="flex">
-                      {promotionApplied && !ticket.discountCode ? (
+                      {promotionApplied && !ticket.discountCode && !isPromotionPriceSame ? (
                         <div className="flex">
                           <div
                             className="text-base"
