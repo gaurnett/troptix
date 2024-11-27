@@ -223,10 +223,10 @@ export default function TicketForm({
 
         <div>
           <div className="mb-4 md:mr-4 w-full">
-            <Checkbox checked={selectedTicket.discountCode?.length != 0} onChange={onChange}>Does this ticket require a discount code</Checkbox>
+            <Checkbox checked={selectedTicket.discountCode?.length !== 0} onChange={onChange}>Does this ticket require a discount code</Checkbox>
           </div>
           {
-            (selectedTicket.requiredDiscountCode || selectedTicket.discountCode?.length != 0) &&
+            (selectedTicket.requiredDiscountCode || selectedTicket.discountCode?.length !== 0) &&
             <div className="mb-4 w-full">
               <CustomInput
                 value={selectedTicket.discountCode}
