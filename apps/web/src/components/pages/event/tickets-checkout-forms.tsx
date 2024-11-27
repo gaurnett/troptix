@@ -259,9 +259,13 @@ export default function TicketsCheckoutForm(
     return undefined;
   }
 
-  const filteredTickets = ticketTypes.filter(ticket => {
-    return (promotionApplied && ticket.discountCode === promotionCode) || !ticket.discountCode;
-  });
+  let filteredTickets = ticketTypes
+
+  if (filteredTickets !== null || filteredTickets !== undefined) {
+    filteredTickets = filteredTickets.filter(ticket => {
+      return (promotionApplied && ticket.discountCode === promotionCode) || !ticket.discountCode;
+    });
+  }
 
   return (
     <div className="md:px-4">
