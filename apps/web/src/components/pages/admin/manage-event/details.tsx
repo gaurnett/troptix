@@ -9,7 +9,7 @@ import React from 'react';
 import { prodUrl } from '../../../../hooks/useFetchEvents';
 
 export default function DetailsPage({ event, setEvent, updateEvent }) {
-  const fileUploadUrl = prodUrl + "/api/fileupload";
+  const fileUploadUrl = prodUrl + '/api/fileupload';
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setEvent((previousEvent) => ({
@@ -68,7 +68,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
         message.error(`${info.file.name} file upload failed.`);
       }
     },
-    onDrop(e) { },
+    onDrop(e) {},
   };
 
   return (
@@ -134,7 +134,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
           <div className="w-full px-3">
             <CustomTextArea
               value={event.description}
-              maxLength={2000}
+              maxLength={4000}
               name={'description'}
               id={'description'}
               label={'Event Description'}
