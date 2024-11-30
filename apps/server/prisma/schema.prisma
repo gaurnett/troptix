@@ -107,7 +107,7 @@ model Events {
   isDraft         Boolean          @default(true)
   imageUrl        String?          @db.VarChar(2000)
   name            String
-  description     String           @db.VarChar(2000)
+  description     String           @db.VarChar(4000)
   summary         String?
   organizer       String
   organizerUserId String
@@ -158,9 +158,9 @@ model TicketTypes {
   price              Float
   ticketingFees      TicketFeeStructure @default(PASS_TICKET_FEES)
   eventId            String
+  discountCode       String?
   event              Events             @relation(fields: [eventId], references: [id])
   tickets            Tickets[]
-  discountCode       String?
 
   @@index([eventId])
 }
