@@ -25,13 +25,14 @@ export enum PostOrdersType {
   POST_ORDERS_CREATE_CHARGE = 'POST_ORDERS_CREATE_CHARGE',
   POST_ORDERS_CREATE_ORDER = 'POST_ORDERS_CREATE_ORDER',
   POST_ORDERS_CREATE_COMPLEMENTARY_ORDER = 'POST_ORDERS_CREATE_COMPLEMENTARY_ORDER',
+  POST_ORDERS_CREATE_FREE_ORDER = 'POST_ORDERS_CREATE_FREE_ORDER',
 }
 
 export interface PostOrdersRequest {
   type: keyof typeof PostOrdersType;
   order?: Order;
   charge?: Charge;
-  checkoutTickets?: [string, CheckoutTicket][],
+  checkoutTickets?: [string, CheckoutTicket][];
   complementaryOrder?: ComplementaryOrder;
   jwtToken?: string;
 }
@@ -137,12 +138,14 @@ export function useCreateOrder() {
       customerId,
       userId,
       jwtToken,
+      isFreeOrder = false,
     }: {
       checkout: Checkout;
       paymentId: string;
       customerId: string;
       userId: string;
       jwtToken: string;
+      isFreeOrder: boolean;
     }) => {
       if (!paymentId) {
         message.error(
@@ -153,7 +156,9 @@ export function useCreateOrder() {
       const order = createOrder(checkout, paymentId, customerId, userId);
 
       await postOrders({
-        type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
+        type: isFreeOrder
+          ? PostOrdersType.POST_ORDERS_CREATE_FREE_ORDER
+          : PostOrdersType.POST_ORDERS_CREATE_ORDER,
         order: order,
         jwtToken: jwtToken,
       });
@@ -181,7 +186,13 @@ export async function postOrders({
 }: PostOrdersRequest) {
   try {
     let url = prodUrl + `/api/orders`;
-    const request = { type, order, charge, complementaryOrder, checkoutTickets };
+    const request = {
+      type,
+      order,
+      charge,
+      complementaryOrder,
+      checkoutTickets,
+    };
 
     const response = await fetch(url, {
       method: 'POST',

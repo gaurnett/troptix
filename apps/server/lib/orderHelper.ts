@@ -1,9 +1,4 @@
-import {
-  OrderStatus,
-  Prisma,
-  TicketStatus,
-  TicketType
-} from '@prisma/client';
+import { OrderStatus, Prisma, TicketStatus, TicketType } from '@prisma/client';
 import { buffer } from 'micro';
 
 export const config = {
@@ -51,7 +46,7 @@ export function updateTicketTypeQuantitySold(quantitySold) {
   return ticketTypeUpdate;
 }
 
-export function getPrismaCreateOrderQuery(order) {
+export function getPrismaCreateOrderQuery(order, isFreeOrder = false) {
   let orderInput: Prisma.OrdersCreateInput;
   let orderTickets: Prisma.TicketsCreateManyOrderInput[] = [];
 
@@ -60,8 +55,8 @@ export function getPrismaCreateOrderQuery(order) {
       id: ticket.id,
       eventId: ticket.eventId,
       ticketTypeId: ticket.ticketTypeId,
-      status: TicketStatus.NOT_AVAILABLE,
-      ticketsType: TicketType.PAID,
+      status: isFreeOrder ? TicketStatus.AVAILABLE : TicketStatus.NOT_AVAILABLE,
+      ticketsType: isFreeOrder ? TicketType.FREE : TicketType.PAID,
       fees: ticket.fees,
       subtotal: ticket.subtotal,
       total: ticket.total,
@@ -99,6 +94,7 @@ export function getPrismaCreateOrderQuery(order) {
     billingZip: order.billingZip,
     billingState: order.billingState,
     ticketsLink: order.ticketsLink,
+    status: isFreeOrder ? OrderStatus.COMPLETED : OrderStatus.PENDING,
     event: {
       connect: {
         id: order.eventId,

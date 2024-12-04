@@ -16,6 +16,8 @@ export default function OrderConfirmation() {
   const [stripeError, setStripeError] = useState<StripeError>();
   const [fetchingStatus, setFetchingStatus] = useState(true);
 
+  const isFree = 'isFree' in router.query;
+
   useEffect(() => {
     async function getStripeStatus() {
       const stripe = await stripePromise;
@@ -27,8 +29,8 @@ export default function OrderConfirmation() {
         return;
       }
 
-      if (!clientSecret) {
-        // router.push('/');
+      if (!clientSecret || isFree) {
+        setFetchingStatus(false);
         return;
       }
 
@@ -41,7 +43,7 @@ export default function OrderConfirmation() {
     }
 
     getStripeStatus();
-  }, [clientSecret, messageApi, router]);
+  }, [clientSecret, messageApi, router, isFree]);
 
   if (fetchingStatus) {
     return (
