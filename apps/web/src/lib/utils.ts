@@ -13,8 +13,16 @@ export function getDateFormatter(date: Date) {
 }
 
 export function getDateRangeFormatter(start: Date, end: Date) {
-  const startDate = formatInTimeZone(start, 'America/New_York', 'EEEE MMM dd, yyyy');
-  const endDate = formatInTimeZone(end, 'America/New_York', 'EEEE MMM dd, yyyy');
+  const startDate = formatInTimeZone(
+    start,
+    'America/New_York',
+    'EEEE MMM dd, yyyy'
+  );
+  const endDate = formatInTimeZone(
+    end,
+    'America/New_York',
+    'EEEE MMM dd, yyyy'
+  );
 
   if (startDate !== endDate) {
     return `${startDate} - ${endDate}`;
@@ -65,7 +73,7 @@ export function isInputBad(value: string): boolean {
 }
 
 export function calculateFees(price) {
-  const fee = price * 0.04 + 0.3;
+  const fee = price > 0 ? price * 0.04 + 0.3 : 0;
   const tax = fee * 0.15;
   return normalizePrice(fee + tax);
 }

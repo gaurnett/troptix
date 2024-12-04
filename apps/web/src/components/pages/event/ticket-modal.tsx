@@ -4,15 +4,19 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog";
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
 import { Checkout, initializeCheckout } from '@/hooks/types/Checkout';
 import { TicketType } from '@/hooks/types/Ticket';
 import { useCreateOrder } from '@/hooks/useOrders';
 import { useCreatePaymentIntent } from '@/hooks/usePostStripe';
-import { checkOrderValidity, useFetchTicketTypesForCheckout } from '@/hooks/useTicketType';
-import { getFormattedCurrency } from '@/lib/utils';
+import { useRouter } from 'next/router';
+import {
+  checkOrderValidity,
+  useFetchTicketTypesForCheckout,
+} from '@/hooks/useTicketType';
+import { generateId, getFormattedCurrency } from '@/lib/utils';
 import { ShoppingCartOutlined } from '@ant-design/icons';
 import { List, Steps, message, notification } from 'antd';
 import Image from 'next/image';
@@ -25,7 +29,7 @@ export type TicketOrders = {
   quantitySold?: number;
   pendingOrders?: number;
   ticket?: any;
-}
+};
 
 export default function TicketModal({
   event,
@@ -34,6 +38,7 @@ export default function TicketModal({
 }) {
   const eventId = event.id;
   const { user } = useContext(TropTixContext);
+  const router = useRouter();
   const [checkout, setCheckout] = useState<Checkout>(
     initializeCheckout(user, eventId)
   );
@@ -55,7 +60,10 @@ export default function TicketModal({
     setCheckout(initializeCheckout(user, eventId));
   }, [user, eventId]);
 
-  const { isPending: isFetchingTicketTypesForCheckout, data: ticketTypesWithPendingOrders } = useFetchTicketTypesForCheckout(eventId);
+  const {
+    isPending: isFetchingTicketTypesForCheckout,
+    data: ticketTypesWithPendingOrders,
+  } = useFetchTicketTypesForCheckout(eventId);
 
   useEffect(() => {
     if (!isFetchingTicketTypesForCheckout) {
@@ -98,6 +106,30 @@ export default function TicketModal({
     setCheckoutPreviousButtonClicked(false);
   }, [checkoutPreviousButtonClicked, current]);
 
+  async function initializeFreeOrder() {
+    createOrder.mutate(
+      {
+        checkout,
+        paymentId: generateId(),
+        customerId: '',
+        userId: user?.id,
+        jwtToken: user?.jwtToken as string,
+        isFreeOrder: true,
+      },
+      {
+        onSuccess: (data) => {
+          setClientSecret(clientSecret);
+          setOrderId(data as string);
+          router.push(`/orders/order-confirmation?orderId=${data}&isFree`);
+        },
+        onError: (error) => {
+          messageApi.error('There was an error initializing your order');
+          setCurrent(1);
+        },
+      }
+    );
+  }
+
   async function initializeStripeDetails() {
     createPaymentIntent.mutate(
       { checkout },
@@ -112,6 +144,7 @@ export default function TicketModal({
               customerId,
               userId: user?.id,
               jwtToken: user?.jwtToken as string,
+              isFreeOrder: false,
             },
             {
               onSuccess: (data) => {
@@ -153,8 +186,12 @@ export default function TicketModal({
       }
       return;
     }
+    const quantityTickets = Array.from(checkout.tickets.values()).reduce(
+      (acc, ticket) => acc + ticket.quantitySelected,
+      0
+    );
 
-    if (checkout.total === 0) {
+    if (quantityTickets === 0) {
       if (canShowMessage) {
         setCanShowMessage(false);
         message
@@ -171,10 +208,17 @@ export default function TicketModal({
       duration: 0,
     });
 
-    const { valid, checkout: orderCheckout, ticketTypes } = await checkOrderValidity(eventId, user?.jwtToken, checkout, promotion);
+    const {
+      valid,
+      checkout: orderCheckout,
+      ticketTypes,
+    } = await checkOrderValidity(eventId, user?.jwtToken, checkout, promotion);
 
+    const isFree = checkout.total === 0 && valid;
     messageApi.destroy('creating-order-loading');
-    if (valid) {
+    if (isFree) {
+      initializeFreeOrder();
+    } else if (valid) {
       initializeStripeDetails();
       setCurrent(current + 1);
     } else {
@@ -182,7 +226,8 @@ export default function TicketModal({
       setCheckout(orderCheckout as Checkout);
       notification.error({
         message: `Updated Quantity`,
-        description: 'Your order has been updated due to ticket availabilities. Please check and verify your updated cart.',
+        description:
+          'Your order has been updated due to ticket availabilities. Please check and verify your updated cart.',
         placement: 'bottom',
         duration: 0,
       });
@@ -194,7 +239,6 @@ export default function TicketModal({
   }
 
   function closeModal() {
-    console.log("Hello World");
     setCheckout(initializeCheckout(user, eventId));
     setCurrent(0);
     handleCancel();
@@ -203,14 +247,12 @@ export default function TicketModal({
   if (!user) {
     return <></>;
   }
+  const isFree = checkout.total === 0 && checkout.tickets.size > 0;
 
   return (
     <>
       {contextHolder}
-      <Dialog
-        open={isTicketModalOpen}
-        onOpenChange={closeModal}
-        modal={true}>
+      <Dialog open={isTicketModalOpen} onOpenChange={closeModal} modal={true}>
         <DialogContent className="sm:max-w-[1080px]">
           <DialogHeader>
             <DialogTitle>Ticket Checkout</DialogTitle>
@@ -234,14 +276,15 @@ export default function TicketModal({
                   </div>
 
                   <div className="flex-1 overflow-y-auto">
-                    {
-                      isFetchingTicketTypesForCheckout ?
-                        <div className="mt-32">
-                          <Spinner text={'Initializing Checkout'} />
-                        </div>
-                        :
-                        <div className="grow">{checkoutSteps[current].content}</div>
-                    }
+                    {isFetchingTicketTypesForCheckout ? (
+                      <div className="mt-32">
+                        <Spinner text={'Initializing Checkout'} />
+                      </div>
+                    ) : (
+                      <div className="grow">
+                        {checkoutSteps[current].content}
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-end content-end items-end self-end mt-4">
                     {current === 0 && (
@@ -249,7 +292,7 @@ export default function TicketModal({
                         onClick={next}
                         className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
                       >
-                        Continue
+                        {isFree ? 'RSVP' : 'Continue'}
                       </Button>
                     )}
                     {current === 1 && (
@@ -379,8 +422,7 @@ export default function TicketModal({
                           <div className="ml-4">
                             <div className="ml-4">
                               <div className="text-xl font-bold text-end">
-                                {getFormattedCurrency(checkout.total)}{' '}
-                                USD
+                                {getFormattedCurrency(checkout.total)} USD
                               </div>
                             </div>
                           </div>

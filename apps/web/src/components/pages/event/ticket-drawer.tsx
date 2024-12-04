@@ -5,13 +5,17 @@ import { Checkout, initializeCheckout } from '@/hooks/types/Checkout';
 import { TicketType } from '@/hooks/types/Ticket';
 import { useCreateOrder } from '@/hooks/useOrders';
 import { useCreatePaymentIntent } from '@/hooks/usePostStripe';
-import { checkOrderValidity, useFetchTicketTypesForCheckout } from '@/hooks/useTicketType';
-import { getFormattedCurrency } from '@/lib/utils';
+import {
+  checkOrderValidity,
+  useFetchTicketTypesForCheckout,
+} from '@/hooks/useTicketType';
+import { generateId, getFormattedCurrency } from '@/lib/utils';
 import { ShoppingCartOutlined } from '@ant-design/icons';
 import { Drawer, List, Steps, message, notification } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import CheckoutForm from './checkout';
 import TicketsCheckoutForm from './tickets-checkout-forms';
+import { useRouter } from 'next/router';
 
 export default function TicketDrawer({
   event,
@@ -25,6 +29,7 @@ export default function TicketDrawer({
   const [checkout, setCheckout] = useState<Checkout>(
     initializeCheckout(user, eventId)
   );
+  const router = useRouter();
   const [ticketTypes, setTicketTypes] = useState<TicketType[]>();
   const [checkoutPreviousButtonClicked, setCheckoutPreviousButtonClicked] =
     useState(false);
@@ -44,7 +49,10 @@ export default function TicketDrawer({
     setCheckout(initializeCheckout(user, eventId));
   }, [user, eventId]);
 
-  const { isPending: isFetchingTicketTypesForCheckout, data: ticketTypesWithPendingOrders } = useFetchTicketTypesForCheckout(eventId);
+  const {
+    isPending: isFetchingTicketTypesForCheckout,
+    data: ticketTypesWithPendingOrders,
+  } = useFetchTicketTypesForCheckout(eventId);
 
   useEffect(() => {
     if (!isFetchingTicketTypesForCheckout) {
@@ -95,6 +103,30 @@ export default function TicketDrawer({
     }
   }, [isTicketModalOpen]);
 
+  async function initializeFreeOrder() {
+    createOrder.mutate(
+      {
+        checkout,
+        paymentId: generateId(),
+        customerId: '',
+        userId: user?.id,
+        jwtToken: user?.jwtToken as string,
+        isFreeOrder: true,
+      },
+      {
+        onSuccess: (data) => {
+          setClientSecret(clientSecret);
+          setOrderId(data as string);
+          router.push(`/orders/order-confirmation?orderId=${data}&isFree`);
+        },
+        onError: (error) => {
+          messageApi.error('There was an error initializing your order');
+          setCurrent(1);
+        },
+      }
+    );
+  }
+
   async function initializeStripeDetails() {
     createPaymentIntent.mutate(
       { checkout },
@@ -109,6 +141,7 @@ export default function TicketDrawer({
               customerId,
               userId: user?.id,
               jwtToken: user?.jwtToken as string,
+              isFreeOrder: false,
             },
             {
               onSuccess: (data) => {
@@ -150,8 +183,11 @@ export default function TicketDrawer({
       }
       return;
     }
-
-    if (checkout.total === 0) {
+    const quantityTickets = Array.from(checkout.tickets.values()).reduce(
+      (acc, ticket) => acc + ticket.quantitySelected,
+      0
+    );
+    if (quantityTickets === 0) {
       if (canShowMessage) {
         setCanShowMessage(false);
         message
@@ -168,10 +204,17 @@ export default function TicketDrawer({
       duration: 0,
     });
 
-    const { valid, checkout: orderCheckout, ticketTypes } = await checkOrderValidity(eventId, user?.jwtToken, checkout, promotion);
+    const {
+      valid,
+      checkout: orderCheckout,
+      ticketTypes,
+    } = await checkOrderValidity(eventId, user?.jwtToken, checkout, promotion);
 
+    const isFree = checkout.total === 0 && valid;
     messageApi.destroy('creating-order-loading');
-    if (valid) {
+    if (isFree) {
+      initializeFreeOrder();
+    } else if (valid) {
       initializeStripeDetails();
       setCurrent(current + 1);
     } else {
@@ -179,7 +222,8 @@ export default function TicketDrawer({
       setCheckout(orderCheckout as Checkout);
       notification.error({
         message: `Updated Quantity`,
-        description: 'Your order has been updated due to ticket availabilities. Please check and verify your updated cart.',
+        description:
+          'Your order has been updated due to ticket availabilities. Please check and verify your updated cart.',
         placement: 'bottom',
         duration: 0,
       });
@@ -203,6 +247,8 @@ export default function TicketDrawer({
   if (!user) {
     return <></>;
   }
+
+  const isFree = checkout.total === 0 && checkout.tickets.size > 0;
 
   return (
     <>
@@ -309,8 +355,7 @@ export default function TicketDrawer({
                       <div className="ml-4">
                         <div className="ml-4">
                           <div className="text-2xl font-bold">
-                            {getFormattedCurrency(checkout.total)}{' '}
-                            USD
+                            {getFormattedCurrency(checkout.total)} USD
                           </div>
                         </div>
                       </div>
@@ -348,14 +393,13 @@ export default function TicketDrawer({
             />
           </div>
           <div className="flex-1 overflow-y-auto px-4">
-            {
-              isFetchingTicketTypesForCheckout ?
-                <div className="mt-32">
-                  <Spinner text={'Initializing Checkout'} />
-                </div>
-                :
-                <div className="grow">{checkoutSteps[current].content}</div>
-            }
+            {isFetchingTicketTypesForCheckout ? (
+              <div className="mt-32">
+                <Spinner text={'Initializing Checkout'} />
+              </div>
+            ) : (
+              <div className="grow">{checkoutSteps[current].content}</div>
+            )}
           </div>
           <footer className="border-t border-gray-200 px-6 pb-6">
             <div className="flex mt-4">
@@ -378,7 +422,7 @@ export default function TicketDrawer({
                   onClick={next}
                   className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
                 >
-                  Continue
+                  {isFree ? 'RSVP' : 'Continue'}
                 </Button>
               )}
               {current === 1 && (
