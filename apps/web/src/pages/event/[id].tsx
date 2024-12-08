@@ -14,18 +14,17 @@ import { useEvent } from '@/hooks/useEvents';
 import { RequestType, eventFetcher } from '@/hooks/useFetchEvents';
 import { useScreenSize } from '@/hooks/useScreenSize';
 
-import { Typography } from 'antd';
 import {
   getDateRangeFormatter,
   getFormattedCurrency,
   getTimeRangeFormatter,
 } from '@/lib/utils';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
+import { Typography } from 'antd';
 
 import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { IoTicket } from 'react-icons/io5';
 import { useContext, useState } from 'react';
 
 const { Paragraph } = Typography;
@@ -86,6 +85,9 @@ export default function EventDetailPage(props) {
       </div>
     );
   }
+
+  // console.log('Hello: ' + JSON.stringify(event));
+  // console.log('Hello: ' + JSON.stringify(event.startDate));
 
   let lowest = Number.MAX_VALUE;
   let priceString = '';

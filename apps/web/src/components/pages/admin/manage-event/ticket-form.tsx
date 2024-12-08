@@ -16,10 +16,10 @@ export default function TicketForm({
   saveTicket,
   onClose,
 }: {
-  selectedTicket: TicketType,
-  setSelectedTicket: Dispatch<any>,
-  saveTicket: () => void,
-  onClose: () => void
+  selectedTicket: TicketType;
+  setSelectedTicket: Dispatch<any>;
+  saveTicket: () => void;
+  onClose: () => void;
 }) {
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSelectedTicket((previousTicket) => ({
@@ -52,11 +52,18 @@ export default function TicketForm({
   }
 
   function onChange(e) {
-    setSelectedTicket((previousTicket) => ({
+    const checked = e.target.checked as boolean;
+    setSelectedTicket((previousTicket: TicketType) => ({
       ...previousTicket,
-      ['requiredDiscountCode']: e.target.checked
-    }))
-  };
+      ['requiredDiscountCode']: checked,
+      ['discountCode']: checked ? previousTicket.discountCode : null,
+    }));
+  }
+
+  const isDiscountRequired =
+    selectedTicket.requiredDiscountCode ||
+    (typeof selectedTicket.discountCode === 'string' &&
+      selectedTicket.discountCode?.trim().length > 0);
 
   return (
     <div className="md:max-w-md">
@@ -223,10 +230,11 @@ export default function TicketForm({
 
         <div>
           <div className="mb-4 md:mr-4 w-full">
-            <Checkbox checked={selectedTicket.discountCode?.length !== 0} onChange={onChange}>Does this ticket require a discount code</Checkbox>
+            <Checkbox checked={isDiscountRequired} onChange={onChange}>
+              Does this ticket require a discount code
+            </Checkbox>
           </div>
-          {
-            (selectedTicket.requiredDiscountCode || selectedTicket.discountCode?.length !== 0) &&
+          {isDiscountRequired && (
             <div className="mb-4 w-full">
               <CustomInput
                 value={selectedTicket.discountCode}
@@ -239,8 +247,7 @@ export default function TicketForm({
                 required={true}
               />
             </div>
-          }
-
+          )}
         </div>
 
         <div className="flex flex-wrap -mx-3 mb-4 mt-4">

@@ -13,8 +13,16 @@ export function getDateFormatter(date: Date) {
 }
 
 export function getDateRangeFormatter(start: Date, end: Date) {
-  const startDate = formatInTimeZone(start, 'America/New_York', 'EEEE MMM dd, yyyy');
-  const endDate = formatInTimeZone(end, 'America/New_York', 'EEEE MMM dd, yyyy');
+  const startDate = formatInTimeZone(
+    start,
+    'America/New_York',
+    'EEEE MMM dd, yyyy'
+  );
+  const endDate = formatInTimeZone(
+    end,
+    'America/New_York',
+    'EEEE MMM dd, yyyy'
+  );
 
   if (startDate !== endDate) {
     return `${startDate} - ${endDate}`;

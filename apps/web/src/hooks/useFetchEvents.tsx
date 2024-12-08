@@ -31,6 +31,8 @@ export async function eventFetcher({
   //   jwtToken = jwt.sign(generateJwtId(), jwtSecretKey as string);
   // }
 
+  console.log('Hello eventFetcher');
+
   if (
     requestType === RequestType.GET_EVENTS_BY_ID ||
     requestType === RequestType.GET_EVENTS_BY_ORGANIZER

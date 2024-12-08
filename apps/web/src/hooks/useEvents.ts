@@ -31,10 +31,13 @@ export function useEvents(
 
 // Fetch event by id
 export const useEvent = (id: string, intialData) => {
+  console.log('Hello useEvent: ' + id);
+  console.log('Hello ' + intialData);
   return useQuery({
     queryKey: ['event', id],
     queryFn: async () => {
       const response = await axios.get(`/api/events/${id}`);
+      console.log('Hello: ' + JSON.stringify(response));
       if (response.status !== 200) throw new Error(response.statusText);
       return response.data;
     },
