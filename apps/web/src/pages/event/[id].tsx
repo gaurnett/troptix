@@ -36,6 +36,9 @@ export async function getStaticPaths() {
     const response = await axios.get(`${baseUrl}/api/events`);
     const events = response.data;
     console.log('events: ' + events);
+    if (!(events instanceof Array)) {
+      return { paths: [], fallback: 'blocking' };
+    }
     // Get the paths we want to pre-render based on posts
     const paths = events.map((event) => ({
       params: { id: event.id?.toString() ?? '' },
