@@ -3,24 +3,27 @@ import EventCard from '@/components/EventCard';
 import Footer from '@/components/ui/footer';
 import { Spinner } from '@/components/ui/spinner';
 import { useEvents } from '@/hooks/useEvents';
-import {
-  RequestType,
-  eventFetcher
-} from '@/hooks/useFetchEvents';
+import { getBaseUrl } from '@/lib/utils';
+import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import * as React from 'react';
 
 export async function getStaticProps() {
-  const events = await eventFetcher({
-    requestType: RequestType.GET_EVENTS_ALL,
-  });
+  const baseUrl = getBaseUrl();
+  try {
+    const response = await axios.get(`${baseUrl}/api/events`);
+    const events = response.data;
 
-  if (!events) {
+    if (!events) {
+      return { props: { events: [] }, revalidate: 60 };
+    }
+
+    return { props: { events }, revalidate: 60 };
+  } catch (error) {
+    console.error('Error fetching events:', error);
     return { props: { events: [] }, revalidate: 60 };
   }
-
-  return { props: { events }, revalidate: 60 };
 }
 
 export default function ManageEventsPage(props) {

@@ -13,8 +13,16 @@ export function getDateFormatter(date: Date) {
 }
 
 export function getDateRangeFormatter(start: Date, end: Date) {
-  const startDate = formatInTimeZone(start, 'America/New_York', 'EEEE MMM dd, yyyy');
-  const endDate = formatInTimeZone(end, 'America/New_York', 'EEEE MMM dd, yyyy');
+  const startDate = formatInTimeZone(
+    start,
+    'America/New_York',
+    'EEEE MMM dd, yyyy'
+  );
+  const endDate = formatInTimeZone(
+    end,
+    'America/New_York',
+    'EEEE MMM dd, yyyy'
+  );
 
   if (startDate !== endDate) {
     return `${startDate} - ${endDate}`;
@@ -72,4 +80,12 @@ export function calculateFees(price) {
 
 export function normalizePrice(price): number {
   return Math.round(price * 100) / 100;
+}
+
+export function getBaseUrl() {
+  return process.env.VERCEL_ENV === 'production'
+    ? `https://www.usetroptix.com`
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : `http://localhost:3000`;
 }

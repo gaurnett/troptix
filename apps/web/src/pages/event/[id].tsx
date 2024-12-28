@@ -11,11 +11,11 @@ import {
 } from '@/components/ui/typography';
 import { MetaHead } from '@/components/utils/MetaHead';
 import { useEvent } from '@/hooks/useEvents';
-import { RequestType, eventFetcher } from '@/hooks/useFetchEvents';
 import { useScreenSize } from '@/hooks/useScreenSize';
 
 import { Typography } from 'antd';
 import {
+  getBaseUrl,
   getDateRangeFormatter,
   getFormattedCurrency,
   getTimeRangeFormatter,
@@ -25,41 +25,57 @@ import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { IoTicket } from 'react-icons/io5';
 import { useContext, useState } from 'react';
+import axios from 'axios';
 
 const { Paragraph } = Typography;
 
 export async function getStaticPaths() {
-  // Call an external API endpoint to get posts
-  const events = await eventFetcher({
-    requestType: RequestType.GET_EVENTS_ALL,
-  });
+  const baseUrl = getBaseUrl();
+  try {
+    const response = await axios.get(`${baseUrl}/api/events`);
+    const events = response.data;
+    console.log('events: ' + events);
+    // Get the paths we want to pre-render based on posts
+    const paths = events.map((event) => ({
+      params: { id: event.id?.toString() ?? '' },
+    }));
 
-  // Get the paths we want to pre-render based on posts
-  const paths = events.map((event) => ({
-    params: { id: event.id },
-  }));
-
-  // We'll pre-render only these paths at build time.
-  // { fallback: false } means other routes should 404.
-  return { paths, fallback: 'blocking' };
+    // We'll pre-render only these paths at build time.
+    // { fallback: blocking } means other routes not return will wait for the html to be generated
+    return { paths, fallback: 'blocking' };
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return { paths: [], fallback: 'blocking' };
+  }
 }
 
 // This also gets called at build time
 export async function getStaticProps({ params }) {
-  const { id } = params;
-  const event = await eventFetcher({
-    requestType: RequestType.GET_EVENTS_BY_ID,
-    id: id,
-  });
+  const baseUrl = getBaseUrl();
+  try {
+    const { id } = params;
+    const response = await axios.get(`${baseUrl}/api/events/${id}`);
+    const event = response.data;
+    // Check if event exists and is valid
+    if (!event || event instanceof Error) {
+      return {
+        notFound: true, // This will show the 404 page
+      };
+    }
 
-  return {
-    props: {
-      event,
-    },
-    revalidate: 60,
-  };
+    return {
+      props: {
+        event: JSON.parse(JSON.stringify(event)),
+      },
+      revalidate: 60,
+    };
+  } catch (error) {
+    console.error('Error fetching event:', error);
+    return {
+      notFound: true,
+    };
+  }
 }
 
 export default function EventDetailPage(props) {
