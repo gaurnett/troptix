@@ -19,7 +19,7 @@ export const MetaHead = ({
   const defaultDescription = 'Troptix is a better way to get tickets';
   const defaultImage =
     'https://firebasestorage.googleapis.com/v0/b/troptix-prod.appspot.com/o/images%2Flogo_v1.png?alt=media&token=b4c2970f-1344-46b9-80d1-f5565ed93882'; // Replace with your default image path
-
+  console.log('MetaHead: ', title, description, image);
   return (
     <Head>
       <title>{title || defaultTitle}</title>
@@ -41,6 +41,9 @@ export const MetaHead = ({
       />
       <meta property="og:type" content="website" />
       <meta property="og:image" content={image || defaultImage} key="image" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:site_name" content="Troptix" />
       <meta property="twitter:domain" content="usetroptix.com" />
       <meta property="twitter:url" content={url || 'usetroptix.com'} />
       <meta name="twitter:card" content="summary_large_image" />

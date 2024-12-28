@@ -3,23 +3,34 @@ import EventCard from '@/components/EventCard';
 import Footer from '@/components/ui/footer';
 import { Spinner } from '@/components/ui/spinner';
 import { useEvents } from '@/hooks/useEvents';
-import { getBaseUrl } from '@/lib/utils';
-import axios from 'axios';
+import prisma from '@/server/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
 import * as React from 'react';
 
 export async function getStaticProps() {
-  const baseUrl = getBaseUrl();
   try {
-    const response = await axios.get(`${baseUrl}/api/events`);
-    const events = response.data;
+    const events = await prisma.events.findMany({
+      include: {
+        ticketTypes: true,
+      },
+      where: {
+        isDraft: false,
+        startDate: {
+          gte: new Date(),
+        },
+      },
+    });
+    console.log('events: ' + events);
 
     if (!events) {
       return { props: { events: [] }, revalidate: 60 };
     }
 
-    return { props: { events }, revalidate: 60 };
+    return {
+      props: { events: JSON.parse(JSON.stringify(events)) },
+      revalidate: 60,
+    };
   } catch (error) {
     console.error('Error fetching events:', error);
     return { props: { events: [] }, revalidate: 60 };

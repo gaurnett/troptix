@@ -15,7 +15,6 @@ import { useScreenSize } from '@/hooks/useScreenSize';
 
 import { Typography } from 'antd';
 import {
-  getBaseUrl,
   getDateRangeFormatter,
   getFormattedCurrency,
   getTimeRangeFormatter,
@@ -26,19 +25,23 @@ import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
-import axios from 'axios';
+import prisma from '@/server/prisma';
 
 const { Paragraph } = Typography;
 
 export async function getStaticPaths() {
-  const baseUrl = getBaseUrl();
   try {
-    const response = await axios.get(`${baseUrl}/api/events`);
-    const events = response.data;
-    console.log('events: ' + events);
-    if (!(events instanceof Array)) {
-      return { paths: [], fallback: 'blocking' };
-    }
+    const events = await prisma.events.findMany({
+      select: {
+        id: true,
+      },
+      where: {
+        isDraft: false,
+        startDate: {
+          gte: new Date(),
+        },
+      },
+    });
     // Get the paths we want to pre-render based on posts
     const paths = events.map((event) => ({
       params: { id: event.id?.toString() ?? '' },
@@ -55,29 +58,36 @@ export async function getStaticPaths() {
 
 // This also gets called at build time
 export async function getStaticProps({ params }) {
-  const baseUrl = getBaseUrl();
   try {
     const { id } = params;
-    const response = await axios.get(`${baseUrl}/api/events/${id}`);
-    const event = response.data;
-    // Check if event exists and is valid
-    if (!event || event instanceof Error) {
-      return {
-        notFound: true, // This will show the 404 page
-      };
+    const event = await prisma.events.findUnique({
+      where: { id },
+      include: { ticketTypes: true },
+    });
+
+    if (!event) {
+      return { notFound: true };
     }
+
+    // Prepare SEO tags with fallbacks
+    const seoTags = {
+      id: event.id,
+      title: event.name,
+      description: event.summary || `${event.name} - ${event.organizer}`,
+      image: event.imageUrl,
+      url: `https://usetroptix.com/event/${event.id}`,
+    };
 
     return {
       props: {
         event: JSON.parse(JSON.stringify(event)),
+        seoTags,
       },
       revalidate: 60,
     };
   } catch (error) {
-    console.error('Error fetching event:', error);
-    return {
-      notFound: true,
-    };
+    console.error('Error in getStaticProps:', error);
+    return { notFound: true };
   }
 }
 
@@ -123,12 +133,7 @@ export default function EventDetailPage(props) {
 
   return (
     <>
-      <MetaHead
-        title={event.name}
-        description={event.organizer}
-        image={event.imageUrl}
-        url={undefined}
-      />
+      <MetaHead {...props.seoTags} />
       <div
         style={{
           // backgroundColor: '#455A64',

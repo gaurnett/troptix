@@ -10,6 +10,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from '@/components/utils/ErrorFallback';
 import { ConfigProvider } from 'antd';
 import { withRouter } from 'next/router';
+import Head from 'next/head';
 
 function App({ Component, pageProps, router }: AppProps) {
   const queryClient = new QueryClient();
@@ -20,7 +21,8 @@ function App({ Component, pageProps, router }: AppProps) {
         components: {
           /* here is your component tokens */
         },
-      }}>
+      }}
+    >
       <ErrorBoundary
         key={router.asPath}
         FallbackComponent={ErrorFallback}
@@ -29,15 +31,12 @@ function App({ Component, pageProps, router }: AppProps) {
         }}
       >
         <>
-          <MetaHead
-            title="Troptix"
-            description={'Troptix is a better way to get tickets'}
-          >
+          <Head>
             <meta
               name="viewport"
               content="initial-scale=1.0, width=device-width"
             />
-          </MetaHead>
+          </Head>
 
           <QueryClientProvider client={queryClient}>
             <WebNavigator
