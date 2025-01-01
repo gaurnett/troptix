@@ -19,7 +19,6 @@ export const MetaHead = ({
   const defaultDescription = 'Troptix is a better way to get tickets';
   const defaultImage =
     'https://firebasestorage.googleapis.com/v0/b/troptix-prod.appspot.com/o/images%2Flogo_v1.png?alt=media&token=b4c2970f-1344-46b9-80d1-f5565ed93882'; // Replace with your default image path
-  console.log('MetaHead: ', title, description, image);
   return (
     <Head>
       <title>{title || defaultTitle}</title>
