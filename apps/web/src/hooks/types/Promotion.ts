@@ -1,4 +1,4 @@
-import { generateId } from "@/lib/utils";
+import { generateId } from '@/lib/utils';
 
 export enum PromotionType {
   PERCENTAGE = 'PERCENTAGE',
@@ -16,12 +16,10 @@ export type Promotion = {
   eventId?: string;
 };
 
-export function createPromotion(
-  eventId: string
-): Promotion {
+export function createPromotion(eventId: string): Promotion {
   const promotion: Promotion = {
     id: generateId(),
-    eventId: eventId
+    eventId: eventId,
   };
 
   return promotion;

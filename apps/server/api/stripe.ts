@@ -1,4 +1,4 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { allowCors } from '../lib/auth.js';
 import { sendEmailToUser } from '../lib/emailHelper.js';
@@ -11,7 +11,7 @@ import prisma from '../prisma/prisma.js';
 
 const secretKey = process.env.STRIPE_SECRET_KEY as string;
 const stripe = new Stripe(secretKey, {
-  apiVersion: "2023-08-16"
+  apiVersion: '2023-08-16',
 });
 const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
 

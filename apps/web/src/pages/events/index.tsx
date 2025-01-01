@@ -3,10 +3,7 @@ import EventCard from '@/components/EventCard';
 import Footer from '@/components/ui/footer';
 import { Spinner } from '@/components/ui/spinner';
 import { useEvents } from '@/hooks/useEvents';
-import {
-  RequestType,
-  eventFetcher
-} from '@/hooks/useFetchEvents';
+import { RequestType, eventFetcher } from '@/hooks/useFetchEvents';
 import Image from 'next/image';
 import Link from 'next/link';
 import * as React from 'react';

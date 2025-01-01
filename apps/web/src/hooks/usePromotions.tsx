@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Promotion } from "./types/Promotion";
+import { Promotion } from './types/Promotion';
 import { prodUrl } from './useFetchEvents';
 
 export enum GetPromotionsType {
@@ -40,8 +40,7 @@ export async function getPromotions({
   eventId,
   code,
 }: GetPromotionsRequest) {
-  let url =
-    prodUrl + `/api/promotions?getPromotionsType=${getPromotionsType}`;
+  let url = prodUrl + `/api/promotions?getPromotionsType=${getPromotionsType}`;
 
   switch (getPromotionsType) {
     case GetPromotionsType.GET_ALL_PROMOTIONS_FOR_EVENT:
@@ -64,20 +63,17 @@ export async function getPromotions({
     console.error('Error in getting promotions:', error);
     throw error;
   }
-
 }
 
 export function usePostPromotion() {
   return useMutation({
-    mutationFn: (request: PostPromotionRequest) =>
-      mutatePromotion(request),
+    mutationFn: (request: PostPromotionRequest) => mutatePromotion(request),
   });
 }
 
 export function useDeletePromotion() {
   return useMutation({
-    mutationFn: (request: DeletePromotionRequest) =>
-      deletePromotion(request),
+    mutationFn: (request: DeletePromotionRequest) => deletePromotion(request),
   });
 }
 

@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "next": "yarn --cwd apps/web dev",
-    "dev": "npm-run-all --parallel next"
+    "dev": "npm-run-all --parallel next",
+    "format": "prettier --write ."
   },
   "workspaces": [
     "apps/server",

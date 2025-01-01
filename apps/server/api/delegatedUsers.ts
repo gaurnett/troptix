@@ -1,4 +1,4 @@
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import { allowCors, verifyUser } from '../lib/auth.js';
 import {
   deleteDelegatedUserQuery,

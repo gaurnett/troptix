@@ -16,7 +16,7 @@ export default function ManageEventsPage() {
   });
 
   return (
-    <div className='w-full md:max-w-2xl'>
+    <div className="w-full md:max-w-2xl">
       {!isPending ? (
         <div className="flex flex-wrap">
           {data.map((event, index: any) => {
@@ -25,10 +25,12 @@ export default function ManageEventsPage() {
                 key={index}
                 className="w-full sm:w-1/2 md:w-1/2 lg:w-1/3 px-2 mb-4"
               >
-                <Link href={{
-                  pathname: '/admin/manage-event',
-                  query: { eventId: event.id },
-                }}>
+                <Link
+                  href={{
+                    pathname: '/admin/manage-event',
+                    query: { eventId: event.id },
+                  }}
+                >
                   <ManageEventCard
                     event={event}
                     showDivider={index < data.length - 1}
