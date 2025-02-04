@@ -17,14 +17,14 @@ export interface PaymentIntent {
   clientSecret: string;
   ephemeralKey: string;
   customerId: string;
-  currentTabIndex?: number,
-  error?: Error
+  currentTabIndex?: number;
+  error?: Error;
 }
 
 export interface InitializeStripeDetailsResponse {
-  currentTabIndex?: number,
-  clientSecret?: string,
-  orderId?: string
+  currentTabIndex?: number;
+  clientSecret?: string;
+  orderId?: string;
 }
 
 export function useCreatePaymentIntent() {

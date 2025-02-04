@@ -41,7 +41,7 @@ export default function TicketsPage({ event }) {
         ) {
           setTicketTypes(response);
         }
-      } catch (error) { }
+      } catch (error) {}
       setIsFetchingTicketTypes(false);
     }
 
@@ -142,9 +142,9 @@ export default function TicketsPage({ event }) {
                     eventId: eventId as string,
                     saleEndDate: endDate,
                     saleStartDate: startDate,
-                    ticketingFees: TicketFeeStructure.PASS_TICKET_FEES
-                  }
-                  showDrawer(ticket, -1)
+                    ticketingFees: TicketFeeStructure.PASS_TICKET_FEES,
+                  };
+                  showDrawer(ticket, -1);
                 }}
                 type="primary"
                 className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"

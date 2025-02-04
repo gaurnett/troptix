@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { PrismaClient } from '@prisma/client';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import { allowCors } from '../lib/auth.js';
 import { sendComplementaryTicketEmailToUser } from '../lib/emailHelper.js';
 import {
@@ -15,7 +15,7 @@ type TicketOrders = {
   quantitySold?: number;
   pendingOrders?: number;
   ticket?: any;
-}
+};
 
 async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
@@ -231,7 +231,10 @@ async function getOrdersForEvent(response, eventId) {
   }
 }
 
-async function getPendingOrdersForEvent(request: VercelRequest, response: VercelResponse) {
+async function getPendingOrdersForEvent(
+  request: VercelRequest,
+  response: VercelResponse
+) {
   const eventId = request.query.id as string;
 
   try {
@@ -250,22 +253,22 @@ async function getPendingOrdersForEvent(request: VercelRequest, response: Vercel
     });
 
     const pendingOrdersMap = new Map<string, TicketOrders>();
-    orders.forEach(order => {
-      order.tickets.forEach(ticket => {
+    orders.forEach((order) => {
+      order.tickets.forEach((ticket) => {
         const ticketType = ticket.ticketType;
         const ticketTypeId = ticketType?.id as string;
         if (pendingOrdersMap.has(ticketTypeId)) {
           const currentOrder = pendingOrdersMap.get(ticketTypeId);
           pendingOrdersMap.set(ticketTypeId, {
             ...currentOrder,
-            pendingOrders: currentOrder?.pendingOrders as number + 1
-          })
+            pendingOrders: (currentOrder?.pendingOrders as number) + 1,
+          });
         } else {
           pendingOrdersMap.set(ticketTypeId, {
             quantity: ticketType?.quantity,
             quantitySold: ticketType?.quantitySold as number,
             pendingOrders: 1,
-            ticket: ticket
+            ticket: ticket,
           });
         }
       });
@@ -277,4 +280,3 @@ async function getPendingOrdersForEvent(request: VercelRequest, response: Vercel
     return response.status(500).json({ error: 'Error fetching orders' });
   }
 }
-

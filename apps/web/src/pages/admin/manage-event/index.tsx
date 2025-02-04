@@ -5,7 +5,7 @@ import PromotionCodesPage from '@/components/pages/admin/manage-event/promotions
 import TicketsPage from '@/components/pages/admin/manage-event/tickets';
 import UserDelegationPage from '@/components/pages/admin/manage-event/user-delegation';
 import { Spinner } from '@/components/ui/spinner';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RequestType, useFetchEventsById } from '@/hooks/useFetchEvents';
 import { useEditEvent } from '@/hooks/usePostEvent';
 import { useQueryClient } from '@tanstack/react-query';
@@ -200,14 +200,18 @@ export default function ManageEventPage() {
 
               <div className="w-full mb-8 mt-4">
                 <Tabs defaultValue="basic-info">
-                  <div className='overflow-auto'>
+                  <div className="overflow-auto">
                     <TabsList>
                       <TabsTrigger value="basic-info">Basic Info</TabsTrigger>
                       <TabsTrigger value="details">Details</TabsTrigger>
                       <TabsTrigger value="orders">Orders</TabsTrigger>
                       <TabsTrigger value="tickets">Tickets</TabsTrigger>
-                      <TabsTrigger value="promotion-codes">Promotion Codes</TabsTrigger>
-                      <TabsTrigger value="user-delegation">User Delegation</TabsTrigger>
+                      <TabsTrigger value="promotion-codes">
+                        Promotion Codes
+                      </TabsTrigger>
+                      <TabsTrigger value="user-delegation">
+                        User Delegation
+                      </TabsTrigger>
                     </TabsList>
                   </div>
 
@@ -215,13 +219,15 @@ export default function ManageEventPage() {
                     <BasicInfoPage
                       event={eventForm}
                       setEvent={setEventForm}
-                      updateEvent={updateEvent} />
+                      updateEvent={updateEvent}
+                    />
                   </TabsContent>
                   <TabsContent value="details">
                     <DetailsPage
                       event={eventForm}
                       setEvent={setEventForm}
-                      updateEvent={updateEvent} />
+                      updateEvent={updateEvent}
+                    />
                   </TabsContent>
                   <TabsContent value="orders">
                     <OrdersPage />

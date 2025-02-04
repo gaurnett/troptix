@@ -1,10 +1,10 @@
-import { TropTixContext } from "@/components/WebNavigator";
-import { updateTicketQuantities } from "@/lib/checkoutHelper";
+import { TropTixContext } from '@/components/WebNavigator';
+import { updateTicketQuantities } from '@/lib/checkoutHelper';
 import { useQuery } from '@tanstack/react-query';
-import { useContext } from "react";
-import { Checkout } from "./types/Checkout";
-import { Promotion } from "./types/Promotion";
-import { TicketType } from "./types/Ticket";
+import { useContext } from 'react';
+import { Checkout } from './types/Checkout';
+import { Promotion } from './types/Promotion';
+import { TicketType } from './types/Ticket';
 import { prodUrl } from './useFetchEvents';
 
 export enum GetTicketTypesType {
@@ -18,9 +18,9 @@ export interface GetTicketTypeRequest {
 }
 
 export interface CheckOrderValidityResponse {
-  valid?: boolean,
-  checkout?: Checkout,
-  ticketTypes?: TicketType[]
+  valid?: boolean;
+  checkout?: Checkout;
+  ticketTypes?: TicketType[];
 }
 
 export function useFetchTicketTypesForCheckout(eventId: string) {
@@ -35,13 +35,18 @@ export function useFetchTicketTypesForCheckout(eventId: string) {
   });
 }
 
-export async function checkOrderValidity(eventId: string, jwtToken: string | undefined, checkout: Checkout, promotion: Promotion): Promise<CheckOrderValidityResponse> {
+export async function checkOrderValidity(
+  eventId: string,
+  jwtToken: string | undefined,
+  checkout: Checkout,
+  promotion: Promotion
+): Promise<CheckOrderValidityResponse> {
   const response: CheckOrderValidityResponse = {};
   const getTicketTypesRequest: GetTicketTypeRequest = {
     getTicketTypesType: GetTicketTypesType.GET_TICKET_TYPES_FOR_CHECKOUT,
     eventId: eventId,
-    jwtToken: jwtToken
-  }
+    jwtToken: jwtToken,
+  };
 
   return getTicketTypes(getTicketTypesRequest)
     .then((ticketTypes: TicketType[]) => {
@@ -60,11 +65,21 @@ export async function checkOrderValidity(eventId: string, jwtToken: string | und
           const currentPendingAndSoldTotal = pendingOrder + completedOrders;
           if (currentPendingAndSoldTotal === quantity) {
             validOrder = false;
-            const newCheckout = updateTicketQuantities(checkout, ticketType, promotion, quantitySelected);
+            const newCheckout = updateTicketQuantities(
+              checkout,
+              ticketType,
+              promotion,
+              quantitySelected
+            );
             response.checkout = newCheckout;
           } else if (currentPendingAndSoldTotal + quantitySelected > quantity) {
             validOrder = false;
-            const newCheckout = updateTicketQuantities(checkout, ticketType, promotion, (currentPendingAndSoldTotal + quantitySelected) - quantity);
+            const newCheckout = updateTicketQuantities(
+              checkout,
+              ticketType,
+              promotion,
+              currentPendingAndSoldTotal + quantitySelected - quantity
+            );
             response.checkout = newCheckout;
           }
         }
@@ -72,7 +87,8 @@ export async function checkOrderValidity(eventId: string, jwtToken: string | und
 
       response.valid = validOrder;
       return response;
-    }).catch(error => {
+    })
+    .catch((error) => {
       response.valid = false;
       return response;
     });
@@ -83,7 +99,8 @@ export async function getTicketTypes({
   eventId,
   jwtToken,
 }: GetTicketTypeRequest) {
-  let url = prodUrl + `/api/ticketTypes?getTicketTypesType=${getTicketTypesType}`;
+  let url =
+    prodUrl + `/api/ticketTypes?getTicketTypesType=${getTicketTypesType}`;
 
   switch (getTicketTypesType) {
     case GetTicketTypesType.GET_TICKET_TYPES_FOR_CHECKOUT:
@@ -110,5 +127,4 @@ export async function getTicketTypes({
     console.error('Error in getTicketTypes:', error);
     throw error;
   }
-
 }

@@ -20,7 +20,8 @@ function App({ Component, pageProps, router }: AppProps) {
         components: {
           /* here is your component tokens */
         },
-      }}>
+      }}
+    >
       <ErrorBoundary
         key={router.asPath}
         FallbackComponent={ErrorFallback}

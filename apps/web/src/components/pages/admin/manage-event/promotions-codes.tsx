@@ -1,7 +1,13 @@
 import { TropTixContext } from '@/components/WebNavigator';
 import { Spinner } from '@/components/ui/spinner';
 import { Promotion, createPromotion } from '@/hooks/types/Promotion';
-import { DeletePromotionRequest, PostPromotionRequest, useDeletePromotion, useFetchPromotionsForEvent, usePostPromotion } from '@/hooks/usePromotions';
+import {
+  DeletePromotionRequest,
+  PostPromotionRequest,
+  useDeletePromotion,
+  useFetchPromotionsForEvent,
+  usePostPromotion,
+} from '@/hooks/usePromotions';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, Drawer, List, Popconfirm, message } from 'antd';
 import { useRouter } from 'next/router';
@@ -34,8 +40,8 @@ export default function PromotionCodesPage() {
     const request: PostPromotionRequest = {
       editingPromotion: selectedIndex !== -1,
       promotion: selectedPromotion,
-      jwtToken: user.jwtToken
-    }
+      jwtToken: user.jwtToken,
+    };
 
     postPromotion.mutate(request, {
       onSuccess: (data) => {
@@ -59,10 +65,10 @@ export default function PromotionCodesPage() {
         messageApi.destroy('update-promotions-loading');
         messageApi.open({
           type: 'error',
-          content: "Error saving promotion",
+          content: 'Error saving promotion',
         });
         return;
-      }
+      },
     });
   }
 
@@ -96,7 +102,8 @@ export default function PromotionCodesPage() {
         messageApi.destroy('delete-promotion-loading');
         messageApi.open({
           type: 'error',
-          content: 'There was an error deleting the promotion, please try again',
+          content:
+            'There was an error deleting the promotion, please try again',
         });
       },
     });
