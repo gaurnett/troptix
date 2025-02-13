@@ -225,9 +225,10 @@ model TicketTypes {
   price         Float
   ticketingFees TicketFeeStructure @default(PASS_TICKET_FEES)
 
-  event   Events    @relation(fields: [eventId], references: [id])
-  eventId String
-  tickets Tickets[]
+  event        Events    @relation(fields: [eventId], references: [id])
+  eventId      String
+  discountCode String?
+  tickets      Tickets[]
 
   @@index([eventId])
 }
