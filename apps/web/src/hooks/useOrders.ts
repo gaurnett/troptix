@@ -5,7 +5,6 @@ import { useContext } from 'react';
 import { Charge } from './types/Charge';
 import { Checkout, CheckoutTicket } from './types/Checkout';
 import { ComplementaryOrder, Order, createOrder } from './types/Order';
-import { prodUrl } from './useFetchEvents';
 
 export enum GetOrdersType {
   GET_ORDERS_FOR_USER = 'GET_ORDERS_FOR_USER',
@@ -100,7 +99,7 @@ export async function getOrders({
   email,
   jwtToken,
 }: GetOrdersRequest) {
-  let url = prodUrl + `/api/orders?getOrdersType=${getOrdersType}`;
+  let url = `/api/orders?getOrdersType=${getOrdersType}`;
 
   if (getOrdersType === GetOrdersType.GET_ORDERS_FOR_USER) {
     url += `&email=${email}`;
@@ -180,7 +179,7 @@ export async function postOrders({
   jwtToken,
 }: PostOrdersRequest) {
   try {
-    let url = prodUrl + `/api/orders`;
+    let url = `/api/orders`;
     const request = {
       type,
       order,
