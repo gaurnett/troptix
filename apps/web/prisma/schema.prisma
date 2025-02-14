@@ -144,7 +144,7 @@ model Events {
   // Event Details
   imageUrl        String? @db.VarChar(2000)
   name            String
-  description     String  @db.VarChar(2000)
+  description     String  @db.VarChar(4000)
   summary         String?
   organizer       String
   organizerUserId String

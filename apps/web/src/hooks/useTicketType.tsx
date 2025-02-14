@@ -5,10 +5,10 @@ import { useContext } from 'react';
 import { Checkout } from './types/Checkout';
 import { Promotion } from './types/Promotion';
 import { TicketType } from './types/Ticket';
-import { prodUrl } from './useFetchEvents';
 
 export enum GetTicketTypesType {
   GET_TICKET_TYPES_FOR_CHECKOUT = 'GET_TICKET_TYPES_FOR_CHECKOUT',
+  GET_TICKET_TYPES_BY_EVENT = 'GET_TICKET_TYPES_BY_EVENT',
 }
 
 export interface GetTicketTypeRequest {
@@ -21,6 +21,18 @@ export interface CheckOrderValidityResponse {
   valid?: boolean;
   checkout?: Checkout;
   ticketTypes?: TicketType[];
+}
+
+export function useFetchTicketTypesByEvent(eventId: string) {
+  const { user } = useContext(TropTixContext);
+  const getTicketTypesType = GetTicketTypesType.GET_TICKET_TYPES_BY_EVENT;
+  const id = eventId;
+  const jwtToken = user?.jwtToken;
+
+  return useQuery({
+    queryKey: ['order', getTicketTypesType, id],
+    queryFn: () => getTicketTypes({ getTicketTypesType, eventId, jwtToken }),
+  });
 }
 
 export function useFetchTicketTypesForCheckout(eventId: string) {
@@ -99,11 +111,13 @@ export async function getTicketTypes({
   eventId,
   jwtToken,
 }: GetTicketTypeRequest) {
-  let url =
-    prodUrl + `/api/ticketTypes?getTicketTypesType=${getTicketTypesType}`;
+  let url = `/api/ticketTypes?getTicketTypesType=${getTicketTypesType}`;
 
   switch (getTicketTypesType) {
     case GetTicketTypesType.GET_TICKET_TYPES_FOR_CHECKOUT:
+      url += `&eventId=${eventId}`;
+      break;
+    case GetTicketTypesType.GET_TICKET_TYPES_BY_EVENT:
       url += `&eventId=${eventId}`;
       break;
   }

@@ -1,15 +1,21 @@
 import { TropTixContext } from '@/components/WebNavigator';
 import { FetchEventOptions } from '@/pages/api/events/[[...slug]]';
 import { Prisma } from '@prisma/client';
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import axios from 'axios';
 import { useContext } from 'react';
 
+interface UseEventsOptions extends Omit<FetchEventOptions, 'userId'> {
+  intialData?: any;
+}
+
 // Fetch all events
-export function useEvents(
-  intialData,
-  options?: Omit<FetchEventOptions, 'userId'> // Omit userId from FetchEventOptions since userId is already provided by the context
-) {
+export function useEvents(options?: UseEventsOptions) {
   const { user } = useContext(TropTixContext);
 
   const userId = user?.id;
@@ -25,12 +31,16 @@ export function useEvents(
       if (response.status !== 200) throw new Error(response.statusText);
       return response.data;
     },
-    initialData: intialData,
+    ...(options?.intialData ? { initialData: options.intialData } : {}),
   });
 }
 
+interface UseEventOptions {
+  intialData?: any;
+}
+
 // Fetch event by id
-export const useEvent = (id: string, intialData) => {
+export const useEvent = (id: string, options?: UseEventOptions) => {
   return useQuery({
     queryKey: ['event', id],
     queryFn: async () => {
@@ -38,13 +48,13 @@ export const useEvent = (id: string, intialData) => {
       if (response.status !== 200) throw new Error(response.statusText);
       return response.data;
     },
-    initialData: intialData,
+    ...(options?.intialData ? { initialData: options.intialData } : {}),
   });
 };
 
 // Create a new event
 export const useCreateEvent = () => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (event: Prisma.EventsCreateInput) => {
       const response = await axios.post('/api/events', event, {
@@ -52,18 +62,19 @@ export const useCreateEvent = () => {
           'Content-Type': 'application/json',
         },
       });
-      if (response.status !== 200) throw new Error(response.statusText);
+      if (response.status !== 201) throw new Error(response.statusText);
       return response.data;
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
+    onError: (error) => {
+      console.error('Create event error:', error);
+      throw error;
     },
   });
 };
 
 // Update an event
 export const useUpdateEvent = () => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (event: Prisma.EventsUpdateInput) => {
       const response = await axios.put(`/api/events/${event.id}`, event, {
@@ -74,16 +85,12 @@ export const useUpdateEvent = () => {
       if (response.status !== 200) throw new Error(response.statusText);
       return response.data;
     },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['events'] });
-      queryClient.invalidateQueries({ queryKey: ['event', data.id] });
-    },
   });
 };
 
 // Delete an event
 export const useDeleteEvent = () => {
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
       const response = await axios.delete(`/api/events/${id}`);

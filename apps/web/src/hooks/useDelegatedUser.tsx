@@ -1,8 +1,6 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { DelegatedUser } from './types/DelegatedUser';
 
-export const prodUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
-
 export interface PostDelegatedUserRequest {
   user?: DelegatedUser;
   jwtToken?: string;
@@ -17,7 +15,7 @@ export interface DeleteDelegatedUserRequest {
 export async function mutateDelegatedUser(
   request: PostDelegatedUserRequest
 ): Promise<any> {
-  const url = prodUrl + '/api/delegatedUsers';
+  const url = '/api/delegatedUsers';
 
   return await fetch(url, {
     method: request.editingUser ? 'PUT' : 'POST',
@@ -44,7 +42,7 @@ export async function mutateDelegatedUser(
 export async function deleteDelegatedUser(
   request: DeleteDelegatedUserRequest
 ): Promise<any> {
-  const url = prodUrl + `/api/delegatedUsers?id=${request.id}`;
+  const url = `/api/delegatedUsers?id=${request.id}`;
 
   return await fetch(url, {
     method: 'DELETE',
@@ -85,7 +83,7 @@ export async function delegatedUserFetcher(
   eventId: string,
   jwtToken: string
 ): Promise<any> {
-  const url = prodUrl + `/api/delegatedUsers?eventId=${eventId}`;
+  const url = `/api/delegatedUsers?eventId=${eventId}`;
 
   return await fetch(url, {
     method: 'GET',
