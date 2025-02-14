@@ -35,7 +35,7 @@ async function handler(request: VercelRequest, response: VercelResponse) {
   }
 }
 
-export default allowCors(handler);
+export default handler;
 
 async function getTicketTypes(
   request: VercelRequest,
@@ -139,6 +139,7 @@ async function getTicketTypesForCheckout(
       };
     });
 
+    console.log(ticketTypesWithOrderStatus);
     return response.status(200).json(ticketTypesWithOrderStatus);
   } catch (error) {
     console.error('Request error', error);

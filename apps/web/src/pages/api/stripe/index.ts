@@ -242,7 +242,7 @@ async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
       }
     });
 
-    for (let [key, value] of orderMap) {
+    for (const [key, value] of Array.from(orderMap.entries())) {
       const updatedTicket = await prisma.ticketTypes.update({
         where: {
           id: key,
