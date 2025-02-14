@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Promotion } from './types/Promotion';
-import { prodUrl } from './useFetchEvents';
 
 export enum GetPromotionsType {
   GET_ALL_PROMOTIONS_FOR_EVENT = 'GET_ALL_PROMOTIONS_FOR_EVENT',
@@ -40,7 +39,7 @@ export async function getPromotions({
   eventId,
   code,
 }: GetPromotionsRequest) {
-  let url = prodUrl + `/api/promotions?getPromotionsType=${getPromotionsType}`;
+  let url = `/api/promotions?getPromotionsType=${getPromotionsType}`;
 
   switch (getPromotionsType) {
     case GetPromotionsType.GET_ALL_PROMOTIONS_FOR_EVENT:
@@ -80,7 +79,7 @@ export function useDeletePromotion() {
 export async function mutatePromotion(
   request: PostPromotionRequest
 ): Promise<any> {
-  const url = prodUrl + '/api/promotions';
+  const url = '/api/promotions';
 
   return await fetch(url, {
     method: request.editingPromotion ? 'PUT' : 'POST',
@@ -107,7 +106,7 @@ export async function mutatePromotion(
 export async function deletePromotion(
   request: DeletePromotionRequest
 ): Promise<any> {
-  const url = prodUrl + `/api/promotions?id=${request.id}`;
+  const url = `/api/promotions?id=${request.id}`;
 
   return await fetch(url, {
     method: 'DELETE',

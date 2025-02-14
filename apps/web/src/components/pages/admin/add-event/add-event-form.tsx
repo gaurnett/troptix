@@ -4,8 +4,8 @@ import {
   CustomTextArea,
   CustomTimeField,
 } from '@/components/ui/input';
+import { useCreateEvent } from '@/hooks/useEvents';
 import { RequestType } from '@/hooks/useFetchEvents';
-import { useCreateEvent } from '@/hooks/usePostEvent';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, Form, message } from 'antd';
 import { useRouter } from 'next/router';
@@ -98,12 +98,12 @@ export default function AddEventFormPage({ event, setEvent }) {
   }
 
   const queryClient = useQueryClient();
-  const mutation = useCreateEvent();
+  const { mutate: createEventMutation } = useCreateEvent();
 
   function createEvent() {
     const e = event;
-    mutation.mutate(e, {
-      onSuccess: () => {
+    createEventMutation(e, {
+      onSuccess: (data) => {
         messageApi.open({
           type: 'success',
           content: 'Successfully created event.',
@@ -115,14 +115,15 @@ export default function AddEventFormPage({ event, setEvent }) {
         router.push({
           pathname: `/admin/manage-event`,
           query: {
-            eventId: event.id,
+            eventId: data.id,
           },
         });
       },
-      onError: () => {
+      onError: (error: Error) => {
+        console.error('Failed to create event:', error);
         messageApi.open({
           type: 'error',
-          content: 'Failed to create event, please try again.',
+          content: 'Failed to create event: ' + error.message,
         });
       },
     });

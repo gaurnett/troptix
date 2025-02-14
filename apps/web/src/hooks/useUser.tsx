@@ -2,7 +2,6 @@ import { TropTixContext } from '@/components/WebNavigator';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useContext } from 'react';
 import { SocialMediaAccount, User } from './types/User';
-import { prodUrl } from './useFetchEvents';
 
 export enum GetUsersType {
   GET_USERS_BY_ID = 'GET_USERS_BY_ID',
@@ -58,9 +57,7 @@ export function useFetchUser(): {
 }
 
 export async function fetchUserById(userId: string) {
-  const url =
-    prodUrl +
-    `/api/users?getUsersType=${GetUsersType.GET_USERS_BY_ID}&id=${userId}`;
+  const url = `/api/users?getUsersType=${GetUsersType.GET_USERS_BY_ID}&id=${userId}`;
 
   try {
     const response = await fetch(url, {
@@ -89,7 +86,7 @@ export function useCreateUser(user: User) {
 }
 
 export async function addUser(request: PostUsersRequest) {
-  const url = prodUrl + '/api/users';
+  const url = '/api/users';
 
   try {
     const response = await fetch(url, {
@@ -133,7 +130,7 @@ export async function putUsers({
   socialMediaAccount,
   user,
 }: PutUsersRequest) {
-  let url = prodUrl + `/api/users`;
+  let url = `/api/users`;
   const request = {
     putUsersType,
     socialMediaAccount,

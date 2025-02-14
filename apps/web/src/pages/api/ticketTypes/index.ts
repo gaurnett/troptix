@@ -209,5 +209,3 @@ async function updateTicket(body, response) {
     return response.status(500).json({ error: 'Error updating event' });
   }
 }
-
-async function scanTicket() {}

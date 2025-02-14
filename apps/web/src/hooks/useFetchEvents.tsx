@@ -15,15 +15,13 @@ export type GetEventsRequestType = {
   userId?: string;
 };
 
-export const prodUrl = process.env.NEXT_PUBLIC_VERCEL_URL;
-
 export async function eventFetcher({
   requestType,
   id,
   jwtToken,
   userId,
 }: GetEventsRequestType): Promise<any> {
-  let url = prodUrl + `/api/events?getEventsType=${requestType}`;
+  let url = `/api/events?getEventsType=${requestType}`;
 
   // Uncomment for auth
   // if (requestType === RequestType.GET_EVENTS_ALL || requestType === RequestType.GET_EVENTS_BY_ID) {
