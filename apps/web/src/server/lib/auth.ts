@@ -1,5 +1,5 @@
 import admin from 'firebase-admin';
-import { initializeApp } from 'firebase-admin/app';
+import { initializeApp, getApps } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import jwt from 'jsonwebtoken';
 
@@ -7,9 +7,12 @@ const serviceAccount = JSON.parse(
   process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
 );
 
-initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// Only initialize if no apps exist
+if (getApps().length === 0) {
+  initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
 
 export async function verifyUser(request): Promise<any> {
   let token = '';

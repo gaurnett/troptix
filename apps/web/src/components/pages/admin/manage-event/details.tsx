@@ -6,10 +6,9 @@ import { Button, Form, Image, Upload, message } from 'antd';
 import { RcFile } from 'antd/es/upload';
 import { getDownloadURL } from 'firebase/storage';
 import React from 'react';
-import { prodUrl } from '../../../../hooks/useFetchEvents';
 
 export default function DetailsPage({ event, setEvent, updateEvent }) {
-  const fileUploadUrl = prodUrl + '/api/fileupload';
+  const fileUploadUrl = '/api/fileupload';
 
   function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setEvent((previousEvent) => ({

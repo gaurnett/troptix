@@ -6,6 +6,7 @@ import TicketsPage from '@/components/pages/admin/manage-event/tickets';
 import UserDelegationPage from '@/components/pages/admin/manage-event/user-delegation';
 import { Spinner } from '@/components/ui/spinner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useCreateEvent, useEvent, useUpdateEvent } from '@/hooks/useEvents';
 import { RequestType, useFetchEventsById } from '@/hooks/useFetchEvents';
 import { useEditEvent } from '@/hooks/usePostEvent';
 import { useQueryClient } from '@tanstack/react-query';
@@ -23,17 +24,9 @@ export default function ManageEventPage() {
   const [activeKey, setActiveKey] = useState('basic-info');
 
   const queryClient = useQueryClient();
-  const mutation = useEditEvent();
+  const { mutate: updateEventMutation } = useUpdateEvent();
 
-  const {
-    isPending,
-    isError,
-    data: event,
-    error,
-  } = useFetchEventsById({
-    requestType: RequestType.GET_EVENTS_BY_ID,
-    id: eventId,
-  });
+  const { isPending, isError, data: event, error } = useEvent(eventId);
 
   // Update local state with fetched data
   useEffect(() => {
@@ -50,7 +43,7 @@ export default function ManageEventPage() {
       duration: 0,
     });
 
-    mutation.mutate(e, {
+    updateEventMutation(e, {
       onSuccess: () => {
         messageApi.destroy('update-event-loading');
         messageApi.open({
@@ -86,7 +79,7 @@ export default function ManageEventPage() {
       ['isDraft']: !event.isDraft,
     };
 
-    mutation.mutate(e, {
+    updateEventMutation(e, {
       onSuccess: () => {
         messageApi.open({
           type: 'success',

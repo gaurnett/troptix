@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/typography';
 import { MetaHead } from '@/components/utils/MetaHead';
 import { useEvent } from '@/hooks/useEvents';
-import { RequestType, eventFetcher } from '@/hooks/useFetchEvents';
 import { useScreenSize } from '@/hooks/useScreenSize';
 
 import { Typography } from 'antd';
@@ -25,47 +24,76 @@ import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { IoTicket } from 'react-icons/io5';
 import { useContext, useState } from 'react';
+import prisma from '@/server/prisma';
 
 const { Paragraph } = Typography;
 
 export async function getStaticPaths() {
-  // Call an external API endpoint to get posts
-  const events = await eventFetcher({
-    requestType: RequestType.GET_EVENTS_ALL,
-  });
+  try {
+    const events = await prisma.events.findMany({
+      select: {
+        id: true,
+      },
+      where: {
+        isDraft: false,
+        startDate: {
+          gte: new Date(),
+        },
+      },
+    });
+    // Get the paths we want to pre-render based on posts
+    const paths = events.map((event) => ({
+      params: { id: event.id?.toString() ?? '' },
+    }));
 
-  // Get the paths we want to pre-render based on posts
-  const paths = events.map((event) => ({
-    params: { id: event.id },
-  }));
-
-  // We'll pre-render only these paths at build time.
-  // { fallback: false } means other routes should 404.
-  return { paths, fallback: 'blocking' };
+    // We'll pre-render only these paths at build time.
+    // { fallback: blocking } means other routes not return will wait for the html to be generated
+    return { paths, fallback: 'blocking' };
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return { paths: [], fallback: 'blocking' };
+  }
 }
 
 // This also gets called at build time
 export async function getStaticProps({ params }) {
-  const { id } = params;
-  const event = await eventFetcher({
-    requestType: RequestType.GET_EVENTS_BY_ID,
-    id: id,
-  });
+  try {
+    const { id } = params;
+    const event = await prisma.events.findUnique({
+      where: { id },
+      include: { ticketTypes: true },
+    });
 
-  return {
-    props: {
-      event,
-    },
-    revalidate: 60,
-  };
+    if (!event) {
+      return { notFound: true };
+    }
+
+    // Prepare SEO tags with fallbacks
+    const seoTags = {
+      id: event.id,
+      title: event.name,
+      description: event.summary || `${event.name} - ${event.organizer}`,
+      image: event.imageUrl,
+      url: `https://usetroptix.com/event/${event.id}`,
+    };
+
+    return {
+      props: {
+        event: JSON.parse(JSON.stringify(event)),
+        seoTags,
+      },
+      revalidate: 60,
+    };
+  } catch (error) {
+    console.error('Error in getStaticProps:', error);
+    return { notFound: true };
+  }
 }
 
 export default function EventDetailPage(props) {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const router = useRouter();
-  const { user } = useContext(TropTixContext);
   const eventId = router.query.id as string;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const { isMobile } = useScreenSize();
@@ -104,12 +132,7 @@ export default function EventDetailPage(props) {
 
   return (
     <>
-      <MetaHead
-        title={event.name}
-        description={event.organizer}
-        image={event.imageUrl}
-        url={undefined}
-      />
+      <MetaHead {...props.seoTags} />
       <div
         style={{
           // backgroundColor: '#455A64',

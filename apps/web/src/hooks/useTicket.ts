@@ -2,7 +2,6 @@ import { TropTixContext } from '@/components/WebNavigator';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useContext } from 'react';
 import { Ticket } from './types/Ticket';
-import { prodUrl } from './useFetchEvents';
 
 export enum PostTicketType {
   UPDATE_STATUS = 'UPDATE_STATUS',
@@ -16,7 +15,7 @@ export interface PostTicketRequest {
 }
 
 export async function mutateTicket(request: PostTicketRequest): Promise<any> {
-  let url = prodUrl + `/api/tickets`;
+  let url = `/api/tickets`;
 
   try {
     const response = await fetch(url, {
@@ -49,7 +48,7 @@ export function useCreateTicket() {
 }
 
 export async function fetchUserTickets(userId: string): Promise<any> {
-  const url = prodUrl + `/api/tickets?userId=${userId}`;
+  const url = `/api/tickets?userId=${userId}`;
 
   try {
     const response = await fetch(url, {
