@@ -1,23 +1,17 @@
-import { TropTixContext } from '@/components/WebNavigator';
 import { Spinner } from '@/components/ui/spinner';
-import { RequestType, useFetchEventsById } from '@/hooks/useFetchEvents';
 import Link from 'next/link';
 import * as React from 'react';
-import { useContext } from 'react';
 import ManageEventCard from '../../../components/ManageEventCard';
+import { useEvents } from '@/hooks/useEvents';
 
 export default function ManageEventsPage() {
-  const { user } = useContext(TropTixContext);
-
-  const { isPending, isError, data, error } = useFetchEventsById({
-    requestType: RequestType.GET_EVENTS_BY_ORGANIZER,
-    jwtToken: user.jwtToken,
-    id: user.id,
+  const { isPending, isError, data } = useEvents({
+    byOrganizerId: true,
   });
 
   return (
     <div className="w-full md:max-w-2xl">
-      {!isPending ? (
+      {!isPending && !isError ? (
         <div className="flex flex-wrap">
           {data.map((event, index: any) => {
             return (

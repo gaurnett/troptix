@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { Charge } from './types/Charge';
 import { Checkout } from './types/Checkout';
-import { prodUrl } from './useFetchEvents';
 
 export enum PostStripeType {
   CREATE_CHARGE = 'CREATE_CHARGE',
@@ -59,7 +58,7 @@ export async function postStripe({
   charge,
 }: PostStripeRequest): Promise<PaymentIntent> {
   try {
-    let url = prodUrl + `/api/stripe`;
+    let url = `/api/stripe`;
     const request = { type, charge };
 
     const response = await fetch(url, {
