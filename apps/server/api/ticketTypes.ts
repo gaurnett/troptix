@@ -53,31 +53,111 @@ async function getTicketTypes(
   }
 }
 
+const getEventTicketStats = async (eventId: string) => {
+  return await prisma.ticketTypes.findMany({
+    where: {
+      eventId: eventId,
+    },
+    include: {
+      // count of tickets sold
+      _count: {
+        select: {
+          tickets: {
+            where: {
+              order: {
+                status: OrderStatus.COMPLETED,
+              },
+            },
+          },
+        },
+      },
+      // array of tickets pending
+      tickets: {
+        where: {
+          order: {
+            status: OrderStatus.PENDING,
+          },
+        },
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+};
+
+type TicketTypeWithOrders = {
+  id: string;
+  pendingOrders: number;
+  completedOrders: number;
+  [key: string]: any; // for other ticket type fields
+};
+
+function compareTicketResults(
+  newImplementation: TicketTypeWithOrders[],
+  oldImplementation: TicketTypeWithOrders[]
+): { isMatch: boolean; differences: string[] } {
+  // Sort both arrays by ID for consistent comparison
+  const sortById = (a: TicketTypeWithOrders, b: TicketTypeWithOrders) =>
+    a.id.localeCompare(b.id);
+
+  const normalizedNew = [...newImplementation].sort(sortById);
+  const normalizedOld = [...oldImplementation].sort(sortById);
+
+  if (normalizedNew.length !== normalizedOld.length) {
+    return {
+      isMatch: false,
+      differences: [
+        `Length mismatch: new (${normalizedNew.length}) vs old (${normalizedOld.length})`,
+      ],
+    };
+  }
+
+  const differences: string[] = [];
+
+  normalizedNew.forEach((newItem, index) => {
+    const oldItem = normalizedOld[index];
+
+    // Compare key fields
+    const fields: (keyof TicketTypeWithOrders)[] = [
+      'pendingOrders',
+      'completedOrders',
+    ];
+
+    fields.forEach((field) => {
+      if (newItem[field] !== oldItem[field]) {
+        differences.push(
+          `Mismatch for ticket ${newItem.id} - ${field}: new (${newItem[field]}) vs old (${oldItem[field]})`
+        );
+      }
+    });
+  });
+
+  return {
+    isMatch: differences.length === 0,
+    differences,
+  };
+}
+
 async function getTicketTypesForCheckout(
   request: VercelRequest,
   response: VercelResponse
 ) {
   const eventId = request.query.eventId as string;
 
-  // await prismaClient.orders.updateMany({
-  //   where: {
-  //     eventId: eventId,
-  //     status: OrderStatus.PENDING,
-  //     // cardLast4: '4242'
-  //   },
-  //   data: {
-  //     status: OrderStatus.CANCELLED
-  //   }
-  // })
-
   try {
+    // Get results from new implementation
+    const newQuery = await getEventTicketStats(eventId);
+    const newResult = newQuery.map((ticketType) => ({
+      ...ticketType,
+      pendingOrders: ticketType.tickets.length,
+      completedOrders: ticketType._count.tickets,
+    }));
+
+    // Get results from old implementation
     const ticketTypes = await prismaClient.ticketTypes.findMany({
-      where: {
-        eventId: eventId,
-      },
-      orderBy: {
-        price: 'asc',
-      },
+      where: { eventId },
+      orderBy: { price: 'asc' },
     });
 
     const orders = await prismaClient.orders.findMany({
@@ -131,13 +211,25 @@ async function getTicketTypesForCheckout(
 
     const ticketTypesWithOrderStatus = ticketTypes.map((ticketType) => {
       const orderStatusMap = ticketMap.get(ticketType.id);
-
       return {
         ...ticketType,
         pendingOrders: orderStatusMap?.get(OrderStatus.PENDING) ?? 0,
         completedOrders: orderStatusMap?.get(OrderStatus.COMPLETED) ?? 0,
       };
     });
+
+    // Compare implementations
+    const comparison = compareTicketResults(
+      newResult.map(({ tickets, _count, ...rest }) => rest), // Remove internal fields
+      ticketTypesWithOrderStatus
+    );
+
+    if (!comparison.isMatch) {
+      console.error('Implementation mismatch detected:');
+      comparison.differences.forEach((diff) => console.error(diff));
+    } else {
+      console.log('Implementations match exactly');
+    }
 
     return response.status(200).json(ticketTypesWithOrderStatus);
   } catch (error) {
