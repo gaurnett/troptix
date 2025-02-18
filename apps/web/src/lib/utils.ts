@@ -44,14 +44,6 @@ export function getFormattedCurrency(price) {
   return formatter.format(price);
 }
 
-export function getBaseUrl() {
-  return process.env.VERCEL_ENV === 'production'
-    ? `https://www.usetroptix.com`
-    : process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : `http://localhost:${process.env.PORT ?? 3000}`;
-}
-
 export function generateId() {
   const uid = new ShortUniqueId({
     dictionary: 'alphanum_upper',

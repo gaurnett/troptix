@@ -123,7 +123,7 @@ export default function AddEventFormPage({ event, setEvent }) {
         console.error('Failed to create event:', error);
         messageApi.open({
           type: 'error',
-          content: 'Failed to create event: ' + error.message,
+          content: 'Failed to create event, please try again',
         });
       },
     });
