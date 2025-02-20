@@ -5,7 +5,8 @@ import PromotionCodesPage from '@/components/pages/admin/manage-event/promotions
 import TicketsPage from '@/components/pages/admin/manage-event/tickets';
 import UserDelegationPage from '@/components/pages/admin/manage-event/user-delegation';
 import { Spinner } from '@/components/ui/spinner';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useCreateEvent, useEvent, useUpdateEvent } from '@/hooks/useEvents';
 import { RequestType, useFetchEventsById } from '@/hooks/useFetchEvents';
 import { useEditEvent } from '@/hooks/usePostEvent';
 import { useQueryClient } from '@tanstack/react-query';
@@ -23,17 +24,9 @@ export default function ManageEventPage() {
   const [activeKey, setActiveKey] = useState('basic-info');
 
   const queryClient = useQueryClient();
-  const mutation = useEditEvent();
+  const { mutate: updateEventMutation } = useUpdateEvent();
 
-  const {
-    isPending,
-    isError,
-    data: event,
-    error,
-  } = useFetchEventsById({
-    requestType: RequestType.GET_EVENTS_BY_ID,
-    id: eventId,
-  });
+  const { isPending, isError, data: event, error } = useEvent(eventId);
 
   // Update local state with fetched data
   useEffect(() => {
@@ -50,7 +43,7 @@ export default function ManageEventPage() {
       duration: 0,
     });
 
-    mutation.mutate(e, {
+    updateEventMutation(e, {
       onSuccess: () => {
         messageApi.destroy('update-event-loading');
         messageApi.open({
@@ -86,7 +79,7 @@ export default function ManageEventPage() {
       ['isDraft']: !event.isDraft,
     };
 
-    mutation.mutate(e, {
+    updateEventMutation(e, {
       onSuccess: () => {
         messageApi.open({
           type: 'success',
@@ -200,14 +193,18 @@ export default function ManageEventPage() {
 
               <div className="w-full mb-8 mt-4">
                 <Tabs defaultValue="basic-info">
-                  <div className='overflow-auto'>
+                  <div className="overflow-auto">
                     <TabsList>
                       <TabsTrigger value="basic-info">Basic Info</TabsTrigger>
                       <TabsTrigger value="details">Details</TabsTrigger>
                       <TabsTrigger value="orders">Orders</TabsTrigger>
                       <TabsTrigger value="tickets">Tickets</TabsTrigger>
-                      <TabsTrigger value="promotion-codes">Promotion Codes</TabsTrigger>
-                      <TabsTrigger value="user-delegation">User Delegation</TabsTrigger>
+                      <TabsTrigger value="promotion-codes">
+                        Promotion Codes
+                      </TabsTrigger>
+                      <TabsTrigger value="user-delegation">
+                        User Delegation
+                      </TabsTrigger>
                     </TabsList>
                   </div>
 
@@ -215,13 +212,15 @@ export default function ManageEventPage() {
                     <BasicInfoPage
                       event={eventForm}
                       setEvent={setEventForm}
-                      updateEvent={updateEvent} />
+                      updateEvent={updateEvent}
+                    />
                   </TabsContent>
                   <TabsContent value="details">
                     <DetailsPage
                       event={eventForm}
                       setEvent={setEventForm}
-                      updateEvent={updateEvent} />
+                      updateEvent={updateEvent}
+                    />
                   </TabsContent>
                   <TabsContent value="orders">
                     <OrdersPage />

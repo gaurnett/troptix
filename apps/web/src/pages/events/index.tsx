@@ -3,28 +3,43 @@ import EventCard from '@/components/EventCard';
 import Footer from '@/components/ui/footer';
 import { Spinner } from '@/components/ui/spinner';
 import { useEvents } from '@/hooks/useEvents';
-import {
-  RequestType,
-  eventFetcher
-} from '@/hooks/useFetchEvents';
+import prisma from '@/server/prisma';
 import Image from 'next/image';
 import Link from 'next/link';
 import * as React from 'react';
 
 export async function getStaticProps() {
-  const events = await eventFetcher({
-    requestType: RequestType.GET_EVENTS_ALL,
-  });
+  try {
+    const events = await prisma.events.findMany({
+      include: {
+        ticketTypes: true,
+      },
+      where: {
+        isDraft: false,
+        startDate: {
+          gte: new Date(),
+        },
+      },
+    });
 
-  if (!events) {
+    if (!events) {
+      return { props: { events: [] }, revalidate: 60 };
+    }
+
+    return {
+      props: { events: JSON.parse(JSON.stringify(events)) },
+      revalidate: 60,
+    };
+  } catch (error) {
+    console.error('Error fetching events:', error);
     return { props: { events: [] }, revalidate: 60 };
   }
-
-  return { props: { events }, revalidate: 60 };
 }
 
 export default function ManageEventsPage(props) {
-  const { isPending, isError, data, error } = useEvents(props.events);
+  const { isPending, isError, data } = useEvents({
+    intialData: props.events,
+  });
   const events = data as any[];
 
   return (
@@ -39,7 +54,7 @@ export default function ManageEventsPage(props) {
               Events
             </span>
           </h1>
-          {!isPending ? (
+          {!isPending && !isError ? (
             <div className="mx-auto p-4">
               <div className="flex flex-wrap -mx-2">
                 {events.length === 0 ? (

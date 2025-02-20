@@ -88,9 +88,10 @@ export default function ManageEventCard({ event, showDivider = false }) {
       <div
         className="relative rounded-md"
         style={{
-          backgroundImage: `url("${event.imageUrl ??
+          backgroundImage: `url("${
+            event.imageUrl ??
             'https://placehold.co/400x400?text=Add+Event+Flyer'
-            }")`,
+          }")`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           WebkitBackgroundSize: 'cover',

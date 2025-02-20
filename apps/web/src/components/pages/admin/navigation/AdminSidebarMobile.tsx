@@ -1,13 +1,9 @@
+import { Plus, SquareGanttChart } from 'lucide-react';
+import Link from 'next/link';
 
-import {
-  Plus,
-  SquareGanttChart
-} from "lucide-react";
-import Link from "next/link";
-
-import { usePathname } from "next/navigation";
+import { usePathname } from 'next/navigation';
 import React from 'react';
-import Logo from "../../../ui/logo";
+import Logo from '../../../ui/logo';
 
 interface Item {
   path: string;
@@ -29,7 +25,7 @@ export default function AdminSidebarMobile() {
         {item.icon}
         {item.title}
       </Link>
-    )
+    );
   }
 
   return (
@@ -40,18 +36,18 @@ export default function AdminSidebarMobile() {
       </Link>
 
       {renderItem({
-        path: "/admin/manage-events",
-        title: "Manage Events",
-        isCurrent: pathname.includes('/manage-event') || pathname === "/admin",
-        icon: <SquareGanttChart className="h-5 w-5" />
+        path: '/admin/manage-events',
+        title: 'Manage Events',
+        isCurrent: pathname.includes('/manage-event') || pathname === '/admin',
+        icon: <SquareGanttChart className="h-5 w-5" />,
       })}
 
       {renderItem({
-        path: "/admin/add-event",
-        title: "Add Event",
+        path: '/admin/add-event',
+        title: 'Add Event',
         isCurrent: pathname.includes('add-event'),
-        icon: <Plus className="h-5 w-5" />
+        icon: <Plus className="h-5 w-5" />,
       })}
     </nav>
-  )
+  );
 }

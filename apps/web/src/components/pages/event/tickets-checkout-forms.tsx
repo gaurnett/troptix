@@ -8,14 +8,30 @@ import { InputWithLabel } from '@/components/ui/input';
 import { TypographyH3 } from '@/components/ui/typography';
 import { initializeCheckoutTicket } from '@/hooks/types/Checkout';
 import { TicketType } from '@/hooks/types/Ticket';
-import { GetPromotionsRequest, GetPromotionsType, getPromotions } from '@/hooks/usePromotions';
+import {
+  GetPromotionsRequest,
+  GetPromotionsType,
+  getPromotions,
+} from '@/hooks/usePromotions';
 import { calculateFees, getDateFormatter } from '@/lib/utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 const { Paragraph } = Typography;
 
-export default function TicketsCheckoutForm(
-  { event, ticketTypes, checkout, setCheckout, promotion, setPromotion }:
-    { event: any, ticketTypes: TicketType[], promotion: any, setPromotion: any, checkout: any, setCheckout: any }) {
+export default function TicketsCheckoutForm({
+  event,
+  ticketTypes,
+  checkout,
+  setCheckout,
+  promotion,
+  setPromotion,
+}: {
+  event: any;
+  ticketTypes: TicketType[];
+  promotion: any;
+  setPromotion: any;
+  checkout: any;
+  setCheckout: any;
+}) {
   const [promotionCode, setPromotionCode] = useState<string>();
   const [promotionApplied, setPromotionApplied] = useState(false);
   const [canShowMessage, setCanShowMessage] = useState(true);
@@ -23,8 +39,11 @@ export default function TicketsCheckoutForm(
 
   async function applyPromotion() {
     let ticketDiscountApplied = false;
-    ticketTypes.forEach(ticket => {
-      if (String(ticket.discountCode).toUpperCase() === String(promotionCode).toUpperCase()) {
+    ticketTypes.forEach((ticket) => {
+      if (
+        String(ticket.discountCode).toUpperCase() ===
+        String(promotionCode).toUpperCase()
+      ) {
         message.success('Tickets unlocked');
         ticketDiscountApplied = true;
         setPromotionApplied(true);
@@ -46,7 +65,7 @@ export default function TicketsCheckoutForm(
     if (
       promotionApplied &&
       String(promotion.code).toUpperCase() ===
-      String(promotionCode).toUpperCase()
+        String(promotionCode).toUpperCase()
     ) {
       if (canShowMessage) {
         setCanShowMessage(false);
@@ -74,7 +93,10 @@ export default function TicketsCheckoutForm(
           const updatedTickets = checkout.tickets;
           Array.from(checkout.tickets.keys()).forEach((key, i) => {
             const item = checkout.tickets.get(key);
-            const promotedPrice = getPromotionPriceFromResponse(item.subtotal, promotion);
+            const promotedPrice = getPromotionPriceFromResponse(
+              item.subtotal,
+              promotion
+            );
             const promotedFee = calculateFees(promotedPrice);
 
             subtotal += normalizePrice(promotedPrice) * item.quantitySelected;
@@ -100,16 +122,15 @@ export default function TicketsCheckoutForm(
           setCheckout((previousOrder) => ({
             ...previousOrder,
             promotionApplied: true,
-            tickets: updatedTickets
+            tickets: updatedTickets,
           }));
 
           message.success('Promotion code applied');
         } else {
           message.error('There was a problem applying promotion code.');
         }
-      }).catch(error => {
-
       })
+      .catch((error) => {});
   }
 
   function getPromotionPriceFromResponse(price, response) {
@@ -181,9 +202,13 @@ export default function TicketsCheckoutForm(
 
   function updateCost(ticket, reduce = false) {
     const price = normalizePrice(ticket.price);
-    var ticketSubtotal = checkout.promotionApplied ? getPromotionPrice(price) : price;
+    var ticketSubtotal = checkout.promotionApplied
+      ? getPromotionPrice(price)
+      : price;
     var ticketFees =
-      ticket.ticketingFees === 'PASS_TICKET_FEES' ? calculateFees(ticketSubtotal) : 0;
+      ticket.ticketingFees === 'PASS_TICKET_FEES'
+        ? calculateFees(ticketSubtotal)
+        : 0;
     var ticketTotal = normalizePrice(ticketFees + ticketSubtotal);
 
     const updatedTickets = checkout.tickets;
@@ -250,7 +275,8 @@ export default function TicketsCheckoutForm(
     }
 
     if (ticket.completedOrders !== null && ticket.pendingOrders !== null) {
-      quantityRemaining = ticket.quantity - (ticket.completedOrders + ticket.pendingOrders);
+      quantityRemaining =
+        ticket.quantity - (ticket.completedOrders + ticket.pendingOrders);
       if (quantityRemaining <= 0) {
         return 'Sold Out';
       }
@@ -259,17 +285,22 @@ export default function TicketsCheckoutForm(
     return undefined;
   }
 
-  let filteredTickets = ticketTypes
+  let filteredTickets = ticketTypes;
 
   if (filteredTickets !== null && filteredTickets !== undefined) {
-    filteredTickets = filteredTickets.filter(ticket => {
-      return (promotionApplied && String(ticket.discountCode).toUpperCase() === String(promotionCode).toUpperCase()) || !ticket.discountCode;
+    filteredTickets = filteredTickets.filter((ticket) => {
+      return (
+        (promotionApplied &&
+          String(ticket.discountCode).toUpperCase() ===
+            String(promotionCode).toUpperCase()) ||
+        !ticket.discountCode
+      );
     });
   }
 
   return (
     <div className="md:px-4">
-      <TypographyH3 text={"Contact Information"} classes='mb-2' />
+      <TypographyH3 text={'Contact Information'} classes="mb-2" />
       <div className="flex justify-between">
         <div className="mb-4 mr-1 md:mr-4 w-full">
           <InputWithLabel
@@ -280,7 +311,8 @@ export default function TicketsCheckoutForm(
             type={'text'}
             placeholder={'John'}
             onChange={handleChange}
-            required={true} />
+            required={true}
+          />
         </div>
         <div className="mb-4 ml-1 md:ml-4 w-full">
           <InputWithLabel
@@ -325,7 +357,7 @@ export default function TicketsCheckoutForm(
         </div>
       </div>
 
-      <TypographyH3 text={"Tickets"} classes='mb-2' />
+      <TypographyH3 text={'Tickets'} classes="mb-2" />
       <div className="mb-4">
         <div className="w-full">
           <label
@@ -343,12 +375,9 @@ export default function TicketsCheckoutForm(
             id={'promotionCode'}
             type={'text'}
             placeholder={'SAVE15'}
-            containerClass='w-full'
+            containerClass="w-full"
           />
-          <Button
-            onClick={applyPromotion}
-            className="my-auto ml-2"
-          >
+          <Button onClick={applyPromotion} className="my-auto ml-2">
             Apply
           </Button>
         </div>
@@ -370,7 +399,9 @@ export default function TicketsCheckoutForm(
           const pendingOrders = ticket.pendingOrders as number;
           const maxPurchasePerUser = ticket.maxPurchasePerUser as number;
           const completedOrders = ticket.completedOrders as number;
-          const isPromotionPriceSame = getFormattedCurrency(ticket.price) === getFormattedCurrency(ticket.price, true);
+          const isPromotionPriceSame =
+            getFormattedCurrency(ticket.price) ===
+            getFormattedCurrency(ticket.price, true);
 
           return (
             <List.Item className="mb-4" style={{ padding: 0 }}>
@@ -385,9 +416,7 @@ export default function TicketsCheckoutForm(
                 <div>
                   <div className="my-auto">
                     <div className="flex h-16">
-                      <div className="md:w-4/5 grow my-auto">
-                        {ticket.name}
-                      </div>
+                      <div className="md:w-4/5 grow my-auto">{ticket.name}</div>
                       <div className="md:w-1/5 flex my-auto justify-center items-center">
                         <div>
                           {ticketState !== undefined ? (
@@ -419,10 +448,11 @@ export default function TicketsCheckoutForm(
                                 disabled={
                                   checkoutTicket &&
                                   checkoutTicket.quantitySelected ===
-                                  Math.min(
-                                    quantity - (completedOrders + pendingOrders),
-                                    maxPurchasePerUser
-                                  )
+                                    Math.min(
+                                      quantity -
+                                        (completedOrders + pendingOrders),
+                                      maxPurchasePerUser
+                                    )
                                 }
                                 icon={
                                   <PlusOutlined className="text-white items-center justify-center" />
@@ -444,7 +474,9 @@ export default function TicketsCheckoutForm(
                   />
                   <div className="my-4">
                     <div className="flex">
-                      {promotionApplied && !ticket.discountCode && !isPromotionPriceSame ? (
+                      {promotionApplied &&
+                      !ticket.discountCode &&
+                      !isPromotionPriceSame ? (
                         <div className="flex">
                           <div
                             className="text-base"

@@ -1,8 +1,7 @@
-import { prodUrl } from './useFetchEvents';
 import { useMutation } from '@tanstack/react-query';
 
 export async function mutateEvent(event, editEvent): Promise<any> {
-  let url = prodUrl + `/api/events`;
+  let url = `/api/events`;
   let method = editEvent ? 'PUT' : 'POST';
 
   try {

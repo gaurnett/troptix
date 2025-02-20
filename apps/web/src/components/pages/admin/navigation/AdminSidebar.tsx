@@ -1,11 +1,7 @@
+import { Plus, SquareGanttChart } from 'lucide-react';
+import Link from 'next/link';
 
-import {
-  Plus,
-  SquareGanttChart
-} from "lucide-react";
-import Link from "next/link";
-
-import { usePathname } from "next/navigation";
+import { usePathname } from 'next/navigation';
 
 interface Item {
   path: string;
@@ -26,23 +22,23 @@ export default function AdminSidebar() {
         {item.icon}
         <span className="text-base">{item.title}</span>
       </Link>
-    )
+    );
   }
 
   return (
     <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
       {renderItem({
-        path: "/admin/manage-events",
-        title: "Manage Events",
-        isCurrent: pathname.includes('/manage-event') || pathname === "/admin",
-        icon: <SquareGanttChart className="h-5 w-5" />
+        path: '/admin/manage-events',
+        title: 'Manage Events',
+        isCurrent: pathname.includes('/manage-event') || pathname === '/admin',
+        icon: <SquareGanttChart className="h-5 w-5" />,
       })}
 
       {renderItem({
-        path: "/admin/add-event",
-        title: "Add Event",
+        path: '/admin/add-event',
+        title: 'Add Event',
         isCurrent: pathname.includes('add-event'),
-        icon: <Plus className="h-5 w-5" />
+        icon: <Plus className="h-5 w-5" />,
       })}
 
       {/* {renderItem({
@@ -65,7 +61,6 @@ export default function AdminSidebar() {
         isCurrent: pathname.includes('organization-settings'),
         icon: <Users className="h-5 w-5" />
       })} */}
-
     </nav>
-  )
+  );
 }

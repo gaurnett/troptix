@@ -1,4 +1,3 @@
-
 export default function OrdersPage() {
   return (
     <div className="w-full md:max-w-2xl mx-auto">

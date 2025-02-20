@@ -1,12 +1,7 @@
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
-import {
-  Input as AntdInput,
-  DatePicker,
-  InputNumber,
-  TimePicker
-} from 'antd';
+import { Input as AntdInput, DatePicker, InputNumber, TimePicker } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
 import { format } from 'date-fns';
 import dayjs from 'dayjs';
@@ -27,39 +22,37 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       <input
         type={type}
         className={cn(
-          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+          'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
           className
         )}
         ref={ref}
         {...props}
       />
-    )
+    );
   }
-)
-Input.displayName = "Input"
+);
+Input.displayName = 'Input';
 
 const InputWithLabel = React.forwardRef<HTMLInputElement, InputProps>(
   ({ id, labelValue, containerClass, className, type, ...props }, ref) => {
     return (
       <div className={containerClass}>
-        <Label htmlFor={id}>
-          {labelValue}
-        </Label>
+        <Label htmlFor={id}>{labelValue}</Label>
         <input
           id={id}
           type={type}
           className={cn(
-            "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+            'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
             className
           )}
           ref={ref}
           {...props}
         />
       </div>
-    )
+    );
   }
-)
-InputWithLabel.displayName = "InputWithLabel"
+);
+InputWithLabel.displayName = 'InputWithLabel';
 
 function CustomInput({
   name,
@@ -279,8 +272,11 @@ function CustomTimeField({
 }
 
 export {
-  CustomDateField, CustomInput,
+  CustomDateField,
+  CustomInput,
   CustomNumberInput,
-  CustomTextArea, CustomTimeField, Input, InputWithLabel
+  CustomTextArea,
+  CustomTimeField,
+  Input,
+  InputWithLabel,
 };
-

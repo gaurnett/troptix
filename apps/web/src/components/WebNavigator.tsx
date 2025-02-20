@@ -37,7 +37,11 @@ export const TropTixContext = createContext({
 
 export const useTropTixContext = () => useContext(TropTixContext);
 
-export default function WebNavigator({ Component, pageProps, router }: AppProps) {
+export default function WebNavigator({
+  Component,
+  pageProps,
+  router,
+}: AppProps) {
   const pathname = usePathname();
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
@@ -121,10 +125,12 @@ export default function WebNavigator({ Component, pageProps, router }: AppProps)
           />
         </>
       ) : (
-        <div className={cn(
-          "min-h-screen font-sans antialiased mx-auto",
-          inter.variable
-        )}>
+        <div
+          className={cn(
+            'min-h-screen font-sans antialiased mx-auto',
+            inter.variable
+          )}
+        >
           <div
             className={`${inter.variable} font-inter antialiased text-gray-900 tracking-tight`}
           >
@@ -139,7 +145,13 @@ export default function WebNavigator({ Component, pageProps, router }: AppProps)
                 </div>
               ) : (
                 <div>
-                  {user && <AdminDashboard Component={Component} pageProps={pageProps} router={router} />}
+                  {user && (
+                    <AdminDashboard
+                      Component={Component}
+                      pageProps={pageProps}
+                      router={router}
+                    />
+                  )}
                 </div>
               )}
             </div>

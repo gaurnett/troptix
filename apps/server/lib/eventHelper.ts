@@ -1,8 +1,4 @@
-import {
-  DelegatedAccess,
-  Prisma,
-  PrismaClient
-} from '@prisma/client';
+import { DelegatedAccess, Prisma, PrismaClient } from '@prisma/client';
 import prisma from '../prisma/prisma.js';
 import { adminUserIds } from './experimentHelper.js';
 

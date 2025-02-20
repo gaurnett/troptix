@@ -1,17 +1,15 @@
-import {
-  Menu
-} from "lucide-react";
-import Link from "next/link";
+import { Menu } from 'lucide-react';
+import Link from 'next/link';
 
-import { TropTixContext } from "@/components/WebNavigator";
-import AdminSidebar from "@/components/pages/admin/navigation/AdminSidebar";
-import AdminSidebarMobile from "@/components/pages/admin/navigation/AdminSidebarMobile";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { TropTixContext } from '@/components/WebNavigator';
+import AdminSidebar from '@/components/pages/admin/navigation/AdminSidebar';
+import AdminSidebarMobile from '@/components/pages/admin/navigation/AdminSidebarMobile';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps } from 'antd';
 import { AppProps } from 'next/app';
 import { useContext } from 'react';
-import Logo from "../../components/ui/logo";
+import Logo from '../../components/ui/logo';
 import { auth } from '../../config';
 
 export default function AdminDashboard({ Component, pageProps }: AppProps) {
@@ -21,7 +19,7 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
   let items: MenuProps['items'];
 
   async function signOut() {
-    auth
+    auth;
     await auth.signOut();
   }
 
@@ -63,9 +61,7 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
         <header className="flex h-14 items-center gap-4 border-b border-gray-200 bg-muted/40 px-4 lg:h-[60px] lg:px-6">
           <Sheet>
             <SheetTrigger asChild>
-              <Button
-                className="shrink-0 md:hidden"
-              >
+              <Button className="shrink-0 md:hidden">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
@@ -74,8 +70,7 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
               <AdminSidebarMobile />
             </SheetContent>
           </Sheet>
-          <div className="w-full flex-1">
-          </div>
+          <div className="w-full flex-1"></div>
           <div className="mr-2">
             <ul className="flex justify-end">
               <Dropdown className="cursor-pointer" menu={{ items }}>
@@ -92,6 +87,5 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
         </main>
       </div>
     </div>
-  )
+  );
 }
-

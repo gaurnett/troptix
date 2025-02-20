@@ -1,9 +1,14 @@
-import { Checkout, CheckoutTicket } from "@/hooks/types/Checkout";
-import { Promotion } from "@/hooks/types/Promotion";
-import { TicketType } from "@/hooks/types/Ticket";
-import { calculateFees, normalizePrice } from "./utils";
+import { Checkout, CheckoutTicket } from '@/hooks/types/Checkout';
+import { Promotion } from '@/hooks/types/Promotion';
+import { TicketType } from '@/hooks/types/Ticket';
+import { calculateFees, normalizePrice } from './utils';
 
-export function updateTicketQuantities(checkout: Checkout, ticketType: TicketType, promotion: Promotion, quantity: number): Checkout {
+export function updateTicketQuantities(
+  checkout: Checkout,
+  ticketType: TicketType,
+  promotion: Promotion,
+  quantity: number
+): Checkout {
   const ticketTypeId = ticketType.id as string;
   const ticket = checkout.tickets.get(ticketTypeId);
 
@@ -29,9 +34,9 @@ export function updateTicketQuantities(checkout: Checkout, ticketType: TicketTyp
     }
   }
 
-  var currentSubtotal = checkout.subtotal as number
-  var checkoutSubtotal = currentSubtotal - (ticketSubtotal * quantity);
-  var checkoutFees = normalizePrice(checkout.fees) - (ticketFees * quantity);
+  var currentSubtotal = checkout.subtotal as number;
+  var checkoutSubtotal = currentSubtotal - ticketSubtotal * quantity;
+  var checkoutFees = normalizePrice(checkout.fees) - ticketFees * quantity;
   var checkoutTotal = normalizePrice(checkoutSubtotal + checkoutFees);
 
   checkout = {
@@ -40,12 +45,16 @@ export function updateTicketQuantities(checkout: Checkout, ticketType: TicketTyp
     total: checkoutTotal,
     fees: checkoutFees,
     subtotal: checkoutSubtotal,
-  }
+  };
 
   return checkout;
 }
 
-function getPromotionPrice(checkout: Checkout, promotion: Promotion, price: number) {
+function getPromotionPrice(
+  checkout: Checkout,
+  promotion: Promotion,
+  price: number
+) {
   const promotionValue = promotion.value as number;
   if (checkout.promotionApplied && promotion) {
     switch (promotion.promotionType) {

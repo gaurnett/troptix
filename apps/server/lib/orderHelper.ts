@@ -1,9 +1,4 @@
-import {
-  OrderStatus,
-  Prisma,
-  TicketStatus,
-  TicketType
-} from '@prisma/client';
+import { OrderStatus, Prisma, TicketStatus, TicketType } from '@prisma/client';
 import { buffer } from 'micro';
 
 export const config = {

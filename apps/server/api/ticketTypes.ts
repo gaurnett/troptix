@@ -1,10 +1,13 @@
-import { OrderStatus, PrismaClient } from "@prisma/client";
-import { VercelRequest, VercelResponse } from "@vercel/node";
+import { OrderStatus, PrismaClient } from '@prisma/client';
+import { VercelRequest, VercelResponse } from '@vercel/node';
 import { allowCors } from '../lib/auth.js';
-import { getPrismaCreateTicketTypeQuery, getPrismaTicketTypeQuery } from '../lib/eventHelper.js';
+import {
+  getPrismaCreateTicketTypeQuery,
+  getPrismaTicketTypeQuery,
+} from '../lib/eventHelper.js';
 import prisma from '../prisma/prisma.js';
 
-const prismaClient = prisma as PrismaClient
+const prismaClient = prisma as PrismaClient;
 
 async function handler(request: VercelRequest, response: VercelResponse) {
   const { body, method } = request;
@@ -34,7 +37,10 @@ async function handler(request: VercelRequest, response: VercelResponse) {
 
 export default allowCors(handler);
 
-async function getTicketTypes(request: VercelRequest, response: VercelResponse) {
+async function getTicketTypes(
+  request: VercelRequest,
+  response: VercelResponse
+) {
   const getTicketTypesType = request.query.getTicketTypesType;
 
   switch (String(getTicketTypesType)) {
@@ -47,28 +53,111 @@ async function getTicketTypes(request: VercelRequest, response: VercelResponse) 
   }
 }
 
-async function getTicketTypesForCheckout(request: VercelRequest, response: VercelResponse) {
+const getEventTicketStats = async (eventId: string) => {
+  return await prisma.ticketTypes.findMany({
+    where: {
+      eventId: eventId,
+    },
+    include: {
+      // count of tickets sold
+      _count: {
+        select: {
+          tickets: {
+            where: {
+              order: {
+                status: OrderStatus.COMPLETED,
+              },
+            },
+          },
+        },
+      },
+      // array of tickets pending
+      tickets: {
+        where: {
+          order: {
+            status: OrderStatus.PENDING,
+          },
+        },
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+};
+
+type TicketTypeWithOrders = {
+  id: string;
+  pendingOrders: number;
+  completedOrders: number;
+  [key: string]: any; // for other ticket type fields
+};
+
+function compareTicketResults(
+  newImplementation: TicketTypeWithOrders[],
+  oldImplementation: TicketTypeWithOrders[]
+): { isMatch: boolean; differences: string[] } {
+  // Sort both arrays by ID for consistent comparison
+  const sortById = (a: TicketTypeWithOrders, b: TicketTypeWithOrders) =>
+    a.id.localeCompare(b.id);
+
+  const normalizedNew = [...newImplementation].sort(sortById);
+  const normalizedOld = [...oldImplementation].sort(sortById);
+
+  if (normalizedNew.length !== normalizedOld.length) {
+    return {
+      isMatch: false,
+      differences: [
+        `Length mismatch: new (${normalizedNew.length}) vs old (${normalizedOld.length})`,
+      ],
+    };
+  }
+
+  const differences: string[] = [];
+
+  normalizedNew.forEach((newItem, index) => {
+    const oldItem = normalizedOld[index];
+
+    // Compare key fields
+    const fields: (keyof TicketTypeWithOrders)[] = [
+      'pendingOrders',
+      'completedOrders',
+    ];
+
+    fields.forEach((field) => {
+      if (newItem[field] !== oldItem[field]) {
+        differences.push(
+          `Mismatch for ticket ${newItem.id} - ${field}: new (${newItem[field]}) vs old (${oldItem[field]})`
+        );
+      }
+    });
+  });
+
+  return {
+    isMatch: differences.length === 0,
+    differences,
+  };
+}
+
+async function getTicketTypesForCheckout(
+  request: VercelRequest,
+  response: VercelResponse
+) {
   const eventId = request.query.eventId as string;
 
-  // await prismaClient.orders.updateMany({
-  //   where: {
-  //     eventId: eventId,
-  //     status: OrderStatus.PENDING,
-  //     // cardLast4: '4242'
-  //   },
-  //   data: {
-  //     status: OrderStatus.CANCELLED
-  //   }
-  // })
-
   try {
+    // Get results from new implementation
+    const newQuery = await getEventTicketStats(eventId);
+    const newResult = newQuery.map((ticketType) => ({
+      ...ticketType,
+      pendingOrders: ticketType.tickets.length,
+      completedOrders: ticketType._count.tickets,
+    }));
+
+    // Get results from old implementation
     const ticketTypes = await prismaClient.ticketTypes.findMany({
-      where: {
-        eventId: eventId,
-      },
-      orderBy: {
-        price: 'asc'
-      }
+      where: { eventId },
+      orderBy: { price: 'asc' },
     });
 
     const orders = await prismaClient.orders.findMany({
@@ -76,12 +165,12 @@ async function getTicketTypesForCheckout(request: VercelRequest, response: Verce
         eventId: eventId,
         OR: [
           {
-            status: OrderStatus.COMPLETED
+            status: OrderStatus.COMPLETED,
           },
           {
-            status: OrderStatus.PENDING
-          }
-        ]
+            status: OrderStatus.PENDING,
+          },
+        ],
       },
       include: {
         tickets: {
@@ -93,13 +182,16 @@ async function getTicketTypesForCheckout(request: VercelRequest, response: Verce
     });
 
     const ticketMap = new Map<string, Map<OrderStatus, number>>();
-    orders.forEach(order => {
-      order.tickets.forEach(ticket => {
+    orders.forEach((order) => {
+      order.tickets.forEach((ticket) => {
         const ticketType = ticket.ticketType;
         const ticketTypeId = ticketType?.id as string;
 
         if (ticketMap.has(ticketTypeId)) {
-          const currentTicketMap = ticketMap.get(ticketTypeId) as Map<OrderStatus, number>;
+          const currentTicketMap = ticketMap.get(ticketTypeId) as Map<
+            OrderStatus,
+            number
+          >;
 
           if (currentTicketMap?.has(order.status)) {
             const statusCount = currentTicketMap.get(order.status) as number;
@@ -109,7 +201,6 @@ async function getTicketTypesForCheckout(request: VercelRequest, response: Verce
             currentTicketMap.set(order.status, 1);
             ticketMap.set(ticketTypeId, currentTicketMap);
           }
-
         } else {
           const map = new Map<OrderStatus, number>();
           map.set(order.status, 1);
@@ -118,22 +209,32 @@ async function getTicketTypesForCheckout(request: VercelRequest, response: Verce
       });
     });
 
-    const ticketTypesWithOrderStatus = ticketTypes.map(ticketType => {
+    const ticketTypesWithOrderStatus = ticketTypes.map((ticketType) => {
       const orderStatusMap = ticketMap.get(ticketType.id);
-
       return {
         ...ticketType,
         pendingOrders: orderStatusMap?.get(OrderStatus.PENDING) ?? 0,
-        completedOrders: orderStatusMap?.get(OrderStatus.COMPLETED) ?? 0
-      }
+        completedOrders: orderStatusMap?.get(OrderStatus.COMPLETED) ?? 0,
+      };
     });
+
+    // Compare implementations
+    const comparison = compareTicketResults(
+      newResult.map(({ tickets, _count, ...rest }) => rest), // Remove internal fields
+      ticketTypesWithOrderStatus
+    );
+
+    if (!comparison.isMatch) {
+      console.error('Implementation mismatch detected:');
+      comparison.differences.forEach((diff) => console.error(diff));
+    } else {
+      console.log('Implementations match exactly');
+    }
 
     return response.status(200).json(ticketTypesWithOrderStatus);
   } catch (error) {
     console.error('Request error', error);
-    return response
-      .status(500)
-      .json({ error: 'Error fetching ticket types' });
+    return response.status(500).json({ error: 'Error fetching ticket types' });
   }
 }
 
@@ -176,7 +277,6 @@ async function createTicket(body, response) {
   }
 }
 
-
 async function updateTicket(body, response) {
   if (body === undefined || body.ticketType === undefined) {
     return response.status(500).json({ error: 'No body found in PUT request' });
@@ -202,4 +302,4 @@ async function updateTicket(body, response) {
   }
 }
 
-async function scanTicket() { }
+async function scanTicket() {}

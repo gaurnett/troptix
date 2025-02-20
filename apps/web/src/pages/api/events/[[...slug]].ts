@@ -4,7 +4,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 export interface FetchEventOptions {
   userId?: string; // Fetch events viewable by the user
-  organizerId?: string; // Fetch events by organizerId
+  byOrganizerId?: boolean; // Fetch events by organizerId
   scanable?: boolean; // Fetch events that are scannable by the user
 }
 
@@ -46,9 +46,8 @@ export default async function handler(
           break;
         case 'POST':
           // Create a new event
-          const event = { ...req.body };
-
-          const createdEvent = await createEvent(event);
+          const parsedEvent = parseEventForCreateRequest(req.body);
+          const createdEvent = await createEvent(parsedEvent);
           res.status(201).json(createdEvent);
           break;
         default:
@@ -66,7 +65,8 @@ export default async function handler(
 
         case 'PUT':
           // Update event by id
-          const updatedEvent = await updateEvent(id, req.body);
+          const parsedEvent = parseEventForUpdateRequest(req.body);
+          const updatedEvent = await updateEvent(id, parsedEvent);
           res.status(200).json(updatedEvent);
           break;
 
@@ -107,6 +107,7 @@ async function updateEvent(eventId: string, event: Prisma.EventsUpdateInput) {
     });
     return updatedEvent;
   } catch (e: any) {
+    console.log('Error updating event: ' + e);
     throw new Error(e);
   }
 }
@@ -124,8 +125,9 @@ async function deleteEvent(eventId: string) {
 }
 // Fetch events by organizerId or all events depending on the options provided
 async function getEvents(options: FetchEventOptions) {
-  if (options.organizerId) {
-    return getEventsByOrganizerIdQuery(options.organizerId, options.scanable);
+  if (options.byOrganizerId && options.userId) {
+    console.log('getEventsByOrganizerIdQuery: ' + options.userId);
+    return getEventsByOrganizerIdQuery(options.userId, options.scanable);
   } else {
     return getAllEvents(options.userId);
   }
@@ -144,10 +146,10 @@ async function getAllEvents(userId?: string) {
         },
       },
     });
-    console.log("Hello World: " + events);
+    console.log('Hello World: ' + events);
     return events;
   } catch (e: any) {
-    console.log("Hello World: " + e);
+    console.log('Hello World: ' + e);
     throw new Error(e);
   }
 }
@@ -171,11 +173,11 @@ async function getEventsByOrganizerIdQuery(userId: string, scanable?: boolean) {
       // Fetch events that are scannable by the user if scanable is true, else fetch all events the user owns
       ...(scanable
         ? {
-          OR: [
-            { delegatedAccess: DelegatedAccess.OWNER },
-            { delegatedAccess: DelegatedAccess.TICKET_SCANNER },
-          ],
-        }
+            OR: [
+              { delegatedAccess: DelegatedAccess.OWNER },
+              { delegatedAccess: DelegatedAccess.TICKET_SCANNER },
+            ],
+          }
         : { delegatedAccess: DelegatedAccess.OWNER }),
     },
   });
@@ -206,3 +208,78 @@ async function getEventById(eventId: string) {
     throw new Error(e);
   }
 }
+
+interface EventRequestBody {
+  imageUrl?: string;
+  isDraft?: boolean;
+  name: string;
+  description: string;
+  summary: string;
+  organizer: string;
+  organizerUserId: string;
+  endDate: Date;
+  startDate: Date;
+  venue: string;
+  address: string;
+  countryCode: string;
+  latitude: number;
+  longitude: number;
+  country: string;
+}
+
+interface CreateEventRequest {
+  id: string;
+  name: string;
+  description: string;
+  organizer: string;
+  organizerUserId: string;
+  endDate: Date;
+  startDate: Date;
+  venue: string;
+  address: string;
+  countryCode: string;
+  latitude: number;
+  longitude: number;
+  country: string;
+}
+export const parseEventForCreateRequest = (
+  event: CreateEventRequest
+): Prisma.EventsCreateInput => {
+  return {
+    id: event.id,
+    name: event.name,
+    description: event.description,
+    organizer: event.organizer,
+    organizerUserId: event.organizerUserId,
+    endDate: event.endDate,
+    startDate: event.startDate,
+    venue: event.venue,
+    address: event.address,
+    countryCode: event.countryCode,
+    latitude: event.latitude,
+    longitude: event.longitude,
+    country: event.country,
+  };
+};
+
+export const parseEventForUpdateRequest = (
+  event: Record<string, any>
+): EventRequestBody => {
+  return {
+    imageUrl: event.imageUrl,
+    isDraft: event.isDraft,
+    name: event.name,
+    description: event.description,
+    summary: event.summary,
+    organizer: event.organizer,
+    organizerUserId: event.organizerUserId,
+    endDate: event.endDate,
+    startDate: event.startDate,
+    venue: event.venue,
+    address: event.address,
+    countryCode: event.country_code,
+    latitude: event.latitude,
+    longitude: event.longitude,
+    country: event.country,
+  };
+};

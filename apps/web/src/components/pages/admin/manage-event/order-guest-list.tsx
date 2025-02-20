@@ -104,7 +104,7 @@ export default function OrderGuestListPage({ orders }) {
     const request: PostTicketRequest = {
       type: PostTicketType.UPDATE_STATUS,
       ticket: updatedTicket,
-      jwtToken: user.jwtToken
+      jwtToken: user.jwtToken,
     };
 
     createTicket.mutate(request, {
