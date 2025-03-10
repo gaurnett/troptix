@@ -1,12 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { allowCors } from '@/server/lib/auth';
-import { sendEmailToUser } from '@/server/lib/emailHelper';
-import {
-  getBuffer,
-  updateSuccessfulOrder,
-  updateTicketTypeQuantitySold,
-} from '@/server/lib/orderHelper';
 import prisma from '@/server/prisma';
 
 const secretKey = process.env.STRIPE_SECRET_KEY as string;
@@ -14,10 +8,9 @@ const stripe = new Stripe(secretKey, {
   // @ts-ignore
   apiVersion: '2023-08-16',
 });
-const endpointSecret = process.env.STRIPE_CHARGE_SUCCEEDED_WEBHOOK;
 
 async function handler(request: VercelRequest, response: VercelResponse) {
-  const { body, method } = request;
+  const { method } = request;
 
   if (method === undefined) {
     return response
@@ -38,7 +31,7 @@ async function handler(request: VercelRequest, response: VercelResponse) {
 export default allowCors(handler);
 
 async function postOrders(request, response) {
-  const { body, headers } = request;
+  const { body } = request;
 
   if (body === undefined || body.type === undefined) {
     return response
@@ -51,10 +44,6 @@ async function postOrders(request, response) {
   switch (String(postOrderType)) {
     case 'CREATE_CHARGE':
       return createCharge(body, response);
-    case 'payment_intent.succeeded':
-      return stripePaymentIntentSucceeded(body, headers, request, response);
-    case 'payment_intent.payment_failed':
-      return stripePaymentIntentFailed(body, headers, request, response);
     default:
       return response.status(500).json({ error: 'No post order type set' });
   }
@@ -85,7 +74,7 @@ async function createCharge(body, response) {
         },
       });
 
-      if (!user.stripeId) {
+      if (!user?.stripeId) {
         const customer = await stripe.customers.create({
           name: charge?.name,
           email: charge?.email,
@@ -120,144 +109,15 @@ async function createCharge(body, response) {
       },
     });
 
-    response.json({
+    return response.status(200).json({
       paymentId: paymentIntent.id,
       clientSecret: paymentIntent.client_secret,
       ephemeralKey: ephemeralKey.secret,
       customerId: customerId,
     });
   } catch (error) {
-    console.log(error);
+    console.log('ERROR in createCharge:', error);
+    console.log('Error details:', JSON.stringify(error, null, 2));
     return response.status(500).json({ error: error });
-  }
-}
-
-async function stripePaymentIntentFailed(body, headers, request, response) {
-  console.log(body);
-
-  return response.status(200).json({ message: 'Payment intent failed' });
-}
-
-async function stripePaymentIntentSucceeded(body, headers, request, response) {
-  let event = body;
-  if (endpointSecret) {
-    const signature = headers['stripe-signature'];
-    const buf = await getBuffer(request);
-    try {
-      event = stripe.webhooks.constructEvent(buf, signature, endpointSecret);
-    } catch (err: any) {
-      console.log(`⚠️  Webhook signature verification failed.`, err.message);
-      return response.status(400).json({ error: 'Web failed: ' + err.message });
-    }
-  }
-
-  const data = event.data.object;
-
-  const paymentMethod = await stripe.paymentMethods.retrieve(
-    data.payment_method
-  );
-
-  // Handle the event
-  switch (event.type) {
-    case 'payment_intent.succeeded':
-      const paymentIntent = event.data.object;
-      console.log(
-        `Payment intent attached for ${paymentIntent.id} ${paymentIntent.amount} was successful!`
-      );
-      return updateOrderAfterPaymentSucceeds(
-        paymentIntent.id,
-        paymentMethod,
-        response
-      );
-    case 'payment_method.failed':
-      const paymentFailed = event.data.object;
-      console.log(
-        `attached for ${paymentFailed.id} ${paymentFailed.amount} was successful!`
-      );
-      break;
-    case 'payment_method.canceled':
-      const paymentCanceled = event.data.object;
-      console.log(
-        `attached for ${paymentMethod.id} ${paymentCanceled.amount} was successful!`
-      );
-      break;
-    case 'charge.succeeded':
-      const chargeSucceeded = event.data.object;
-      console.log(
-        `Charge succeeded for ${chargeSucceeded.id} ${chargeSucceeded.amount} was successful!`
-      );
-      break;
-    default:
-      console.log(`Unhandled event type ${event.type}`);
-  }
-
-  // Return a 200 response to acknowledge receipt of the event
-  response
-    .status(200)
-    .json({ message: 'Payment succeeded and tickets added to database' });
-}
-
-async function updateOrderAfterPaymentSucceeds(id, paymentMethod, response) {
-  try {
-    await prisma.orders.update({
-      where: {
-        stripePaymentId: id,
-      },
-      data: updateSuccessfulOrder(paymentMethod),
-      include: {
-        tickets: true,
-      },
-    });
-
-    const order = await prisma.orders.findUnique({
-      where: {
-        stripePaymentId: id,
-      },
-      include: {
-        tickets: {
-          include: {
-            ticketType: true,
-          },
-        },
-        event: true,
-      },
-    });
-
-    const orderMap = new Map();
-    order.tickets.forEach((ticket) => {
-      const ticketId = ticket.ticketType.id;
-      if (orderMap.has(ticketId)) {
-        const order = orderMap.get(ticketId);
-        orderMap.set(ticketId, {
-          ...order,
-          ticketQuantity: order.ticketQuantity + 1,
-          ticketTotalPaid: order.ticketTotalPaid + ticket.total,
-        });
-      } else {
-        orderMap.set(ticketId, {
-          ticketQuantity: 1,
-          ticketName: ticket.ticketType.name,
-          ticketTotalPaid: ticket.total,
-        });
-      }
-    });
-
-    for (const [key, value] of Array.from(orderMap.entries())) {
-      const updatedTicket = await prisma.ticketTypes.update({
-        where: {
-          id: key,
-        },
-        data: updateTicketTypeQuantitySold(value.ticketQuantity),
-      });
-    }
-
-    const mailResponse = await sendEmailToUser(order, orderMap);
-
-    console.log('mail response: ' + JSON.stringify(mailResponse));
-
-    return response.status(200).json({ message: 'Updated order successfully' });
-  } catch (e) {
-    console.log('Error: ' + e);
-    return response.status(500).json({ error: 'Error fetching posts' });
   }
 }
