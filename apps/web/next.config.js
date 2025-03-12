@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: '/.well-known/vercel/flags',
+        destination: '/api/vercel/flags',
+      },
+    ];
+  },
+
   experimental: {
     externalDir: true,
   },
@@ -46,5 +55,5 @@ const nextConfig = {
     'rc-util',
   ],
 };
-
-module.exports = nextConfig;
+const withVercelToolbar = require('@vercel/toolbar/plugins/next')();
+module.exports = withVercelToolbar(nextConfig);
