@@ -1,5 +1,5 @@
 'use client';
-
+import { VercelToolbar } from '@vercel/toolbar/next';
 import WebNavigator from '@/components/WebNavigator';
 import { MetaHead } from '@/components/utils/MetaHead';
 import '@/styles/globals.css';
@@ -13,6 +13,7 @@ import { withRouter } from 'next/router';
 
 function App({ Component, pageProps, router }: AppProps) {
   const queryClient = new QueryClient();
+  const shouldInjectToolbar = process.env.NODE_ENV === 'development';
 
   return (
     <ConfigProvider
@@ -46,6 +47,7 @@ function App({ Component, pageProps, router }: AppProps) {
               Component={Component}
               router={router}
             />
+            {shouldInjectToolbar && <VercelToolbar />}
           </QueryClientProvider>
         </>
       </ErrorBoundary>
