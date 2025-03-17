@@ -1,9 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { getFormattedCurrency } from '@/lib/utils';
-import { ShoppingCartOutlined } from '@ant-design/icons';
-import { Drawer, List, Steps } from 'antd';
+import { ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
 import { CheckoutContainer } from './CheckoutContainer';
+import { CheckoutSteps } from '@/components/pages/event/checkout-steps';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
 export default function TicketDrawer({
   event,
@@ -31,196 +37,170 @@ export default function TicketDrawer({
         renderCheckoutStep,
       }) => (
         <>
-          <Drawer
-            title="Ticket Checkout"
-            closable={true}
-            open={isTicketModalOpen}
-            onClose={handleCancel}
-            width={900}
-            styles={{ body: { padding: '0' } }}
-          >
-            <div className="w-full h-full flex flex-col">
-              <div className="w-full sticky top-0 bg-white mx-auto mb-8 px-6 pt-6">
-                <Steps
-                  responsive={false}
-                  current={current}
-                  items={[
-                    {
-                      title: 'Tickets',
-                    },
-                    {
-                      title: 'Checkout',
-                    },
-                  ]}
-                />
-              </div>
-              <div className="flex-1 overflow-y-auto px-4">
-                {renderCheckoutStep()}
-              </div>
-              <footer className="border-t border-gray-200 px-6 pb-6">
-                <div className="flex mt-4">
-                  <div className="text-xl mr-2">
-                    {getFormattedCurrency(checkout.total)}
-                  </div>
-                  <div>
-                    <Button
-                      onClick={() => setSummaryDrawerOpen(true)}
-                      variant={'ghost'}
-                      className="text-blue-500"
-                    >
-                      Order Summary
-                    </Button>
-                  </div>
+          <Sheet open={isTicketModalOpen} onOpenChange={handleCancel}>
+            <SheetContent
+              side="right"
+              className="w-full sm:w-[540px] md:w-[680px] lg:w-[900px] p-0"
+            >
+              <div className="w-full h-full flex flex-col">
+                <SheetHeader className="px-4 sm:px-6 pt-6">
+                  <SheetTitle>Ticket Checkout</SheetTitle>
+                </SheetHeader>
+                <div className="w-full sticky top-0 bg-background mx-auto mb-6 sm:mb-8 px-4 sm:px-6 pt-6">
+                  <CheckoutSteps
+                    current={current}
+                    steps={[{ title: 'Tickets' }, { title: 'Checkout' }]}
+                  />
                 </div>
-                <div className="flex flex-end content-end items-end self-end mt-4">
-                  {current === 0 && (
-                    <Button
-                      onClick={handleNext}
-                      className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
-                    >
-                      Continue
-                    </Button>
-                  )}
-                  {current === 1 && (
-                    <div className="flex w-full">
+                <div className="flex-1 overflow-y-auto px-4 sm:px-6">
+                  {renderCheckoutStep()}
+                </div>
+                <footer className="border-t border-border px-4 sm:px-6 pb-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center mt-4 gap-2">
+                    <div className="text-xl">
+                      {getFormattedCurrency(checkout.total)}
+                    </div>
+                    <div className="sm:ml-2">
                       <Button
-                        onClick={handleCompleteStripePayment}
-                        disabled={!clientSecret}
-                        className="ml-2 w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
-                      >
-                        Complete Purchase
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </footer>
-            </div>
-          </Drawer>
-
-          <Drawer
-            title="Order Summary"
-            closable={true}
-            open={summaryDrawerOpen}
-            onClose={closeSummary}
-            width={900}
-          >
-            <div className="w-full h-full flex flex-col">
-              <div className="flex-1 overflow-y-auto">
-                <div>
-                  {checkout.tickets.size === 0 ? (
-                    <div className="mx-auto my-auto w-full text-center justify-center items-center">
-                      <ShoppingCartOutlined className="text-4xl my-auto mx-auto mt-2" />
-                      <div className="text-xl font-bold">Cart is empty</div>
-                    </div>
-                  ) : (
-                    <div>
-                      <h2
-                        className="text-xl font-bold leading-tighter tracking-tighter mb-4"
-                        data-aos="zoom-y-out"
+                        onClick={() => setSummaryDrawerOpen(true)}
+                        variant="ghost"
+                        className="text-primary w-full sm:w-auto"
                       >
                         Order Summary
-                      </h2>
-                      <List
-                        itemLayout="vertical"
-                        size="large"
-                        dataSource={Array.from(checkout.tickets.keys())}
-                        split={false}
-                        renderItem={(id: any, index: number) => {
-                          const summary = checkout.tickets.get(id);
-                          let subtotal = 0;
-                          let quantitySelected = 0;
-                          if (summary?.subtotal) {
-                            subtotal = summary.subtotal;
-                          }
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex flex-end content-end items-end self-end mt-4">
+                    {current === 0 && (
+                      <Button
+                        onClick={handleNext}
+                        className="w-full px-4 sm:px-6 py-4 sm:py-6 shadow-md items-center justify-center font-medium inline-flex"
+                      >
+                        Continue
+                      </Button>
+                    )}
+                    {current === 1 && (
+                      <div className="flex w-full">
+                        <Button
+                          onClick={handleCompleteStripePayment}
+                          disabled={!clientSecret}
+                          className="w-full px-4 sm:px-6 py-4 sm:py-6 shadow-md items-center justify-center font-medium inline-flex"
+                        >
+                          Complete Purchase
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </footer>
+              </div>
+            </SheetContent>
+          </Sheet>
 
-                          if (summary?.quantitySelected) {
-                            quantitySelected = summary.quantitySelected;
-                          }
-                          return (
-                            <List.Item className="mb-4" style={{ padding: 0 }}>
-                              <div className="w-full flex my-4">
+          <Sheet open={summaryDrawerOpen} onOpenChange={closeSummary}>
+            <SheetContent side="right" className="w-full p-0">
+              <div className="w-full h-full flex flex-col">
+                <SheetHeader className="px-4 sm:px-6 pt-6">
+                  <SheetTitle>Order Summary</SheetTitle>
+                </SheetHeader>
+                <div className="flex-1 overflow-y-auto px-4 sm:px-6">
+                  <div className="py-4">
+                    {checkout.tickets.size === 0 ? (
+                      <div className="mx-auto my-auto w-full text-center justify-center items-center">
+                        <ShoppingCart className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mt-2" />
+                        <div className="text-lg sm:text-xl font-bold">
+                          Cart is empty
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <h2
+                          className="text-lg sm:text-xl font-bold leading-tighter tracking-tighter mb-4"
+                          data-aos="zoom-y-out"
+                        >
+                          Order Summary
+                        </h2>
+                        <div className="space-y-3 sm:space-y-4">
+                          {Array.from(checkout.tickets.keys()).map((id) => {
+                            const summary = checkout.tickets.get(id);
+                            const subtotal = summary?.subtotal ?? 0;
+                            const quantitySelected =
+                              summary?.quantitySelected ?? 0;
+
+                            return (
+                              <div
+                                key={id}
+                                className="w-full flex items-center"
+                              >
                                 <div className="grow">
-                                  <div className="text-base">
+                                  <div className="text-sm sm:text-base">
                                     {summary?.quantitySelected} x{' '}
                                     {summary?.name}
                                   </div>
                                 </div>
                                 <div className="ml-4">
-                                  <div className="ml-4">
-                                    <div className="text-base text-end">
-                                      {getFormattedCurrency(
-                                        subtotal * quantitySelected
-                                      )}
-                                    </div>
+                                  <div className="text-sm sm:text-base text-end">
+                                    {getFormattedCurrency(
+                                      subtotal * quantitySelected
+                                    )}
                                   </div>
                                 </div>
                               </div>
-                            </List.Item>
-                          );
-                        }}
-                      />
-
-                      <div
-                        style={{
-                          flex: 1,
-                          height: 1,
-                          backgroundColor: '#D3D3D3',
-                        }}
-                      />
-
-                      <div className="w-full flex my-4">
-                        <div className="grow">
-                          <div className="text-base">Subtotal:</div>
-                          <div className="text-base">Taxes & Fees:</div>
+                            );
+                          })}
                         </div>
-                        <div className="ml-4">
-                          <div className="ml-4">
-                            <div className="text-base text-end">
+
+                        <div className="h-px bg-border my-4 sm:my-6" />
+
+                        <div className="w-full flex items-center my-3 sm:my-4">
+                          <div className="grow space-y-2">
+                            <div className="text-sm sm:text-base">
+                              Subtotal:
+                            </div>
+                            <div className="text-sm sm:text-base">
+                              Taxes & Fees:
+                            </div>
+                          </div>
+                          <div className="ml-4 space-y-2">
+                            <div className="text-sm sm:text-base text-end">
                               {getFormattedCurrency(checkout.subtotal)}
                             </div>
-                            <div className="text-base text-end">
+                            <div className="text-sm sm:text-base text-end">
                               {getFormattedCurrency(checkout.fees)}
                             </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div
-                        style={{
-                          flex: 1,
-                          height: 1,
-                          backgroundColor: '#D3D3D3',
-                        }}
-                      />
+                        <div className="h-px bg-border my-4 sm:my-6" />
 
-                      <div className="w-full flex my-4">
-                        <div className="grow">
-                          <div className="text-2xl font-bold">Total:</div>
-                        </div>
-                        <div className="ml-4">
+                        <div className="w-full flex items-center">
+                          <div className="grow">
+                            <div className="text-xl sm:text-2xl font-bold">
+                              Total:
+                            </div>
+                          </div>
                           <div className="ml-4">
-                            <div className="text-2xl font-bold">
+                            <div className="text-xl sm:text-2xl font-bold text-end">
                               {getFormattedCurrency(checkout.total)} USD
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
+                <footer className="border-t border-border mt-auto">
+                  <div className="p-4 sm:p-6">
+                    <Button
+                      onClick={closeSummary}
+                      className="w-full px-4 sm:px-6 py-4 sm:py-6 shadow-md items-center justify-center font-medium inline-flex"
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </footer>
               </div>
-              <footer className="border-t border-gray-200">
-                <div className="flex flex-end content-end items-end self-end mt-4">
-                  <Button
-                    onClick={closeSummary}
-                    className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
-                  >
-                    Close
-                  </Button>
-                </div>
-              </footer>
-            </div>
-          </Drawer>
+            </SheetContent>
+          </Sheet>
         </>
       )}
     </CheckoutContainer>

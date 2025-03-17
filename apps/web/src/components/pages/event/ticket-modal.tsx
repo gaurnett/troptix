@@ -6,10 +6,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { getFormattedCurrency } from '@/lib/utils';
-import { ShoppingCartOutlined } from '@ant-design/icons';
-import { List, Steps } from 'antd';
+import { ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 import { CheckoutContainer } from './CheckoutContainer';
+import { CheckoutSteps } from '@/components/pages/event/checkout-steps';
 
 export default function TicketModal({
   event,
@@ -44,16 +44,9 @@ export default function TicketModal({
                 <div className="w-4/6 grow">
                   <div className="flex flex-col h-full px-4">
                     <div className="w-3/4 md:mx-auto mb-6">
-                      <Steps
+                      <CheckoutSteps
                         current={current}
-                        items={[
-                          {
-                            title: 'Tickets',
-                          },
-                          {
-                            title: 'Checkout',
-                          },
-                        ]}
+                        steps={[{ title: 'Tickets' }, { title: 'Checkout' }]}
                       />
                     </div>
 
@@ -105,7 +98,7 @@ export default function TicketModal({
                     <div className="mb-4 md:mt-4 md:mb-8 my-auto w-full">
                       {checkout.tickets.size === 0 ? (
                         <div className="mx-auto my-auto w-full text-center justify-center align-center">
-                          <ShoppingCartOutlined className="text-3xl mx-auto mt-2" />
+                          <ShoppingCart className="w-8 h-8 mx-auto mt-2" />
                           <div className="text-base">Cart is empty</div>
                         </div>
                       ) : (
@@ -116,53 +109,36 @@ export default function TicketModal({
                           >
                             Order Summary
                           </h2>
-                          <List
-                            itemLayout="vertical"
-                            size="large"
-                            dataSource={Array.from(checkout.tickets?.keys())}
-                            split={false}
-                            renderItem={(id: any, index: number) => {
+                          <div className="space-y-4">
+                            {Array.from(checkout.tickets?.keys()).map((id) => {
                               const summary = checkout.tickets.get(id);
-                              let subtotal = 0;
-                              let quantitySelected = 0;
-                              if (summary?.subtotal) {
-                                subtotal = summary.subtotal;
-                              }
+                              const subtotal = summary?.subtotal ?? 0;
+                              const quantitySelected =
+                                summary?.quantitySelected ?? 0;
 
-                              if (summary?.quantitySelected) {
-                                quantitySelected = summary.quantitySelected;
-                              }
                               return (
-                                <List.Item style={{ padding: 0 }}>
-                                  <div className="w-full flex my-4">
-                                    <div className="grow">
-                                      <div className="text-sm">
-                                        {summary?.quantitySelected} x{' '}
-                                        {summary?.name}
-                                      </div>
+                                <div key={id} className="w-full flex my-4">
+                                  <div className="grow">
+                                    <div className="text-sm">
+                                      {summary?.quantitySelected} x{' '}
+                                      {summary?.name}
                                     </div>
+                                  </div>
+                                  <div className="ml-4">
                                     <div className="ml-4">
-                                      <div className="ml-4">
-                                        <div className="text-sm text-end">
-                                          {getFormattedCurrency(
-                                            subtotal * quantitySelected
-                                          )}
-                                        </div>
+                                      <div className="text-sm text-end">
+                                        {getFormattedCurrency(
+                                          subtotal * quantitySelected
+                                        )}
                                       </div>
                                     </div>
                                   </div>
-                                </List.Item>
+                                </div>
                               );
-                            }}
-                          />
+                            })}
+                          </div>
 
-                          <div
-                            style={{
-                              flex: 1,
-                              height: 1,
-                              backgroundColor: '#D3D3D3',
-                            }}
-                          />
+                          <div className="h-px bg-border" />
 
                           <div className="w-full flex my-4">
                             <div className="grow">
@@ -181,13 +157,7 @@ export default function TicketModal({
                             </div>
                           </div>
 
-                          <div
-                            style={{
-                              flex: 1,
-                              height: 1,
-                              backgroundColor: '#D3D3D3',
-                            }}
-                          />
+                          <div className="h-px bg-border" />
 
                           <div className="w-full flex my-4">
                             <div className="grow">
