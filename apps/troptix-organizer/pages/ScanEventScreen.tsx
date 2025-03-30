@@ -1,4 +1,4 @@
-import { BarCodeScanner, BarCodeScannerResult } from 'expo-barcode-scanner';
+import { Camera, CameraView } from 'expo-camera';
 import { Image } from 'expo-image';
 import { useContext, useEffect, useState } from 'react';
 import { Dimensions, StyleSheet } from 'react-native';
@@ -45,7 +45,7 @@ type ToastSettings = {
 export default function ScanEventScreen({ route, navigation }) {
   const { event } = route.params;
   const { user } = useContext(TropTixContext);
-  const [hasPermission, setHasPermission] = useState(null);
+  const [hasPermission, setHasPermission] = useState(false);
   const [scanned, setScanned] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
   const [dialogData, setDialogData] = useState<any>({});
@@ -58,12 +58,10 @@ export default function ScanEventScreen({ route, navigation }) {
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
-    const getBarCodeScannerPermissions = async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
+    (async () => {
+      const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === 'granted');
-    };
-
-    getBarCodeScannerPermissions();
+    })();
   }, []);
 
   useEffect(() => {
@@ -76,12 +74,10 @@ export default function ScanEventScreen({ route, navigation }) {
     return date.toDateString();
   }
 
-  async function handleBarCodeScanned(scanningResult: BarCodeScannerResult) {
+  async function handleBarCodeScanned({ type, data }) {
     if (!scanned) {
-      const { type, data, bounds } = scanningResult;
       setScanned(true);
       setShowToast(true);
-      console.log(data);
       const response = await scanTicket(data);
     }
   }
@@ -262,20 +258,21 @@ export default function ScanEventScreen({ route, navigation }) {
         </Text>
       </View>
       <View>
-        <BarCodeScanner
-          onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          style={{
-            width: finderWidth,
-            height: finderWidth,
-          }}
+        <CameraView
+          style={{ width: finderWidth, height: finderWidth }}
+          mode="picture"
+          facing="back"
+          mute={false}
+          responsiveOrientationWhenOrientationLocked
+          onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
         >
           <BarcodeMask
             width={finderWidth}
             height={finderHeight}
             edgeColor="#62B1F6"
-            showAnimatedLine={false}
+            showAnimatedLine={true}
           />
-        </BarCodeScanner>
+        </CameraView>
       </View>
     </View>
   );

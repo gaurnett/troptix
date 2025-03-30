@@ -28,6 +28,8 @@ export async function eventFetcher({
     url += `&id=${id}`;
   }
 
+  console.log('Hello: ' + url);
+
   return await fetch(url, {
     method: 'GET',
     headers: {
