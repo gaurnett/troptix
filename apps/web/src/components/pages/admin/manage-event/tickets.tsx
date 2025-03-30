@@ -3,67 +3,56 @@ import { TicketFeeStructure, TicketType } from '@/hooks/types/Ticket';
 import { generateId, getFormattedCurrency } from '@/lib/utils';
 import { Button, Drawer, List, Popconfirm, Typography, message } from 'antd';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import {
-  GetTicketTypesType,
-  getTicketTypes,
-  saveTicketType,
-} from 'troptix-api';
+import { useState } from 'react';
 import TicketCompForm from './ticket-comp-form';
 import TicketForm from './ticket-form';
-const { Paragraph } = Typography;
+import {
+  useFetchTicketTypesByEvent,
+  useSaveTicketType,
+} from '@/hooks/useTicketType';
 
 export default function TicketsPage({ event }) {
   const router = useRouter();
-  const eventId = router.query.eventId;
+  const eventId = router.query.eventId as string;
 
   const [messageApi, contextHolder] = message.useMessage();
+  // Drawer state
   const [open, setOpen] = useState(false);
+  // Complementary ticket modal state
   const [compTicketModalOpen, setCompTicketModalOpen] = useState(false);
-  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]);
-  const [selectedTicket, setSelectedTicket] = useState<any>();
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [isFetchingTicketTypes, setIsFetchingTicketTypes] = useState(true);
+  // Selected ticket state
+  const [selectedTicket, setSelectedTicket] = useState<TicketType | null>(null);
 
-  useEffect(() => {
-    async function fetchTicketTypes() {
-      const getTicketTypesRequest: any = {
-        getTicketTypesType: GetTicketTypesType.GET_TICKET_TYPES_BY_EVENT,
-        eventId: eventId,
-      };
+  const {
+    data: ticketTypes = [],
+    isLoading,
+    refetch,
+  } = useFetchTicketTypesByEvent(eventId);
 
-      try {
-        const response = await getTicketTypes(getTicketTypesRequest);
+  const { mutate: saveTicketType, isError } = useSaveTicketType(eventId);
 
-        if (
-          (response.error === undefined || response.error === undefined) &&
-          response.length !== 0
-        ) {
-          setTicketTypes(response);
-        }
-      } catch (error) {}
-      setIsFetchingTicketTypes(false);
-    }
+  // TODO: Refactor to move this into the form component
+  async function saveTicket(ticketType: TicketType | undefined) {
+    if (!ticketType) return;
 
-    fetchTicketTypes();
-  }, [eventId]);
-
-  async function saveTicket() {
     messageApi.open({
       key: 'update-ticket-loading',
       type: 'loading',
       content: 'Updating Ticket..',
       duration: 0,
     });
-
-    const response = await saveTicketType(selectedTicket, selectedIndex !== -1);
+    const editTicketType = ticketType.id !== undefined;
+    const ticketTypeToSave = {
+      ...ticketType,
+      ...(!editTicketType && { id: generateId() }),
+    };
+    saveTicketType({
+      ticketType: ticketTypeToSave,
+      editTicketType: editTicketType,
+    });
 
     messageApi.destroy('update-ticket-loading');
-    if (
-      response === null ||
-      response === undefined ||
-      response.error !== null
-    ) {
+    if (isError) {
       messageApi.open({
         type: 'error',
         content: 'Failed to save ticket, please try again.',
@@ -76,37 +65,21 @@ export default function TicketsPage({ event }) {
       content: 'Successfully saved ticket.',
     });
 
-    if (selectedIndex === -1) {
-      setTicketTypes([...ticketTypes, selectedTicket]);
-    } else {
-      const updatedTickets = ticketTypes.map((ticketType, i) => {
-        if (ticketType.id === selectedTicket.id) {
-          return selectedTicket;
-        } else {
-          return ticketType;
-        }
-      });
-      setTicketTypes(updatedTickets);
-    }
-
+    // Refetch ticket types after saving
+    await refetch();
     setOpen(false);
   }
 
   function deleteTicket(index: number) {
-    let tempTickets = ticketTypes;
-    tempTickets.splice(index, 1);
-    setTicketTypes((previousEvent) => ({ ...previousEvent, tempTickets }));
+    // Implementation will need to be updated to use an API call
+    // and then refetch the data
+    console.warn('Delete functionality needs to be implemented');
   }
 
-  function showDrawer(ticket: any, index: number) {
+  function showDrawer(ticket: TicketType | null) {
     setSelectedTicket(ticket);
-    setSelectedIndex(index);
     setOpen(true);
   }
-
-  const onClose = () => {
-    setOpen(false);
-  };
 
   const closeCompTicketTypeDrawer = () => {
     setCompTicketModalOpen(false);
@@ -116,7 +89,7 @@ export default function TicketsPage({ event }) {
     <div>
       {contextHolder}
       <div className="w-full md:max-w-2xl mr-8">
-        {isFetchingTicketTypes ? (
+        {isLoading ? (
           <div className="mt-4">
             <Spinner text={'Fetching Tickets'} />
           </div>
@@ -137,14 +110,15 @@ export default function TicketsPage({ event }) {
                   const endDate = new Date();
                   endDate.setHours(startDate.getHours() + 4);
                   endDate.setMinutes(0, 0, 0);
+                  // Intialize a new ticket with default values
+                  // ID will be generated when saved
                   const ticket: TicketType = {
-                    id: generateId(),
-                    eventId: eventId as string,
+                    eventId: eventId,
                     saleEndDate: endDate,
                     saleStartDate: startDate,
                     ticketingFees: TicketFeeStructure.PASS_TICKET_FEES,
                   };
-                  showDrawer(ticket, -1);
+                  showDrawer(ticket);
                 }}
                 type="primary"
                 className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
@@ -164,26 +138,24 @@ export default function TicketsPage({ event }) {
                 className="demo-loadmore-list"
                 itemLayout="horizontal"
                 dataSource={ticketTypes}
-                renderItem={(item, index) => (
+                renderItem={(item: TicketType, index) => (
                   <List.Item
                     actions={[
-                      <Button
-                        onClick={() => showDrawer(item, index)}
-                        key="edit"
-                      >
+                      <Button onClick={() => showDrawer(item)} key="edit">
                         Edit
                       </Button>,
-                      <Popconfirm
-                        key="delete"
-                        title="Delete this ticket"
-                        description="Are you sure to delete this ticket?"
-                        className="time-picker-button"
-                        onConfirm={() => deleteTicket(index)}
-                        okText="Yes"
-                        cancelText="No"
-                      >
-                        <Button danger>Delete</Button>
-                      </Popconfirm>,
+                      // TODO: Uncomment this when delete functionality is implemented
+                      // <Popconfirm
+                      //   key="delete"
+                      //   title="Delete this ticket"
+                      //   description="Are you sure to delete this ticket?"
+                      //   className="time-picker-button"
+                      //   onConfirm={() => deleteTicket(index)}
+                      //   okText="Yes"
+                      //   cancelText="No"
+                      // >
+                      //   <Button danger>Delete</Button>
+                      // </Popconfirm>,
                     ]}
                   >
                     <div>
@@ -204,15 +176,22 @@ export default function TicketsPage({ event }) {
         width={500}
         title="Add Ticket"
         placement="right"
-        onClose={onClose}
+        onClose={() => {
+          setOpen(false);
+          setSelectedTicket(null);
+        }}
         open={open}
       >
-        <TicketForm
-          selectedTicket={selectedTicket}
-          setSelectedTicket={setSelectedTicket}
-          saveTicket={saveTicket}
-          onClose={onClose}
-        />
+        {selectedTicket && (
+          <TicketForm
+            selectedTicket={selectedTicket}
+            saveTicket={saveTicket}
+            onClose={() => {
+              setOpen(false);
+              setSelectedTicket(null);
+            }}
+          />
+        )}
       </Drawer>
 
       <Drawer
@@ -225,7 +204,7 @@ export default function TicketsPage({ event }) {
         <TicketCompForm
           ticketTypes={ticketTypes}
           event={event}
-          onClose={onClose}
+          onClose={() => setCompTicketModalOpen(false)}
         />
       </Drawer>
     </div>
