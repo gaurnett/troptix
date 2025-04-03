@@ -5,7 +5,7 @@ export enum TicketStatus {
   AVAILABLE = 'AVAILABLE',
   NOT_AVAILABLE = 'NOT_AVAILABLE',
 }
-
+// TODO: This needs to be renamed to something more descriptive like TicketCostType
 export enum TicketsType {
   FREE = 'FREE',
   PAID = 'PAID',
@@ -45,6 +45,7 @@ export type TicketType = {
   eventId?: string;
   createdAt?: Date;
   updatedAt?: Date;
+  ticketType?: TicketsType;
 
   // Ticket Details
   name?: string;

@@ -293,6 +293,7 @@ async function updateTicket(body, response) {
       where: {
         id: ticketType.id,
       },
+      // TODO: We don't really need this helper functions
       update: getPrismaTicketTypeQuery(ticketType),
       create: getPrismaTicketTypeQuery(ticketType),
     });

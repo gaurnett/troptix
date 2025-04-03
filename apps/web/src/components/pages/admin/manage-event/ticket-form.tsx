@@ -5,7 +5,11 @@ import {
   CustomTextArea,
   CustomTimeField,
 } from '@/components/ui/input';
-import { TicketFeeStructure, TicketType } from '@/hooks/types/Ticket';
+import {
+  TicketsType as TicketCostType,
+  TicketFeeStructure,
+  TicketType,
+} from '@/hooks/types/Ticket';
 import { Button, Checkbox, Form, Select } from 'antd';
 import { useEffect, useState } from 'react';
 
@@ -144,45 +148,72 @@ export default function TicketForm({
         >
           Pricing & Availability
         </h2>
-        <div className="md:flex md:justify-between">
-          <div className="mb-4 md:mr-4 w-full">
-            <CustomNumberInput
-              value={ticketForm?.price}
-              name="price"
-              id="ticket-input-price"
-              label="Ticket Price"
-              placeholder="$130.00"
-              useFormatter={true}
-              handleChange={(value) => handleFormChange('price', value)}
-              required={true}
-            />
-          </div>
-          <div className="mb-4 md:ml-4 w-full">
-            <label
-              className="block text-gray-800 text-sm font-medium mb-1"
-              htmlFor="ticketingFees"
-            >
-              Fee Structure
-            </label>
-            <Select
-              className="sm:w-screen w-full md:w-52 h-12 text-gray-800"
-              id="ticketingFees"
-              defaultValue={TicketFeeStructure.PASS_TICKET_FEES}
-              onChange={(value) => handleFormChange('ticketingFees', value)}
-              value={ticketForm?.ticketingFees}
-              options={[
-                {
-                  label: 'Absorb Ticket Fees',
-                  value: TicketFeeStructure.ABSORB_TICKET_FEES,
-                },
-                {
-                  label: 'Pass Ticket Fees',
-                  value: TicketFeeStructure.PASS_TICKET_FEES,
-                },
-              ]}
-            />
-          </div>
+        <div className="mb-4 w-full">
+          <label
+            className="block text-gray-800 text-sm font-medium mb-1"
+            htmlFor="ticketCostType"
+          >
+            Ticket Cost Type
+          </label>
+          <Select
+            className="sm:w-screen w-full md:w-52 h-12 text-gray-800"
+            id="ticketCostType"
+            defaultValue={TicketCostType.FREE}
+            onChange={(value) => handleFormChange('ticketType', value)}
+            value={ticketForm?.ticketType}
+            options={[
+              {
+                label: 'Free RSVP',
+                value: TicketCostType.FREE,
+              },
+              {
+                label: 'Paid Ticket',
+                value: TicketCostType.PAID,
+              },
+            ]}
+          />
         </div>
+        {ticketForm?.ticketType === TicketCostType.PAID && (
+          <div className="md:flex md:justify-between">
+            <div className="mb-4 md:mr-4 w-full">
+              <CustomNumberInput
+                value={ticketForm?.price}
+                name="price"
+                id="ticket-input-price"
+                label="Ticket Price"
+                placeholder="$130.00"
+                useFormatter={true}
+                handleChange={(value) => handleFormChange('price', value)}
+                required={ticketForm?.ticketType === TicketCostType.PAID}
+              />
+            </div>
+            <div className="mb-4 md:ml-4 w-full">
+              <label
+                className="block text-gray-800 text-sm font-medium mb-1"
+                htmlFor="ticketingFees"
+              >
+                Fee Structure
+              </label>
+              <Select
+                className="sm:w-screen w-full md:w-52 h-12 text-gray-800"
+                id="ticketingFees"
+                defaultValue={TicketFeeStructure.PASS_TICKET_FEES}
+                onChange={(value) => handleFormChange('ticketingFees', value)}
+                value={ticketForm?.ticketingFees}
+                options={[
+                  {
+                    label: 'Absorb Ticket Fees',
+                    value: TicketFeeStructure.ABSORB_TICKET_FEES,
+                  },
+                  {
+                    label: 'Pass Ticket Fees',
+                    value: TicketFeeStructure.PASS_TICKET_FEES,
+                  },
+                ]}
+              />
+            </div>
+          </div>
+        )}
         <div className="md:flex md:justify-between">
           <div className="mb-4 md:mr-4 w-full">
             <CustomNumberInput
