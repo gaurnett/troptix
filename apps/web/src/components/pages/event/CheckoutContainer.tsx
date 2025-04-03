@@ -12,12 +12,15 @@ import { message, notification } from 'antd';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import CheckoutForm from './checkout';
 import TicketsCheckoutForm from './tickets-checkout-forms';
+import { generateId } from '@/lib/utils';
+import { useRouter } from 'next/router';
 
 interface CheckoutContainerProps {
   event: any;
   isOpen: boolean;
   onClose: () => void;
   children: (props: {
+    isFree: boolean;
     current: number;
     checkout: Checkout;
     ticketTypes: TicketType[] | undefined;
@@ -42,7 +45,7 @@ export function CheckoutContainer({
   const { user } = useContext(TropTixContext);
   const [messageApi, contextHolder] = message.useMessage();
   const eventId = event.id;
-
+  const router = useRouter();
   const [checkout, setCheckout] = useState<Checkout>(
     initializeCheckout(user, eventId)
   );
@@ -53,6 +56,7 @@ export function CheckoutContainer({
   const [orderId, setOrderId] = useState('');
   const [clientSecret, setClientSecret] = useState<string>();
   const [promotion, setPromotion] = useState<any>();
+  const isFree = checkout.total === 0 && checkout.tickets.size > 0;
 
   const createPaymentIntent = useCreatePaymentIntent();
   const createOrder = useCreateOrder();
@@ -107,6 +111,30 @@ export function CheckoutContainer({
     );
   }
 
+  async function initializeFreeOrder() {
+    createOrder.mutate(
+      {
+        checkout,
+        paymentId: generateId(),
+        customerId: '',
+        userId: user?.id,
+        jwtToken: user?.jwtToken as string,
+        isFreeOrder: true,
+      },
+      {
+        onSuccess: (data) => {
+          setClientSecret(clientSecret);
+          setOrderId(data as string);
+          router.push(`/orders/order-confirmation?orderId=${data}&isFree`);
+        },
+        onError: (error) => {
+          messageApi.error('There was an error initializing your order');
+          setCurrent(1);
+        },
+      }
+    );
+  }
+
   async function handleNext() {
     if (checkout.email !== checkout.confirmEmail) {
       if (canShowMessage) {
@@ -128,7 +156,7 @@ export function CheckoutContainer({
       return;
     }
 
-    if (checkout.total === 0) {
+    if (checkout.tickets.size === 0) {
       if (canShowMessage) {
         setCanShowMessage(false);
         message
@@ -150,9 +178,14 @@ export function CheckoutContainer({
       checkout: orderCheckout,
       ticketTypes,
     } = await checkOrderValidity(eventId, user?.jwtToken, checkout, promotion);
+    const isOrderFree = Boolean(
+      checkout.total === 0 && valid && checkout.tickets.size > 0
+    );
 
     messageApi.destroy('creating-order-loading');
-    if (valid) {
+    if (isOrderFree) {
+      initializeFreeOrder();
+    } else if (valid) {
       initializeStripeDetails();
       setCurrent(current + 1);
     } else {
@@ -210,6 +243,7 @@ export function CheckoutContainer({
     <>
       {contextHolder}
       {children({
+        isFree,
         current,
         checkout,
         ticketTypes,

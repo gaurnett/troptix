@@ -7,7 +7,7 @@ import { Button, ButtonWithIcon } from '@/components/ui/button';
 import { InputWithLabel } from '@/components/ui/input';
 import { TypographyH3 } from '@/components/ui/typography';
 import { initializeCheckoutTicket } from '@/hooks/types/Checkout';
-import { TicketType } from '@/hooks/types/Ticket';
+import { TicketsType, TicketType } from '@/hooks/types/Ticket';
 import {
   GetPromotionsRequest,
   GetPromotionsType,
@@ -201,12 +201,17 @@ export default function TicketsCheckoutForm({
   }
 
   function updateCost(ticket, reduce = false) {
-    const price = normalizePrice(ticket.price);
-    var ticketSubtotal = checkout.promotionApplied
-      ? getPromotionPrice(price)
-      : price;
+    const price =
+      ticket.ticketType === TicketsType.FREE ? 0 : normalizePrice(ticket.price);
+    var ticketSubtotal =
+      ticket.ticketType === TicketsType.FREE
+        ? 0
+        : checkout.promotionApplied
+          ? getPromotionPrice(price)
+          : price;
     var ticketFees =
-      ticket.ticketingFees === 'PASS_TICKET_FEES'
+      ticket.ticketingFees === 'PASS_TICKET_FEES' ||
+      ticket.ticketType === TicketsType.PAID
         ? calculateFees(ticketSubtotal)
         : 0;
     var ticketTotal = normalizePrice(ticketFees + ticketSubtotal);

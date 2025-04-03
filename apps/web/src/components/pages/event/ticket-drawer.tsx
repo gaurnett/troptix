@@ -23,6 +23,7 @@ export default function TicketDrawer({
       onClose={handleCancel}
     >
       {({
+        isFree,
         current,
         checkout,
         clientSecret,
@@ -78,7 +79,7 @@ export default function TicketDrawer({
                       onClick={handleNext}
                       className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
                     >
-                      Continue
+                      {isFree ? 'RSVP' : 'Continue'}
                     </Button>
                   )}
                   {current === 1 && (
