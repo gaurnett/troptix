@@ -1,5 +1,9 @@
 import { Spinner } from '@/components/ui/spinner';
-import { TicketFeeStructure, TicketType } from '@/hooks/types/Ticket';
+import {
+  TicketFeeStructure,
+  TicketsType,
+  TicketType,
+} from '@/hooks/types/Ticket';
 import { generateId, getFormattedCurrency } from '@/lib/utils';
 import { Button, Drawer, List, Popconfirm, Typography, message } from 'antd';
 import { useRouter } from 'next/router';
@@ -34,6 +38,19 @@ export default function TicketsPage({ event }) {
   // TODO: Refactor to move this into the form component
   async function saveTicket(ticketType: TicketType | undefined) {
     if (!ticketType) return;
+    // TODO: This input validation should be done in the form component but we need to refactor the form component to use the form hook
+    if (
+      ticketType.ticketType === TicketsType.PAID &&
+      ticketType?.price !== undefined &&
+      ticketType?.price <= 0
+    ) {
+      messageApi.open({
+        key: 'update-ticket-loading',
+        type: 'error',
+        content: 'Ticket price must be greater than 0',
+      });
+      return;
+    }
 
     messageApi.open({
       key: 'update-ticket-loading',
@@ -117,6 +134,8 @@ export default function TicketsPage({ event }) {
                     saleEndDate: endDate,
                     saleStartDate: startDate,
                     ticketingFees: TicketFeeStructure.PASS_TICKET_FEES,
+                    ticketType: TicketsType.FREE,
+                    price: 0,
                   };
                   showDrawer(ticket);
                 }}
@@ -161,7 +180,11 @@ export default function TicketsPage({ event }) {
                     <div>
                       <p>{item.name}</p>
                       <div className="text-green-700">
-                        {getFormattedCurrency(item.price)}
+                        {item.ticketType === TicketsType.PAID ? (
+                          getFormattedCurrency(item.price)
+                        ) : (
+                          <span className="text-green-700">Free RSVP</span>
+                        )}
                       </div>
                     </div>
                   </List.Item>

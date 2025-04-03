@@ -136,6 +136,7 @@ export function getPrismaTicketTypeQuery(ticket) {
   ticketInput = {
     id: ticket.id,
     name: ticket.name,
+    ticketType: ticket.ticketType,
     description: ticket.description,
     maxPurchasePerUser: ticket.maxPurchasePerUser,
     quantity: ticket.quantity,
