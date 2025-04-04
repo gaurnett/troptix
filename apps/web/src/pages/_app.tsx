@@ -29,8 +29,7 @@ function App({ Component, pageProps, router }: AppProps) {
   const shouldInjectToolbar = process.env.NODE_ENV === 'development';
   const pathname = usePathname();
 
-  const Layout = pathname.includes('admin') ? AdminLayout : GlobalLayout;
-
+  const Layout = pathname.startsWith('/admin') ? AdminLayout : GlobalLayout;
   return (
     <ConfigProvider
       theme={{
