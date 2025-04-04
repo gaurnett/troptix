@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { updateTicketQuantities } from '@/lib/checkoutHelper';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useContext } from 'react';

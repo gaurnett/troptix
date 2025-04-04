@@ -2,7 +2,7 @@ import { List, Typography, message } from 'antd';
 import { format } from 'date-fns';
 import { useContext, useState } from 'react';
 
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { Button, ButtonWithIcon } from '@/components/ui/button';
 import { InputWithLabel } from '@/components/ui/input';
 import { TypographyH3 } from '@/components/ui/typography';

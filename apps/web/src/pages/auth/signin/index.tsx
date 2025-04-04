@@ -1,6 +1,6 @@
 'use client';
 
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { signInWithEmail, signInWithGoogle } from '@/firebase/auth';
 import { isInputBad, isValidEmail } from '@/lib/utils';
 import { Button, Form, message } from 'antd';

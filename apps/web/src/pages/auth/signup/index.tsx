@@ -5,7 +5,7 @@ export const metadata = {
   description: 'Page description',
 };
 
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { CustomInput } from '@/components/ui/input';
 import { signInWithGoogle, signUpWithEmail } from '@/firebase/auth';
 import { isInputBad, isValidEmail } from '@/lib/utils';

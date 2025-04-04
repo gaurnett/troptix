@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { auth } from '../../config';
-import { TropTixContext } from '../WebNavigator';
+import { TropTixContext } from '../AuthProvider';
 
 export default function MobileMenu() {
   const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);

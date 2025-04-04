@@ -3,9 +3,7 @@
 import { TROPTIX_ORGANIZER_ALLOW_LIST } from '@/firebase/remoteConfig';
 import { User, initializeUser } from '@/hooks/types/User';
 import { cn } from '@/lib/utils';
-import AdminDashboard from '@/pages/admin/AdminDashboard';
 import { LoadingOutlined } from '@ant-design/icons';
-import { Analytics } from '@vercel/analytics/react';
 import { Spin } from 'antd';
 import { onAuthStateChanged } from 'firebase/auth';
 import {
@@ -13,12 +11,10 @@ import {
   getRemoteConfig,
   getValue,
 } from 'firebase/remote-config';
-import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { app, auth } from '../config';
-import Header from './ui/header';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -33,33 +29,19 @@ const emptyUser: User = {
 
 export const TropTixContext = createContext({
   user: emptyUser,
+  loading: true,
 });
 
 export const useTropTixContext = () => useContext(TropTixContext);
 
-export default function WebNavigator({
-  Component,
-  pageProps,
-  router,
-}: AppProps) {
+export default function AuthProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
-  // const router = useRouter();
-
-  useEffect(() => {
-    if (
-      (pathname.includes('admin') || pathname.includes('account')) &&
-      !loading &&
-      !user?.id
-    ) {
-      router.push('/auth/signup');
-    }
-
-    if (pathname.includes('admin') && !loading && user && !user.isOrganizer) {
-      router.push('/');
-    }
-  }, [loading, pathname, router, user]);
 
   useEffect(() => {
     async function isUserAnOrganizer(userId: string) {
@@ -115,6 +97,7 @@ export default function WebNavigator({
     <TropTixContext.Provider
       value={{
         user: user as User,
+        loading,
       }}
     >
       {loading && (pathname === '/' || pathname === '/home') ? (
@@ -135,25 +118,7 @@ export default function WebNavigator({
             className={`${inter.variable} font-inter antialiased text-gray-900 tracking-tight`}
           >
             <div className="flex flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
-              <Analytics />
-              {!pathname.includes('admin') ? (
-                <div>
-                  <Header />
-                  <div className="flex-grow border-x">
-                    <Component {...pageProps} />
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  {user && (
-                    <AdminDashboard
-                      Component={Component}
-                      pageProps={pageProps}
-                      router={router}
-                    />
-                  )}
-                </div>
-              )}
+              {children}
             </div>
           </div>
         </div>

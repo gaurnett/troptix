@@ -20,7 +20,7 @@ import {
 import { usePathname } from 'next/navigation';
 import { AiOutlineHome } from 'react-icons/ai';
 import { auth } from '../../config';
-import { TropTixContext } from '../WebNavigator';
+import { TropTixContext } from '../AuthProvider';
 import AdminMobileMenu from './admin-mobile-menu';
 
 export default function AdminHeader() {

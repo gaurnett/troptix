@@ -1,20 +1,40 @@
 import { Menu } from 'lucide-react';
 import Link from 'next/link';
 
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import AdminSidebar from '@/components/pages/admin/navigation/AdminSidebar';
 import AdminSidebarMobile from '@/components/pages/admin/navigation/AdminSidebarMobile';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps } from 'antd';
-import { AppProps } from 'next/app';
-import { useContext } from 'react';
-import Logo from '../../components/ui/logo';
-import { auth } from '../../config';
-
-export default function AdminDashboard({ Component, pageProps }: AppProps) {
-  const { user } = useContext(TropTixContext);
+import { useContext, useEffect } from 'react';
+import Logo from './ui/logo';
+import { auth } from '../config';
+import { usePathname, useRouter } from 'next/navigation';
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user, loading } = useContext(TropTixContext);
+  const pathname = usePathname();
+  const router = useRouter();
   const logoSize = 40;
+
+  // TODO: This is temporary to simplify the logic in the WebNavigator. Route protection should be checked server side.
+  useEffect(() => {
+    if (
+      (pathname.includes('admin') || pathname.includes('account')) &&
+      !loading &&
+      !user?.id
+    ) {
+      router.push('/auth/signup');
+    }
+
+    if (pathname.includes('admin') && !loading && user && !user.isOrganizer) {
+      router.push('/');
+    }
+  }, [loading, pathname, router, user]);
 
   let items: MenuProps['items'];
 
@@ -83,7 +103,7 @@ export default function AdminDashboard({ Component, pageProps }: AppProps) {
           </div>
         </header>
         <main className="flex flex-1 flex-col gap-4 lg:gap-6 lg:p-6">
-          <Component {...pageProps} />
+          {children}
         </main>
       </div>
     </div>

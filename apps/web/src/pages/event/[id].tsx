@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import TicketDrawer from '@/components/pages/event/ticket-drawer';
 import TicketModal from '@/components/pages/event/ticket-modal';
 import { ButtonWithIcon } from '@/components/ui/button';

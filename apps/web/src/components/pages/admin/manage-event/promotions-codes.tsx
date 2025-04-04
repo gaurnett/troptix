@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { Spinner } from '@/components/ui/spinner';
 import { Promotion, createPromotion } from '@/hooks/types/Promotion';
 import {
