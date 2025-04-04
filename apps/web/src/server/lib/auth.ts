@@ -1,18 +1,8 @@
-import admin from 'firebase-admin';
-import { initializeApp, getApps } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
 import jwt from 'jsonwebtoken';
-
-const serviceAccount = JSON.parse(
-  process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string
-);
-
-// Only initialize if no apps exist
-if (getApps().length === 0) {
-  initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-}
+import { GetServerSidePropsContext } from 'next';
+import { getCookie } from 'cookies-next';
+import admin from './firebaseAdmin';
+import prisma from '@/server/prisma';
 
 export async function verifyUser(request): Promise<any> {
   let token = '';
@@ -28,7 +18,8 @@ export async function verifyUser(request): Promise<any> {
     return undefinedUser;
   }
 
-  return await getAuth()
+  return await admin
+    .auth()
     .verifyIdToken(token)
     .then((decodedToken) => {
       return { userId: decodedToken.uid, email: decodedToken.email };
@@ -37,6 +28,37 @@ export async function verifyUser(request): Promise<any> {
       console.log(error);
       return undefinedUser;
     });
+}
+// This is a helper function to be used with getServerSideProps for routes that require authentication
+export async function requireAuth(
+  ctx: GetServerSidePropsContext,
+  opts = { organizerOnly: false }
+) {
+  const token = await getCookie('fb-token', { req: ctx.req, res: ctx.res });
+  if (!token) {
+    return { redirect: { destination: '/auth/signin', permanent: false } };
+  }
+
+  try {
+    //Gets and verifies the token
+    const decoded = await admin.auth().verifyIdToken(token as string);
+    const uid = decoded.uid;
+    // TODO: We should store a mapping of firebase uid to troptix user id
+    const userRecord = await admin.auth().getUser(uid);
+
+    const user = await prisma.users.findUnique({
+      where: { email: userRecord.email },
+    });
+    if (!user) throw new Error('User not found');
+    // TODO: We should use firebase Custom Claims to check if the user is an organizer (more secure and performant)
+    if (opts.organizerOnly && user.role !== 'ORGANIZER') {
+      return { redirect: { destination: '/', permanent: false } };
+    }
+
+    return { props: { user: { email: user.email, role: user.role } } };
+  } catch (error) {
+    return { redirect: { destination: '/auth/signin', permanent: false } };
+  }
 }
 
 export async function verifyJwtToken(request): Promise<any> {

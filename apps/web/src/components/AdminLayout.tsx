@@ -22,19 +22,6 @@ export default function AdminLayout({
   const logoSize = 40;
 
   // TODO: This is temporary to simplify the logic in the WebNavigator. Route protection should be checked server side.
-  useEffect(() => {
-    if (
-      (pathname.includes('admin') || pathname.includes('account')) &&
-      !loading &&
-      !user?.id
-    ) {
-      router.push('/auth/signup');
-    }
-
-    if (pathname.includes('admin') && !loading && user && !user.isOrganizer) {
-      router.push('/');
-    }
-  }, [loading, pathname, router, user]);
 
   let items: MenuProps['items'];
 
