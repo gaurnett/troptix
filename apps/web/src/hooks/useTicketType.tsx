@@ -1,6 +1,6 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { updateTicketQuantities } from '@/lib/checkoutHelper';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useContext } from 'react';
 import { Checkout } from './types/Checkout';
 import { Promotion } from './types/Promotion';
@@ -141,4 +141,88 @@ export async function getTicketTypes({
     console.error('Error in getTicketTypes:', error);
     throw error;
   }
+}
+
+interface SaveTicketTypeError {
+  message: string;
+  status: number;
+}
+
+export interface SaveTicketTypeResponse {
+  success: boolean;
+  data?: TicketType;
+  error?: SaveTicketTypeError;
+}
+
+export async function saveTicketType(
+  ticketType: Partial<TicketType>,
+  editTicketType: boolean
+): Promise<SaveTicketTypeResponse> {
+  if (!ticketType) {
+    throw new Error('Ticket type is required');
+  }
+
+  const url = '/api/ticketTypes';
+  const method = editTicketType ? 'PUT' : 'POST';
+
+  try {
+    const headers: HeadersInit = {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    };
+
+    const response = await fetch(url, {
+      method,
+      headers,
+      body: JSON.stringify({ ticketType }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        error: {
+          message: data.message || 'Failed to save ticket type',
+          status: response.status,
+        },
+      };
+    }
+
+    return {
+      success: true,
+      data: data as TicketType,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: {
+        message:
+          error instanceof Error ? error.message : 'An unknown error occurred',
+        status: 500,
+      },
+    };
+  }
+}
+
+export function useSaveTicketType(eventId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      ticketType,
+      editTicketType,
+    }: {
+      ticketType: Partial<TicketType>;
+      editTicketType: boolean;
+    }) => saveTicketType(ticketType, editTicketType),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          'order',
+          GetTicketTypesType.GET_TICKET_TYPES_BY_EVENT,
+          eventId,
+        ],
+      });
+    },
+  });
 }

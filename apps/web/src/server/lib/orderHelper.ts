@@ -1,9 +1,4 @@
-import {
-  OrderStatus,
-  Prisma,
-  TicketStatus,
-  TicketType
-} from '@prisma/client';
+import { OrderStatus, Prisma, TicketStatus, TicketType } from '@prisma/client';
 import { buffer } from 'micro';
 
 export const config = {
@@ -51,7 +46,7 @@ export function updateTicketTypeQuantitySold(quantitySold) {
   return ticketTypeUpdate;
 }
 
-export function getPrismaCreateOrderQuery(order) {
+export function getPrismaCreateOrderQuery(order, isFreeOrder = false) {
   let orderInput: Prisma.OrdersCreateInput;
   let orderTickets: Prisma.TicketsCreateManyOrderInput[] = [];
 
@@ -60,11 +55,11 @@ export function getPrismaCreateOrderQuery(order) {
       id: ticket.id,
       eventId: ticket.eventId,
       ticketTypeId: ticket.ticketTypeId,
-      status: TicketStatus.NOT_AVAILABLE,
-      ticketsType: TicketType.PAID,
-      fees: ticket.fees,
-      subtotal: ticket.subtotal,
-      total: ticket.total,
+      status: isFreeOrder ? TicketStatus.AVAILABLE : TicketStatus.NOT_AVAILABLE,
+      ticketsType: isFreeOrder ? TicketType.FREE : TicketType.PAID,
+      fees: isFreeOrder ? 0 : ticket.fees,
+      subtotal: isFreeOrder ? 0 : ticket.subtotal,
+      total: isFreeOrder ? 0 : ticket.total,
       firstName: order.firstName,
       lastName: order.lastName,
       email: order.email,
@@ -87,6 +82,7 @@ export function getPrismaCreateOrderQuery(order) {
     total: order.total,
     fees: order.fees,
     subtotal: order.subtotal,
+    status: isFreeOrder ? OrderStatus.COMPLETED : OrderStatus.PENDING,
     name: order.name,
     firstName: order.firstName,
     lastName: order.lastName,

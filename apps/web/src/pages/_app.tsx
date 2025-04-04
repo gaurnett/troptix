@@ -1,6 +1,6 @@
 'use client';
-
-import WebNavigator from '@/components/WebNavigator';
+import { VercelToolbar } from '@vercel/toolbar/next';
+import AuthProvider from '@/components/AuthProvider';
 import { MetaHead } from '@/components/utils/MetaHead';
 import '@/styles/globals.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,10 +10,26 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { ErrorFallback } from '@/components/utils/ErrorFallback';
 import { ConfigProvider } from 'antd';
 import { withRouter } from 'next/router';
+import AdminLayout from '../components/AdminLayout';
+import Header from '@/components/ui/header';
+import { usePathname } from 'next/navigation';
+import { Analytics } from '@vercel/analytics/react';
+
+function GlobalLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div>
+      <Header />
+      <div className="flex-grow border-x">{children}</div>
+    </div>
+  );
+}
 
 function App({ Component, pageProps, router }: AppProps) {
   const queryClient = new QueryClient();
+  const shouldInjectToolbar = process.env.NODE_ENV === 'development';
+  const pathname = usePathname();
 
+  const Layout = pathname.startsWith('/admin') ? AdminLayout : GlobalLayout;
   return (
     <ConfigProvider
       theme={{
@@ -41,11 +57,13 @@ function App({ Component, pageProps, router }: AppProps) {
           </MetaHead>
 
           <QueryClientProvider client={queryClient}>
-            <WebNavigator
-              pageProps={pageProps}
-              Component={Component}
-              router={router}
-            />
+            <AuthProvider>
+              <Layout>
+                <Analytics />
+                <Component {...pageProps} />
+              </Layout>
+            </AuthProvider>
+            {shouldInjectToolbar && <VercelToolbar />}
           </QueryClientProvider>
         </>
       </ErrorBoundary>

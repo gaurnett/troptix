@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { Spinner } from '@/components/ui/spinner';
 import { GetOrdersType, useFetchOrderById } from '@/hooks/useOrders';
 import { getDateFormatter } from '@/lib/utils';

@@ -1,7 +1,12 @@
+import { exampleFlag } from '@/flags';
+import { getServerSideProps } from '@/pages';
 import { Alert } from 'antd';
+import { InferGetServerSidePropsType } from 'next';
 import Link from 'next/link';
 
-export default function LandingHero() {
+export default function LandingHero({
+  example,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <section className="relative">
       <div
@@ -40,11 +45,13 @@ export default function LandingHero() {
           {/* Section header */}
           <div className="text-center pb-12 md:pb-16">
             <div className="mx-auto w-fit mb-8">
-              <Alert
-                message="TropTix is now in Beta Testing!"
-                className="p-3"
-                type="info"
-              />
+              {example && (
+                <Alert
+                  message="TropTix is now in Beta Testing!"
+                  className="p-3"
+                  type="info"
+                />
+              )}
             </div>
             <h1
               className="text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"

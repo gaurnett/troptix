@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { CustomInput } from '@/components/ui/input';
 import {
   ComplementaryOrder,

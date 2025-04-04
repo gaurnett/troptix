@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { message } from 'antd';
 import { useContext } from 'react';
@@ -24,6 +24,7 @@ export enum PostOrdersType {
   POST_ORDERS_CREATE_CHARGE = 'POST_ORDERS_CREATE_CHARGE',
   POST_ORDERS_CREATE_ORDER = 'POST_ORDERS_CREATE_ORDER',
   POST_ORDERS_CREATE_COMPLEMENTARY_ORDER = 'POST_ORDERS_CREATE_COMPLEMENTARY_ORDER',
+  POST_ORDERS_CREATE_FREE_ORDER = 'POST_ORDERS_CREATE_FREE_ORDER',
 }
 
 export interface PostOrdersRequest {
@@ -136,12 +137,14 @@ export function useCreateOrder() {
       customerId,
       userId,
       jwtToken,
+      isFreeOrder,
     }: {
       checkout: Checkout;
       paymentId: string;
       customerId: string;
       userId: string;
       jwtToken: string;
+      isFreeOrder?: boolean;
     }) => {
       if (!paymentId) {
         message.error(
@@ -152,7 +155,9 @@ export function useCreateOrder() {
       const order = createOrder(checkout, paymentId, customerId, userId);
 
       await postOrders({
-        type: PostOrdersType.POST_ORDERS_CREATE_ORDER,
+        type: isFreeOrder
+          ? PostOrdersType.POST_ORDERS_CREATE_FREE_ORDER
+          : PostOrdersType.POST_ORDERS_CREATE_ORDER,
         order: order,
         jwtToken: jwtToken,
       });

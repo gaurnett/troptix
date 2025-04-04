@@ -13,6 +13,7 @@ export default function OrderConfirmation() {
   const router = useRouter();
   const orderId = router.query.orderId as string;
   const clientSecret = router.query.payment_intent_client_secret as string;
+  const isFree = 'isFree' in router.query;
   const [stripeError, setStripeError] = useState<StripeError>();
   const [fetchingStatus, setFetchingStatus] = useState(true);
 
@@ -27,8 +28,8 @@ export default function OrderConfirmation() {
         return;
       }
 
-      if (!clientSecret) {
-        // router.push('/');
+      if (!clientSecret || isFree) {
+        setFetchingStatus(false);
         return;
       }
 
@@ -41,7 +42,7 @@ export default function OrderConfirmation() {
     }
 
     getStripeStatus();
-  }, [clientSecret, messageApi, router]);
+  }, [clientSecret, messageApi, router, isFree]);
 
   if (fetchingStatus) {
     return (

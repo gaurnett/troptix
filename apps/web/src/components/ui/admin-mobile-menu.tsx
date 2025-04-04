@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { auth } from '../../config';
-import { TropTixContext } from '../WebNavigator';
+import { TropTixContext } from '../AuthProvider';
 
 export default function AdminMobileMenu() {
   const { user } = useContext(TropTixContext);

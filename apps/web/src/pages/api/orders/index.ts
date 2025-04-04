@@ -1,10 +1,14 @@
 import { PrismaClient } from '@prisma/client';
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import { allowCors } from '@/server/lib/auth';
-import { sendComplementaryTicketEmailToUser } from '@/server/lib/emailHelper';
+import {
+  sendComplementaryTicketEmailToUser,
+  sendEmailToUser,
+} from '@/server/lib/emailHelper';
 import {
   getPrismaCreateComplementaryOrderQuery,
   getPrismaCreateOrderQuery,
+  updateTicketTypeQuantitySold,
 } from '@/server/lib/orderHelper';
 import prisma from '@/server/prisma';
 
@@ -62,6 +66,8 @@ async function postOrders(request, response) {
       return createOrder(body, response);
     case 'POST_ORDERS_CREATE_COMPLEMENTARY_ORDER':
       return createComplementaryOrder(body, response);
+    case 'POST_ORDERS_CREATE_FREE_ORDER':
+      return createFreeOrder(body, response);
     default:
       return response.status(500).json({ error: 'No post order type set' });
   }
@@ -139,6 +145,65 @@ async function createComplementaryOrder(body, response) {
     return response
       .status(500)
       .json({ error: 'Error adding complementary order' });
+  }
+}
+
+async function createFreeOrder(body, response) {
+  const order = body.order;
+  // console.log(order);
+
+  if (order === undefined) {
+    return response
+      .status(500)
+      .json({ error: 'No order found in create order request' });
+  }
+
+  try {
+    const prismaOrder = await prisma.orders.create({
+      data: getPrismaCreateOrderQuery(order, true),
+      include: {
+        tickets: {
+          include: {
+            ticketType: true,
+          },
+        },
+        event: true,
+      },
+    });
+
+    const orderMap = new Map();
+    prismaOrder.tickets.forEach((ticket) => {
+      const ticketId = ticket.ticketType.id;
+      if (orderMap.has(ticketId)) {
+        const order = orderMap.get(ticketId);
+        orderMap.set(ticketId, {
+          ...order,
+          ticketQuantity: order.ticketQuantity + 1,
+          ticketTotalPaid: order.ticketTotalPaid + ticket.total,
+        });
+      } else {
+        orderMap.set(ticketId, {
+          ticketQuantity: 1,
+          ticketName: ticket.ticketType.name,
+          ticketTotalPaid: ticket.total,
+        });
+      }
+    });
+
+    for (const [key, value] of Array.from(orderMap)) {
+      await prisma.ticketTypes.update({
+        where: {
+          id: key,
+        },
+        data: updateTicketTypeQuantitySold(value.ticketQuantity),
+      });
+    }
+    const mailResponse = await sendEmailToUser(prismaOrder, orderMap);
+
+    return response.status(200).json(prismaOrder);
+  } catch (e) {
+    console.error('Request error', e);
+    return response.status(500).json({ error: 'Error adding order' });
   }
 }
 

@@ -5,7 +5,7 @@ export const metadata = {
   description: 'Page description',
 };
 
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { resetPassword } from '@/firebase/auth';
 import { Button, Form, message } from 'antd';
 import { useRouter } from 'next/router';

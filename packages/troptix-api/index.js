@@ -24,12 +24,7 @@ import {
   PostOrdersRequest,
   postOrders,
 } from './orders';
-import {
-  saveTicketType,
-  GetTicketTypesType,
-  GetTicketTypesRequest,
-  getTicketTypes,
-} from './ticketTypes';
+
 import {
   addPromotion,
   getPromotions,
@@ -57,10 +52,6 @@ export {
   PutUsersRequest,
   scanTicket,
   getTicketsForUser,
-  saveTicketType,
-  getTicketTypes,
-  GetTicketTypesType,
-  GetTicketTypesRequest,
   addPromotion,
   getPromotions,
   GetPromotionsRequest,
