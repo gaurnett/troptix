@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { Ticket, TicketStatus } from '@/hooks/types/Ticket';
 import {
   PostTicketRequest,

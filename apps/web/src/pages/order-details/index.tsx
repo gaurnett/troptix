@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import EditTicketForm from '@/components/pages/order-details/edit-ticket-form';
 import { Spinner } from '@/components/ui/spinner';
 import { OrderStatus } from '@/hooks/types/Order';

@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { FetchEventOptions } from '@/pages/api/events/[[...slug]]';
 import { Prisma } from '@prisma/client';
 import {

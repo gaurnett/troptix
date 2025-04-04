@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { Button, Drawer, List, Popconfirm, message } from 'antd';
 import { useContext, useState } from 'react';
 import { PutUsersType, putUsers } from 'troptix-api';

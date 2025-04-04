@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import AddEventFormPage from '@/components/pages/admin/add-event/add-event-form';
 import { useContext, useState } from 'react';
 import { Event } from 'troptix-models';

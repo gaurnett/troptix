@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
 import { auth } from '../../config';
-import { TropTixContext } from '../WebNavigator';
+import { TropTixContext } from '../AuthProvider';
 import MobileMenu from './mobile-menu';
 
 export default function Header() {
