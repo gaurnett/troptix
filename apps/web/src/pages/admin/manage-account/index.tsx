@@ -5,6 +5,11 @@ import { Tabs, TabsProps, message } from 'antd';
 import { useEffect, useState } from 'react';
 import AccountDetails from '../../../components/pages/admin/manage-account/account-detail';
 
+import { requireAuth } from '@/server/lib/auth';
+
+export const getServerSideProps = (ctx) =>
+  requireAuth(ctx, { organizerOnly: true });
+
 export default function ManageAccountPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [adminUser, setAdminUser] = useState<any>({});

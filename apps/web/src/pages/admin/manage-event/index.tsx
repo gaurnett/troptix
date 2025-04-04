@@ -16,6 +16,11 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { IoMdArrowRoundBack } from 'react-icons/io';
 
+import { requireAuth } from '@/server/lib/auth';
+
+export const getServerSideProps = (ctx) =>
+  requireAuth(ctx, { organizerOnly: true });
+
 export default function ManageEventPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
