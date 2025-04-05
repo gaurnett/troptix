@@ -13,7 +13,7 @@ export function middleware(req: NextRequest) {
   }
 
   try {
-    // Verfiy that the token is present and logged in but NOT if valid
+    // Verify that the token is present and logged in but NOT if valid
     const decoded = jwt.decode(token || '') as any;
     if (!decoded?.uid) throw new Error('Missing UID');
     return NextResponse.next();
