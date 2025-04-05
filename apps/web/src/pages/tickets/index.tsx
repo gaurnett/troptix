@@ -3,7 +3,6 @@ import { Spinner } from '@/components/ui/spinner';
 import { GetOrdersType, useFetchOrderById } from '@/hooks/useOrders';
 import { getDateFormatter } from '@/lib/utils';
 import { Button, Carousel, Divider, QRCode, Result } from 'antd';
-import JsPDF from 'jspdf';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useRef } from 'react';
@@ -36,19 +35,6 @@ export default function TicketsPage() {
 
   function goBack() {
     carouselRef.current.prev();
-  }
-
-  function saveToPdf() {
-    const element = document.querySelector('#ticket') as HTMLElement;
-
-    if (element === null) {
-      return;
-    } else {
-      const report = new JsPDF('portrait', 'pt', 'letter');
-      report.html(element as HTMLElement).then(() => {
-        report.output('dataurlnewwindow');
-      });
-    }
   }
 
   function renderTicketRow(label, value) {
