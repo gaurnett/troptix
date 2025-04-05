@@ -3,6 +3,10 @@ import Link from 'next/link';
 import * as React from 'react';
 import ManageEventCard from '../../../components/ManageEventCard';
 import { useEvents } from '@/hooks/useEvents';
+import { requireAuth } from '@/server/lib/auth';
+
+export const getServerSideProps = (ctx) =>
+  requireAuth(ctx, { organizerOnly: true });
 
 export default function ManageEventsPage() {
   const { isPending, isError, data } = useEvents({

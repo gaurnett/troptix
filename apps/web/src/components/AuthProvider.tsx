@@ -5,7 +5,7 @@ import { User, initializeUser } from '@/hooks/types/User';
 import { cn } from '@/lib/utils';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onIdTokenChanged } from 'firebase/auth';
 import {
   fetchAndActivate,
   getRemoteConfig,
@@ -15,6 +15,7 @@ import { Inter } from 'next/font/google';
 import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { app, auth } from '../config';
+import Cookies from 'js-cookie';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -72,18 +73,26 @@ export default function AuthProvider({
       return isOrganizer;
     }
 
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onIdTokenChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
+        const token = await firebaseUser.getIdToken();
+
+        Cookies.set('fb-token', token, {
+          path: '/',
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+        });
+
         let currentUser = await initializeUser(firebaseUser);
         currentUser.isOrganizer = await isUserAnOrganizer(
           currentUser.id as string
         );
         setUser(currentUser);
-        setLoading(false);
       } else {
+        Cookies.remove('fb-token');
         setUser(emptyUser);
-        setLoading(false);
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();
