@@ -35,7 +35,7 @@ export default function Header() {
 
   const userItems = [
     {
-      key: '3`',
+      key: '3',
       label: (
         <Link rel="noopener noreferrer" href="/account">
           Account Settings
