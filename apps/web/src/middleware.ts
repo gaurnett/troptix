@@ -15,7 +15,7 @@ export function middleware(req: NextRequest) {
   try {
     // Verify that the token is present and logged in but NOT if valid
     const decoded = jwt.decode(token || '') as any;
-    if (!decoded?.uid) throw new Error('Missing UID');
+    if (!decoded?.user_id) throw new Error('Missing user_id');
     return NextResponse.next();
   } catch (error) {
     const url = new URL('/auth/signin', req.url);
