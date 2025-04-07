@@ -216,12 +216,17 @@ export function useSaveTicketType(eventId: string) {
       editTicketType: boolean;
     }) => saveTicketType(ticketType, editTicketType),
     onSuccess: () => {
+      // Check if I need this to invalidate this query
       queryClient.invalidateQueries({
         queryKey: [
           'order',
           GetTicketTypesType.GET_TICKET_TYPES_BY_EVENT,
           eventId,
         ],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['event', eventId],
       });
     },
   });

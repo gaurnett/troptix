@@ -11,7 +11,9 @@ import {
   TicketType,
 } from '@/hooks/types/Ticket';
 import { Button, Checkbox, Form, Select } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { TropTixContext } from '@/components/AuthProvider';
+import { Banner } from '@/components/ui/banner';
 
 type DateFieldName = 'saleStartDate' | 'saleEndDate';
 
@@ -25,6 +27,7 @@ export default function TicketForm({
   onClose: () => void;
 }) {
   const [ticketForm, setTicketForm] = useState<TicketType>();
+  const { user } = useContext(TropTixContext);
 
   useEffect(() => {
     setTicketForm(selectedTicket);
@@ -173,6 +176,34 @@ export default function TicketForm({
             ]}
           />
         </div>
+        {ticketForm?.ticketType === TicketCostType.PAID &&
+          !user?.isOrganizer && (
+            <Banner
+              type="warning"
+              title="You’re not verified to publish paid events"
+              className="mb-4"
+              message={
+                <>
+                  To publish this event, you’ll need to verify your account by
+                  meeting with our team.{' '}
+                  <a
+                    href="https://calendly.com/your-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline font-medium"
+                  >
+                    Schedule a quick call
+                  </a>
+                  <br />
+                  <br />
+                  <span>
+                    You can still save this event as a draft or switch to a free
+                    ticket to publish it right away.
+                  </span>
+                </>
+              }
+            />
+          )}
         {ticketForm?.ticketType === TicketCostType.PAID && (
           <div className="md:flex md:justify-between">
             <div className="mb-4 md:mr-4 w-full">

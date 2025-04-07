@@ -1,21 +1,17 @@
 'use client';
 
-import { TROPTIX_ORGANIZER_ALLOW_LIST } from '@/firebase/remoteConfig';
 import { User, initializeUser } from '@/hooks/types/User';
 import { cn } from '@/lib/utils';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { onIdTokenChanged } from 'firebase/auth';
-import {
-  fetchAndActivate,
-  getRemoteConfig,
-  getValue,
-} from 'firebase/remote-config';
+
 import { Inter } from 'next/font/google';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { app, auth } from '../config';
+import { auth } from '../config';
 import Cookies from 'js-cookie';
+import { useOrganizerStatus } from '@/hooks/useUser';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -44,35 +40,11 @@ export default function AuthProvider({
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
 
+  // Fetch the organizer state from the database
+  const { data: isOrganizer, isLoading: isOrganizerLoading } =
+    useOrganizerStatus(user?.id);
+
   useEffect(() => {
-    async function isUserAnOrganizer(userId: string) {
-      let isOrganizer = false;
-
-      if (typeof window !== 'undefined') {
-        const remoteConfig = getRemoteConfig(app);
-        remoteConfig.settings.minimumFetchIntervalMillis = 3600000;
-
-        isOrganizer = await fetchAndActivate(remoteConfig)
-          .then(() => {
-            const organizerList = getValue(
-              remoteConfig,
-              TROPTIX_ORGANIZER_ALLOW_LIST
-            );
-            const organizers = Array.from(JSON.parse(organizerList.asString()));
-            if (organizers.includes(userId)) {
-              return true;
-            }
-
-            return false;
-          })
-          .catch((err) => {
-            return false;
-          });
-      }
-
-      return isOrganizer;
-    }
-
     const unsubscribe = onIdTokenChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const token = await firebaseUser.getIdToken();
@@ -84,9 +56,6 @@ export default function AuthProvider({
         });
 
         let currentUser = await initializeUser(firebaseUser);
-        currentUser.isOrganizer = await isUserAnOrganizer(
-          currentUser.id as string
-        );
         setUser(currentUser);
       } else {
         Cookies.remove('fb-token');
@@ -97,6 +66,19 @@ export default function AuthProvider({
 
     return () => unsubscribe();
   }, []);
+
+  // Sync the isOrganizer state with the user state
+  // TODO: I am not sure if this is the best way to do this
+  useEffect(() => {
+    if (
+      user &&
+      !isOrganizerLoading &&
+      isOrganizer !== undefined &&
+      user.isOrganizer !== isOrganizer
+    ) {
+      setUser({ ...user, isOrganizer });
+    }
+  }, [user, isOrganizer, isOrganizerLoading]);
 
   if (loading && pathname !== '/' && pathname !== '/home') {
     return <></>;

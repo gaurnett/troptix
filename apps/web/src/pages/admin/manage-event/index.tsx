@@ -13,11 +13,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { TabsProps } from 'antd';
 import { Button, message } from 'antd';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { IoMdArrowRoundBack } from 'react-icons/io';
 
 import { requireAuth } from '@/server/lib/auth';
-
+import { Banner } from '@/components/ui/banner';
+import { TropTixContext } from '@/components/AuthProvider';
 export const getServerSideProps = (ctx) =>
   requireAuth(ctx, { organizerOnly: true });
 
@@ -32,6 +33,21 @@ export default function ManageEventPage() {
   const { mutate: updateEventMutation } = useUpdateEvent();
 
   const { isPending, isError, data: event, error } = useEvent(eventId);
+  const { user } = useContext(TropTixContext);
+  console.log('event', event);
+
+  function isPaidEvent() {
+    if (!event?.ticketTypes) {
+      return false;
+    }
+
+    if (event.ticketTypes.some((ticket) => ticket.price > 0)) {
+      return true;
+    }
+    return false;
+  }
+
+  console.log('isPaidEvent', isPaidEvent());
 
   // Update local state with fetched data
   useEffect(() => {
@@ -56,7 +72,7 @@ export default function ManageEventPage() {
           content: 'Successfully updated event.',
         });
         queryClient.invalidateQueries({
-          queryKey: [RequestType.GET_EVENTS_BY_ID, eventId],
+          queryKey: ['event', eventId],
         });
       },
       onError: () => {
@@ -97,6 +113,7 @@ export default function ManageEventPage() {
         });
       },
       onError: () => {
+        // TODO: Pass reason for in error message
         messageApi.open({
           type: 'error',
           content: 'Failed to update event, please try again.',
@@ -164,6 +181,33 @@ export default function ManageEventPage() {
       {contextHolder}
       {!isPending ? (
         <div className="mx-4">
+          {isPaidEvent() && !user?.isOrganizer && (
+            <Banner
+              type="warning"
+              title="You're not verified to publish paid events"
+              className="mb-4 mt-4"
+              message={
+                <>
+                  This event has paid tickets. To publish this event,
+                  you&apos;ll need to meet with our team to verify your account.{' '}
+                  <a
+                    href="https://calendly.com/your-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline font-medium"
+                  >
+                    Schedule a meeting with our team
+                  </a>
+                  <br />
+                  <br />
+                  <span className="font-medium">
+                    You can remove the paid tickets from the event and publish
+                    it as a free event.
+                  </span>
+                </>
+              }
+            />
+          )}
           <h1
             className="text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
             data-aos="zoom-y-out"
@@ -188,6 +232,7 @@ export default function ManageEventPage() {
 
                 <div className="my-auto">
                   <Button
+                    disabled={isPaidEvent() && !user?.isOrganizer}
                     onClick={publishEvent}
                     className="px-4 py-4 shadow-md items-center font-medium inline-flex"
                   >
