@@ -35,7 +35,7 @@ export default function Header() {
 
   const userItems = [
     {
-      key: '2',
+      key: '3`',
       label: (
         <Link rel="noopener noreferrer" href="/account">
           Account Settings
@@ -43,7 +43,7 @@ export default function Header() {
       ),
     },
     {
-      key: '3',
+      key: '4',
       label: (
         <Link rel="noopener noreferrer" href="/orders">
           Tickets
@@ -51,7 +51,7 @@ export default function Header() {
       ),
     },
     {
-      key: '4',
+      key: '5',
       label: (
         <a onClick={signOut} rel="noopener noreferrer">
           Sign Out
@@ -59,14 +59,23 @@ export default function Header() {
       ),
     },
   ];
-
-  if (user && user.isOrganizer) {
+  // TODO: Unfortunately I can't use the feature flag here since this is in a layout component
+  // TODO: When ready we should update this for just authenticated users
+  if (user && user?.isOrganizer) {
     items = [
       {
         key: '1',
         label: (
           <Link rel="noopener noreferrer" href="/admin">
-            Admin Portal
+            Manage Events
+          </Link>
+        ),
+      },
+      {
+        key: '2',
+        label: (
+          <Link rel="noopener noreferrer" href="/admin/add-event">
+            Create Event
           </Link>
         ),
       },

@@ -168,3 +168,19 @@ export function useUpdateUserSocialMedia() {
       }),
   });
 }
+
+export function useOrganizerStatus(userId: string | undefined) {
+  return useQuery<boolean, Error>({
+    queryKey: ['organizerStatus', userId],
+    queryFn: () => {
+      if (!userId)
+        throw new Error('User ID is required to fetch organizer status.');
+      return fetchUserById(userId).then((user) => user.role === 'ORGANIZER');
+    },
+
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+    refetchOnWindowFocus: true,
+  });
+}
