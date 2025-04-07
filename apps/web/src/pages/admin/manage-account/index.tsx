@@ -8,7 +8,7 @@ import AccountDetails from '../../../components/pages/admin/manage-account/accou
 import { requireAuth } from '@/server/lib/auth';
 
 export const getServerSideProps = (ctx) =>
-  requireAuth(ctx, { organizerOnly: true });
+  requireAuth(ctx, { organizerOnly: false });
 
 export default function ManageAccountPage() {
   const [messageApi, contextHolder] = message.useMessage();

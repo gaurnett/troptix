@@ -7,22 +7,16 @@ import AdminSidebarMobile from '@/components/pages/admin/navigation/AdminSidebar
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps } from 'antd';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import Logo from './ui/logo';
 import { auth } from '../config';
-import { usePathname, useRouter } from 'next/navigation';
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { user, loading } = useContext(TropTixContext);
-  const pathname = usePathname();
-  const router = useRouter();
+  const { user } = useContext(TropTixContext);
   const logoSize = 40;
-
-  // TODO: This is temporary to simplify the logic in the WebNavigator. Route protection should be checked server side.
-
   let items: MenuProps['items'];
 
   async function signOut() {

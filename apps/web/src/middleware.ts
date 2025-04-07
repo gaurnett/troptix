@@ -19,7 +19,7 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   } catch (error) {
     const url = new URL('/auth/signin', req.url);
-    url.searchParams.set('redirectedFrom', req.nextUrl.pathname);
+    // url.searchParams.set('redirectedFrom', req.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
 }
