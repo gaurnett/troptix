@@ -5,6 +5,7 @@ import { useContext } from 'react';
 import { Charge } from './types/Charge';
 import { Checkout, CheckoutTicket } from './types/Checkout';
 import { ComplementaryOrder, Order, createOrder } from './types/Order';
+import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema';
 
 export enum GetOrdersType {
   GET_ORDERS_FOR_USER = 'GET_ORDERS_FOR_USER',
@@ -138,6 +139,7 @@ export function useCreateOrder() {
       userId,
       jwtToken,
       isFreeOrder,
+      userDetails,
     }: {
       checkout: Checkout;
       paymentId: string;
@@ -145,6 +147,7 @@ export function useCreateOrder() {
       userId: string;
       jwtToken: string;
       isFreeOrder?: boolean;
+      userDetails: UserDetailsFormData;
     }) => {
       if (!paymentId) {
         message.error(
@@ -152,7 +155,13 @@ export function useCreateOrder() {
         );
       }
 
-      const order = createOrder(checkout, paymentId, customerId, userId);
+      const order = createOrder(
+        checkout,
+        paymentId,
+        customerId,
+        userId,
+        userDetails
+      );
 
       await postOrders({
         type: isFreeOrder

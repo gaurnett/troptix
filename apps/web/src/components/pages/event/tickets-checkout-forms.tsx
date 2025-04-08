@@ -1,6 +1,15 @@
 import { List, Typography, message } from 'antd';
 import { format } from 'date-fns';
 import { useContext, useState } from 'react';
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 
 import { TropTixContext } from '@/components/AuthProvider';
 import { Button, ButtonWithIcon } from '@/components/ui/button';
@@ -15,6 +24,9 @@ import {
 } from '@/hooks/usePromotions';
 import { calculateFees, getDateFormatter } from '@/lib/utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { UseFormReturn } from 'react-hook-form';
+import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema';
+import { Input } from '@/components/ui/input';
 const { Paragraph } = Typography;
 
 export default function TicketsCheckoutForm({
@@ -24,6 +36,7 @@ export default function TicketsCheckoutForm({
   setCheckout,
   promotion,
   setPromotion,
+  formMethods,
 }: {
   event: any;
   ticketTypes: TicketType[];
@@ -31,6 +44,7 @@ export default function TicketsCheckoutForm({
   setPromotion: any;
   checkout: any;
   setCheckout: any;
+  formMethods: UseFormReturn<UserDetailsFormData>;
 }) {
   const [promotionCode, setPromotionCode] = useState<string>();
   const [promotionApplied, setPromotionApplied] = useState(false);
@@ -142,13 +156,6 @@ export default function TicketsCheckoutForm({
     }
 
     return price;
-  }
-
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setCheckout((prevState) => ({
-      ...prevState,
-      [event.target.name]: event.target.value,
-    }));
   }
 
   function handlePromotionChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -305,62 +312,78 @@ export default function TicketsCheckoutForm({
 
   return (
     <div className="md:px-4">
-      <TypographyH3 text={'Contact Information'} classes="mb-2" />
-      <div className="flex justify-between">
-        <div className="mb-4 mr-1 md:mr-4 w-full">
-          <InputWithLabel
-            value={checkout.firstName}
-            name={'firstName'}
-            id={'firstName'}
-            labelValue={'First Name *'}
-            type={'text'}
-            placeholder={'John'}
-            onChange={handleChange}
-            required={true}
+      <Form {...formMethods}>
+        <TypographyH3 text={'Contact Information'} classes="mb-2" />
+        <div className="flex justify-between">
+          <FormField
+            control={formMethods.control}
+            name="firstName"
+            rules={{ required: true }}
+            render={({ field }) => (
+              <FormItem className="mb-4 mr-1 md:mr-4 w-full">
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder={'John'} disabled={!!user.id} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={formMethods.control}
+            name="lastName"
+            rules={{ required: true }}
+            render={({ field }) => (
+              <FormItem className="mb-4 mr-1 md:mr-4 w-full">
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder={'Doe'} disabled={!!user.id} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
-        <div className="mb-4 ml-1 md:ml-4 w-full">
-          <InputWithLabel
-            value={checkout.lastName}
-            name={'lastName'}
-            id={'lastName'}
-            labelValue={'Last Name *'}
-            type={'text'}
-            placeholder={'Doe'}
-            onChange={handleChange}
-            required={true}
-          />
-        </div>
-      </div>
 
-      <div className="md:flex justify-between">
-        <div className="mb-4 md:mr-4 w-full">
-          <InputWithLabel
-            value={checkout.email}
-            name={'email'}
-            id={'email'}
-            labelValue={'Email *'}
-            type={'text'}
-            placeholder={'johndoe@gmail.com'}
-            onChange={handleChange}
-            required={true}
-            disabled={!!user.id}
+        <div className="md:flex justify-between">
+          <FormField
+            control={formMethods.control}
+            name="email"
+            rules={{ required: true }}
+            render={({ field }) => (
+              <FormItem className="mb-4 mr-1 md:mr-4 w-full">
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder={'johndoe@gmail.com'}
+                    disabled={!!user.id}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={formMethods.control}
+            name="confirmEmail"
+            rules={{ required: true }}
+            render={({ field }) => (
+              <FormItem className="mb-4 mr-1 md:mr-4 w-full">
+                <FormLabel>Confirm Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder={'johndoe@gmail.com'}
+                    disabled={!!user.id}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
-        <div className="mb-4 md:ml-4 w-full">
-          <InputWithLabel
-            value={checkout.confirmEmail}
-            name={'confirmEmail'}
-            id={'confirmEmail'}
-            labelValue={'Confirm Email *'}
-            type={'text'}
-            placeholder={'johndoe@gmail.com'}
-            onChange={handleChange}
-            required={true}
-            disabled={!!user.id}
-          />
-        </div>
-      </div>
+      </Form>
 
       <TypographyH3 text={'Tickets'} classes="mb-2" />
       <div className="mb-4">

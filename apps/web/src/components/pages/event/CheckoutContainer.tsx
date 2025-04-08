@@ -14,6 +14,12 @@ import CheckoutForm from './checkout';
 import TicketsCheckoutForm from './tickets-checkout-forms';
 import { generateId } from '@/lib/utils';
 import { useRouter } from 'next/router';
+import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  userDetailsSchema,
+  UserDetailsFormData,
+} from '@/lib/schemas/checkoutSchema';
 
 interface CheckoutContainerProps {
   event: any;
@@ -30,9 +36,10 @@ interface CheckoutContainerProps {
     completePurchaseClicked: boolean;
     promotion: any;
     setPromotion: (promotion: any) => void;
-    handleNext: () => Promise<void>;
+    handleNext: (userDetails: UserDetailsFormData) => Promise<void>;
     handleCompleteStripePayment: () => void;
     renderCheckoutStep: () => ReactNode;
+    formMethods: UseFormReturn<UserDetailsFormData>;
   }) => ReactNode;
 }
 
@@ -43,12 +50,24 @@ export function CheckoutContainer({
   children,
 }: CheckoutContainerProps) {
   const { user } = useContext(TropTixContext);
-  const [messageApi, contextHolder] = message.useMessage();
   const eventId = event.id;
-  const router = useRouter();
+
   const [checkout, setCheckout] = useState<Checkout>(
     initializeCheckout(user, eventId)
   );
+  const formMethods = useForm<UserDetailsFormData>({
+    resolver: zodResolver(userDetailsSchema),
+    defaultValues: {
+      firstName: user?.firstName || '',
+      lastName: user?.lastName || '',
+      email: user?.email || '',
+      confirmEmail: user?.email || '',
+    },
+    mode: 'onBlur',
+  });
+  const [messageApi, contextHolder] = message.useMessage();
+  const router = useRouter();
+
   const [ticketTypes, setTicketTypes] = useState<TicketType[]>();
   const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -76,7 +95,7 @@ export function CheckoutContainer({
     }
   }, [isFetchingTicketTypesForCheckout, ticketTypesWithPendingOrders]);
 
-  async function initializeStripeDetails() {
+  async function initializeStripeDetails(userDetails: UserDetailsFormData) {
     createPaymentIntent.mutate(
       { checkout },
       {
@@ -90,6 +109,7 @@ export function CheckoutContainer({
               customerId,
               userId: user?.id,
               jwtToken: user?.jwtToken as string,
+              userDetails,
             },
             {
               onSuccess: (data) => {
@@ -111,7 +131,7 @@ export function CheckoutContainer({
     );
   }
 
-  async function initializeFreeOrder() {
+  async function initializeFreeOrder(userDetails: UserDetailsFormData) {
     createOrder.mutate(
       {
         checkout,
@@ -120,6 +140,7 @@ export function CheckoutContainer({
         userId: user?.id,
         jwtToken: user?.jwtToken as string,
         isFreeOrder: true,
+        userDetails,
       },
       {
         onSuccess: (data) => {
@@ -135,27 +156,7 @@ export function CheckoutContainer({
     );
   }
 
-  async function handleNext() {
-    if (checkout.email !== checkout.confirmEmail) {
-      if (canShowMessage) {
-        setCanShowMessage(false);
-        message
-          .warning('Email addresses do not match')
-          .then(() => setCanShowMessage(true));
-      }
-      return;
-    }
-
-    if (!checkout.firstName || !checkout.lastName || !checkout.email) {
-      if (canShowMessage) {
-        setCanShowMessage(false);
-        message
-          .warning('Please fill in contact information')
-          .then(() => setCanShowMessage(true));
-      }
-      return;
-    }
-
+  async function handleNext(userDetails: UserDetailsFormData) {
     if (checkout.tickets.size === 0) {
       if (canShowMessage) {
         setCanShowMessage(false);
@@ -184,9 +185,9 @@ export function CheckoutContainer({
 
     messageApi.destroy('creating-order-loading');
     if (isOrderFree) {
-      initializeFreeOrder();
+      initializeFreeOrder(userDetails);
     } else if (valid) {
-      initializeStripeDetails();
+      initializeStripeDetails(userDetails);
       setCurrent(current + 1);
     } else {
       setTicketTypes(ticketTypes);
@@ -228,6 +229,7 @@ export function CheckoutContainer({
         setPromotion={setPromotion}
         checkout={checkout}
         setCheckout={setCheckout}
+        formMethods={formMethods}
       />
     ) : (
       <CheckoutForm
@@ -256,6 +258,7 @@ export function CheckoutContainer({
         handleNext,
         handleCompleteStripePayment,
         renderCheckoutStep,
+        formMethods,
       })}
     </>
   );
