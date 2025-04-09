@@ -31,6 +31,7 @@ export default function TicketModal({
         handleCompleteStripePayment,
         renderCheckoutStep,
         formMethods,
+        ticketTypes,
       }) => (
         <Dialog
           open={isTicketModalOpen}
@@ -124,7 +125,15 @@ export default function TicketModal({
                             dataSource={Array.from(checkout.tickets?.keys())}
                             split={false}
                             renderItem={(id: any, index: number) => {
+                              let price = 0;
                               const summary = checkout.tickets.get(id);
+                              if (ticketTypes) {
+                                const ticketType = ticketTypes.find(
+                                  (ticket) => ticket.id === id
+                                );
+                                price = ticketType?.price ?? 0;
+                              }
+                              console.log('summary', summary);
                               let subtotal = 0;
                               let quantitySelected = 0;
                               if (summary?.subtotal) {
@@ -147,7 +156,7 @@ export default function TicketModal({
                                       <div className="ml-4">
                                         <div className="text-sm text-end">
                                           {getFormattedCurrency(
-                                            subtotal * quantitySelected
+                                            price * quantitySelected
                                           )}
                                         </div>
                                       </div>
@@ -166,23 +175,6 @@ export default function TicketModal({
                             }}
                           />
 
-                          <div className="w-full flex my-4">
-                            <div className="grow">
-                              <div className="text-sm">Subtotal:</div>
-                              <div className="text-sm">Taxes & Fees:</div>
-                            </div>
-                            <div className="ml-4">
-                              <div className="ml-4">
-                                <div className="text-sm text-end">
-                                  {getFormattedCurrency(checkout.subtotal)}
-                                </div>
-                                <div className="text-sm text-end">
-                                  {getFormattedCurrency(checkout.fees)}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
                           <div
                             style={{
                               flex: 1,
@@ -190,19 +182,6 @@ export default function TicketModal({
                               backgroundColor: '#D3D3D3',
                             }}
                           />
-
-                          <div className="w-full flex my-4">
-                            <div className="grow">
-                              <div className="text-xl font-bold">Total:</div>
-                            </div>
-                            <div className="ml-4">
-                              <div className="ml-4">
-                                <div className="text-xl font-bold text-end">
-                                  {getFormattedCurrency(checkout.total)} USD
-                                </div>
-                              </div>
-                            </div>
-                          </div>
                         </div>
                       )}
                     </div>

@@ -31,6 +31,7 @@ export default function TicketDrawer({
         handleCompleteStripePayment,
         renderCheckoutStep,
         formMethods,
+        ticketTypes,
       }) => (
         <>
           <Drawer
@@ -61,9 +62,6 @@ export default function TicketDrawer({
               </div>
               <footer className="border-t border-gray-200 px-6 pb-6">
                 <div className="flex mt-4">
-                  <div className="text-xl mr-2">
-                    {getFormattedCurrency(checkout.total)}
-                  </div>
                   <div>
                     <Button
                       onClick={() => setSummaryDrawerOpen(true)}
@@ -134,6 +132,13 @@ export default function TicketDrawer({
                           if (summary?.subtotal) {
                             subtotal = summary.subtotal;
                           }
+                          let price = 0;
+                          if (ticketTypes) {
+                            const ticketType = ticketTypes.find(
+                              (ticket) => ticket.id === id
+                            );
+                            price = ticketType?.price ?? 0;
+                          }
 
                           if (summary?.quantitySelected) {
                             quantitySelected = summary.quantitySelected;
@@ -151,7 +156,7 @@ export default function TicketDrawer({
                                   <div className="ml-4">
                                     <div className="text-base text-end">
                                       {getFormattedCurrency(
-                                        subtotal * quantitySelected
+                                        price * quantitySelected
                                       )}
                                     </div>
                                   </div>
@@ -170,23 +175,6 @@ export default function TicketDrawer({
                         }}
                       />
 
-                      <div className="w-full flex my-4">
-                        <div className="grow">
-                          <div className="text-base">Subtotal:</div>
-                          <div className="text-base">Taxes & Fees:</div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="ml-4">
-                            <div className="text-base text-end">
-                              {getFormattedCurrency(checkout.subtotal)}
-                            </div>
-                            <div className="text-base text-end">
-                              {getFormattedCurrency(checkout.fees)}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
                       <div
                         style={{
                           flex: 1,
@@ -194,19 +182,6 @@ export default function TicketDrawer({
                           backgroundColor: '#D3D3D3',
                         }}
                       />
-
-                      <div className="w-full flex my-4">
-                        <div className="grow">
-                          <div className="text-2xl font-bold">Total:</div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="ml-4">
-                            <div className="text-2xl font-bold">
-                              {getFormattedCurrency(checkout.total)} USD
-                            </div>
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   )}
                 </div>
