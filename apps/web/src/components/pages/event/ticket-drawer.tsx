@@ -30,6 +30,7 @@ export default function TicketDrawer({
         handleNext,
         handleCompleteStripePayment,
         renderCheckoutStep,
+        formMethods,
       }) => (
         <>
           <Drawer
@@ -76,7 +77,7 @@ export default function TicketDrawer({
                 <div className="flex flex-end content-end items-end self-end mt-4">
                   {current === 0 && (
                     <Button
-                      onClick={handleNext}
+                      onClick={formMethods.handleSubmit(handleNext)}
                       className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
                     >
                       {isFree ? 'RSVP' : 'Continue'}

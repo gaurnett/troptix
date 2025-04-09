@@ -1,6 +1,7 @@
 import { generateId } from '@/lib/utils';
 import { Checkout, CheckoutTicket } from './Checkout';
 import { createTicket } from './Ticket';
+import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema';
 
 type Ticket = {
   // Define the properties of the Ticket type here
@@ -40,7 +41,8 @@ export function createOrder(
   checkout: Checkout,
   paymentId: string,
   stripeCustomerId: string,
-  userId: string
+  userId: string,
+  userDetails: UserDetailsFormData
 ): Order {
   const id = generateId();
   const tickets: Ticket[] = [];
@@ -71,9 +73,9 @@ export function createOrder(
     tickets: tickets,
     ticketsLink: url,
     userId: userId,
-    firstName: checkout.firstName,
-    lastName: checkout.lastName,
-    email: checkout.email,
+    firstName: userDetails.firstName,
+    lastName: userDetails.lastName,
+    email: userDetails.email,
     eventId: checkout.eventId,
     telephoneNumber: checkout.telephoneNumber,
     billingAddress1: checkout.billingAddress1,
