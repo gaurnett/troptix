@@ -145,12 +145,7 @@ export default function EventDetailPage(props) {
           WebkitBackgroundSize: 'cover',
         }}
       >
-        <TicketModal
-          event={event}
-          isTicketModalOpen={isTicketModalOpen}
-          handleCancel={handleCancel}
-        />
-        {/* {isMobile ? (
+        {isMobile ? (
           <TicketDrawer
             event={event}
             isTicketModalOpen={isTicketModalOpen}
@@ -162,7 +157,7 @@ export default function EventDetailPage(props) {
             isTicketModalOpen={isTicketModalOpen}
             handleCancel={handleCancel}
           />
-        )} */}
+        )}
         <div className="w-full md:min-h-screen flex backdrop-blur-3xl">
           <div className={`max-w-5xl mx-auto p-4 sm:p-8`}>
             <div className="md:flex mt-32">

@@ -15,7 +15,11 @@ import { TropTixContext } from '@/components/AuthProvider';
 import { Button, ButtonWithIcon } from '@/components/ui/button';
 import { InputWithLabel } from '@/components/ui/input';
 import { TypographyH3 } from '@/components/ui/typography';
-import { initializeCheckoutTicket } from '@/hooks/types/Checkout';
+import {
+  Checkout,
+  CheckoutTicket,
+  initializeCheckoutTicket,
+} from '@/hooks/types/Checkout';
 import { TicketsType, TicketType } from '@/hooks/types/Ticket';
 import {
   GetPromotionsRequest,
@@ -97,47 +101,10 @@ export default function TicketsCheckoutForm({
     };
 
     return getPromotions(getPromotionsRequest)
-      .then((promotion) => {
-        if (promotion) {
-          let subtotal = 0;
-          let fees = 0;
-          setPromotion(promotion);
+      .then((fetchedPromotion) => {
+        if (fetchedPromotion) {
+          setPromotion(fetchedPromotion);
           setPromotionApplied(true);
-
-          const updatedTickets = checkout.tickets;
-          Array.from(checkout.tickets.keys()).forEach((key, i) => {
-            const item = checkout.tickets.get(key);
-            const promotedPrice = getPromotionPriceFromResponse(
-              item.subtotal,
-              promotion
-            );
-            const promotedFee = calculateFees(promotedPrice);
-
-            subtotal += normalizePrice(promotedPrice) * item.quantitySelected;
-            fees += normalizePrice(promotedFee) * item.quantitySelected;
-
-            updatedTickets.set(key, {
-              ...item,
-              subtotal: promotedPrice,
-              fees: promotedFee,
-              total: normalizePrice(promotedFee + promotedPrice),
-            });
-          });
-
-          if (checkout.subtotal > 0) {
-            setCheckout((previousOrder) => ({
-              ...previousOrder,
-              subtotal: subtotal,
-              fees: fees,
-              total: normalizePrice(subtotal + fees),
-            }));
-          }
-
-          setCheckout((previousOrder) => ({
-            ...previousOrder,
-            promotionApplied: true,
-            tickets: updatedTickets,
-          }));
 
           message.success('Promotion code applied');
         } else {
@@ -145,17 +112,6 @@ export default function TicketsCheckoutForm({
         }
       })
       .catch((error) => {});
-  }
-
-  function getPromotionPriceFromResponse(price, response) {
-    switch (response.promotionType) {
-      case 'PERCENTAGE':
-        return price - price * (response.value / 100);
-      case 'DOLLAR_AMOUNT':
-        return price - response.value;
-    }
-
-    return price;
   }
 
   function handlePromotionChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -188,88 +144,30 @@ export default function TicketsCheckoutForm({
     return formatter.format(price);
   }
 
-  function getFormattedFeesCurrency(price) {
-    let fees = calculateFees(price);
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    });
-
-    if (promotionApplied) {
-      const promotedPrice = getPromotionPrice(price);
-      return formatter.format(calculateFees(promotedPrice));
-    }
-
-    return formatter.format(fees);
-  }
-
-  function normalizePrice(price): number {
-    return Math.round(price * 100) / 100;
-  }
-
   function updateCost(ticket, reduce = false) {
-    const price =
-      ticket.ticketType === TicketsType.FREE ? 0 : normalizePrice(ticket.price);
-    var ticketSubtotal =
-      ticket.ticketType === TicketsType.FREE
-        ? 0
-        : checkout.promotionApplied
-          ? getPromotionPrice(price)
-          : price;
-    var ticketFees =
-      ticket.ticketingFees === 'PASS_TICKET_FEES' ||
-      ticket.ticketType === TicketsType.PAID
-        ? calculateFees(ticketSubtotal)
-        : 0;
-    var ticketTotal = normalizePrice(ticketFees + ticketSubtotal);
+    const updatedTickets: Map<string, CheckoutTicket> = new Map(
+      checkout.tickets
+    );
+    console.log('updatedTickets', updatedTickets);
+    const currentQuantity =
+      updatedTickets.get(ticket.id)?.quantitySelected || 0;
+    const newQuantity = reduce ? currentQuantity - 1 : currentQuantity + 1;
 
-    const updatedTickets = checkout.tickets;
-    if (checkout.tickets.has(ticket.id)) {
-      const checkoutTicket = checkout.tickets.get(ticket.id);
-      const quantitySelected = checkoutTicket.quantitySelected;
-      checkoutTicket.quantitySelected = reduce
-        ? quantitySelected - 1
-        : quantitySelected + 1;
-      if (checkoutTicket.quantitySelected === 0) {
-        updatedTickets.delete(ticket.id);
-      } else {
-        updatedTickets.set(ticket.id, checkoutTicket);
-      }
+    if (newQuantity <= 0) {
+      updatedTickets.delete(ticket.id);
     } else {
-      const checkoutTicket = initializeCheckoutTicket(ticket);
-      checkoutTicket.quantitySelected = 1;
-      checkoutTicket.subtotal = ticketSubtotal;
-      checkoutTicket.fees = ticketFees;
-      checkoutTicket.total = ticketTotal;
-      updatedTickets.set(ticket.id, checkoutTicket);
+      const existingTicketData =
+        updatedTickets.get(ticket.id) || initializeCheckoutTicket(ticket);
+      updatedTickets.set(ticket.id, {
+        ...existingTicketData,
+        quantitySelected: newQuantity,
+      });
     }
 
-    var checkoutSubtotal = normalizePrice(checkout.subtotal);
-    var checkoutFees = normalizePrice(checkout.fees);
-
-    checkoutSubtotal = reduce
-      ? checkoutSubtotal - ticketSubtotal
-      : checkoutSubtotal + ticketSubtotal;
-    checkoutFees = reduce
-      ? checkoutFees - ticketFees
-      : checkoutFees + ticketFees;
-    var checkoutTotal = normalizePrice(checkoutSubtotal + checkoutFees);
-
-    setCheckout((previousOrder) => ({
-      ...previousOrder,
+    setCheckout((previousCheckout) => ({
+      ...previousCheckout,
       tickets: updatedTickets,
-      total: checkoutTotal,
-      fees: checkoutFees,
-      subtotal: checkoutSubtotal,
     }));
-  }
-
-  function reduceCost(ticket, index) {
-    updateCost(ticket, true);
-  }
-
-  function increaseCost(ticket, index) {
-    updateCost(ticket, false);
   }
 
   function getTicketStateMessage(ticket) {
@@ -427,9 +325,16 @@ export default function TicketsCheckoutForm({
           const pendingOrders = ticket.pendingOrders as number;
           const maxPurchasePerUser = ticket.maxPurchasePerUser as number;
           const completedOrders = ticket.completedOrders as number;
-          const isPromotionPriceSame =
-            getFormattedCurrency(ticket.price) ===
-            getFormattedCurrency(ticket.price, true);
+
+          const basePrice = ticket.price ?? 0;
+          const baseFees =
+            ticket.ticketingFees === 'PASS_TICKET_FEES' &&
+            ticket.ticketType === TicketsType.PAID
+              ? calculateFees(basePrice)
+              : 0;
+
+          const displayPrice = getFormattedCurrency(basePrice);
+          const displayFees = getFormattedCurrency(baseFees);
 
           return (
             <List.Item className="mb-4" style={{ padding: 0 }}>
@@ -454,7 +359,7 @@ export default function TicketsCheckoutForm({
                           ) : (
                             <div className="flex">
                               <ButtonWithIcon
-                                onClick={() => reduceCost(ticket, index)}
+                                onClick={() => updateCost(ticket, true)}
                                 className="bg-blue-500 rounded h-8 w-8"
                                 size={'sm'}
                                 disabled={
@@ -471,7 +376,7 @@ export default function TicketsCheckoutForm({
                                   : checkoutTicket.quantitySelected}
                               </div>
                               <ButtonWithIcon
-                                onClick={() => increaseCost(ticket, index)}
+                                onClick={() => updateCost(ticket, false)}
                                 className="bg-blue-500 rounded h-8 w-8"
                                 disabled={
                                   checkoutTicket &&
@@ -502,31 +407,9 @@ export default function TicketsCheckoutForm({
                   />
                   <div className="my-4">
                     <div className="flex">
-                      {promotionApplied &&
-                      !ticket.discountCode &&
-                      !isPromotionPriceSame ? (
-                        <div className="flex">
-                          <div
-                            className="text-base"
-                            style={{ textDecorationLine: 'line-through' }}
-                          >
-                            {getFormattedCurrency(ticket.price)}
-                          </div>
-                          <div className="ml-1 text-base font-bold">
-                            {getFormattedCurrency(ticket.price, true)}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-base font-bold">
-                          {getFormattedCurrency(ticket.price)}
-                        </div>
-                      )}
+                      <div className="text-base font-bold">{displayPrice}</div>
                       <div className="my-auto text-gray-500">
-                        &nbsp;+{' '}
-                        {ticket.ticketingFees === 'PASS_TICKET_FEES'
-                          ? getFormattedFeesCurrency(ticket.price)
-                          : getFormattedCurrency(0)}{' '}
-                        fees
+                        &nbsp;+ {displayFees} fees
                       </div>
                     </div>
                     <div className="text-sm">
