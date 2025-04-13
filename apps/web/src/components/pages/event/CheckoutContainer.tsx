@@ -1,14 +1,11 @@
 import { TropTixContext } from '@/components/AuthProvider';
 import { Spinner } from '@/components/ui/spinner';
-import { Checkout, initializeCheckout } from '@/hooks/types/Checkout';
-import { TicketType } from '@/hooks/types/Ticket';
-import { useFetchTicketTypesForCheckout } from '@/hooks/useTicketType';
-import { message, notification } from 'antd';
+import { message } from 'antd';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import CheckoutForm from './checkout';
 import TicketsCheckoutForm from './tickets-checkout-forms';
 import { useRouter } from 'next/router';
-import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
+import { UseFormReturn, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   userDetailsSchema,
@@ -16,23 +13,24 @@ import {
 } from '@/lib/schemas/checkoutSchema';
 import {
   InitiateCheckoutVariables,
+  useFetchCheckoutConfig,
   useInitiateCheckout,
 } from '@/hooks/useCheckout';
 
-import { ValidationResponseMessage } from '@/types/IntiateCheckout';
+import { CheckoutConfigResponse, ValidationResponse } from '@/types/checkout';
+import { AdjustmentConfirmationModal } from './confirmation-modal';
 
 interface CheckoutContainerProps {
   event: any;
   isOpen: boolean;
   onClose: () => void;
   children: (props: {
-    isFree: boolean;
     current: number;
-    checkout: Checkout;
-    ticketTypes: TicketType[] | undefined;
-    isFetchingTicketTypes: boolean;
-    clientSecret: string | undefined;
-    orderId: string;
+    checkout: CheckoutState;
+    checkoutConfig: CheckoutConfigResponse | undefined;
+    isFetchingCheckoutConfig: boolean;
+    clientSecret: string | null;
+    orderId: string | null;
     completePurchaseClicked: boolean;
     promotion: any;
     setPromotion: (promotion: any) => void;
@@ -40,8 +38,21 @@ interface CheckoutContainerProps {
     handleCompleteStripePayment: () => void;
     renderCheckoutStep: () => ReactNode;
     formMethods: UseFormReturn<UserDetailsFormData>;
+    cartSubtotal: number;
+    cartFees: number;
   }) => ReactNode;
 }
+
+export interface CheckoutState {
+  eventId: string;
+  tickets: Record<string, number>;
+}
+/**
+ * Calculate the cart total, subtotal, and fees on the client only to give a better user experience
+ * @param checkout - The checkout state
+ * @param checkoutConfig - The checkout config
+ * @returns The cart total, subtotal, and fees
+ */
 
 export function CheckoutContainer({
   event,
@@ -52,9 +63,13 @@ export function CheckoutContainer({
   const { user } = useContext(TropTixContext);
   const eventId = event.id;
 
-  const [checkout, setCheckout] = useState<Checkout>(
-    initializeCheckout(user, eventId)
-  );
+  // This is the state of the checkout form
+  const [checkout, setCheckout] = useState<CheckoutState>({
+    eventId: eventId,
+    tickets: {},
+  });
+
+  // This is the form methods for the checkout form for the user details
   const formMethods = useForm<UserDetailsFormData>({
     resolver: zodResolver(userDetailsSchema),
     defaultValues: {
@@ -65,150 +80,129 @@ export function CheckoutContainer({
     },
     mode: 'onBlur',
   });
-  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
   const initiateCheckoutMutation = useInitiateCheckout();
 
-  const [ticketTypes, setTicketTypes] = useState<TicketType[]>();
-  const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);
-  const [current, setCurrent] = useState(0);
-  const [canShowMessage, setCanShowMessage] = useState(true);
-  const [orderId, setOrderId] = useState('');
-  const [clientSecret, setClientSecret] = useState<string>();
+  const [messageApi, contextHolder] = message.useMessage();
+  const [completePurchaseClicked, setCompletePurchaseClicked] =
+    useState<boolean>(false);
+  const [current, setCurrent] = useState<number>(0);
+  const [orderId, setOrderId] = useState<string | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [promotion, setPromotion] = useState<any>();
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState<boolean>(false);
+  const [confirmationData, setConfirmationData] =
+    useState<ValidationResponse | null>(null);
 
-  // This is a temporary solution to check if the checkout is free
-  // We need to refactor the checkout state to be a map of ticket type id to quantity selected
-  // For now, this is a temporary solution to get the selected tickets with only the needed data
-  const isFree = !!(
-    ticketTypes &&
-    ticketTypes
-      .filter((ticket) =>
-        Array.from(checkout.tickets.values()).some(
-          (t) => t.ticketTypeId === ticket.id
-        )
-      )
-      .every((ticket) => ticket.price === 0) &&
-    checkout.tickets.size > 0
-  );
-
+  // When the modal is opened, make sure the state is reset
+  // TODO: We should move the rendering of the modal and drawer in the container so
+  // This ensures that the CheckoutContainer is responsible for all checkout logic
   useEffect(() => {
-    setCheckout(initializeCheckout(user, eventId));
-  }, [user, eventId]);
-
-  const {
-    isPending: isFetchingTicketTypesForCheckout,
-    data: ticketTypesWithPendingOrders,
-  } = useFetchTicketTypesForCheckout(eventId);
-
-  useEffect(() => {
-    if (!isFetchingTicketTypesForCheckout) {
-      setTicketTypes(ticketTypesWithPendingOrders);
+    if (isOpen) {
+      setCurrent(0);
+      setCheckout((prev) => ({ ...prev, tickets: {} }));
+      setIsConfirmationOpen(false);
+      setConfirmationData(null);
+      setClientSecret(null);
+      setOrderId(null);
     }
-  }, [isFetchingTicketTypesForCheckout, ticketTypesWithPendingOrders]);
+  }, [isOpen]);
+
+  const { isPending: isFetchingCheckoutConfig, data: checkoutConfig } =
+    useFetchCheckoutConfig(eventId);
+
+  const { cartSubtotal, cartFees } = calculateCart(checkout, checkoutConfig);
 
   async function handleNext(userDetails: UserDetailsFormData) {
-    if (checkout.tickets.size === 0) {
-      if (canShowMessage) {
-        setCanShowMessage(false);
-        message
-          .warning('Please select a ticket quantity')
-          .then(() => setCanShowMessage(true));
-      }
+    if (Object.keys(checkout.tickets).length === 0) {
+      messageApi.warning('Please select a ticket quantity');
       return;
     }
-    // TODO: Refactor the checkout.tickets state to be a map of ticket type id to quantity selected
-    // For now, this is a temporary solution to get the selected tickets with only the needed data
-    const selectedTickets = Object.fromEntries(
-      Array.from(checkout.tickets.entries()).map(([key, value]) => [
-        key,
-        value.quantitySelected,
-      ])
-    );
+
     const variables: InitiateCheckoutVariables = {
       eventId: eventId,
-      selectedTickets: selectedTickets,
+      selectedTickets: checkout.tickets,
       userDetails: userDetails,
       promotionCode: promotion?.code,
     };
 
     messageApi.open({
-      key: 'creating-order-loading',
+      key: 'initiating-checkout',
       type: 'loading',
-      content: 'Creating Order..',
+      content: 'Confirming Availability...',
       duration: 0,
     });
 
-    const response = await initiateCheckoutMutation.mutateAsync(variables, {
+    initiateCheckoutMutation.mutate(variables, {
       onSuccess: (validationResponse) => {
-        if (validationResponse.isValid) {
-          // Update the checkout state with the validated items
-          const validatedItems = validationResponse.validatedItems;
-          const checkoutTickets = checkout.tickets;
-          validatedItems.forEach((item) => {
-            checkoutTickets[item.ticketTypeId] = {
-              ...checkoutTickets[item.ticketTypeId],
-              quantitySelected: item.validatedQuantity,
-            };
-          });
-          setCheckout((previousCheckout) => ({
-            ...previousCheckout,
-            fees: validationResponse.fees,
-            subtotal: validationResponse.subtotal,
-            total: validationResponse.total,
-            tickets: checkoutTickets,
-          }));
-        }
-        if (
-          validationResponse.isValid &&
-          validationResponse.message ===
-            ValidationResponseMessage.SomeTicketsUnavailable
-        ) {
-          messageApi.open({
-            key: 'creating-order-loading',
-            type: 'error',
-            content:
-              'Some tickets are unavailabe and were removed from the cart',
-          });
-        } else if (
-          validationResponse.message === 'All tickets are valid' &&
-          validationResponse.isFree
-        ) {
-          router.push(
-            `/orders/order-confirmation?orderId=${validationResponse.orderId}&isFree`
+        messageApi.destroy('initiating-checkout');
+
+        if (!validationResponse.isValid) {
+          messageApi.error(
+            validationResponse.message || 'Could not confirm availability.'
           );
-        } else if (
-          validationResponse.message === 'All tickets are valid' &&
-          !validationResponse.isFree
-        ) {
-          setClientSecret(validationResponse.clientSecret as string);
-          setOrderId(validationResponse.orderId as string);
-          setCurrent(current + 1);
-        } else if (!validationResponse.isValid) {
-          messageApi.open({
-            key: 'creating-order-loading',
-            type: 'error',
-            content: 'Unfortunately all tickets are sold out',
-          });
+          // Clear the tickets from the checkout state
+          setCheckout((prev) => ({ ...prev, tickets: {} }));
+          return;
+        }
+
+        if (!validationResponse.orderId) {
+          messageApi.error('An error occurred. Please try again later.');
+          return;
+        }
+
+        // Store the IDs of the created pending order and secret
+        setOrderId(validationResponse.orderId);
+        setClientSecret(validationResponse.clientSecret);
+
+        // Update the cart state to match the server's validated/adjusted items
+        const updatedTickets: Record<string, number> = {};
+        validationResponse.validatedItems.forEach((item) => {
+          updatedTickets[item.ticketTypeId] = item.validatedQuantity;
+        });
+        setCheckout((prev) => ({ ...prev, tickets: updatedTickets }));
+
+        // Check if adjustments require user confirmation via modal
+        if (validationResponse.wasAdjusted) {
+          setConfirmationData(validationResponse);
+          setIsConfirmationOpen(true);
+        } else {
+          // Everything if valid so can just proceed
+          proceedToNextStep(validationResponse);
         }
       },
+      onError: (error) => {
+        messageApi.destroy('initiating-checkout');
+        console.error('Checkout Initiation Mutation Failed:', error);
+      },
     });
-
-    messageApi.destroy('creating-order-loading');
   }
 
+  /**
+   * Handles moving to the next step after successful validation/initiation.
+   * Called directly if no adjustments, or after user confirms adjustments.
+   * @param response - The successful ValidationResponse from the API
+   */
+  function proceedToNextStep(response: ValidationResponse) {
+    if (response.isFree) {
+      messageApi.success('RSVP Confirmed!');
+      router.push(`/orders/order-confirmation?orderId=${response.orderId}`); // Adjust query param name if needed
+    } else if (!response.isFree && response.clientSecret) {
+      setCurrent((prev) => prev + 1);
+    } else {
+      // Should not happen but just in case
+      messageApi.error(
+        'Could not prepare payment. Please check details or try again later.'
+      );
+    }
+  }
+  // TODO: Review this
   function handleCompleteStripePayment() {
     setCompletePurchaseClicked(true);
   }
 
-  function handleClose() {
-    setCheckout(initializeCheckout(user, eventId));
-    setCurrent(0);
-    onClose();
-  }
-
   const renderCheckoutStep = () => {
-    if (isFetchingTicketTypesForCheckout) {
+    if (isFetchingCheckoutConfig || !checkoutConfig) {
       return (
         <div className="mt-32">
           <Spinner text={'Initializing Checkout'} />
@@ -218,10 +212,7 @@ export function CheckoutContainer({
 
     return current === 0 ? (
       <TicketsCheckoutForm
-        event={event}
-        ticketTypes={ticketTypes as TicketType[]}
-        promotion={promotion}
-        setPromotion={setPromotion}
+        checkoutConfig={checkoutConfig}
         checkout={checkout}
         setCheckout={setCheckout}
         formMethods={formMethods}
@@ -240,11 +231,10 @@ export function CheckoutContainer({
     <>
       {contextHolder}
       {children({
-        isFree,
         current,
         checkout,
-        ticketTypes,
-        isFetchingTicketTypes: isFetchingTicketTypesForCheckout,
+        checkoutConfig,
+        isFetchingCheckoutConfig,
         clientSecret,
         orderId,
         completePurchaseClicked,
@@ -254,7 +244,51 @@ export function CheckoutContainer({
         handleCompleteStripePayment,
         renderCheckoutStep,
         formMethods,
+        cartSubtotal,
+        cartFees,
       })}
+      <AdjustmentConfirmationModal
+        isOpen={isConfirmationOpen}
+        response={confirmationData}
+        onClose={() => {
+          setIsConfirmationOpen(false);
+          // TODO: Cancel the order via the API but for now just clear the state and let the cron handle it
+          console.log(
+            'User cancelled adjusted order:',
+            confirmationData?.orderId
+          );
+
+          setConfirmationData(null);
+          onClose();
+        }}
+        onConfirm={() => {
+          setIsConfirmationOpen(false);
+          // This could be done in the component but want to keep the logic in CheckoutContainer
+          if (confirmationData) {
+            proceedToNextStep(confirmationData);
+          }
+          setConfirmationData(null);
+        }}
+      />
     </>
   );
+}
+
+function calculateCart(
+  checkout: CheckoutState,
+  checkoutConfig: CheckoutConfigResponse | undefined
+) {
+  let subtotal = 0;
+  let fees = 0;
+  if (!checkoutConfig) {
+    return { cartSubtotal: subtotal, cartFees: fees };
+  }
+  Object.keys(checkout.tickets).forEach((ticketId) => {
+    const ticket = checkoutConfig?.tickets.find(
+      (ticket) => ticket.id === ticketId
+    );
+    subtotal += (ticket?.price || 0) * checkout.tickets[ticketId];
+    fees += (ticket?.fees || 0) * checkout.tickets[ticketId];
+  });
+  return { cartSubtotal: subtotal, cartFees: fees };
 }

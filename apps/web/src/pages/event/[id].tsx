@@ -13,7 +13,7 @@ import { MetaHead } from '@/components/utils/MetaHead';
 import { useEvent } from '@/hooks/useEvents';
 import { useScreenSize } from '@/hooks/useScreenSize';
 
-import { Typography } from 'antd';
+import { Button, Typography } from 'antd';
 import {
   getDateRangeFormatter,
   getFormattedCurrency,
@@ -26,6 +26,14 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useContext, useState } from 'react';
 import prisma from '@/server/prisma';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const { Paragraph } = Typography;
 
@@ -99,7 +107,7 @@ export default function EventDetailPage(props) {
   const { isMobile } = useScreenSize();
   const { isPending, data: event } = useEvent(eventId, props.event);
 
-  function handleCancel() {
+  function closeModal() {
     setIsTicketModalOpen(false);
   }
 
@@ -149,13 +157,13 @@ export default function EventDetailPage(props) {
           <TicketDrawer
             event={event}
             isTicketModalOpen={isTicketModalOpen}
-            handleCancel={handleCancel}
+            onClose={closeModal}
           />
         ) : (
           <TicketModal
             event={event}
             isTicketModalOpen={isTicketModalOpen}
-            handleCancel={handleCancel}
+            onClose={closeModal}
           />
         )}
         <div className="w-full md:min-h-screen flex backdrop-blur-3xl">
