@@ -83,7 +83,6 @@ async function getPromotionByCode(request, response) {
       },
     });
 
-    console.log(promotion);
     return response.status(200).json(promotion);
   } catch (e) {
     console.error('Request error', e);

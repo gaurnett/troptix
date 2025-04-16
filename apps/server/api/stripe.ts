@@ -126,14 +126,11 @@ async function createCharge(body, response) {
       customerId: customerId,
     });
   } catch (error) {
-    console.log(error);
     return response.status(500).json({ error: error });
   }
 }
 
 async function stripePaymentIntentFailed(body, headers, request, response) {
-  console.log(body);
-
   return response.status(200).json({ message: 'Payment intent failed' });
 }
 
