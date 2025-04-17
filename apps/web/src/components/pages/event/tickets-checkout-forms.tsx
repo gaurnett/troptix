@@ -148,7 +148,7 @@ export default function TicketsCheckoutForm({
     const updatedTickets: Map<string, CheckoutTicket> = new Map(
       checkout.tickets
     );
-    console.log('updatedTickets', updatedTickets);
+    // Removed console.log to prevent unintended logging in production.
     const currentQuantity =
       updatedTickets.get(ticket.id)?.quantitySelected || 0;
     const newQuantity = reduce ? currentQuantity - 1 : currentQuantity + 1;
