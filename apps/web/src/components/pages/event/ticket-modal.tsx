@@ -133,7 +133,7 @@ export default function TicketModal({
                                 );
                                 price = ticketType?.price ?? 0;
                               }
-                              console.log('summary', summary);
+                              // Removed unnecessary console.log statement.
                               let subtotal = 0;
                               let quantitySelected = 0;
                               if (summary?.subtotal) {
