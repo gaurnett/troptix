@@ -2,17 +2,11 @@ import { TropTixContext } from '@/components/AuthProvider';
 import { Spinner } from '@/components/ui/spinner';
 import { Checkout, initializeCheckout } from '@/hooks/types/Checkout';
 import { TicketType } from '@/hooks/types/Ticket';
-import { useCreateOrder } from '@/hooks/useOrders';
-import { useCreatePaymentIntent } from '@/hooks/usePostStripe';
-import {
-  checkOrderValidity,
-  useFetchTicketTypesForCheckout,
-} from '@/hooks/useTicketType';
+import { useFetchTicketTypesForCheckout } from '@/hooks/useTicketType';
 import { message, notification } from 'antd';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import CheckoutForm from './checkout';
 import TicketsCheckoutForm from './tickets-checkout-forms';
-import { generateId } from '@/lib/utils';
 import { useRouter } from 'next/router';
 import { FormProvider, useForm, UseFormReturn } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,6 +14,12 @@ import {
   userDetailsSchema,
   UserDetailsFormData,
 } from '@/lib/schemas/checkoutSchema';
+import {
+  InitiateCheckoutVariables,
+  useInitiateCheckout,
+} from '@/hooks/useCheckout';
+
+import { ValidationResponseMessage } from '@/types/IntiateCheckout';
 
 interface CheckoutContainerProps {
   event: any;
@@ -67,6 +67,7 @@ export function CheckoutContainer({
   });
   const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
+  const initiateCheckoutMutation = useInitiateCheckout();
 
   const [ticketTypes, setTicketTypes] = useState<TicketType[]>();
   const [completePurchaseClicked, setCompletePurchaseClicked] = useState(false);
@@ -75,10 +76,21 @@ export function CheckoutContainer({
   const [orderId, setOrderId] = useState('');
   const [clientSecret, setClientSecret] = useState<string>();
   const [promotion, setPromotion] = useState<any>();
-  const isFree = checkout.total === 0 && checkout.tickets.size > 0;
 
-  const createPaymentIntent = useCreatePaymentIntent();
-  const createOrder = useCreateOrder();
+  // This is a temporary solution to check if the checkout is free
+  // We need to refactor the checkout state to be a map of ticket type id to quantity selected
+  // For now, this is a temporary solution to get the selected tickets with only the needed data
+  const isFree = !!(
+    ticketTypes &&
+    ticketTypes
+      .filter((ticket) =>
+        Array.from(checkout.tickets.values()).some(
+          (t) => t.ticketTypeId === ticket.id
+        )
+      )
+      .every((ticket) => ticket.price === 0) &&
+    checkout.tickets.size > 0
+  );
 
   useEffect(() => {
     setCheckout(initializeCheckout(user, eventId));
@@ -95,67 +107,6 @@ export function CheckoutContainer({
     }
   }, [isFetchingTicketTypesForCheckout, ticketTypesWithPendingOrders]);
 
-  async function initializeStripeDetails(userDetails: UserDetailsFormData) {
-    createPaymentIntent.mutate(
-      { checkout },
-      {
-        onSuccess: (data) => {
-          const { paymentId, customerId, clientSecret } = data;
-
-          createOrder.mutate(
-            {
-              checkout,
-              paymentId,
-              customerId,
-              userId: user?.id,
-              jwtToken: user?.jwtToken as string,
-              userDetails,
-            },
-            {
-              onSuccess: (data) => {
-                setClientSecret(clientSecret);
-                setOrderId(data as string);
-              },
-              onError: (error) => {
-                messageApi.error('There was an error initializing your order');
-                setCurrent(1);
-              },
-            }
-          );
-        },
-        onError: (error) => {
-          messageApi.error('There was an error initializing your order');
-          setCurrent(1);
-        },
-      }
-    );
-  }
-
-  async function initializeFreeOrder(userDetails: UserDetailsFormData) {
-    createOrder.mutate(
-      {
-        checkout,
-        paymentId: generateId(),
-        customerId: '',
-        userId: user?.id,
-        jwtToken: user?.jwtToken as string,
-        isFreeOrder: true,
-        userDetails,
-      },
-      {
-        onSuccess: (data) => {
-          setClientSecret(clientSecret);
-          setOrderId(data as string);
-          router.push(`/orders/order-confirmation?orderId=${data}&isFree`);
-        },
-        onError: (error) => {
-          messageApi.error('There was an error initializing your order');
-          setCurrent(1);
-        },
-      }
-    );
-  }
-
   async function handleNext(userDetails: UserDetailsFormData) {
     if (checkout.tickets.size === 0) {
       if (canShowMessage) {
@@ -166,6 +117,20 @@ export function CheckoutContainer({
       }
       return;
     }
+    // TODO: Refactor the checkout.tickets state to be a map of ticket type id to quantity selected
+    // For now, this is a temporary solution to get the selected tickets with only the needed data
+    const selectedTickets = Object.fromEntries(
+      Array.from(checkout.tickets.entries()).map(([key, value]) => [
+        key,
+        value.quantitySelected,
+      ])
+    );
+    const variables: InitiateCheckoutVariables = {
+      eventId: eventId,
+      selectedTickets: selectedTickets,
+      userDetails: userDetails,
+      promotionCode: promotion?.code,
+    };
 
     messageApi.open({
       key: 'creating-order-loading',
@@ -174,32 +139,62 @@ export function CheckoutContainer({
       duration: 0,
     });
 
-    const {
-      valid,
-      checkout: orderCheckout,
-      ticketTypes,
-    } = await checkOrderValidity(eventId, user?.jwtToken, checkout, promotion);
-    const isOrderFree = Boolean(
-      checkout.total === 0 && valid && checkout.tickets.size > 0
-    );
+    const response = await initiateCheckoutMutation.mutateAsync(variables, {
+      onSuccess: (validationResponse) => {
+        if (validationResponse.isValid) {
+          // Update the checkout state with the validated items
+          const validatedItems = validationResponse.validatedItems;
+          const checkoutTickets = checkout.tickets;
+          validatedItems.forEach((item) => {
+            checkoutTickets[item.ticketTypeId] = {
+              ...checkoutTickets[item.ticketTypeId],
+              quantitySelected: item.validatedQuantity,
+            };
+          });
+          setCheckout((previousCheckout) => ({
+            ...previousCheckout,
+            fees: validationResponse.fees,
+            subtotal: validationResponse.subtotal,
+            total: validationResponse.total,
+            tickets: checkoutTickets,
+          }));
+        }
+        if (
+          validationResponse.isValid &&
+          validationResponse.message ===
+            ValidationResponseMessage.SomeTicketsUnavailable
+        ) {
+          messageApi.open({
+            key: 'creating-order-loading',
+            type: 'error',
+            content:
+              'Some tickets are unavailabe and were removed from the cart',
+          });
+        } else if (
+          validationResponse.message === 'All tickets are valid' &&
+          validationResponse.isFree
+        ) {
+          router.push(
+            `/orders/order-confirmation?orderId=${validationResponse.orderId}&isFree`
+          );
+        } else if (
+          validationResponse.message === 'All tickets are valid' &&
+          !validationResponse.isFree
+        ) {
+          setClientSecret(validationResponse.clientSecret as string);
+          setOrderId(validationResponse.orderId as string);
+          setCurrent(current + 1);
+        } else if (!validationResponse.isValid) {
+          messageApi.open({
+            key: 'creating-order-loading',
+            type: 'error',
+            content: 'Unfortunately all tickets are sold out',
+          });
+        }
+      },
+    });
 
     messageApi.destroy('creating-order-loading');
-    if (isOrderFree) {
-      initializeFreeOrder(userDetails);
-    } else if (valid) {
-      initializeStripeDetails(userDetails);
-      setCurrent(current + 1);
-    } else {
-      setTicketTypes(ticketTypes);
-      setCheckout(orderCheckout as Checkout);
-      notification.error({
-        message: `Updated Quantity`,
-        description:
-          'Your order has been updated due to ticket availabilities. Please check and verify your updated cart.',
-        placement: 'bottom',
-        duration: 0,
-      });
-    }
   }
 
   function handleCompleteStripePayment() {
