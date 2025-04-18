@@ -16,7 +16,8 @@ import {
   ValidatedItemMessage,
   ValidationResponse,
   ValidationResponseMessage,
-} from '@/types/IntiateCheckout';
+} from '@/types/checkout';
+import { calculateFees } from '@/server/lib/checkout';
 // Define the expected Request Body structure
 
 // Initialize Stripe (use environment variables for secret key)
@@ -51,13 +52,19 @@ export default async function handler(
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
   let userId: string | null = null;
-
-  const token = await getCookie('fb-token', { req: req, res: res });
-  if (!token) {
+  // Get the user id from the cookie
+  try {
+    const token = await getCookie('fb-token', { req: req, res: res });
+    if (!token) {
+      userId = null;
+    } else {
+      const decoded = await admin.auth().verifyIdToken(token as string);
+      userId = decoded.uid;
+    }
+  } catch (error) {
+    // If there is an error, set the user id to null
+    console.error('Error in checkout initiation:', error);
     userId = null;
-  } else {
-    const decoded = await admin.auth().verifyIdToken(token as string);
-    userId = decoded.uid;
   }
 
   // TODO: Add authentication and Anonymous User Check so that we can only authenticated users hitting this endpoint
@@ -408,15 +415,6 @@ function calculateCartTotal(
     fee: parseFloat(fee.toFixed(2)),
     total: parseFloat(total.toFixed(2)),
   };
-}
-/**
- * Calculate the fees for a given subtotal
- * @param subtotal - A subtotal amount (e.g. 100 or 100 * 2)
- * @returns - The fees for the subtotal
- */
-function calculateFees(subtotal: number): number {
-  if (subtotal === 0) return 0;
-  return parseFloat((subtotal * 0.03 + 0.3).toFixed(2));
 }
 
 export enum DbOrderType {

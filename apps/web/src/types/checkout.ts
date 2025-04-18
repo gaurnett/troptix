@@ -1,7 +1,12 @@
+import {
+  TicketType as PrismaTicketTypeEnum,
+  TicketFeeStructure,
+} from '@prisma/client';
+
 export enum ValidationResponseMessage {
   SomeTicketsUnavailable = 'Some tickets were unavailable or sold out and cart was adjusted',
-  AllTicketsValidated = 'All tickets are valid',
-  AllTicketInvalid = 'All tickets are invalid',
+  AllTicketsValidated = 'Tickets are available',
+  AllTicketInvalid = 'All tickets are unavailable',
   NoTicketsSelected = 'No tickets selected',
   MissingRequiredFields = 'Missing required fields or no tickets selected',
 }
@@ -38,4 +43,26 @@ export interface ValidatedItem {
   pricePerTicket: number;
   feesPerTicket: number;
   message: ValidatedItemMessage;
+}
+
+export interface CheckoutTicket {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  saleStartDate: string; // ISO String
+  saleEndDate: string; // ISO String
+  maxAllowedToAdd: number;
+  fees: number;
+  feeStructure: TicketFeeStructure;
+  ticketType: PrismaTicketTypeEnum | null;
+  ticketQuanityLow: boolean;
+}
+
+export interface CheckoutConfigResponse {
+  tickets: CheckoutTicket[];
+  message?: string;
+  // Might want to include other relevant information like currency,
+  // currency
+  // Custom form fields set by the event owner
 }

@@ -1,10 +1,9 @@
-import { List, Typography, message } from 'antd';
+import { List, Typography } from 'antd';
 import { format } from 'date-fns';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -15,197 +14,70 @@ import { TropTixContext } from '@/components/AuthProvider';
 import { Button, ButtonWithIcon } from '@/components/ui/button';
 import { InputWithLabel } from '@/components/ui/input';
 import { TypographyH3 } from '@/components/ui/typography';
-import {
-  Checkout,
-  CheckoutTicket,
-  initializeCheckoutTicket,
-} from '@/hooks/types/Checkout';
-import { TicketsType, TicketType } from '@/hooks/types/Ticket';
-import {
-  GetPromotionsRequest,
-  GetPromotionsType,
-  getPromotions,
-} from '@/hooks/usePromotions';
-import { calculateFees, getDateFormatter } from '@/lib/utils';
+import { CheckoutTicket } from '@/types/checkout';
+import { getDateFormatter } from '@/lib/utils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { UseFormReturn } from 'react-hook-form';
 import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema';
 import { Input } from '@/components/ui/input';
+import { CheckoutConfigResponse } from '@/types/checkout';
+import { CheckoutState } from './CheckoutContainer';
 const { Paragraph } = Typography;
 
 export default function TicketsCheckoutForm({
-  event,
-  ticketTypes,
-  checkout,
+  checkoutConfig,
   setCheckout,
-  promotion,
-  setPromotion,
+  checkout,
   formMethods,
 }: {
-  event: any;
-  ticketTypes: TicketType[];
-  promotion: any;
-  setPromotion: any;
-  checkout: any;
-  setCheckout: any;
+  checkoutConfig: CheckoutConfigResponse;
+  checkout: CheckoutState;
+  setCheckout: React.Dispatch<React.SetStateAction<CheckoutState>>;
   formMethods: UseFormReturn<UserDetailsFormData>;
 }) {
-  const [promotionCode, setPromotionCode] = useState<string>();
-  const [promotionApplied, setPromotionApplied] = useState(false);
-  const [canShowMessage, setCanShowMessage] = useState(true);
   const { user } = useContext(TropTixContext);
 
-  async function applyPromotion() {
-    let ticketDiscountApplied = false;
-    ticketTypes.forEach((ticket) => {
-      if (
-        String(ticket.discountCode).toUpperCase() ===
-        String(promotionCode).toUpperCase()
-      ) {
-        message.success('Tickets unlocked');
-        ticketDiscountApplied = true;
-        setPromotionApplied(true);
-      }
-    });
-
-    if (ticketDiscountApplied) return;
-
-    if (promotionCode === undefined) {
-      if (canShowMessage) {
-        setCanShowMessage(false);
-        message
-          .error('Promotion code is empty')
-          .then(() => setCanShowMessage(true));
-      }
-      return;
-    }
-
-    if (
-      promotionApplied &&
-      String(promotion.code).toUpperCase() ===
-        String(promotionCode).toUpperCase()
-    ) {
-      if (canShowMessage) {
-        setCanShowMessage(false);
-        message
-          .error('Promotion already applied')
-          .then(() => setCanShowMessage(true));
-      }
-      return;
-    }
-
-    const getPromotionsRequest: GetPromotionsRequest = {
-      getPromotionsType: GetPromotionsType.GET_PROMOTIONS_BY_CODE,
-      eventId: event.id,
-      code: String(promotionCode).toUpperCase(),
-    };
-
-    return getPromotions(getPromotionsRequest)
-      .then((fetchedPromotion) => {
-        if (fetchedPromotion) {
-          setPromotion(fetchedPromotion);
-          setPromotionApplied(true);
-
-          message.success('Promotion code applied');
-        } else {
-          message.error('There was a problem applying promotion code.');
-        }
-      })
-      .catch((error) => {});
-  }
-
-  function handlePromotionChange(event: React.ChangeEvent<HTMLInputElement>) {
-    setPromotionCode(event.target.value);
-  }
-
-  function getPromotionPrice(price) {
-    if (promotionApplied && promotion) {
-      switch (promotion.promotionType) {
-        case 'PERCENTAGE':
-          return price - price * (promotion.value / 100);
-        case 'DOLLAR_AMOUNT':
-          return price - promotion.value;
-      }
-    }
-
-    return price;
-  }
-
-  function getFormattedCurrency(price, includePromotion = false) {
+  function getFormattedCurrency(price) {
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
     });
-
-    if (includePromotion) {
-      return formatter.format(getPromotionPrice(price));
-    }
-
     return formatter.format(price);
   }
 
   function updateCost(ticket, reduce = false) {
-    const updatedTickets: Map<string, CheckoutTicket> = new Map(
-      checkout.tickets
-    );
-    // Removed console.log to prevent unintended logging in production.
-    const currentQuantity =
-      updatedTickets.get(ticket.id)?.quantitySelected || 0;
+    const updatedTickets = { ...checkout.tickets };
+    const currentQuantity = updatedTickets[ticket.id] || 0;
     const newQuantity = reduce ? currentQuantity - 1 : currentQuantity + 1;
 
     if (newQuantity <= 0) {
-      updatedTickets.delete(ticket.id);
+      // remove the ticket from the checkout
+      delete updatedTickets[ticket.id];
     } else {
-      const existingTicketData =
-        updatedTickets.get(ticket.id) || initializeCheckoutTicket(ticket);
-      updatedTickets.set(ticket.id, {
-        ...existingTicketData,
-        quantitySelected: newQuantity,
-      });
+      updatedTickets[ticket.id] = newQuantity;
     }
-
-    setCheckout((previousCheckout) => ({
-      ...previousCheckout,
+    setCheckout({
+      ...checkout,
       tickets: updatedTickets,
-    }));
+    });
   }
 
-  function getTicketStateMessage(ticket) {
-    let quantityRemaining = ticket.quantity;
+  function getTicketStateMessage(ticket: CheckoutTicket) {
+    const now = new Date();
+    const startDate = new Date(ticket.saleStartDate);
+    const endDate = new Date(ticket.saleEndDate);
 
-    if (new Date().getTime() < new Date(ticket.saleStartDate).getTime()) {
-      return (
-        'Sale starts ' +
-        format(new Date(ticket.saleStartDate), 'MMM dd, yyyy, hh:mm a')
-      );
+    if (now < startDate) {
+      return 'Sale starts ' + format(startDate, 'MMM dd, yyyy, hh:mm a');
     }
-
-    if (new Date().getTime() > new Date(ticket.saleEndDate).getTime()) {
+    if (now > endDate) {
       return 'Sale ended';
     }
-
-    if (ticket.completedOrders !== null && ticket.pendingOrders !== null) {
-      quantityRemaining =
-        ticket.quantity - (ticket.completedOrders + ticket.pendingOrders);
-      if (quantityRemaining <= 0) {
-        return 'Sold Out';
-      }
+    // If sale is active but none can be added
+    if (ticket.maxAllowedToAdd <= 0) {
+      return 'Sold Out';
     }
-
     return undefined;
-  }
-
-  let filteredTickets = ticketTypes;
-
-  if (filteredTickets !== null && filteredTickets !== undefined) {
-    filteredTickets = filteredTickets.filter((ticket) => {
-      return (
-        (promotionApplied &&
-          String(ticket.discountCode).toUpperCase() ===
-            String(promotionCode).toUpperCase()) ||
-        !ticket.discountCode
-      );
-    });
   }
 
   return (
@@ -295,15 +167,14 @@ export default function TicketsCheckoutForm({
         </div>
         <div className="flex w-full">
           <InputWithLabel
-            onChange={handlePromotionChange}
+            // onChange={handlePromotionChange}
             name={'promotionCode'}
-            value={promotionCode}
             id={'promotionCode'}
             type={'text'}
             placeholder={'SAVE15'}
             containerClass="w-full"
           />
-          <Button onClick={applyPromotion} className="my-auto ml-2">
+          <Button onClick={() => {}} className="my-auto ml-2">
             Apply
           </Button>
         </div>
@@ -312,26 +183,15 @@ export default function TicketsCheckoutForm({
       <List
         itemLayout="vertical"
         size="large"
-        dataSource={filteredTickets}
+        dataSource={checkoutConfig.tickets}
         split={false}
-        renderItem={(ticket: TicketType, index: number) => {
-          let checkoutTicket: any;
-          if (checkout.tickets && checkout.tickets.has(ticket.id)) {
-            checkoutTicket = checkout.tickets.get(ticket.id);
-          }
+        renderItem={(ticket: CheckoutTicket, index: number) => {
           let ticketState = getTicketStateMessage(ticket);
 
-          const quantity = ticket.quantity as number;
-          const pendingOrders = ticket.pendingOrders as number;
-          const maxPurchasePerUser = ticket.maxPurchasePerUser as number;
-          const completedOrders = ticket.completedOrders as number;
+          const maxAllowedToAdd = ticket.maxAllowedToAdd;
 
           const basePrice = ticket.price ?? 0;
-          const baseFees =
-            ticket.ticketingFees === 'PASS_TICKET_FEES' &&
-            ticket.ticketType === TicketsType.PAID
-              ? calculateFees(basePrice)
-              : 0;
+          const baseFees = ticket.fees ?? 0;
 
           const displayPrice = getFormattedCurrency(basePrice);
           const displayFees = getFormattedCurrency(baseFees);
@@ -363,29 +223,22 @@ export default function TicketsCheckoutForm({
                                 className="bg-blue-500 rounded h-8 w-8"
                                 size={'sm'}
                                 disabled={
-                                  !checkoutTicket ||
-                                  checkoutTicket.quantitySelected === 0
+                                  checkout.tickets[ticket.id] === 0 ||
+                                  checkout.tickets[ticket.id] === undefined
                                 }
                                 icon={
                                   <MinusOutlined className="text-white items-center justify-center" />
                                 }
                               ></ButtonWithIcon>
                               <div className="mx-4" style={{ fontSize: 20 }}>
-                                {!checkoutTicket
-                                  ? 0
-                                  : checkoutTicket.quantitySelected}
+                                {checkout.tickets[ticket.id] ?? 0}
                               </div>
                               <ButtonWithIcon
                                 onClick={() => updateCost(ticket, false)}
                                 className="bg-blue-500 rounded h-8 w-8"
                                 disabled={
-                                  checkoutTicket &&
-                                  checkoutTicket.quantitySelected ===
-                                    Math.min(
-                                      quantity -
-                                        (completedOrders + pendingOrders),
-                                      maxPurchasePerUser
-                                    )
+                                  checkout.tickets[ticket.id] ===
+                                  maxAllowedToAdd
                                 }
                                 icon={
                                   <PlusOutlined className="text-white items-center justify-center" />
@@ -414,7 +267,7 @@ export default function TicketsCheckoutForm({
                     </div>
                     <div className="text-sm">
                       Sale ends:{' '}
-                      {getDateFormatter(new Date(ticket.saleEndDate as Date))}
+                      {getDateFormatter(new Date(ticket.saleEndDate))}
                     </div>
                     <div>
                       <Paragraph

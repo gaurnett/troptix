@@ -5,11 +5,7 @@ import { Drawer, List, Steps } from 'antd';
 import { useState } from 'react';
 import { CheckoutContainer } from './CheckoutContainer';
 
-export default function TicketDrawer({
-  event,
-  isTicketModalOpen,
-  handleCancel,
-}) {
+export default function TicketDrawer({ event, isTicketModalOpen, onClose }) {
   const [summaryDrawerOpen, setSummaryDrawerOpen] = useState(false);
 
   const closeSummary = () => {
@@ -20,10 +16,9 @@ export default function TicketDrawer({
     <CheckoutContainer
       event={event}
       isOpen={isTicketModalOpen}
-      onClose={handleCancel}
+      onClose={onClose}
     >
       {({
-        isFree,
         current,
         checkout,
         clientSecret,
@@ -31,14 +26,16 @@ export default function TicketDrawer({
         handleCompleteStripePayment,
         renderCheckoutStep,
         formMethods,
-        ticketTypes,
+        checkoutConfig,
+        cartSubtotal,
+        cartFees,
       }) => (
         <>
           <Drawer
             title="Ticket Checkout"
             closable={true}
             open={isTicketModalOpen}
-            onClose={handleCancel}
+            onClose={onClose}
             width={900}
             styles={{ body: { padding: '0' } }}
           >
@@ -63,6 +60,9 @@ export default function TicketDrawer({
               <footer className="border-t border-gray-200 px-6 pb-6">
                 <div className="flex mt-4">
                   <div>
+                    <div className="text-xl mr-2">
+                      {getFormattedCurrency(cartSubtotal + cartFees)}
+                    </div>
                     <Button
                       onClick={() => setSummaryDrawerOpen(true)}
                       variant={'ghost'}
@@ -78,7 +78,7 @@ export default function TicketDrawer({
                       onClick={formMethods.handleSubmit(handleNext)}
                       className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
                     >
-                      {isFree ? 'RSVP' : 'Continue'}
+                      {cartSubtotal === 0 ? 'RSVP' : 'Continue'}
                     </Button>
                   )}
                   {current === 1 && (
@@ -123,40 +123,26 @@ export default function TicketDrawer({
                       <List
                         itemLayout="vertical"
                         size="large"
-                        dataSource={Array.from(checkout.tickets.keys())}
+                        dataSource={Object.keys(checkout?.tickets)}
                         split={false}
                         renderItem={(id: any, index: number) => {
-                          const summary = checkout.tickets.get(id);
-                          let subtotal = 0;
-                          let quantitySelected = 0;
-                          if (summary?.subtotal) {
-                            subtotal = summary.subtotal;
-                          }
-                          let price = 0;
-                          if (ticketTypes) {
-                            const ticketType = ticketTypes.find(
-                              (ticket) => ticket.id === id
-                            );
-                            price = ticketType?.price ?? 0;
-                          }
-
-                          if (summary?.quantitySelected) {
-                            quantitySelected = summary.quantitySelected;
-                          }
+                          const quantity = checkout?.tickets[id];
+                          const ticket = checkoutConfig?.tickets.find(
+                            (ticket) => ticket.id === id
+                          );
                           return (
                             <List.Item className="mb-4" style={{ padding: 0 }}>
                               <div className="w-full flex my-4">
                                 <div className="grow">
                                   <div className="text-base">
-                                    {summary?.quantitySelected} x{' '}
-                                    {summary?.name}
+                                    {quantity} x {ticket?.name}
                                   </div>
                                 </div>
                                 <div className="ml-4">
                                   <div className="ml-4">
                                     <div className="text-base text-end">
                                       {getFormattedCurrency(
-                                        price * quantitySelected
+                                        (ticket?.price || 0) * quantity
                                       )}
                                     </div>
                                   </div>
@@ -175,6 +161,23 @@ export default function TicketDrawer({
                         }}
                       />
 
+                      <div className="w-full flex my-4">
+                        <div className="grow">
+                          <div className="text-base">Subtotal:</div>
+                          <div className="text-base">Taxes & Fees:</div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="ml-4">
+                            <div className="text-base text-end">
+                              {getFormattedCurrency(cartSubtotal)}
+                            </div>
+                            <div className="text-base text-end">
+                              {getFormattedCurrency(cartFees)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                       <div
                         style={{
                           flex: 1,
@@ -182,6 +185,18 @@ export default function TicketDrawer({
                           backgroundColor: '#D3D3D3',
                         }}
                       />
+                      <div className="w-full flex my-4">
+                        <div className="grow">
+                          <div className="text-2xl font-bold">Total:</div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="ml-4">
+                            <div className="text-2xl font-bold">
+                              {getFormattedCurrency(cartSubtotal + cartFees)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                 </div>
