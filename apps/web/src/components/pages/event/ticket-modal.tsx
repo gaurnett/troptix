@@ -11,33 +11,26 @@ import { List, Steps } from 'antd';
 import Image from 'next/image';
 import { CheckoutContainer } from './CheckoutContainer';
 
-export default function TicketModal({
-  event,
-  isTicketModalOpen,
-  handleCancel,
-}) {
+export default function TicketModal({ event, isTicketModalOpen, onClose }) {
   return (
     <CheckoutContainer
       event={event}
       isOpen={isTicketModalOpen}
-      onClose={handleCancel}
+      onClose={onClose}
     >
       {({
-        isFree,
         current,
+        checkoutConfig,
         checkout,
         clientSecret,
         handleNext,
         handleCompleteStripePayment,
         renderCheckoutStep,
         formMethods,
-        ticketTypes,
+        cartSubtotal,
+        cartFees,
       }) => (
-        <Dialog
-          open={isTicketModalOpen}
-          onOpenChange={handleCancel}
-          modal={true}
-        >
+        <Dialog open={isTicketModalOpen} onOpenChange={onClose} modal={true}>
           <DialogContent className="sm:max-w-[1080px]">
             <DialogHeader>
               <DialogTitle>Ticket Checkout</DialogTitle>
@@ -69,7 +62,7 @@ export default function TicketModal({
                           onClick={formMethods.handleSubmit(handleNext)}
                           className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
                         >
-                          {isFree ? 'RSVP' : 'Continue'}
+                          {cartSubtotal === 0 ? 'RSVP' : 'Continue'}
                         </Button>
                       )}
                       {current === 1 && (
@@ -106,7 +99,7 @@ export default function TicketModal({
 
                   <div>
                     <div className="mb-4 md:mt-4 md:mb-8 my-auto w-full">
-                      {checkout.tickets.size === 0 ? (
+                      {Object.keys(checkout?.tickets).length === 0 ? (
                         <div className="mx-auto my-auto w-full text-center justify-center align-center">
                           <ShoppingCartOutlined className="text-3xl mx-auto mt-2" />
                           <div className="text-base">Cart is empty</div>
@@ -122,40 +115,26 @@ export default function TicketModal({
                           <List
                             itemLayout="vertical"
                             size="large"
-                            dataSource={Array.from(checkout.tickets?.keys())}
+                            dataSource={Object.keys(checkout?.tickets)}
                             split={false}
-                            renderItem={(id: any, index: number) => {
-                              let price = 0;
-                              const summary = checkout.tickets.get(id);
-                              if (ticketTypes) {
-                                const ticketType = ticketTypes.find(
-                                  (ticket) => ticket.id === id
-                                );
-                                price = ticketType?.price ?? 0;
-                              }
-                              let subtotal = 0;
-                              let quantitySelected = 0;
-                              if (summary?.subtotal) {
-                                subtotal = summary.subtotal;
-                              }
-
-                              if (summary?.quantitySelected) {
-                                quantitySelected = summary.quantitySelected;
-                              }
+                            renderItem={(id: string) => {
+                              const quantity = checkout?.tickets[id];
+                              const ticket = checkoutConfig?.tickets.find(
+                                (ticket) => ticket.id === id
+                              );
                               return (
                                 <List.Item style={{ padding: 0 }}>
                                   <div className="w-full flex my-4">
                                     <div className="grow">
                                       <div className="text-sm">
-                                        {summary?.quantitySelected} x{' '}
-                                        {summary?.name}
+                                        {quantity} x {ticket?.name}
                                       </div>
                                     </div>
                                     <div className="ml-4">
                                       <div className="ml-4">
                                         <div className="text-sm text-end">
                                           {getFormattedCurrency(
-                                            price * quantitySelected
+                                            (ticket?.price || 0) * quantity
                                           )}
                                         </div>
                                       </div>
@@ -173,6 +152,45 @@ export default function TicketModal({
                               backgroundColor: '#D3D3D3',
                             }}
                           />
+
+                          <div className="w-full flex my-4">
+                            <div className="grow">
+                              <div className="text-sm">Subtotal:</div>
+                              <div className="text-sm">Taxes & Fees:</div>
+                            </div>
+                            <div className="ml-4">
+                              <div className="ml-4">
+                                <div className="text-sm text-end">
+                                  {getFormattedCurrency(cartSubtotal)}
+                                </div>
+                                <div className="text-sm text-end">
+                                  {getFormattedCurrency(cartFees)}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div
+                            style={{
+                              flex: 1,
+                              height: 1,
+                              backgroundColor: '#D3D3D3',
+                            }}
+                          />
+                          <div className="w-full flex my-4">
+                            <div className="grow">
+                              <div className="text-xl font-bold">Total:</div>
+                            </div>
+                            <div className="ml-4">
+                              <div className="ml-4">
+                                <div className="text-xl font-bold text-end">
+                                  {getFormattedCurrency(
+                                    cartSubtotal + cartFees
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
 
                           <div
                             style={{
