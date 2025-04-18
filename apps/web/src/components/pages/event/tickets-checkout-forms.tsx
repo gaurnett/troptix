@@ -20,11 +20,6 @@ import {
   CheckoutTicket,
   initializeCheckoutTicket,
 } from '@/hooks/types/Checkout';
-import {
-  Checkout,
-  CheckoutTicket,
-  initializeCheckoutTicket,
-} from '@/hooks/types/Checkout';
 import { TicketsType, TicketType } from '@/hooks/types/Ticket';
 import {
   GetPromotionsRequest,
