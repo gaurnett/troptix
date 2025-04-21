@@ -6,7 +6,12 @@ import Stripe from 'stripe';
 // Import shared types (ensure these are defined, e.g., in hooks/types/):
 import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema'; // Adjust path
 import { getCookie } from 'cookies-next';
-import { OrderStatus, TicketFeeStructure, TicketTypes } from '@prisma/client'; // Assuming you have OrderStatus enum in Prisma schema
+import {
+  OrderStatus,
+  TicketFeeStructure,
+  TicketStatus,
+  TicketTypes,
+} from '@prisma/client'; // Assuming you have OrderStatus enum in Prisma schema
 import { PrismaClient } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import admin from '@/server/lib/firebaseAdmin';
@@ -298,8 +303,18 @@ export default async function handler(
                 stripeCustomerId: customerId,
               },
             });
+          } else {
+            // Free orders need to update ticket quantity sold
+            // For each ticket in validatedItems, update the quantity sold
+            for (const ticket of response.validatedItems) {
+              await tx.ticketTypes.update({
+                where: { id: ticket.ticketTypeId },
+                data: { quantitySold: { increment: ticket.validatedQuantity } },
+              });
+            }
           }
         }
+
         return response;
       },
       {
@@ -511,6 +526,7 @@ export function getPrismaCreateOrderPayload(
         lastName: orderData.userDetails.lastName,
         email: orderData.userDetails.email,
         eventId: orderData.eventId,
+        status: isFree ? TicketStatus.AVAILABLE : TicketStatus.NOT_AVAILABLE,
       }))
     );
 
