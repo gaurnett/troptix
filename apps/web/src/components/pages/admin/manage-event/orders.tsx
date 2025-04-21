@@ -33,7 +33,7 @@ export default function OrdersPage() {
     {
       key: 'dashboard',
       label: 'Dashboard',
-      children: <OrderSummaryPage orders={orders} />,
+      children: <OrderSummaryPage orders={orders} isLoading={isPending} />,
     },
     {
       key: 'order-list',
