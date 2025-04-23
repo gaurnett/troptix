@@ -1,3 +1,4 @@
+'use client';
 export function ErrorFallback({ error, resetErrorBoundary }) {
   return (
     <section className="relative">
