@@ -1,7 +1,8 @@
 import { TropTixContext } from '@/components/AuthProvider';
 import { Spinner } from '@/components/ui/spinner';
 import { useFetchOrderById } from '@/hooks/useOrders';
-import { getDateFormatter, getFormattedCurrency } from '@/lib/utils';
+import { getDateFormatter } from '@/lib/dateUtils';
+import { getFormattedCurrency } from '@/lib/utils';
 import { Result, Table, Typography } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import Image from 'next/image';

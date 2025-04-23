@@ -15,7 +15,7 @@ import { Button, ButtonWithIcon } from '@/components/ui/button';
 import { InputWithLabel } from '@/components/ui/input';
 import { TypographyH3 } from '@/components/ui/typography';
 import { CheckoutTicket } from '@/types/checkout';
-import { getDateFormatter } from '@/lib/utils';
+import { getDateFormatter } from '@/lib/dateUtils';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { UseFormReturn } from 'react-hook-form';
 import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema';

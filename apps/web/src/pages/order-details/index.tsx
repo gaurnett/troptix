@@ -9,7 +9,8 @@ import {
   PostTicketType,
   useCreateTicket,
 } from '@/hooks/useTicket';
-import { getDateFormatter, getFormattedCurrency } from '@/lib/utils';
+import { getDateFormatter } from '@/lib/dateUtils';
+import { getFormattedCurrency } from '@/lib/utils';
 import { RedoOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, Drawer, List, Result, Typography, message } from 'antd';
