@@ -14,11 +14,8 @@ import { useEvent } from '@/hooks/useEvents';
 import { useScreenSize } from '@/hooks/useScreenSize';
 
 import { Button, Typography } from 'antd';
-import {
-  getDateRangeFormatter,
-  getFormattedCurrency,
-  getTimeRangeFormatter,
-} from '@/lib/utils';
+import { getDateRangeFormatter, getTimeRangeFormatter } from '@/lib/dateUtils';
+import { getFormattedCurrency } from '@/lib/utils';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 
 import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';

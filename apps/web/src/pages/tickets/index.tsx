@@ -1,7 +1,7 @@
 import { TropTixContext } from '@/components/AuthProvider';
 import { Spinner } from '@/components/ui/spinner';
 import { GetOrdersType, useFetchOrderById } from '@/hooks/useOrders';
-import { getDateFormatter } from '@/lib/utils';
+import { getDateFormatter } from '@/lib/dateUtils';
 import { Button, Carousel, Divider, QRCode, Result } from 'antd';
 import JsPDF from 'jspdf';
 import Link from 'next/link';

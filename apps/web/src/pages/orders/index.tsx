@@ -1,6 +1,6 @@
 import { Spinner } from '@/components/ui/spinner';
 import { useFetchUserOrders } from '@/hooks/useOrders';
-import { getDateFormatter } from '@/lib/utils';
+import { getDateFormatter } from '@/lib/dateUtils';
 import { Button, Divider, Empty, Result } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
