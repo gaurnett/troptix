@@ -1,27 +1,24 @@
-// app/organizer/events/[eventId]/_lib/data.ts
-
+// app/organizer/events/[eventId]/_lib/getEventData.ts
 import { OrderStatus, Prisma } from '@prisma/client';
-import { notFound } from 'next/navigation'; // Import notFound for error handling
-import prisma from '@/server/prisma';
+import { notFound } from 'next/navigation';
+import prisma from '@/server/prisma'; // Adjust path if needed
 
-// Define types for the data structure we'll return
 export type TicketTypeBreakdown = {
   name: string;
   sold: number;
-  fill: string; // For chart colors
+  fill: string;
 };
 
 export type DailyPerformanceDataPoint = {
   date: string;
-  tickets: number;
-  // revenue: number; // Add later if needed
+  revenue: number;
 };
 
 export type AttendeeSample = {
   id: string;
   name: string;
   ticketType: string;
-  checkedIn: boolean; // Placeholder
+  checkedIn: boolean; // Not supported yet, could use the ticket statusfield in tickets table
 };
 
 export type OrderSample = {
@@ -34,40 +31,50 @@ export type OrderSample = {
 
 export type EventOverviewData = {
   eventId: string;
-  eventName: string; // Needed for context/layout maybe
+  eventName: string;
+  isDraft: boolean;
+  eventCreatedAt: Date;
+  eventUpdatedAt: Date;
   totalRevenue: number;
   ticketsSold: number;
   capacity: number;
-  attendeeCheckinRate: number; // Placeholder rate
+  attendeeCheckinRate: number;
   ticketTypes: TicketTypeBreakdown[];
   dailyPerformanceData: DailyPerformanceDataPoint[];
   attendeesSample: AttendeeSample[];
   recentOrders: OrderSample[];
+  startTime: Date | null;
+  startDate: Date;
+  venueName: string | null;
+  venueAddress: string;
 };
 
 export const getSingleEventOverviewData = async (
   eventId: string
 ): Promise<EventOverviewData> => {
-  // --- Date Setup ---
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(today.getDate() - 30);
   thirtyDaysAgo.setHours(0, 0, 0, 0);
 
-  // Use Prisma transaction for multiple reads potentially benefiting from same snapshot
   const result = await prisma.$transaction(async (tx) => {
-    // 1. Fetch Core Event Data (Throw if not found)
+    // Fetch Event Data
     const event = await tx.events.findUnique({
       where: { id: eventId },
       select: {
         id: true,
         name: true,
+        isDraft: true,
+        createdAt: true,
+        updatedAt: true,
+        startTime: true,
+        startDate: true,
+        venue: true,
+        address: true,
         ticketTypes: {
-          // For capacity and pie chart
           select: { name: true, quantity: true, quantitySold: true },
         },
-        // Count completed orders for revenue/sold tickets (more accurate than counting Tickets if refunds exist)
         orders: {
           where: { status: OrderStatus.COMPLETED },
           select: { total: true, _count: { select: { tickets: true } } },
@@ -76,28 +83,32 @@ export const getSingleEventOverviewData = async (
     });
 
     if (!event) {
-      notFound(); // Trigger Next.js 404 page
+      notFound();
     }
 
-    // 2. Fetch Daily Ticket Counts (grouping Tickets)
-    const dailySalesGrouped = await tx.tickets.groupBy({
+    //Fetch Daily REVENUE
+    const dailyRevenueGrouped = await tx.orders.groupBy({
       by: ['createdAt'],
       where: {
-        eventId: eventId, // Filter by event
-        order: { status: OrderStatus.COMPLETED },
+        eventId: eventId,
+        status: OrderStatus.COMPLETED,
         createdAt: { gte: thirtyDaysAgo },
       },
-      _count: { id: true },
-      orderBy: { createdAt: 'asc' },
+      _sum: {
+        total: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
     });
 
-    // 3. Fetch Recent Orders (Sample)
+    // Fetch Recent Orders
     const recentOrdersRaw = await tx.orders.findMany({
-      where: { eventId: eventId, status: OrderStatus.COMPLETED }, // Fetch completed for relevance
+      where: { eventId: eventId },
       select: {
         id: true,
-        name: true, // Customer name on order
-        email: true, // Customer email
+        name: true,
+        email: true,
         total: true,
         createdAt: true,
         status: true,
@@ -106,8 +117,7 @@ export const getSingleEventOverviewData = async (
       take: 5,
     });
 
-    // 4. Fetch Recent Attendees (Sample from Tickets)
-    // NOTE: This uses ticket data as proxy - Needs 'checkedIn' field on Ticket model for real data
+    // Fetch Recent Attendees maybe remove this
     const recentTicketsRaw = await tx.tickets.findMany({
       where: {
         eventId: eventId,
@@ -115,36 +125,32 @@ export const getSingleEventOverviewData = async (
       },
       select: {
         id: true,
-        // Fetch user name/email - requires relation populated correctly
         user: { select: { name: true, email: true } },
-        // Fetch ticket type name
         ticketType: { select: { name: true } },
-        // No checkedIn field in schema - using placeholder
       },
-      orderBy: { createdAt: 'desc' }, // Get most recent tickets
+      orderBy: { createdAt: 'desc' },
       take: 5,
     });
 
-    return { event, dailySalesGrouped, recentOrdersRaw, recentTicketsRaw };
-  }); // End transaction
+    return { event, dailyRevenueGrouped, recentOrdersRaw, recentTicketsRaw };
+  });
 
-  // --- Process Results ---
-  const { event, dailySalesGrouped, recentOrdersRaw, recentTicketsRaw } =
+  const { event, dailyRevenueGrouped, recentOrdersRaw, recentTicketsRaw } =
     result;
 
-  // Calculate Stats
   const totalRevenue = event.orders.reduce(
     (sum, order) => sum + order.total,
     0
   );
   const ticketsSold = event.orders.reduce(
-    (sum, order) => sum + order._count.tickets,
+    (sum, order) => sum + (order._count?.tickets ?? 0),
     0
   );
-  const capacity = event.ticketTypes.reduce((sum, tt) => sum + tt.quantity, 0);
+  const capacity = event.ticketTypes.reduce(
+    (sum, tt) => sum + (tt.quantity ?? 0),
+    0
+  );
 
-  // Prepare Pie Chart Data
-  // Assign colors consistently - adjust based on number of types
   const chartColors = [
     'hsl(var(--chart-1))',
     'hsl(var(--chart-2))',
@@ -155,41 +161,48 @@ export const getSingleEventOverviewData = async (
   const ticketTypesForChart: TicketTypeBreakdown[] = event.ticketTypes
     .map((tt, index) => ({
       name: tt.name,
-      // Use quantitySold from TicketType if reliable, otherwise recalculate (more complex)
-      sold: tt.quantitySold ?? 0, // Default to 0 if null
-      fill: chartColors[index % chartColors.length], // Assign color cyclically
+      sold: tt.quantitySold ?? 0,
+      fill: chartColors[index % chartColors.length],
     }))
-    .filter((tt) => tt.sold > 0); // Only show types with sales in the chart
+    .filter((tt) => tt.sold > 0);
 
-  // Process Daily Sales Data (same logic as dashboard, adjusted for tickets)
-  const salesMap = new Map<string, number>();
+  // Process data to be used for the daily revenue chart
+  const revenueMap = new Map<string, number>();
   for (let i = 0; i < 30; i++) {
     const date = new Date(thirtyDaysAgo);
-    date.setDate(thirtyDaysAgo.getDate() + i + 1);
-    salesMap.set(date.toISOString().split('T')[0], 0);
+    date.setDate(thirtyDaysAgo.getDate() + i); // Corrected date iteration
+    const dateStr = date.toISOString().split('T')[0];
+    revenueMap.set(dateStr, 0);
   }
-  dailySalesGrouped.forEach((group) => {
-    const dateStr = group.createdAt.toISOString().split('T')[0];
-    if (salesMap.has(dateStr)) {
-      salesMap.set(dateStr, group._count.id);
+
+  dailyRevenueGrouped.forEach((group) => {
+    if (group.createdAt) {
+      const dateStr = group.createdAt.toISOString().split('T')[0];
+      if (revenueMap.has(dateStr)) {
+        revenueMap.set(
+          dateStr,
+          (revenueMap.get(dateStr) || 0) + (group._sum.total || 0)
+        );
+      }
     }
   });
+
   const dailyPerformanceData: DailyPerformanceDataPoint[] = Array.from(
-    salesMap.entries()
+    revenueMap.entries()
   )
-    .map(([date, tickets]) => ({ date, tickets }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .map(([date, revenue]) => ({ date, revenue }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Ensure sorted by date
 
   // Process Recent Orders
   const recentOrders: OrderSample[] = recentOrdersRaw.map((order) => ({
-    id: `#${order.id.substring(0, 6)}`, // Shorten ID for display
+    id: `#${order.id.substring(0, 6)}`,
     customerDisplay: order.name || order.email || 'N/A',
     amount: order.total,
-    date: order.createdAt?.toISOString().split('T')[0] || 'N/A',
+    date: order.createdAt?.toISOString().split('T')[0] || 'N/A', // Format date as YYYY-MM-DD
     status: order.status,
   }));
 
-  // Process Attendee Sample (Using Ticket Data as Proxy)
+  // Process Attendee Sample
   const attendeesSample: AttendeeSample[] = recentTicketsRaw.map((ticket) => ({
     id: ticket.id,
     name: ticket.user?.name || ticket.user?.email || 'Unknown Attendee',
@@ -198,11 +211,18 @@ export const getSingleEventOverviewData = async (
   }));
 
   // Placeholder Check-in Rate
-  const attendeeCheckinRate = 0; // Calculate properly if checkedIn field is added
+  const attendeeCheckinRate = 0;
 
   return {
     eventId: event.id,
     eventName: event.name,
+    isDraft: event.isDraft,
+    eventCreatedAt: event.createdAt,
+    eventUpdatedAt: event.updatedAt,
+    startTime: event.startTime,
+    startDate: event.startDate,
+    venueName: event.venue,
+    venueAddress: event.address,
     totalRevenue,
     ticketsSold,
     capacity,

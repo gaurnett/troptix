@@ -41,14 +41,12 @@ const getStatusBadgeVariant = (status: EventCardData['status']) => {
 
 // Make page component async
 export default async function AllEventsListPage() {
-  // Replace with actual auth logic
   const user = await getUserFromIdTokenCookie();
   if (!user) {
     return <div>No user found</div>;
   }
   const organizerUserId = user.uid;
 
-  // Fetch and process events - now returns grouped events
   const groupedEvents = await getAllOrganizerEvents(organizerUserId);
 
   // Define the order of statuses for rendering
@@ -80,11 +78,9 @@ export default async function AllEventsListPage() {
       {/* Events List - Grouped */}
       <div className="space-y-8">
         {' '}
-        {/* Increased spacing between groups */}
         {hasEvents ? (
           statusOrder.map((status) => {
             const events = groupedEvents[status];
-            // Only render the group if it has events
             if (events && events.length > 0) {
               return (
                 <section
@@ -97,14 +93,12 @@ export default async function AllEventsListPage() {
                   >
                     {status} Events
                   </h2>
-                  {/* Apply grid layout here */}
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
                     {events.map((event) => (
                       <Card
                         key={event.id}
                         className="overflow-hidden flex flex-col"
                       >
-                        {/* Flyer Image - Ensure it resizes well */}
                         <div className="relative w-full flex-shrink-0 aspect-video">
                           <Image
                             src={
@@ -117,7 +111,6 @@ export default async function AllEventsListPage() {
                           />
                         </div>
 
-                        {/* Event Details & Actions - Ensure it fills remaining space */}
                         <div className="flex flex-1 flex-col p-4 md:p-6">
                           <div className="flex-1">
                             <div className="flex items-start justify-between gap-2 mb-1">
@@ -147,7 +140,6 @@ export default async function AllEventsListPage() {
                               {event.description}
                             </p>
                           </div>
-                          {/* Action Buttons - Keep at the bottom */}
                           <div className="flex flex-wrap gap-2 justify-end items-center mt-auto pt-4 border-t">
                             <Button variant="outline" size="sm" asChild>
                               <Link
@@ -176,7 +168,7 @@ export default async function AllEventsListPage() {
                 </section>
               );
             }
-            return null; // Return null if group is empty
+            return null;
           })
         ) : (
           // Empty State

@@ -32,6 +32,7 @@ import admin from '@/server/lib/firebaseAdmin';
 import { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import clsx from 'clsx';
+import { redirect } from 'next/navigation';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -73,7 +74,8 @@ export default async function OrganizerDashboardPage() {
   // Fetch data using the optimized function
   const user = await getUserFromIdTokenCookie();
   if (!user) {
-    return <div>No user found</div>;
+    //  Redirect to login page
+    redirect('/auth/signin');
   }
   const dashboardData = await getOrganizerDashboardDataOptimized(user.uid);
   console.log('dashboardData', dashboardData);

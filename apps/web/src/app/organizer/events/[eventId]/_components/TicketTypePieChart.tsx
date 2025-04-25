@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 import { Pie, PieChart } from 'recharts';
-import { TrendingUp } from 'lucide-react'; // Optional icon for footer
+import { TrendingUp } from 'lucide-react';
 
 import {
   Card,
@@ -20,27 +20,19 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart';
 
-// Define the expected data structure for the chart prop
 interface TicketTypeData {
-  name: string; // Corresponds to 'browser' in example (category name)
-  sold: number; // Corresponds to 'visitors' in example (value)
+  name: string;
+  sold: number;
 }
 
 interface TicketTypePieChartProps {
   data: TicketTypeData[];
 }
 
-// --- Define Chart Configuration ---
-// 1. Define a label for the value key ('sold')
-// 2. Define label and color for each possible ticket type ('name')
-//    Map your ticket type names to the available chart colors.
 const chartConfig = {
   sold: {
-    // The dataKey for the value
     label: 'Tickets Sold',
   },
-  // --- Map YOUR ticket type names to colors ---
-  // Example mapping:
   'General Admission': {
     label: 'General Admission',
     color: 'hsl(var(--chart-1))',
@@ -50,7 +42,6 @@ const chartConfig = {
     color: 'hsl(var(--chart-2))',
   },
   'Early Bird': {
-    // Add other expected types
     label: 'Early Bird',
     color: 'hsl(var(--chart-3))',
   },
@@ -62,10 +53,7 @@ const chartConfig = {
     label: 'Comp',
     color: 'hsl(var(--chart-5))',
   },
-  // Add more mappings as needed for all your ticket types
-  // --- End Ticket Type Mapping ---
 } satisfies ChartConfig;
-// --- End Chart Configuration ---
 
 export function TicketTypePieChart({ data }: TicketTypePieChartProps) {
   const totalSold = React.useMemo(() => {
@@ -76,7 +64,7 @@ export function TicketTypePieChart({ data }: TicketTypePieChartProps) {
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
         <CardTitle>Tickets Sold by Type</CardTitle>
-        {/* Optional: Add a relevant description like event date range */}
+        {/* TODO: Add a relevant description like event date range */}
         {/* <CardDescription>For Event Duration</CardDescription> */}
       </CardHeader>
       <CardContent className="flex-1 pb-0">
@@ -90,15 +78,7 @@ export function TicketTypePieChart({ data }: TicketTypePieChartProps) {
                 cursor={false}
                 content={<ChartTooltipContent hideLabel />} // Tooltip shows value on hover
               />
-              <Pie
-                data={data}
-                dataKey="sold" // The value to plot
-                nameKey="name" // The category name (used for config lookup and label)
-                label // Enable default labels on slices
-                // Removed innerRadius, activeIndex, activeShape etc. for simpler pie
-              />
-              {/* Note: Colors are applied automatically based on matching nameKey ('name')
-                   with keys in chartConfig */}
+              <Pie data={data} dataKey="sold" nameKey="name" label />
             </PieChart>
           </ChartContainer>
         ) : (
@@ -108,10 +88,10 @@ export function TicketTypePieChart({ data }: TicketTypePieChartProps) {
         )}
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        {/* Example Footer - Adapt as needed */}
+        {/* TODO: Could a footer with a note with insights about the ticket types */}
         {/* <div className="flex items-center gap-2 font-medium leading-none">
-          VIP tickets trending <TrendingUp className="h-4 w-4" />
-        </div> */}
+            VIP tickets trending <TrendingUp className="h-4 w-4" />
+          </div> */}
         <div className="leading-none text-muted-foreground">
           Showing breakdown for {totalSold.toLocaleString()} tickets sold.
         </div>

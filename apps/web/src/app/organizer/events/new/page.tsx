@@ -1,24 +1,34 @@
 // app/organizer/events/new/page.tsx
-'use client'; // This page requires client-side interactivity
 
-import React, { useState, useCallback } from 'react';
-import Link from 'next/link';
-import { useForm, Controller } from 'react-hook-form'; // Import RHF elements (we'll use useState for now)
-// import { addDays, format } from 'date-fns'; // Added for Date Range Picker
-// import { Calendar as CalendarIcon, X } from 'lucide-react'; // Added CalendarIcon, keep X
-// import type { DateRange } from 'react-day-picker'; // Added for Date Range Picker type
+'use client';
 
-import { cn } from '@/lib/utils'; // Added for cn utility
+import React, { useState } from 'react';
+import { useForm, useFieldArray, FieldErrors } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  format,
+  setHours,
+  setMinutes,
+  setSeconds,
+  parse,
+  addDays,
+} from 'date-fns';
+import { Calendar as CalendarIcon, Edit, X } from 'lucide-react';
+import { eventFormSchema, EventFormValues } from '@/lib/schemas/eventSchema';
+import { ticketTypeSchema, TicketFormValues } from '@/lib/schemas/eventSchema';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar'; // Added for Date Range Picker
+import { Calendar } from '@/components/ui/calendar';
+import { AddTicketTypeDrawer } from '../_components/AddTicketTypeDrawer';
+
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover'; // Added for Date Range Picker
+} from '@/components/ui/popover';
+
 import {
   Card,
   CardContent,
@@ -26,8 +36,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
+
 import { Separator } from '@/components/ui/separator';
+
 import {
   Table,
   TableBody,
@@ -37,374 +48,661 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-// === Date Range Picker Component ===
-// interface DatePickerWithRangeProps
-//   extends React.HTMLAttributes<HTMLDivElement> {
-//   date: DateRange | undefined;
-//   onDateChange: (date: DateRange | undefined) => void;
-//   className?: string;
-// }
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'; // Added shadcn Form components
 
-// function DatePickerWithRange({
-//   className,
-//   date,
-//   onDateChange,
-// }: DatePickerWithRangeProps) {
-//   return (
-//     <div className={cn('grid gap-2', className)}>
-//       <Popover>
-//         <PopoverTrigger asChild>
-//           <Button
-//             id="date"
-//             variant={'outline'}
-//             className={cn(
-//               'w-full justify-start text-left font-normal', // Changed width to full
-//               !date && 'text-muted-foreground'
-//             )}
-//           >
-//             <CalendarIcon className="mr-2 h-4 w-4" /> {/* Added margin */}
-//             {date?.from ? (
-//               date.to ? (
-//                 <>
-//                   {format(date.from, 'LLL dd, y')} -{' '}
-//                   {format(date.to, 'LLL dd, y')}
-//                 </>
-//               ) : (
-//                 format(date.from, 'LLL dd, y')
-//               )
-//             ) : (
-//               <span>Pick a date range</span>
-//             )}
-//           </Button>
-//         </PopoverTrigger>
-//         <PopoverContent className="w-auto p-0" align="start">
-//           <Calendar
-//             initialFocus
-//             mode="range"
-//             defaultMonth={date?.from}
-//             selected={date}
-//             onSelect={onDateChange} // Use the passed setter
-//             numberOfMonths={2}
-//           />
-//         </PopoverContent>
-//       </Popover>
-//     </div>
-//   );
-// }
-// ===================================
+import { usePlacesWidget } from 'react-google-autocomplete';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { PlusCircle } from 'lucide-react';
 
-// Define type for quick-add tickets
-interface QuickTicketType {
-  id: number; // Simple ID for list key
-  name: string;
-  price: number;
-  quantity: number;
+const combineDateAndTime = (
+  date: Date | undefined,
+  time: string | undefined
+): Date | null => {
+  if (!date || !time) {
+    return null; // Cannot combine if either is missing
+  }
+  try {
+    // Parse time string HH:mm
+    const parsedTime = parse(time, 'HH:mm', new Date());
+    const hours = parsedTime.getHours();
+    const minutes = parsedTime.getMinutes();
+
+    // Set hours and minutes on the date object
+    let combined = setHours(date, hours);
+    combined = setMinutes(combined, minutes);
+    combined = setSeconds(combined, 0); // Set seconds to 00
+    return combined;
+  } catch (error) {
+    // Should never happen
+    console.error('Error parsing time:', time, error);
+    return null;
+  }
+};
+
+interface DatePickerProps extends React.HTMLAttributes<HTMLDivElement> {
+  date: Date | undefined;
+
+  onDateChange: (date: Date | undefined) => void;
+
+  placeholder?: string;
+}
+//TODO: Add a date picker component
+export function DatePicker({
+  date,
+  onDateChange,
+  placeholder = 'Pick a date',
+}: DatePickerProps) {
+  const isMobile = useIsMobile();
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant={'outline'}
+          className={cn(
+            'w-full justify-start text-left font-normal',
+
+            !date && 'text-muted-foreground'
+          )}
+        >
+          {!isMobile && <CalendarIcon className="mr-2 h-4 w-4 " />}
+          {date ? format(date, 'LLL dd, y') : <span>{placeholder}</span>}
+        </Button>
+      </PopoverTrigger>
+
+      <PopoverContent className="w-auto p-0" align="start">
+        <Calendar
+          mode="single"
+          selected={date}
+          onSelect={onDateChange}
+          initialFocus
+        />
+      </PopoverContent>
+    </Popover>
+  );
 }
 
 export default function CreateEventPage() {
-  // === State Management ===
-  const [eventName, setEventName] = useState('');
-  const [description, setDescription] = useState('');
-  //   const [dateRange, setDateRange] = useState<DateRange | undefined>(); // Added dateRange state
-  const [venue, setVenue] = useState('');
-  // --- Settings State ---
-  const [isPublic, setIsPublic] = useState(true);
-  const [listOnSite, setListOnSite] = useState(true);
-  const [capacity, setCapacity] = useState<number | string>('');
-  // --- Quick Add Tickets State ---
-  const [ticketName, setTicketName] = useState('');
-  const [ticketPrice, setTicketPrice] = useState<number | string>('');
-  const [ticketQuantity, setTicketQuantity] = useState<number | string>('');
-  const [addedTickets, setAddedTickets] = useState<QuickTicketType[]>([]);
-  // ============================================================
+  // === RHF Setup ===
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [editingTicketIndex, setEditingTicketIndex] = useState<number | null>(
+    null
+  );
+  const [currentTicketData, setCurrentTicketData] = useState<
+    Partial<TicketFormValues> | undefined
+  >(undefined);
 
-  // === Quick Add Ticket Handlers ===
-  const handleAddTicket = () => {
-    const priceNum = parseFloat(String(ticketPrice));
-    const quantityNum = parseInt(String(ticketQuantity), 10);
+  const form = useForm<EventFormValues>({
+    resolver: zodResolver(eventFormSchema),
 
-    if (
-      ticketName &&
-      !isNaN(priceNum) &&
-      priceNum >= 0 &&
-      !isNaN(quantityNum) &&
-      quantityNum > 0
-    ) {
-      setAddedTickets([
-        ...addedTickets,
-        {
-          id: Date.now(), // Simple unique key for list rendering
-          name: ticketName,
-          price: priceNum,
-          quantity: quantityNum,
-        },
-      ]);
-      // Reset fields
-      setTicketName('');
-      setTicketPrice('');
-      setTicketQuantity('');
+    defaultValues: {
+      eventName: '',
+      description: '',
+      organizer: '',
+      startDate: undefined,
+      startTime: '',
+      endDate: undefined,
+      endTime: '',
+      venue: '',
+      address: '',
+      country: '',
+      countryCode: '',
+      latitude: null,
+      longitude: null,
+      tickets: [],
+    },
+
+    mode: 'onChange',
+  });
+
+  const { fields, append, remove, update } = useFieldArray({
+    control: form.control,
+    name: 'tickets',
+  });
+
+  const handleOpenDrawerForNew = () => {
+    setEditingTicketIndex(null);
+    setCurrentTicketData({ name: '', price: 0, quantity: 1 });
+    setIsDrawerOpen(true);
+  };
+
+  const handleOpenDrawerForEdit = (index: number) => {
+    setEditingTicketIndex(index);
+    const ticketToEdit = fields[index];
+    setCurrentTicketData({
+      id: ticketToEdit.id,
+      name: ticketToEdit.name,
+      price: ticketToEdit.price,
+      quantity: ticketToEdit.quantity,
+      saleStartDate: ticketToEdit.saleStartDate,
+      saleStartTime: ticketToEdit.saleStartTime,
+      saleEndDate: ticketToEdit.saleEndDate,
+      saleEndTime: ticketToEdit.saleEndTime,
+      description: ticketToEdit.description,
+      maxPurchasePerUser: ticketToEdit.maxPurchasePerUser,
+    });
+    setIsDrawerOpen(true);
+  };
+
+  const handleDrawerSubmit = (ticketData: TicketFormValues) => {
+    const { id: rhfId, ...dataToSave } = ticketData;
+
+    if (editingTicketIndex !== null) {
+      update(editingTicketIndex, dataToSave);
+      console.log('Updated ticket at index', editingTicketIndex, dataToSave);
     } else {
-      // Basic validation feedback (replace with RHF validation later)
-      alert(
-        'Please enter valid ticket name, non-negative price, and positive quantity.'
-      );
+      append(dataToSave);
+      console.log('Appended new ticket:', dataToSave);
     }
   };
 
-  const handleRemoveTicket = (idToRemove: number) => {
-    setAddedTickets(addedTickets.filter((ticket) => ticket.id !== idToRemove));
-  };
-  // ==================================
+  const handlePlaceSelected = (
+    place: google.maps.places.PlaceResult | null
+  ) => {
+    if (!place) {
+      console.warn('Autocomplete returned no place data.');
+      return;
+    }
 
-  // === Form Submission (Placeholder) ===
-  const handleSaveDraft = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Saving Draft...', {
-      eventName,
-      description,
-      dateRange,
-      addedTickets,
+    console.log('Place selected:', place);
+
+    let country = '';
+    let countryCode = '';
+    let lat = 0;
+    let lng = 0;
+
+    place.address_components?.forEach((component) => {
+      if (component.types.includes('country')) {
+        country = component.long_name;
+        countryCode = component.short_name;
+      }
     });
-    alert('Save Draft clicked (check console)');
-    // Implement actual save logic here
+
+    if (place.geometry?.location) {
+      lat = place.geometry.location.lat();
+      lng = place.geometry.location.lng();
+    }
+
+    const formattedAddress = place.formatted_address ?? place.name ?? '';
+
+    form.setValue('address', formattedAddress, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+    form.setValue('country', country || undefined, { shouldDirty: true }); // Set to undefined if empty
+    form.setValue('countryCode', countryCode || undefined, {
+      shouldDirty: true,
+    });
+    form.setValue('latitude', lat, { shouldDirty: true }); // lat/lng can be null
+    form.setValue('longitude', lng, { shouldDirty: true });
+
+    if (place.name && place.name !== formattedAddress.split(',')[0]) {
+      if (!form.getValues('venue')) {
+        form.setValue('venue', place.name, { shouldDirty: true });
+      }
+    }
   };
 
-  const handlePublish = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Publishing Event...', {
-      eventName,
-      description,
-      dateRange,
-      addedTickets,
+  const { ref: placesRef } = usePlacesWidget({
+    apiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    onPlaceSelected: handlePlaceSelected,
+    options: {
+      componentRestrictions: { country: ['jm', 'us', 'ca', 'gb', 'tt'] },
+      fields: [
+        'address_components',
+        'geometry.location',
+        'formatted_address',
+        'name',
+      ],
+      types: ['geocode', 'establishment'],
+    },
+  });
+
+  const onSubmit = (data: EventFormValues) => {
+    const startDateTime = combineDateAndTime(data.startDate, data.startTime);
+    const endDateTime = combineDateAndTime(data.endDate, data.endTime);
+
+    const formattedStartDateTime = startDateTime
+      ? format(startDateTime, 'yyyy-MM-dd HH:mm:ss')
+      : null;
+    const formattedEndDateTime = endDateTime
+      ? format(endDateTime, 'yyyy-MM-dd HH:mm:ss')
+      : null;
+
+    const submissionData = {
+      ...data,
+      name: data.eventName,
+      startDate: formattedStartDateTime ?? '',
+      endDate: formattedEndDateTime ?? '',
+      startTime: '',
+      endTime: '',
+    };
+
+    Object.keys(submissionData).forEach((key) => {
+      if (submissionData[key] === undefined) {
+        delete submissionData[key];
+      }
     });
-    alert('Publish Event clicked (check console)');
-    // Implement actual publish logic + validation here
+
+    // TODO: Add logic to handle the creation of the event
+    console.log('Publishing Event (Formatted Data):', submissionData);
   };
-  // =====================================
+
+  // Add an error handler
+  const onError = (errors: FieldErrors<EventFormValues>) => {
+    console.error('Form validation errors:', errors);
+    // TODO:  add a toast notification here to show errors
+    alert('Form has validation errors. Check the console.');
+  };
 
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-bold tracking-tight">Create New Event</h1>
+      <div className="flex flex-col md:flex-row gap-8">
+        <div className="md:w-1/3 space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Event Image</CardTitle>
 
-      {/* Use form tag - handleSubmit will be added with RHF */}
-      <form className="space-y-8" onSubmit={handlePublish}>
-        {' '}
-        {/* Main Content: Details */}
-        {/* Adjusted grid: Removed flyer column, details take full width on larger screens */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Event Details</CardTitle>
-            <CardDescription>
-              Enter the core information for your event.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="eventName">Event Name</Label>
-              <Input
-                id="eventName"
-                value={eventName}
-                onChange={(e) => setEventName(e.target.value)}
-                placeholder="e.g., Annual Summer Concert"
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Tell attendees about the event..."
-                rows={4}
-              />
-            </div>
-            <div>
-              <Label htmlFor="eventDateRange">Date Range</Label>
-              {/* <DatePickerWithRange
-                date={dateRange}
-                onDateChange={setDateRange}
-                className="mt-1" // Add margin if needed
-              /> */}
-            </div>
-            <div>
-              <Label htmlFor="venue">Venue / Location</Label>
-              <Input
-                id="venue"
-                value={venue}
-                onChange={(e) => setVenue(e.target.value)}
-                placeholder="e.g., Kingston Waterfront or Online"
-                required
-              />
-            </div>
-            {/* Optional Category Select Here */}
-          </CardContent>
-        </Card>
-        {/* Separator remains */}
-        <Separator />
-        {/* Event Settings Card remains */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Event Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
-              <Label htmlFor="isPublic" className="flex flex-col space-y-1">
-                <span>Event Visibility</span>
-                <span className="font-normal leading-snug text-muted-foreground">
-                  Public events are discoverable. Private events require a
-                  direct link.
-                </span>
-              </Label>
-              {/* Replace with <Controller> for RHF */}
-              <Switch
-                id="isPublic"
-                checked={isPublic}
-                onCheckedChange={setIsPublic}
-                aria-label="Event Visibility"
-              />
-            </div>
-            <div className="flex items-center justify-between space-x-2 rounded-lg border p-4">
-              <Label htmlFor="listOnSite" className="flex flex-col space-y-1">
-                <span>List on Troptix</span>
-                <span className="font-normal leading-snug text-muted-foreground">
-                  Allow this event to be featured on the main Troptix site (if
-                  public).
-                </span>
-              </Label>
-              {/* Replace with <Controller> for RHF */}
-              <Switch
-                id="listOnSite"
-                checked={listOnSite}
-                onCheckedChange={setListOnSite}
-                aria-label="List on Troptix"
-              />
-            </div>
-            <div>
-              <Label htmlFor="capacity">
-                Total Event Capacity{' '}
-                <span className="text-xs text-muted-foreground">
-                  (Optional)
-                </span>
-              </Label>
-              <Input
-                id="capacity"
-                type="number"
-                value={capacity}
-                onChange={(e) => setCapacity(e.target.value)}
-                placeholder="e.g., 500"
-                min="0"
-              />
-            </div>
-          </CardContent>
-        </Card>
-        {/* Separator remains */}
-        <Separator />
-        {/* Quick Add Ticket Types Card remains */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Ticket Types</CardTitle>
-            <CardDescription>
-              Add at least one ticket type to sell. You can add more details
-              later.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-7">
-              <div className="sm:col-span-3">
-                <Label htmlFor="ticketName">Ticket Name</Label>
-                <Input
-                  id="ticketName"
-                  value={ticketName}
-                  onChange={(e) => setTicketName(e.target.value)}
-                  placeholder="e.g., General Admission"
-                />
-              </div>
-              <div className="sm:col-span-1">
-                <Label htmlFor="ticketPrice">Price ($)</Label>
-                <Input
-                  id="ticketPrice"
-                  value={ticketPrice}
-                  onChange={(e) => setTicketPrice(e.target.value)}
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="e.g., 25.00"
-                />
-              </div>
-              <div className="sm:col-span-1">
-                <Label htmlFor="ticketQuantity">Quantity</Label>
-                <Input
-                  id="ticketQuantity"
-                  value={ticketQuantity}
-                  onChange={(e) => setTicketQuantity(e.target.value)}
-                  type="number"
-                  min="1"
-                  placeholder="e.g., 100"
-                />
-              </div>
-              <div className="sm:col-span-2 flex items-end">
-                <Button
-                  type="button"
-                  onClick={handleAddTicket}
-                  className="w-full sm:w-auto"
-                >
-                  Add Ticket Type
-                </Button>
-              </div>
-            </div>
+              <CardDescription>
+                Upload an image for your event. (Coming soon!)
+              </CardDescription>
+            </CardHeader>
 
-            {/* List Added Tickets */}
-            {addedTickets.length > 0 && (
-              <div className="mt-6 rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Price</TableHead>
-                      <TableHead>Quantity</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {addedTickets.map((ticket) => (
-                      <TableRow key={ticket.id}>
-                        <TableCell className="font-medium">
-                          {ticket.name}
-                        </TableCell>
-                        <TableCell>${ticket.price.toFixed(2)}</TableCell>
-                        <TableCell>{ticket.quantity}</TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7"
-                            onClick={() => handleRemoveTicket(ticket.id)}
-                            type="button"
-                          >
-                            {/* <X className="h-4 w-4" /> */}
-                            <span className="sr-only">Remove</span>
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+            <CardContent>
+              <div className="flex items-center justify-center h-40 border-2 border-dashed rounded-md text-muted-foreground">
+                Image Upload Placeholder
               </div>
-            )}
-          </CardContent>
-        </Card>
-        {/* Separator remains */}
-        <Separator />
-        {/* Action Buttons remain */}
-        <div className="flex justify-end gap-2">
-          <Button variant="outline" type="button" onClick={handleSaveDraft}>
-            Save Draft
-          </Button>
-          <Button type="submit">Publish Event</Button>{' '}
-          {/* Default form submit */}
+            </CardContent>
+          </Card>
         </div>
-      </form>
+
+        {/* Right Column: Event Form */}
+
+        <div className="md:w-2/3">
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit, onError)}
+              className="space-y-8"
+            >
+              <Card>
+                <CardHeader>
+                  <CardTitle>Event Details</CardTitle>
+
+                  <CardDescription>
+                    Enter the core information for your event.
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  {/* Event Name */}
+
+                  <FormField
+                    control={form.control}
+                    name="eventName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Event Name</FormLabel>
+
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., Annual Summer Concert"
+                            {...field}
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description</FormLabel>
+
+                        <FormControl>
+                          <Textarea
+                            placeholder="Tell attendees about the event..."
+                            rows={4}
+                            {...field}
+                            value={field.value ?? ''}
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="organizer"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Organizer</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., Troptix Events"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        <FormDescription>
+                          This is the name of who is organizing the event and
+                          will be displayed to attendees.
+                        </FormDescription>
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid gap-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="startDate"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Start Date</FormLabel>
+
+                            <FormControl>
+                              <DatePicker
+                                date={field.value}
+                                onDateChange={field.onChange}
+                                placeholder="Select start date"
+                              />
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="startTime"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>Start Time</FormLabel>
+
+                            <FormControl>
+                              <Input
+                                type="time"
+                                className="w-full"
+                                {...field}
+                              />
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="endDate"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>End Date</FormLabel>
+
+                            <FormControl>
+                              <DatePicker
+                                date={field.value}
+                                onDateChange={field.onChange}
+                                placeholder="Select end date"
+                              />
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="endTime"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-col">
+                            <FormLabel>End Time</FormLabel>
+
+                            <FormControl>
+                              <Input
+                                type="time"
+                                className="w-full"
+                                {...field}
+                              />
+                            </FormControl>
+
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address / Location Details</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Start typing address, e.g., Hope Road, Kingston"
+                            {...field}
+                            ref={(el) => {
+                              field.ref(el);
+                              (
+                                placesRef as React.MutableRefObject<HTMLInputElement | null>
+                              ).current = el;
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Google Maps will suggest addresses as you type.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Venue */}
+
+                  <FormField
+                    control={form.control}
+                    name="venue"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Venue / Location</FormLabel>
+
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., Kingston Waterfront or Online"
+                            {...field}
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* <Card>
+                <CardHeader>
+                  <CardTitle>Event Settings</CardTitle>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="isPublic"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between space-x-2 rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel>Event Visibility</FormLabel>
+
+                          <FormDescription>
+                            When set to public, this event will be discoverable.
+                            When set to private, this event will require a
+                            direct link.
+                          </FormDescription>
+                        </div>
+
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            aria-label="Event Visibility"
+                          />
+                        </FormControl>
+
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="capacity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          Total Event Capacity{' '}
+                          <span className="text-xs text-muted-foreground">
+                            (Optional)
+                          </span>
+                        </FormLabel>
+
+                        <FormControl>
+                          <Input
+                            placeholder="e.g., 500"
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            value={field.value ?? ''}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+
+              <Separator /> */}
+              <Separator />
+
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Ticket Types</CardTitle>
+                      <CardDescription>
+                        Manage tickets for your event.
+                      </CardDescription>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={handleOpenDrawerForNew}
+                    >
+                      <PlusCircle className="h-4 w-4 mr-2" /> Add Ticket Type
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {fields.length > 0 ? (
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Price ($)</TableHead>
+                            <TableHead>Quantity</TableHead>
+                            <TableHead className="text-right">
+                              Actions
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {fields.map((field, index) => (
+                            <TableRow key={field.id}>
+                              <TableCell className="font-medium">
+                                {field.name}
+                              </TableCell>
+                              <TableCell>${field.price?.toFixed(2)}</TableCell>
+                              <TableCell>{field.quantity}</TableCell>
+                              <TableCell className="text-right space-x-1">
+                                {/* Edit Button -> Opens drawer */}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7"
+                                  onClick={() => handleOpenDrawerForEdit(index)}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                  <span className="sr-only">Edit</span>
+                                </Button>
+                                {/* Remove Button -> RHF remove */}
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-destructive hover:text-destructive"
+                                  onClick={() => remove(index)}
+                                  type="button"
+                                >
+                                  <X className="h-4 w-4" />
+                                  <span className="sr-only">Remove</span>
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      No ticket types added yet. Add one to publish.
+                    </p>
+                  )}
+                  {/* RHF Array Error Message */}
+                  {form.formState.errors.tickets &&
+                    !Array.isArray(form.formState.errors.tickets) && (
+                      <p className="text-sm font-medium text-destructive mt-2">
+                        {form.formState.errors.tickets.message ||
+                          form.formState.errors.tickets.root?.message}
+                      </p>
+                    )}
+                </CardContent>
+              </Card>
+
+              <div className="flex justify-end gap-2">
+                <Button type="submit">Save Event</Button>
+              </div>
+            </form>
+          </Form>
+        </div>
+      </div>{' '}
+      <AddTicketTypeDrawer
+        open={isDrawerOpen}
+        setOpen={setIsDrawerOpen}
+        onSubmit={handleDrawerSubmit} // Parent function to update RHF state
+        initialData={currentTicketData} // Pass data for editing/defaults for new
+        ticketSchema={ticketTypeSchema} // Pass schema for validation within drawer
+      />
     </div>
   );
 }

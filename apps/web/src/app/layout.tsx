@@ -25,10 +25,10 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body>
+      <body className="lg:px-10">
         {/* Providers component wraps client-side context providers */}
         <Providers>
-          {children} {/* This will render pages from both `app` and `pages` */}
+          {children}
           <Analytics />
           {shouldInjectToolbar && <VercelToolbar />}
         </Providers>
