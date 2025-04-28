@@ -31,9 +31,9 @@ export default async function EventManagementLayout({
         <div className="mb-8">
           <h2
             className="text-xl font-semibold tracking-tight truncate"
-            title={event.name}
+            title={event.eventName}
           >
-            {event.name || 'Manage Event'}
+            {event.eventName || 'Manage Event'}
           </h2>
           <p className="text-sm text-muted-foreground">Event Menu</p>
         </div>

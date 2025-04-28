@@ -5,30 +5,15 @@
 import React, { useState } from 'react';
 import { useForm, useFieldArray, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  format,
-  setHours,
-  setMinutes,
-  setSeconds,
-  parse,
-  addDays,
-} from 'date-fns';
-import { Calendar as CalendarIcon, Edit, X } from 'lucide-react';
+import { format, setHours, setMinutes, setSeconds, parse } from 'date-fns';
+import { Edit, X } from 'lucide-react';
 import { eventFormSchema, EventFormValues } from '@/lib/schemas/eventSchema';
 import { ticketTypeSchema, TicketFormValues } from '@/lib/schemas/eventSchema';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
 import { AddTicketTypeDrawer } from '../_components/AddTicketTypeDrawer';
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-
+import { DatePicker } from '@/components/DatePicker';
 import {
   Card,
   CardContent,
@@ -59,7 +44,6 @@ import {
 } from '@/components/ui/form'; // Added shadcn Form components
 
 import { usePlacesWidget } from 'react-google-autocomplete';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { PlusCircle } from 'lucide-react';
 
 const combineDateAndTime = (
@@ -87,50 +71,7 @@ const combineDateAndTime = (
   }
 };
 
-interface DatePickerProps extends React.HTMLAttributes<HTMLDivElement> {
-  date: Date | undefined;
-
-  onDateChange: (date: Date | undefined) => void;
-
-  placeholder?: string;
-}
-//TODO: Add a date picker component
-export function DatePicker({
-  date,
-  onDateChange,
-  placeholder = 'Pick a date',
-}: DatePickerProps) {
-  const isMobile = useIsMobile();
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant={'outline'}
-          className={cn(
-            'w-full justify-start text-left font-normal',
-
-            !date && 'text-muted-foreground'
-          )}
-        >
-          {!isMobile && <CalendarIcon className="mr-2 h-4 w-4 " />}
-          {date ? format(date, 'LLL dd, y') : <span>{placeholder}</span>}
-        </Button>
-      </PopoverTrigger>
-
-      <PopoverContent className="w-auto p-0" align="start">
-        <Calendar
-          mode="single"
-          selected={date}
-          onSelect={onDateChange}
-          initialFocus
-        />
-      </PopoverContent>
-    </Popover>
-  );
-}
-
 export default function CreateEventPage() {
-  // === RHF Setup ===
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingTicketIndex, setEditingTicketIndex] = useState<number | null>(
     null

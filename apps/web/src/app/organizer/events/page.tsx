@@ -175,7 +175,7 @@ export default async function AllEventsListPage() {
           <Card className="text-center p-10">
             <CardContent>
               <p className="text-muted-foreground">
-                You haven't created any events yet.
+                You haven&apos;t created any events yet.
               </p>
               <Button className="mt-4" asChild>
                 <Link href="/organizer/events/new">

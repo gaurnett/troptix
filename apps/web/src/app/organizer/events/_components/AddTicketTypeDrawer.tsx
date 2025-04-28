@@ -22,7 +22,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
-import { DatePicker } from '../new/page';
+import { DatePicker } from '@/components/DatePicker';
 import { ChevronsUpDown } from 'lucide-react';
 import {
   Form,
