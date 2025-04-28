@@ -15,6 +15,8 @@ interface Item {
 export default function AdminSidebarMobile() {
   const pathname = usePathname();
   const logoSize = 40;
+  // TODO: Add loading state
+  if (!pathname) return null;
 
   function renderItem(item: Item) {
     return (
