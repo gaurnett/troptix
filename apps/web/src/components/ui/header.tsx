@@ -6,7 +6,7 @@ import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
 import { auth } from '../../config';
 import { TropTixContext } from '../AuthProvider';
@@ -89,7 +89,7 @@ export default function Header() {
     <header
       className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${
         !top ? 'bg-white backdrop-blur-sm shadow-lg' : ''
-      } ${pathname.includes('/event') ? 'bg-white' : ''}`}
+      } ${pathname?.includes('/event') ? 'bg-white' : ''}`}
     >
       <div className="max-w-6xl mx-auto px-5 sm:px-6">
         <div className="flex items-center justify-between h-24 md:h-28">

@@ -12,6 +12,8 @@ interface Item {
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  // TODO: Add loading state
+  if (!pathname) return null;
 
   function renderItem(item: Item) {
     return (
