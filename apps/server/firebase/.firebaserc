@@ -1,9 +1,0 @@
-{
-  "projects": {
-    "default": "troptix",
-    "dev": "troptix",
-    "prod": "troptix-prod"
-  },
-  "targets": {},
-  "etags": {}
-}
