@@ -4,7 +4,7 @@ import { adminUserIds } from '@/server/lib/experimentHelper';
 
 const prismaClient = prisma as PrismaClient;
 
-export async function getAllEventsQuery(userId: string) {
+async function getAllEventsQuery(userId: string) {
   if (adminUserIds.includes(userId)) {
     return prismaClient.events.findMany({
       include: {
@@ -37,7 +37,7 @@ export async function getAllEventsQuery(userId: string) {
   });
 }
 
-export async function getEventsScannableByOrganizerIdQuery(userId: string) {
+async function getEventsScannableByOrganizerIdQuery(userId: string) {
   const organizedEvents = await prismaClient.events.findMany({
     where: {
       organizerUserId: userId,
@@ -67,7 +67,7 @@ export async function getEventsScannableByOrganizerIdQuery(userId: string) {
   return organizedEvents.concat(scannedEvents);
 }
 
-export async function getEventsByOrganizerIdQuery(userId: string) {
+async function getEventsByOrganizerIdQuery(userId: string) {
   const events = await prismaClient.events.findMany({
     where: {
       organizerUserId: userId,
@@ -97,7 +97,7 @@ export async function getEventsByOrganizerIdQuery(userId: string) {
   return events.concat(ownerEvents);
 }
 
-export async function getEventByIdQuery(id: string) {
+async function getEventByIdQuery(id: string) {
   return prismaClient.events.findUnique({
     where: {
       id: id,
@@ -155,7 +155,7 @@ export function getPrismaTicketTypeQuery(ticket) {
   return ticketInput;
 }
 
-export function getPrismaUpdateEventQuery(event) {
+function getPrismaUpdateEventQuery(event) {
   let eventInput: Prisma.EventsUpdateInput;
   eventInput = {
     imageUrl: event.imageUrl,
@@ -178,7 +178,7 @@ export function getPrismaUpdateEventQuery(event) {
   return eventInput;
 }
 
-export function getPrismaCreateStarterEventQuery(event) {
+function getPrismaCreateStarterEventQuery(event) {
   let eventInput: Prisma.EventsCreateInput;
 
   eventInput = {

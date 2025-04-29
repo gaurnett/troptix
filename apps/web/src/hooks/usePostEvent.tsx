@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 
-export async function mutateEvent(event, editEvent): Promise<any> {
+async function mutateEvent(event, editEvent): Promise<any> {
   let url = `/api/events`;
   let method = editEvent ? 'PUT' : 'POST';
 
@@ -29,7 +29,7 @@ export async function mutateEvent(event, editEvent): Promise<any> {
   }
 }
 
-export function useCreateEvent() {
+function useCreateEvent() {
   return useMutation({ mutationFn: (e) => mutateEvent(e, false) });
 }
 

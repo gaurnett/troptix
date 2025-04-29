@@ -1,12 +1,12 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Promotion } from './types/Promotion';
 
-export enum GetPromotionsType {
+enum GetPromotionsType {
   GET_ALL_PROMOTIONS_FOR_EVENT = 'GET_ALL_PROMOTIONS_FOR_EVENT',
   GET_PROMOTIONS_BY_CODE = 'GET_PROMOTIONS_BY_CODE',
 }
 
-export interface GetPromotionsRequest {
+interface GetPromotionsRequest {
   getPromotionsType: GetPromotionsType;
   eventId?: string;
   code?: string;
@@ -34,7 +34,7 @@ export function useFetchPromotionsForEvent(eventId: string) {
   });
 }
 
-export async function getPromotions({
+async function getPromotions({
   getPromotionsType,
   eventId,
   code,
@@ -76,7 +76,7 @@ export function useDeletePromotion() {
   });
 }
 
-export async function mutatePromotion(
+async function mutatePromotion(
   request: PostPromotionRequest
 ): Promise<any> {
   const url = '/api/promotions';
@@ -103,7 +103,7 @@ export async function mutatePromotion(
     });
 }
 
-export async function deletePromotion(
+async function deletePromotion(
   request: DeletePromotionRequest
 ): Promise<any> {
   const url = `/api/promotions?id=${request.id}`;

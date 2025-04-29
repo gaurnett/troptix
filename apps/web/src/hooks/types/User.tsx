@@ -26,7 +26,7 @@ enum Role {
   ORGANIZER,
 }
 
-export enum SocialMediaAccounts {
+enum SocialMediaAccounts {
   FACEBOOK = 'FACEBOOK',
   INSTAGRAM = 'INSTAGRAM',
   TIKTOK = 'TIKTOK',
@@ -73,7 +73,7 @@ export async function initializeUser(
   return user;
 }
 
-export function initializeUserWithJwtToken(token: string): User {
+function initializeUserWithJwtToken(token: string): User {
   const user: User = {
     id: '',
     jwtToken: token,

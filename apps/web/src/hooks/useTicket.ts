@@ -14,7 +14,7 @@ export interface PostTicketRequest {
   jwtToken?: string;
 }
 
-export async function mutateTicket(request: PostTicketRequest): Promise<any> {
+async function mutateTicket(request: PostTicketRequest): Promise<any> {
   let url = `/api/tickets`;
 
   try {
@@ -47,7 +47,7 @@ export function useCreateTicket() {
   });
 }
 
-export async function fetchUserTickets(userId: string): Promise<any> {
+async function fetchUserTickets(userId: string): Promise<any> {
   const url = `/api/tickets?userId=${userId}`;
 
   try {
@@ -69,7 +69,7 @@ export async function fetchUserTickets(userId: string): Promise<any> {
   }
 }
 
-export function useFetchUserTickets() {
+function useFetchUserTickets() {
   const { user } = useContext(TropTixContext);
   const userId = user.id;
   return useQuery({

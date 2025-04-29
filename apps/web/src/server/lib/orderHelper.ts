@@ -1,13 +1,13 @@
 import { OrderStatus, Prisma, TicketStatus, TicketType } from '@prisma/client';
 import { buffer } from 'micro';
 
-export const config = {
+const config = {
   api: {
     bodyParser: false,
   },
 };
 
-export async function getBuffer(request) {
+async function getBuffer(request) {
   const buf = await buffer(request);
   return buf;
 }

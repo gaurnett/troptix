@@ -95,7 +95,7 @@ export const useUpdateEvent = () => {
 };
 
 // Delete an event
-export const useDeleteEvent = () => {
+const useDeleteEvent = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {

@@ -3,36 +3,36 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useContext } from 'react';
 import { SocialMediaAccount, User } from './types/User';
 
-export enum GetUsersType {
+enum GetUsersType {
   GET_USERS_BY_ID = 'GET_USERS_BY_ID',
 }
 
-export type GetUsersRequest = {
+type GetUsersRequest = {
   getUsersType: GetUsersType;
   userId?: string;
 };
 
-export enum PutUsersType {
+enum PutUsersType {
   PUT_USERS_USER_DETAILS = 'PUT_USERS_USER_DETAILS',
   PUT_USERS_SOCIAL_MEDIA = 'PUT_USERS_SOCIAL_MEDIA',
 }
 
-export type PutUsersRequest = {
+type PutUsersRequest = {
   putUsersType: keyof typeof PutUsersType;
   socialMediaAccount?: SocialMediaAccount;
   user?: User;
 };
 
-export enum PostUsersType {
+enum PostUsersType {
   POST_USERS_NEW_USER = 'POST_USERS_NEW_USER',
 }
 
-export type PostUsersRequest = {
+type PostUsersRequest = {
   postUsersType: keyof typeof PostUsersType;
   user?: User;
 };
 
-export function useFetchUserById(userId: string) {
+function useFetchUserById(userId: string) {
   return useQuery({
     queryKey: ['user', userId],
     queryFn: () => fetchUserById(userId),
@@ -56,7 +56,7 @@ export function useFetchUser(): {
   };
 }
 
-export async function fetchUserById(userId: string) {
+async function fetchUserById(userId: string) {
   const url = `/api/users?getUsersType=${GetUsersType.GET_USERS_BY_ID}&id=${userId}`;
 
   try {
@@ -77,7 +77,7 @@ export async function fetchUserById(userId: string) {
   }
 }
 
-export function useCreateUser(user: User) {
+function useCreateUser(user: User) {
   const request: PostUsersRequest = {
     postUsersType: PostUsersType.POST_USERS_NEW_USER,
     user: user,
@@ -85,7 +85,7 @@ export function useCreateUser(user: User) {
   return useMutation({ mutationFn: () => addUser(request) });
 }
 
-export async function addUser(request: PostUsersRequest) {
+async function addUser(request: PostUsersRequest) {
   const url = '/api/users';
 
   try {
@@ -125,7 +125,7 @@ export function useUpdateUser() {
   });
 }
 
-export async function putUsers({
+async function putUsers({
   putUsersType,
   socialMediaAccount,
   user,
@@ -159,7 +159,7 @@ export async function putUsers({
   }
 }
 
-export function useUpdateUserSocialMedia() {
+function useUpdateUserSocialMedia() {
   return useMutation({
     mutationFn: (socialMediaAccount: SocialMediaAccount) =>
       putUsers({

@@ -42,7 +42,7 @@ const priceFilterFn: FilterFn<TicketType> = (row, columnId, filterValue) => {
   return true;
 };
 
-export const columns: ColumnDef<TicketType>[] = [
+const columns: ColumnDef<TicketType>[] = [
   {
     accessorKey: 'name',
     header: 'Name',

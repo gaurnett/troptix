@@ -6,18 +6,18 @@ import { Checkout } from './types/Checkout';
 import { Promotion } from './types/Promotion';
 import { TicketType } from './types/Ticket';
 
-export enum GetTicketTypesType {
+enum GetTicketTypesType {
   GET_TICKET_TYPES_FOR_CHECKOUT = 'GET_TICKET_TYPES_FOR_CHECKOUT',
   GET_TICKET_TYPES_BY_EVENT = 'GET_TICKET_TYPES_BY_EVENT',
 }
 
-export interface GetTicketTypeRequest {
+interface GetTicketTypeRequest {
   getTicketTypesType: keyof typeof GetTicketTypesType;
   eventId?: string;
   jwtToken?: string;
 }
 
-export interface CheckOrderValidityResponse {
+interface CheckOrderValidityResponse {
   valid?: boolean;
   checkout?: Checkout;
   ticketTypes?: TicketType[];
@@ -35,7 +35,7 @@ export function useFetchTicketTypesByEvent(eventId: string) {
   });
 }
 
-export function useFetchTicketTypesForCheckout(eventId: string) {
+function useFetchTicketTypesForCheckout(eventId: string) {
   const { user } = useContext(TropTixContext);
   const getTicketTypesType = GetTicketTypesType.GET_TICKET_TYPES_FOR_CHECKOUT;
   const id = eventId;
@@ -47,7 +47,7 @@ export function useFetchTicketTypesForCheckout(eventId: string) {
   });
 }
 
-export async function checkOrderValidity(
+async function checkOrderValidity(
   eventId: string,
   jwtToken: string | undefined,
   checkout: Checkout,
@@ -106,7 +106,7 @@ export async function checkOrderValidity(
     });
 }
 
-export async function getTicketTypes({
+async function getTicketTypes({
   getTicketTypesType,
   eventId,
   jwtToken,
@@ -148,13 +148,13 @@ interface SaveTicketTypeError {
   status: number;
 }
 
-export interface SaveTicketTypeResponse {
+interface SaveTicketTypeResponse {
   success: boolean;
   data?: TicketType;
   error?: SaveTicketTypeError;
 }
 
-export async function saveTicketType(
+async function saveTicketType(
   ticketType: Partial<TicketType>,
   editTicketType: boolean
 ): Promise<SaveTicketTypeResponse> {

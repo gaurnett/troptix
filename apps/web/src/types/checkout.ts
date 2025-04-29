@@ -8,8 +8,7 @@ export enum ValidationResponseMessage {
   AllTicketsValidated = 'Tickets are available',
   AllTicketInvalid = 'All tickets are unavailable',
   NoTicketsSelected = 'No tickets selected',
-  MissingRequiredFields = 'Missing required fields or no tickets selected',
-}
+  }
 
 export interface ValidationResponse {
   isValid: boolean;

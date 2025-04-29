@@ -14,7 +14,7 @@ export enum GetOrdersType {
   GET_PENDING_ORDERS_FOR_EVENT = 'GET_PENDING_ORDERS_FOR_EVENT',
 }
 
-export interface GetOrdersRequest {
+interface GetOrdersRequest {
   getOrdersType: keyof typeof GetOrdersType;
   id?: string;
   email?: string;
@@ -22,7 +22,6 @@ export interface GetOrdersRequest {
 }
 
 export enum PostOrdersType {
-  POST_ORDERS_CREATE_CHARGE = 'POST_ORDERS_CREATE_CHARGE',
   POST_ORDERS_CREATE_ORDER = 'POST_ORDERS_CREATE_ORDER',
   POST_ORDERS_CREATE_COMPLEMENTARY_ORDER = 'POST_ORDERS_CREATE_COMPLEMENTARY_ORDER',
   POST_ORDERS_CREATE_FREE_ORDER = 'POST_ORDERS_CREATE_FREE_ORDER',
@@ -83,7 +82,7 @@ export function useFetchEventOrders(eventId: string) {
 }
 
 // fetch the events for a specific event currently
-export function useFetchPendingEventOrders(eventId: string) {
+function useFetchPendingEventOrders(eventId: string) {
   const { user } = useContext(TropTixContext);
   const getOrdersType = GetOrdersType.GET_PENDING_ORDERS_FOR_EVENT;
   const id = eventId;
@@ -95,7 +94,7 @@ export function useFetchPendingEventOrders(eventId: string) {
   });
 }
 
-export async function getOrders({
+async function getOrders({
   getOrdersType,
   id,
   email,
@@ -130,7 +129,7 @@ export async function getOrders({
   }
 }
 
-export function useCreateOrder() {
+function useCreateOrder() {
   return useMutation({
     mutationFn: async ({
       checkout,
@@ -184,7 +183,7 @@ export function useCreateComplementaryOrder() {
   });
 }
 
-export async function postOrders({
+async function postOrders({
   type,
   order,
   charge,

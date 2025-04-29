@@ -29,7 +29,7 @@ export const TropTixContext = createContext({
   loading: true,
 });
 
-export const useTropTixContext = () => useContext(TropTixContext);
+const useTropTixContext = () => useContext(TropTixContext);
 
 export default function AuthProvider({
   children,

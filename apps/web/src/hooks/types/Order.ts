@@ -9,9 +9,7 @@ type Ticket = {
 
 export enum OrderStatus {
   PENDING = 'PENDING',
-  CANCELLED = 'CANCELLED',
-  COMPLETED = 'COMPLETED',
-}
+  }
 
 export type Order = {
   id?: string;

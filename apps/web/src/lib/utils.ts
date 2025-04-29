@@ -8,11 +8,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function getDateFormatter(date: Date) {
+function getDateFormatter(date: Date) {
   return `${formatInTimeZone(date, 'America/New_York', 'MMM dd, yyyy, h:mm a')}`;
 }
 
-export function getDateRangeFormatter(start: Date, end: Date) {
+function getDateRangeFormatter(start: Date, end: Date) {
   const startDate = formatInTimeZone(
     start,
     'America/New_York',
@@ -31,7 +31,7 @@ export function getDateRangeFormatter(start: Date, end: Date) {
   return startDate;
 }
 
-export function getTimeRangeFormatter(start: Date, end: Date) {
+function getTimeRangeFormatter(start: Date, end: Date) {
   return `${formatInTimeZone(start, 'America/New_York', 'h:mm a')} - ${formatInTimeZone(end, 'America/New_York', 'h:mm a')}`;
 }
 
@@ -53,7 +53,7 @@ export function generateId() {
   return uid.rnd();
 }
 
-export function generateJwtId() {
+function generateJwtId() {
   const uid = new ShortUniqueId({ length: 16 });
 
   return uid.rnd();

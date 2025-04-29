@@ -22,7 +22,7 @@ export interface Checkout {
   tickets: Map<string, CheckoutTicket>;
 }
 
-export function initializeCheckout(user: any, eventId: string): Checkout {
+function initializeCheckout(user: any, eventId: string): Checkout {
   const checkout: Checkout = {
     id: '',
     eventId: eventId,
@@ -57,7 +57,7 @@ export interface CheckoutTicket {
   ticketType: TicketsType;
 }
 
-export function initializeCheckoutTicket(ticket): CheckoutTicket {
+function initializeCheckoutTicket(ticket): CheckoutTicket {
   const checkoutTicket: CheckoutTicket = {
     id: '',
     ticketTypeId: ticket.id,

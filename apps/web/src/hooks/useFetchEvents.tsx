@@ -6,16 +6,15 @@ export enum RequestType {
   GET_EVENTS_ALL = 'GET_EVENTS_ALL',
   GET_EVENTS_BY_ID = 'GET_EVENTS_BY_ID',
   GET_EVENTS_BY_ORGANIZER = 'GET_EVENTS_BY_ORGANIZER',
-  GET_EVENTS_SCANNABLE_BY_ORGANIZER = 'GET_EVENTS_SCANNABLE_BY_ORGANIZER',
-}
-export type GetEventsRequestType = {
+  }
+type GetEventsRequestType = {
   requestType: keyof typeof RequestType;
   id?: string;
   jwtToken?: string;
   userId?: string;
 };
 
-export async function eventFetcher({
+async function eventFetcher({
   requestType,
   id,
   jwtToken,
@@ -57,7 +56,7 @@ export async function eventFetcher({
     });
 }
 
-export function useFetchAllEvents(initialData?) {
+function useFetchAllEvents(initialData?) {
   const { user } = useContext(TropTixContext);
   const { isPending, isError, data, error } = useQuery({
     queryKey: [RequestType.GET_EVENTS_ALL],
