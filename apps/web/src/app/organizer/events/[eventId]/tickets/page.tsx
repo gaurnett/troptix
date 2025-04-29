@@ -23,7 +23,9 @@ async function fetchTicketTypes(
     const ticketTypes = await prisma.ticketTypes.findMany({
       where: {
         eventId: eventId,
-        organizerUserId: organizerUserId,
+        event: {
+          organizerUserId: organizerUserId,
+        },
       },
       select: {
         id: true,

@@ -14,26 +14,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TicketSalesChart } from './_components/TicketSalesChart';
-import {
-  ArrowUpRight,
-  DollarSign,
-  Ticket,
-  CalendarClock,
-  Banknote,
-  Users, // Added for Recent Orders
-} from 'lucide-react';
+import { ArrowUpRight, DollarSign, Ticket, CalendarClock } from 'lucide-react';
 import { getOrganizerDashboardDataOptimized } from './_lib/getDashboardData';
-import { ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-import clsx from 'clsx';
+
 import { redirect } from 'next/navigation';
 import { getUserFromIdTokenCookie } from '@/server/authUser';
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 export default async function OrganizerDashboardPage() {
   // Fetch data using the optimized function
