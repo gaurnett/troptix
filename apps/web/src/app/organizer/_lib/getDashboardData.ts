@@ -1,4 +1,3 @@
-// /lib/organizer-data.ts (or place inside app/organizer/page.tsx)
 import { PrismaClient, OrderStatus, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();

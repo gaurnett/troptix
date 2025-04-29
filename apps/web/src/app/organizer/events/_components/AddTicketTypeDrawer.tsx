@@ -1,8 +1,7 @@
-// app/organizer/events/new/_components/AddTicketTypeDrawer.tsx
 'use client';
 
-import React, { useEffect } from 'react'; // Removed useState for inputs
-import { useForm, Controller } from 'react-hook-form'; // Import useForm, Controller
+import React, { useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
@@ -32,7 +31,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'; // Import RHF/Shadcn form components
+} from '@/components/ui/form';
 import { ticketTypeSchema, TicketFormValues } from '@/lib/schemas/eventSchema';
 import { Select } from '@/components/ui/select';
 interface AddTicketTypeDrawerProps {
@@ -54,13 +53,12 @@ export function AddTicketTypeDrawer({
     defaultValues: initialData || { name: '', price: 0, quantity: 1 },
   });
 
-  // Reset form when drawer opens or initialData changes
   useEffect(() => {
     if (open) {
       console.log('Resetting drawer form with:', initialData);
       form.reset(initialData || { name: '', price: 0, quantity: 1 });
     }
-  }, [initialData, open, form]); // form.reset is stable
+  }, [initialData, open, form]);
 
   const onValidSubmit = (data: TicketFormValues) => {
     console.log('Submitting validated data from drawer:', data);
@@ -73,7 +71,6 @@ export function AddTicketTypeDrawer({
 
   const onInvalidSubmit = (errors: any) => {
     console.error('Drawer form validation errors:', errors);
-    // Errors are displayed inline via <FormMessage />
   };
 
   return (
@@ -88,15 +85,12 @@ export function AddTicketTypeDrawer({
           </SheetDescription>
         </SheetHeader>
 
-        {/* Wrap drawer content in RHF Form Provider */}
         <Form {...form}>
-          {/* Add form tag for submission trigger */}
           <form
             id="drawer-ticket-form"
             onSubmit={form.handleSubmit(onValidSubmit, onInvalidSubmit)}
             className="px-4 py-2 space-y-4 overflow-y-auto flex-grow"
           >
-            {/* Use FormField for all inputs */}
             <FormField
               control={form.control}
               name="name"
@@ -154,7 +148,6 @@ export function AddTicketTypeDrawer({
               />
             </div>
 
-            {/* Description (Moved Here) */}
             <FormField
               control={form.control}
               name="description"
@@ -174,7 +167,6 @@ export function AddTicketTypeDrawer({
               )}
             />
 
-            {/* Collapsible Advanced Options */}
             <Collapsible>
               <CollapsibleTrigger asChild>
                 <Button
@@ -186,7 +178,6 @@ export function AddTicketTypeDrawer({
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-4 space-y-4 pt-4 border-t">
-                {/* Sale Dates */}
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -259,7 +250,6 @@ export function AddTicketTypeDrawer({
                     )}
                   />
                 </div>
-                {/* Max Per User */}
                 <FormField
                   control={form.control}
                   name="maxPurchasePerUser"
@@ -308,12 +298,10 @@ export function AddTicketTypeDrawer({
                 />
               </CollapsibleContent>
             </Collapsible>
-            {/* Form submission is handled by the button in DrawerFooter */}
           </form>
         </Form>
 
         <SheetFooter className="pt-2 border-t justify-end gap-2">
-          {/* Button now submits the internal drawer form */}
           <Button type="submit" form="drawer-ticket-form">
             {initialData?.id ? 'Save Changes' : 'Add Ticket Type'}
           </Button>

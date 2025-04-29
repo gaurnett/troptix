@@ -1,4 +1,3 @@
-// app/organizer/_components/TicketSalesChart.tsx
 'use client';
 
 import { useState, useMemo } from 'react';

@@ -1,4 +1,3 @@
-// app/organizer/events/[eventId]/layout.tsx
 import React from 'react';
 import { EventSidebarNav } from './_components/EventSidebarNav'; // Client component for Nav
 import { getSingleEventOverviewData } from './_lib/getEventData'; // Assume data fetching logic is here
@@ -39,7 +38,9 @@ export default async function EventManagementLayout({
         </div>
         <EventSidebarNav navItems={eventNavItems} />
       </aside>
-      <main className="flex-1 p-6 lg:p-8 overflow-auto">{children}</main>
+      <main className="flex-1 p-6 lg:p-8 overflow-auto stable-scrollbar">
+        {children}
+      </main>
     </div>
   );
 }
