@@ -35,8 +35,6 @@
     "@stripe/stripe-js": "^2.2.0",
     "@tanstack/react-query": "^5.8.4",
     "@tanstack/react-table": "^8.21.3",
-    "@types/node": "20.6.0",
-    "@types/react": "18.2.21",
     "@vercel/analytics": "^1.1.1",
     "@vercel/node": "^5.1.14",
     "@vercel/toolbar": "^0.1.34",
@@ -78,7 +76,6 @@
     "tailwind-merge": "^3.2.0",
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "5.2.2",
     "zod": "^3.24.3"
   },
   "devDependencies": {
@@ -86,6 +83,7 @@
     "@types/node": "^22.15.3",
     "eslint-config-next": "^14.2.23",
     "knip": "^5.50.5",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@types/react": "18.2.21"
   }
 }
