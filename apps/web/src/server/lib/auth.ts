@@ -3,6 +3,7 @@ import { GetServerSidePropsContext } from 'next';
 import { getCookie } from 'cookies-next';
 import admin from './firebaseAdmin';
 import prisma from '@/server/prisma';
+import { cookies } from 'next/headers';
 
 export async function verifyUser(request): Promise<any> {
   let token = '';
@@ -58,6 +59,34 @@ export async function requireAuth(
     return { props: { user: { email: user.email, role: user.role } } };
   } catch (error) {
     return { redirect: { destination: '/auth/signin', permanent: false } };
+  }
+}
+
+export async function getUserFromIdTokenCookie() {
+  const cookieStore = cookies();
+  const idToken = cookieStore.get('fb-token')?.value; // Get the ID Token from cookie
+
+  if (!idToken) {
+    console.log('No ID token cookie found.');
+    return null;
+  }
+
+  try {
+    const decodedToken = await admin
+      .auth()
+      .verifyIdToken(idToken /*, checkRevoked = false */);
+    return decodedToken;
+  } catch (error: any) {
+    if (error.code === 'auth/id-token-expired') {
+      console.error('ID token has expired');
+    } else {
+      console.error(
+        'Error verifying ID token cookie:',
+        error.code,
+        error.message
+      );
+    }
+    return null;
   }
 }
 

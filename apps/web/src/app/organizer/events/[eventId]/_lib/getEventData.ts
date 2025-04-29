@@ -49,7 +49,8 @@ export type EventOverviewData = {
 };
 
 export const getSingleEventOverviewData = async (
-  eventId: string
+  eventId: string,
+  organizerUserId: string
 ): Promise<EventOverviewData> => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -60,7 +61,7 @@ export const getSingleEventOverviewData = async (
   const result = await prisma.$transaction(async (tx) => {
     // Fetch Event Data
     const event = await tx.events.findUnique({
-      where: { id: eventId },
+      where: { id: eventId, organizerUserId: organizerUserId },
       select: {
         id: true,
         name: true,
