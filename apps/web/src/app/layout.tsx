@@ -1,4 +1,3 @@
-// app/layout.tsx
 import React from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { VercelToolbar } from '@vercel/toolbar/next';
@@ -6,7 +5,7 @@ import { Metadata } from 'next';
 
 import Providers from './providers';
 import '../styles/globals.css';
-
+import { Toaster } from 'sonner';
 // Replace MetaHead with the App Router's Metadata API
 export const metadata: Metadata = {
   title: 'Troptix',
@@ -25,10 +24,11 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className="lg:px-10">
+      <body>
         {/* Providers component wraps client-side context providers */}
         <Providers>
           {children}
+          <Toaster />
           <Analytics />
           {shouldInjectToolbar && <VercelToolbar />}
         </Providers>

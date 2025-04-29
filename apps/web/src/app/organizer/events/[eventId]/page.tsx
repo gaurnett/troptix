@@ -1,4 +1,3 @@
-// app/organizer/events/[eventId]/page.tsx
 import Link from 'next/link';
 import {
   Card,
@@ -167,8 +166,8 @@ export default async function EventOverviewPage({
         </Card>
       </section>
 
-      {/* Todo: Logic needs to be added */}
-      <section className="flex justify-end gap-2">
+      {/* Todo: Add logic to handle different time periods */}
+      {/* <section className="flex justify-end gap-2">
         <Button variant="outline" size="sm">
           Day
         </Button>
@@ -184,9 +183,9 @@ export default async function EventOverviewPage({
         <Button variant="secondary" size="sm">
           All Time
         </Button>
-      </section>
+      </section> */}
 
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {/* <section className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg font-semibold">Revenue</CardTitle>
@@ -218,7 +217,7 @@ export default async function EventOverviewPage({
             )}
           </CardContent>
         </Card>
-      </section>
+      </section> */}
 
       <section>
         <Card>
@@ -245,14 +244,15 @@ export default async function EventOverviewPage({
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
-                <div className="relative flex-grow sm:flex-grow-0 sm:w-64">
+                {/* TODO: Add search and filter */}
+                {/* <div className="relative flex-grow sm:flex-grow-0 sm:w-64">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input placeholder="Search orders..." className="pl-8" />
                 </div>
                 <Button variant="outline" size="icon">
                   <Filter className="h-4 w-4" />
                   <span className="sr-only">Filter orders</span>
-                </Button>
+                </Button> */}
                 <Link
                   href={`/organizer/events/${eventId}/orders`}
                   passHref

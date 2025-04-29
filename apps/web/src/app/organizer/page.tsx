@@ -1,4 +1,3 @@
-// app/organizer/page.tsx
 import Link from 'next/link';
 import {
   Card,
@@ -17,7 +16,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TicketSalesChart } from './_components/TicketSalesChart'; // Import the chart component
+import { TicketSalesChart } from './_components/TicketSalesChart';
 import {
   ArrowUpRight,
   DollarSign,
@@ -25,7 +24,7 @@ import {
   CalendarClock,
   Banknote,
   Users, // Added for Recent Orders
-} from 'lucide-react'; // Icons for cards
+} from 'lucide-react';
 import { getOrganizerDashboardDataOptimized } from './_lib/getDashboardData';
 import { cookies } from 'next/headers';
 import admin from '@/server/lib/firebaseAdmin';
@@ -78,9 +77,7 @@ export default async function OrganizerDashboardPage() {
     redirect('/auth/signin');
   }
   const dashboardData = await getOrganizerDashboardDataOptimized(user.uid);
-  console.log('dashboardData', dashboardData);
 
-  // Rest of the component remains the same, consuming dashboardData...
   return (
     <div className="space-y-6">
       {' '}

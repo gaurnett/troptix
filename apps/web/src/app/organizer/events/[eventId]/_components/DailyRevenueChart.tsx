@@ -1,4 +1,3 @@
-// app/organizer/events/[eventId]/_components/DailyRevenueChart.tsx
 'use client';
 
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
@@ -8,49 +7,40 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'; // Assuming path to shadcn UI components
-
-// Define the shape of the data points specific to this chart
+} from '@/components/ui/chart';
 interface DailyRevenueDataPoint {
-  date: string; // Expecting format like "YYYY-MM-DD"
+  date: string;
   revenue: number;
 }
 
-// Define the props for this component
 interface DailyRevenueChartProps {
   data: DailyRevenueDataPoint[];
 }
 
-// Chart configuration specific to revenue
 const revenueChartConfig = {
   revenue: {
     label: 'Revenue',
-    color: 'hsl(var(--chart-2))', // Use your defined CSS variable
+    color: 'hsl(var(--chart-2))',
   },
 } satisfies ChartConfig;
 
-// Helper to format currency for the Y-axis and tooltip
 const formatCurrency = (value: number) =>
   value.toLocaleString('en-US', {
     style: 'currency',
     currency: 'USD',
-    maximumFractionDigits: 0, // Show whole dollars
+    maximumFractionDigits: 0,
   });
 
-// Helper to format date for the X-axis
 const formatDate = (value: string) => {
   try {
-    // Attempt to parse the date assuming "YYYY-MM-DD" and format
-    // Adding 'T00:00:00' helps avoid timezone issues during parsing
     return format(new Date(value + 'T00:00:00'), 'MMM d'); // e.g., "Apr 25"
   } catch (error) {
     console.error('Error formatting date:', value, error);
-    return value; // Fallback to original string if formatting fails
+    return value;
   }
 };
 
 export function DailyRevenueChart({ data }: DailyRevenueChartProps) {
-  // Handle case with no data
   if (!data || data.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-8">
@@ -83,26 +73,24 @@ export function DailyRevenueChart({ data }: DailyRevenueChartProps) {
           axisLine={false}
           tickMargin={8}
           tickFormatter={formatCurrency}
-          width={80} // Adjust width to fit currency labels
+          width={80}
         />
         <ChartTooltip
-          cursor={true} // Enable cursor line
+          cursor={true}
           content={
             <ChartTooltipContent
-              labelFormatter={formatDate} // Format date in tooltip header
+              labelFormatter={formatDate}
               formatter={(value, name) => {
-                // Format the value as currency inside the tooltip body
                 if (name === 'revenue' && typeof value === 'number') {
                   return formatCurrency(value);
                 }
                 return String(value);
               }}
-              indicator="dot" // Style of the indicator on the line
+              indicator="dot"
             />
           }
         />
         <defs>
-          {/* Define gradient */}
           <linearGradient id="fillRevenue" x1="0" y1="0" x2="0" y2="1">
             <stop
               offset="5%"
@@ -118,13 +106,12 @@ export function DailyRevenueChart({ data }: DailyRevenueChartProps) {
         </defs>
         <Area
           dataKey="revenue"
-          type="natural" // Smooth curve
-          fill="url(#fillRevenue)" // Use gradient fill
-          // fillOpacity={0.4} // Opacity handled by gradient now
+          type="monotone"
+          fill="url(#fillRevenue)"
           stroke="var(--color-revenue)"
           strokeWidth={2}
-          stackId="a" // Required for AreaChart, even with one area
-          dot={false} // Hide dots on the line unless hovered
+          stackId="a"
+          dot={false}
         />
       </AreaChart>
     </ChartContainer>

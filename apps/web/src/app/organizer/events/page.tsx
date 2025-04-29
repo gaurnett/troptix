@@ -1,4 +1,3 @@
-// app/organizer/events/page.tsx
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ import { PlusCircle, Edit, Eye, Settings } from 'lucide-react';
 import {
   getAllOrganizerEvents,
   EventCardData,
-  GroupedEvents, // Import the new type
+  GroupedEvents,
 } from '../_lib/getEventsData'; // Adjust import path
 import { getUserFromIdTokenCookie } from '../page';
 
