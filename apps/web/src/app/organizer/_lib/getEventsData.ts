@@ -1,5 +1,3 @@
-// /lib/organizer-data.ts (or place inside app/organizer/events/page.tsx)
-
 import { PrismaClient, Prisma } from '@prisma/client';
 
 import prisma from '@/server/prisma';

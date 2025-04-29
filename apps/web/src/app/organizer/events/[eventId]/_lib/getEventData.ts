@@ -1,7 +1,6 @@
-// app/organizer/events/[eventId]/_lib/getEventData.ts
 import { OrderStatus, Prisma } from '@prisma/client';
 import { notFound } from 'next/navigation';
-import prisma from '@/server/prisma'; // Adjust path if needed
+import prisma from '@/server/prisma';
 
 export type TicketTypeBreakdown = {
   name: string;
@@ -193,7 +192,6 @@ export const getSingleEventOverviewData = async (
     .map(([date, revenue]) => ({ date, revenue }))
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Ensure sorted by date
 
-  // Process Recent Orders
   const recentOrders: OrderSample[] = recentOrdersRaw.map((order) => ({
     id: `#${order.id.substring(0, 6)}`,
     customerDisplay: order.name || order.email || 'N/A',
@@ -202,7 +200,6 @@ export const getSingleEventOverviewData = async (
     status: order.status,
   }));
 
-  // Process Attendee Sample
   const attendeesSample: AttendeeSample[] = recentTicketsRaw.map((ticket) => ({
     id: ticket.id,
     name: ticket.user?.name || ticket.user?.email || 'Unknown Attendee',

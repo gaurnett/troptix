@@ -13,7 +13,7 @@ import { ErrorFallback } from '@/components/utils/ErrorFallback';
 const queryClient = new QueryClient();
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  const router = useRouter(); // Use App Router's router
+  const router = useRouter();
 
   return (
     <ConfigProvider
