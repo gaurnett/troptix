@@ -39,7 +39,7 @@ import { getSingleEventOverviewData } from './_lib/getEventData'; // Assuming yo
 
 import { TicketTypePieChart } from './_components/TicketTypePieChart';
 import { DailyRevenueChart } from './_components/DailyRevenueChart';
-import { getUserFromIdTokenCookie } from '@/server/lib/auth';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
 import { redirect } from 'next/navigation';
 
 function calculateDaysUntil(

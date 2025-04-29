@@ -2,7 +2,7 @@ import React from 'react';
 import prisma from '@/server/prisma';
 import OrderTable from './_components/OrderTable';
 import { TicketTypes } from '@prisma/client';
-import { getUserFromIdTokenCookie } from '@/server/lib/auth';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
 import { redirect } from 'next/navigation';
 
 interface FetchedTicket {

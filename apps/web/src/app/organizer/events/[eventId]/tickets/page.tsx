@@ -1,7 +1,7 @@
 import React from 'react';
 import prisma from '@/server/prisma';
 import TicketTable from './_components/TicketTable'; // Update the import path to the colocated component
-import { getUserFromIdTokenCookie } from '@/server/lib/auth';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
 import { redirect } from 'next/navigation';
 
 interface FetchedTicketType {

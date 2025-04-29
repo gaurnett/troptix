@@ -7,7 +7,7 @@ import {
   TicketTypeFormValues,
   ticketTypeSchema,
 } from '@/lib/schemas/ticketSchema';
-import { getUserFromIdTokenCookie } from '@/server/lib/auth';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
 import { redirect } from 'next/navigation';
 
 // Define the return type for actions

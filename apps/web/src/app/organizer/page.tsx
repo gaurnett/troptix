@@ -30,7 +30,7 @@ import { ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import clsx from 'clsx';
 import { redirect } from 'next/navigation';
-import { getUserFromIdTokenCookie } from '@/server/lib/auth';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

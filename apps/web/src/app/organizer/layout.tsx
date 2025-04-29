@@ -4,7 +4,7 @@
 import React from 'react';
 import { OrganizerNavbar } from '@/components/organizer-navbar';
 import { redirect } from 'next/navigation';
-import { getUserFromIdTokenCookie } from '@/server/lib/auth';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
 
 export default async function OrganizerLayout({
   children,

@@ -9,7 +9,7 @@ import {
   EventCardData,
   GroupedEvents,
 } from '../_lib/getEventsData'; // Adjust import path
-import { getUserFromIdTokenCookie } from '@/server/lib/auth';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
 import { redirect } from 'next/navigation';
 // Helper function for formatting time (optional)
 const formatEventTime = (date: Date | null): string => {
