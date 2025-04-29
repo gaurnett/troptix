@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { getFormattedCurrency } from '@/lib/utils';
-import { ShoppingCartOutlined } from '@ant-design/icons';
+import { ShoppingCart } from 'lucide-react';
 import { Drawer, List, Steps } from 'antd';
 import { useState } from 'react';
 import { CheckoutContainer } from './CheckoutContainer';
@@ -109,7 +109,7 @@ export default function TicketDrawer({ event, isTicketModalOpen, onClose }) {
                 <div>
                   {checkout.tickets.size === 0 ? (
                     <div className="mx-auto my-auto w-full text-center justify-center items-center">
-                      <ShoppingCartOutlined className="text-4xl my-auto mx-auto mt-2" />
+                      <ShoppingCart className="text-4xl my-auto mx-auto mt-2" />
                       <div className="text-xl font-bold">Cart is empty</div>
                     </div>
                   ) : (

@@ -2,7 +2,6 @@
 
 import { useContext, useEffect, useState } from 'react';
 
-import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,6 +10,7 @@ import React from 'react';
 import { auth } from '../../config';
 import { TropTixContext } from '../AuthProvider';
 import MobileMenu from './mobile-menu';
+import { ChevronDown } from 'lucide-react';
 
 export default function Header() {
   const [top, setTop] = useState<boolean>(true);
@@ -151,7 +151,7 @@ export default function Header() {
                     <Dropdown className="cursor-pointer" menu={{ items }}>
                       <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
                         <div style={{ fontSize: '16px' }}>{user.email}</div>
-                        <DownOutlined className="ml-1 text-xs" />
+                        <ChevronDown className="ml-1 text-xs" />
                       </a>
                     </Dropdown>
                   </ul>

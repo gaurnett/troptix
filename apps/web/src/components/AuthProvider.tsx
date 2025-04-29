@@ -2,8 +2,6 @@
 
 import { User, initializeUser } from '@/hooks/types/User';
 import { cn } from '@/lib/utils';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Spin } from 'antd';
 import { onIdTokenChanged } from 'firebase/auth';
 
 import { Inter } from 'next/font/google';
@@ -12,7 +10,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { auth } from '../config';
 import Cookies from 'js-cookie';
 import { useOrganizerStatus } from '@/hooks/useUser';
-
+import LoadingIndicator from '@/components/ui/loading-indicator';
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
@@ -93,9 +91,10 @@ export default function AuthProvider({
     >
       {loading && (pathname === '/' || pathname === '/home') ? (
         <>
-          <Spin
-            className="flex h-screen items-center justify-center"
-            indicator={<LoadingOutlined style={{ fontSize: 84 }} spin />}
+          <LoadingIndicator
+            thickness="border-8"
+            size="w-20 h-20"
+            className="w-full h-screen"
           />
         </>
       ) : (

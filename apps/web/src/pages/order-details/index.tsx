@@ -11,7 +11,7 @@ import {
 } from '@/hooks/useTicket';
 import { getDateFormatter } from '@/lib/dateUtils';
 import { getFormattedCurrency } from '@/lib/utils';
-import { RedoOutlined } from '@ant-design/icons';
+import { Hourglass, Loader2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, Drawer, List, Result, Typography, message } from 'antd';
 import Link from 'next/link';
@@ -134,7 +134,11 @@ export default function OrderDetailsPage() {
     return (
       <div className="md:w-1/2 mx-auto">
         <Result
-          icon={<RedoOutlined />}
+          icon={
+            <span className="inline-flex items-center justify-center">
+              <Hourglass className="text-blue-500" size={48} />
+            </span>
+          }
           title="Processing Order"
           className="mt-32"
           subTitle="Your order is currently processing so keep an eye out for your email confirmation and check back later. Please contact us if you have any further questions."
