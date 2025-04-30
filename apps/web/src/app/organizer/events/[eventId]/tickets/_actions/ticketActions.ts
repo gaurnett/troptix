@@ -7,6 +7,8 @@ import {
   TicketTypeFormValues,
   ticketTypeSchema,
 } from '@/lib/schemas/ticketSchema';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
+import { redirect } from 'next/navigation';
 
 // Define the return type for actions
 interface ActionResult {
@@ -30,6 +32,17 @@ export async function createTicketType(
   const data = validationResult.data;
 
   try {
+    const user = await getUserFromIdTokenCookie();
+    if (!user) {
+      redirect('/auth/signin');
+    }
+    // Verify user is the organizer of the event
+    const event = await prisma.events.findUnique({
+      where: { id: eventId, organizerUserId: user.uid },
+    });
+    if (!event) {
+      return { success: false, error: 'Unauthorized' };
+    }
     const ticketTypeEnum = data.price === 0 ? 'FREE' : 'PAID';
 
     await prisma.ticketTypes.create({

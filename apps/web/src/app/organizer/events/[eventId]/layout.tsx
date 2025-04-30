@@ -1,6 +1,8 @@
 import React from 'react';
 import { EventSidebarNav } from './_components/EventSidebarNav'; // Client component for Nav
 import { getSingleEventOverviewData } from './_lib/getEventData'; // Assume data fetching logic is here
+import { getUserFromIdTokenCookie } from '@/server/authUser';
+import { redirect } from 'next/navigation';
 
 export default async function EventManagementLayout({
   children,
@@ -10,7 +12,11 @@ export default async function EventManagementLayout({
   params: { eventId: string };
 }) {
   // TODO: Fetch minimal event data needed for layout context (e.g., name)
-  const event = await getSingleEventOverviewData(params.eventId);
+  const user = await getUserFromIdTokenCookie();
+  if (!user) {
+    redirect('/auth/signin');
+  }
+  const event = await getSingleEventOverviewData(params.eventId, user.uid);
 
   const eventNavItems = [
     { name: 'Overview', href: `/organizer/events/${params.eventId}` },

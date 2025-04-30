@@ -3,15 +3,14 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { PlusCircle, Edit, Eye, Settings } from 'lucide-react';
 import {
   getAllOrganizerEvents,
   EventCardData,
   GroupedEvents,
 } from '../_lib/getEventsData'; // Adjust import path
-import { getUserFromIdTokenCookie } from '../page';
-
+import { getUserFromIdTokenCookie } from '@/server/authUser';
+import { redirect } from 'next/navigation';
 // Helper function for formatting time (optional)
 const formatEventTime = (date: Date | null): string => {
   if (!date) return '';
@@ -42,7 +41,7 @@ const getStatusBadgeVariant = (status: EventCardData['status']) => {
 export default async function AllEventsListPage() {
   const user = await getUserFromIdTokenCookie();
   if (!user) {
-    return <div>No user found</div>;
+    redirect('/auth/signin');
   }
   const organizerUserId = user.uid;
 

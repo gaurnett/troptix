@@ -14,66 +14,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TicketSalesChart } from './_components/TicketSalesChart';
-import {
-  ArrowUpRight,
-  DollarSign,
-  Ticket,
-  CalendarClock,
-  Banknote,
-  Users, // Added for Recent Orders
-} from 'lucide-react';
+import { ArrowUpRight, DollarSign, Ticket, CalendarClock } from 'lucide-react';
 import { getOrganizerDashboardDataOptimized } from './_lib/getDashboardData';
-import { cookies } from 'next/headers';
-import admin from '@/server/lib/firebaseAdmin';
-import { ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-import clsx from 'clsx';
+
 import { redirect } from 'next/navigation';
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
-export async function getUserFromIdTokenCookie() {
-  const cookieStore = cookies();
-  const idToken = cookieStore.get('fb-token')?.value; // Get the ID Token from cookie
-
-  if (!idToken) {
-    console.log('No ID token cookie found.');
-    return null;
-  }
-
-  try {
-    // Verify the ID token using the ADMIN SDK
-    // Set checkRevoked to true if you implement revocation
-    const decodedToken = await admin
-      .auth()
-      .verifyIdToken(idToken /*, checkRevoked = false */);
-    console.log('ID Token verified successfully.');
-    return decodedToken;
-  } catch (error: any) {
-    // Handle specific errors if needed (e.g., token expired, invalid signature)
-    if (error.code === 'auth/id-token-expired') {
-      console.error('ID token has expired');
-    } else {
-      console.error(
-        'Error verifying ID token cookie:',
-        error.code,
-        error.message
-      );
-    }
-    return null;
-  }
-}
+import { getUserFromIdTokenCookie } from '@/server/authUser';
 
 export default async function OrganizerDashboardPage() {
   // Fetch data using the optimized function
   const user = await getUserFromIdTokenCookie();
   if (!user) {
-    //  Redirect to login page
     redirect('/auth/signin');
   }
   const dashboardData = await getOrganizerDashboardDataOptimized(user.uid);

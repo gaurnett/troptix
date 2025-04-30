@@ -3,12 +3,18 @@
 
 import React from 'react';
 import { OrganizerNavbar } from '@/components/organizer-navbar';
+import { redirect } from 'next/navigation';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
 
-export default function OrganizerLayout({
+export default async function OrganizerLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getUserFromIdTokenCookie();
+  if (!user) {
+    redirect('/auth/signin');
+  }
   return (
     <div className="flex min-h-screen flex-col">
       {' '}
