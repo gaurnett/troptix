@@ -39,6 +39,8 @@ import { getSingleEventOverviewData } from './_lib/getEventData'; // Assuming yo
 
 import { TicketTypePieChart } from './_components/TicketTypePieChart';
 import { DailyRevenueChart } from './_components/DailyRevenueChart';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
+import { redirect } from 'next/navigation';
 
 function calculateDaysUntil(
   startDate: Date | null | undefined
@@ -62,9 +64,13 @@ export default async function EventOverviewPage({
 }) {
   const eventId = params.eventId;
   let eventData;
+  const user = await getUserFromIdTokenCookie();
+  if (!user) {
+    redirect('/auth/signin');
+  }
 
   try {
-    eventData = await getSingleEventOverviewData(eventId);
+    eventData = await getSingleEventOverviewData(eventId, user.uid);
   } catch (error) {
     // TODO: Add error handling
     console.error('Failed to fetch event data:', error);

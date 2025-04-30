@@ -1,6 +1,8 @@
 import React from 'react';
 import prisma from '@/server/prisma';
 import TicketTable from './_components/TicketTable'; // Update the import path to the colocated component
+import { getUserFromIdTokenCookie } from '@/server/authUser';
+import { redirect } from 'next/navigation';
 
 interface FetchedTicketType {
   id: string;
@@ -12,12 +14,18 @@ interface FetchedTicketType {
   saleEndDate: Date;
 }
 
-async function fetchTicketTypes(eventId: string): Promise<FetchedTicketType[]> {
+async function fetchTicketTypes(
+  eventId: string,
+  organizerUserId: string
+): Promise<FetchedTicketType[]> {
   console.log(`Fetching ticket types for event: ${eventId}`);
   try {
     const ticketTypes = await prisma.ticketTypes.findMany({
       where: {
         eventId: eventId,
+        event: {
+          organizerUserId: organizerUserId,
+        },
       },
       select: {
         id: true,
@@ -49,8 +57,11 @@ export default async function EventTicketsPage({
   params,
 }: EventTicketsPageProps) {
   const { eventId } = params;
-
-  const initialTicketTypes = await fetchTicketTypes(eventId);
+  const user = await getUserFromIdTokenCookie();
+  if (!user) {
+    redirect('/auth/signin');
+  }
+  const initialTicketTypes = await fetchTicketTypes(eventId, user.uid);
 
   return (
     <div className="container mx-auto py-8">

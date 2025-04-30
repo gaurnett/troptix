@@ -6,6 +6,7 @@ import { Metadata } from 'next';
 import Providers from './providers';
 import '../styles/globals.css';
 import { Toaster } from 'sonner';
+
 // Replace MetaHead with the App Router's Metadata API
 export const metadata: Metadata = {
   title: 'Troptix',
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   // viewport: 'initial-scale=1.0, width=device-width',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
