@@ -3,15 +3,17 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { PlusCircle, Edit, Eye, Settings } from 'lucide-react';
 import {
-  getAllOrganizerEvents,
-  EventCardData,
-  GroupedEvents,
-} from '../_lib/getEventsData'; // Adjust import path
+  PlusCircle,
+  Edit,
+  Eye,
+  Settings,
+  Image as ImageIcon,
+} from 'lucide-react';
+import { getAllOrganizerEvents, EventCardData } from '../_lib/getEventsData'; // Adjust import path
 import { getUserFromIdTokenCookie } from '@/server/authUser';
 import { redirect } from 'next/navigation';
-// Helper function for formatting time (optional)
+
 const formatEventTime = (date: Date | null): string => {
   if (!date) return '';
   return date.toLocaleTimeString('en-US', {
@@ -21,7 +23,6 @@ const formatEventTime = (date: Date | null): string => {
   });
 };
 
-// Helper function for badge variants based on derived status
 const getStatusBadgeVariant = (status: EventCardData['status']) => {
   switch (status) {
     case 'Active':
@@ -37,7 +38,6 @@ const getStatusBadgeVariant = (status: EventCardData['status']) => {
   }
 };
 
-// Make page component async
 export default async function AllEventsListPage() {
   const user = await getUserFromIdTokenCookie();
   if (!user) {
@@ -47,7 +47,6 @@ export default async function AllEventsListPage() {
 
   const groupedEvents = await getAllOrganizerEvents(organizerUserId);
 
-  // Define the order of statuses for rendering
   const statusOrder: Array<EventCardData['status']> = [
     'Active',
     'Upcoming',
@@ -61,7 +60,6 @@ export default async function AllEventsListPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Your Events</h1>
         <Link href="/organizer/events/new" passHref>
@@ -73,7 +71,6 @@ export default async function AllEventsListPage() {
 
       {/* TODO: Add Filtering/Search controls here later */}
 
-      {/* Events List - Grouped */}
       <div className="space-y-8">
         {' '}
         {hasEvents ? (
@@ -98,15 +95,21 @@ export default async function AllEventsListPage() {
                         className="overflow-hidden flex flex-col"
                       >
                         <div className="relative w-full flex-shrink-0 aspect-video">
-                          <Image
-                            src={
-                              event.imageUrl ?? '/placeholder-flyer-default.png'
-                            }
-                            alt={`${event.name} Flyer`}
-                            layout="fill"
-                            objectFit="cover"
-                            className="bg-muted"
-                          />
+                          {event.imageUrl ? (
+                            <Image
+                              src={event.imageUrl}
+                              alt={`${event.name} Flyer`}
+                              layout="fill"
+                              objectFit="cover"
+                              className="bg-muted"
+                            />
+                          ) : (
+                            <div className="bg-muted w-full h-full flex items-center justify-center">
+                              <p className="text-muted-foreground">
+                                <ImageIcon className="h-10 w-10" />
+                              </p>
+                            </div>
+                          )}
                         </div>
 
                         <div className="flex flex-1 flex-col p-4 md:p-6">
@@ -169,7 +172,6 @@ export default async function AllEventsListPage() {
             return null;
           })
         ) : (
-          // Empty State
           <Card className="text-center p-10">
             <CardContent>
               <p className="text-muted-foreground">

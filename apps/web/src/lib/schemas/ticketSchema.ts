@@ -1,7 +1,10 @@
 import { z } from 'zod';
 
 // Define the enum based on your Prisma schema for TicketFeeStructure
-const TicketFeeStructure = z.enum(['ABSORB_TICKET_FEES', 'PASS_TICKET_FEES']);
+export const TicketFeeStructure = z.enum([
+  'ABSORB_TICKET_FEES',
+  'PASS_TICKET_FEES',
+]);
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);
@@ -26,11 +29,9 @@ export const ticketTypeSchema = z
       .number({ invalid_type_error: 'Max purchase must be a number.' })
       .int({ message: 'Max purchase must be a whole number.' })
       .positive({ message: 'Max purchase must be greater than zero.' }),
-    saleStartDateTime: z
-      .date({
-        required_error: 'Sale start date is required.',
-      })
-      .min(today, { message: 'Sale cannot start in the past.' }),
+    saleStartDateTime: z.date({
+      required_error: 'Sale start date is required.',
+    }),
     saleEndDateTime: z.date({ required_error: 'Sale end date is required.' }),
     ticketingFees: TicketFeeStructure,
   })
