@@ -32,14 +32,29 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { ticketTypeSchema, TicketFormValues } from '@/lib/schemas/eventSchema';
-import { Select } from '@/components/ui/select';
+import {
+  ticketTypeSchema,
+  TicketTypeFormValues,
+  TicketFeeStructure,
+} from '@/lib/schemas/ticketSchema';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { combineDateTime } from '@/lib/dateUtils';
+import { formatTime } from '@/lib/dateUtils';
+import { TicketType } from '@prisma/client';
+
 interface AddTicketTypeDrawerProps {
   open: boolean;
   setOpen: (open: boolean) => void;
-  onSubmit: (data: TicketFormValues) => void;
-  initialData?: Partial<TicketFormValues> & { id?: string };
-  ticketSchema: z.ZodType<TicketFormValues>;
+  onSubmit: (data: TicketTypeFormValues) => void;
+  initialData?: Partial<TicketTypeFormValues> & { id?: string };
+  ticketSchema: z.ZodType<TicketTypeFormValues>;
+  eventStartDate: Date;
 }
 
 export function AddTicketTypeDrawer({
@@ -47,20 +62,27 @@ export function AddTicketTypeDrawer({
   setOpen,
   onSubmit: onSubmitProp,
   initialData,
+  eventStartDate,
 }: AddTicketTypeDrawerProps) {
-  const form = useForm<TicketFormValues>({
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const defaultValues = {
+    name: 'Default Ticket',
+    price: 0,
+    quantity: 100,
+    maxPurchasePerUser: 10,
+    ticketingFees: 'PASS_TICKET_FEES' as const,
+    saleStartDateTime: today,
+    saleEndDateTime: eventStartDate || tomorrow,
+  };
+  console.log('initialData', initialData);
+  const form = useForm<TicketTypeFormValues>({
     resolver: zodResolver(ticketTypeSchema),
-    defaultValues: initialData || { name: '', price: 0, quantity: 1 },
+    defaultValues: initialData || defaultValues,
   });
 
-  useEffect(() => {
-    if (open) {
-      console.log('Resetting drawer form with:', initialData);
-      form.reset(initialData || { name: '', price: 0, quantity: 1 });
-    }
-  }, [initialData, open, form]);
-
-  const onValidSubmit = (data: TicketFormValues) => {
+  const onValidSubmit = (data: TicketTypeFormValues) => {
     console.log('Submitting validated data from drawer:', data);
     const dataToSubmit = initialData?.id
       ? { ...data, id: initialData.id }
@@ -178,78 +200,102 @@ export function AddTicketTypeDrawer({
                 </Button>
               </CollapsibleTrigger>
               <CollapsibleContent className="mt-4 space-y-4 pt-4 border-t">
-                <div className="grid grid-cols-2 gap-4">
+                <div>
                   <FormField
                     control={form.control}
-                    name="saleStartDate"
+                    name="saleStartDateTime"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>Sale Starts Date *</FormLabel>
-                        <FormControl>
-                          <DatePicker
-                            date={field.value}
-                            onDateChange={field.onChange}
-                            placeholder="Select start date"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="saleStartTime"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Sale Starts Time</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="time"
-                            {...field}
-                            value={field.value ?? ''}
-                          />
-                        </FormControl>
+                        <FormLabel>Sale Starts *</FormLabel>
+                        <div className="flex items-center gap-2">
+                          <FormControl>
+                            {/* DatePicker handles the date part */}
+                            <DatePicker
+                              date={field.value}
+                              onDateChange={(newDate) => {
+                                const currentTime = formatTime(field.value);
+                                const combined = combineDateTime(
+                                  newDate,
+                                  currentTime
+                                );
+                                field.onChange(combined);
+                              }}
+                              placeholder="Select start date"
+                            />
+                          </FormControl>
+                          <FormControl>
+                            {/* Separate input for time */}
+                            <Input
+                              type="time"
+                              defaultValue={formatTime(field.value)}
+                              onChange={(e) => {
+                                const time = e.target.value;
+                                const currentDate = field.value;
+                                const combined = combineDateTime(
+                                  currentDate,
+                                  time
+                                );
+                                field.onChange(combined);
+                              }}
+                              className="w-[120px]"
+                            />
+                          </FormControl>
+                        </div>
+                        <FormDescription className="pt-1">
+                          When tickets become available.
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="saleEndDate"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Sale Ends Date *</FormLabel>
+                <FormField
+                  control={form.control}
+                  name="saleEndDateTime"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Sale Ends *</FormLabel>
+                      <div className="flex items-center gap-2">
                         <FormControl>
+                          {/* DatePicker handles the date part */}
                           <DatePicker
                             date={field.value}
-                            onDateChange={field.onChange}
+                            onDateChange={(newDate) => {
+                              const currentTime = formatTime(field.value);
+                              const combined = combineDateTime(
+                                newDate,
+                                currentTime
+                              );
+                              field.onChange(combined);
+                            }}
                             placeholder="Select end date"
                           />
                         </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="saleEndTime"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-col">
-                        <FormLabel>Sale Ends Time</FormLabel>
                         <FormControl>
+                          {/* Separate input for time */}
                           <Input
                             type="time"
-                            {...field}
-                            value={field.value ?? ''}
+                            defaultValue={formatTime(field.value)}
+                            onChange={(e) => {
+                              const time = e.target.value;
+                              const currentDate = field.value;
+                              const combined = combineDateTime(
+                                currentDate,
+                                time
+                              );
+                              field.onChange(combined);
+                            }}
+                            className="w-[120px]"
                           />
                         </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                      </div>
+                      <FormDescription className="pt-1">
+                        When ticket sales stop.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="maxPurchasePerUser"
@@ -291,8 +337,24 @@ export function AddTicketTypeDrawer({
                           onValueChange={(value: string) =>
                             field.onChange(value)
                           }
-                        ></Select>
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select fee handling" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="PASS_TICKET_FEES">
+                              Pass fees on to buyer (Recommended)
+                            </SelectItem>
+                            <SelectItem value="ABSORB_TICKET_FEES">
+                              Absorb fees into ticket price
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                       </FormControl>
+                      <FormDescription>
+                        Choose how ticketing platform fees are handled.
+                      </FormDescription>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />

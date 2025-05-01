@@ -26,16 +26,16 @@ interface OrderTableProps {
 export default function OrderTable({ initialOrders }: OrderTableProps) {
   const [selectedOrder, setSelectedOrder] = useState<FetchedOrder | null>(null);
 
-  const handleRowClick = (order: FetchedOrder) => {
-    setSelectedOrder(order);
-  };
-
   const handleDialogClose = () => {
     setSelectedOrder(null);
   };
 
-  const columns = useMemo<ColumnDef<FetchedOrder>[]>(
-    () => [
+  const columns = useMemo<ColumnDef<FetchedOrder>[]>(() => {
+    const handleRowClick = (order: FetchedOrder) => {
+      setSelectedOrder(order);
+    };
+
+    return [
       {
         accessorKey: 'id',
         header: 'Order ID',
@@ -103,9 +103,8 @@ export default function OrderTable({ initialOrders }: OrderTableProps) {
           );
         },
       },
-    ],
-    [handleRowClick]
-  );
+    ];
+  }, []);
 
   return (
     <>
