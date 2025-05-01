@@ -44,7 +44,7 @@ export async function createEvent(
         data: {
           id: newEventId,
           organizerUserId: user.uid,
-          isDraft: false,
+          isDraft: true,
           name: data.eventName,
           description: data.description ?? '',
           organizer: data.organizer,

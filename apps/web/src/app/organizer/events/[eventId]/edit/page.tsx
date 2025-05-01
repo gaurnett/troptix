@@ -23,7 +23,6 @@ async function getEvent(eventId: string) {
 
 export default async function EditEventPage({ params }: EditEventPageProps) {
   const { eventId } = params;
-
   const event = await getEvent(eventId);
 
   if (!event) {
@@ -55,7 +54,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
       <p className="text-muted-foreground mb-6">
         Update the details for the &apos;{event?.name}&apos; event.
       </p>
-      <EventForm initialData={initialData} />
+      <EventForm initialData={initialData} eventId={eventId} />
     </div>
   );
 }

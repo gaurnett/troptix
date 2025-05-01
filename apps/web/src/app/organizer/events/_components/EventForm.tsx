@@ -212,9 +212,8 @@ export default function EventForm({ initialData, eventId }: EventFormProps) {
               ? 'Event updated successfully!'
               : 'Event created successfully!'
           );
-          // Navigate to the event details or tickets page after success
-          router.push(`/organizer/events/${result.eventId}`); // Or potentially '/organizer/events' list page
-          router.refresh(); // Refresh server components
+          router.push(`/organizer/events`);
+          router.refresh();
         } else {
           toast.error(result.error || 'An unknown error occurred.');
         }
@@ -603,7 +602,7 @@ export default function EventForm({ initialData, eventId }: EventFormProps) {
                   ) : isEditing ? (
                     'Save Changes'
                   ) : (
-                    'Create Event' // Changed from "Save Event" for clarity
+                    'Create Event'
                   )}
                 </Button>
               </div>
