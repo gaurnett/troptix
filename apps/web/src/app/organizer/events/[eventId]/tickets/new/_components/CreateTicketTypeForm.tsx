@@ -29,6 +29,7 @@ import {
   TicketTypeFormValues,
   ticketTypeSchema,
 } from '@/lib/schemas/ticketSchema';
+import { formatCurrency, combineDateTime, formatTime } from '@/lib/dateUtils';
 
 const PLATFORM_FIXED_FEE = 0.3; // $0.30
 const PLATFORM_PERCENTAGE_FEE = 0.04; // 4%
@@ -51,7 +52,7 @@ const defaultFormValues: TicketTypeFormValues = {
 
 interface CreateTicketTypeFormProps {
   eventId: string;
-  initialData?: Partial<TicketTypeFormValues> & { id?: string }; // Include optional id for updates
+  initialData?: Partial<TicketTypeFormValues> & { id?: string };
 }
 
 export function CreateTicketTypeForm({
@@ -74,14 +75,12 @@ export function CreateTicketTypeForm({
         ? new Date(initialData.saleEndDateTime)
         : defaultFormValues.saleEndDateTime,
     },
-    mode: 'onChange', // Optional: Validate on change
+    mode: 'onChange',
   });
 
-  // Watch relevant form fields for preview calculation
   const watchedPrice = form.watch('price');
   const watchedTicketingFees = form.watch('ticketingFees');
 
-  // Calculate preview values directly based on watched form values
   let calculatedBuyerPrice: number | null = null;
   let calculatedOrganizerPayout: number | null = null;
 
@@ -96,20 +95,10 @@ export function CreateTicketTypeForm({
       calculatedBuyerPrice = currentPrice + totalFee;
       calculatedOrganizerPayout = currentPrice;
     } else {
-      // ABSORB_TICKET_FEES
       calculatedBuyerPrice = currentPrice;
       calculatedOrganizerPayout = currentPrice - totalFee;
     }
   }
-
-  // Helper to format currency
-  const formatCurrency = (amount: number | null): string => {
-    if (amount === null || isNaN(amount)) return '$--.--';
-    return amount.toLocaleString('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    });
-  };
 
   const onSubmit: SubmitHandler<TicketTypeFormValues> = (values) => {
     startTransition(async () => {
@@ -137,24 +126,6 @@ export function CreateTicketTypeForm({
         toast.error('An unexpected error occurred during submission.');
       }
     });
-  };
-
-  const combineDateTime = (
-    datePart: Date | undefined,
-    timePart: string
-  ): Date | undefined => {
-    if (!datePart) return undefined;
-    const [hours, minutes] = timePart.split(':').map(Number);
-    const newDate = new Date(datePart);
-    if (!isNaN(hours) && !isNaN(minutes)) {
-      newDate.setHours(hours, minutes, 0, 0); // Set hours and minutes, reset seconds/ms
-    }
-    return newDate;
-  };
-
-  const formatTime = (date: Date | undefined): string => {
-    if (!date) return '';
-    return date.toTimeString().slice(0, 5); // Extracts HH:MM
   };
 
   return (
@@ -202,7 +173,6 @@ export function CreateTicketTypeForm({
           )}
         />
 
-        {/* Price */}
         <FormField
           control={form.control}
           name="price"
@@ -224,7 +194,6 @@ export function CreateTicketTypeForm({
           )}
         />
 
-        {/* Quantity & Max Purchase (Inline using Grid) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
@@ -270,9 +239,7 @@ export function CreateTicketTypeForm({
           />
         </div>
 
-        {/* Group Sale Dates/Times */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Sale Start Date & Time */}
           <FormField
             control={form.control}
             name="saleStartDateTime"
@@ -281,11 +248,9 @@ export function CreateTicketTypeForm({
                 <FormLabel>Sale Starts</FormLabel>
                 <div className="flex items-center gap-2">
                   <FormControl>
-                    {/* DatePicker handles the date part */}
                     <DatePicker
                       date={field.value}
                       onDateChange={(newDate) => {
-                        // Get current time from the form state (or default)
                         const currentTime = formatTime(field.value);
                         const combined = combineDateTime(newDate, currentTime);
                         field.onChange(combined); // Update RHF state with combined DateTime
@@ -294,17 +259,16 @@ export function CreateTicketTypeForm({
                     />
                   </FormControl>
                   <FormControl>
-                    {/* Separate input for time */}
                     <Input
                       type="time"
-                      defaultValue={formatTime(field.value)} // Initialize with current time
+                      defaultValue={formatTime(field.value)}
                       onChange={(e) => {
                         const time = e.target.value;
-                        const currentDate = field.value; // Get current date from RHF state
+                        const currentDate = field.value;
                         const combined = combineDateTime(currentDate, time);
                         form.setValue('saleStartDateTime', combined as Date, {
                           shouldValidate: true,
-                        }); // Update RHF state
+                        });
                       }}
                       className="w-[120px]"
                     />
@@ -318,7 +282,6 @@ export function CreateTicketTypeForm({
             )}
           />
 
-          {/* Sale End Date & Time */}
           <FormField
             control={form.control}
             name="saleEndDateTime"
@@ -362,7 +325,6 @@ export function CreateTicketTypeForm({
           />
         </div>
 
-        {/* Ticketing Fees - Conditionally render if price > 0 */}
         {(Number(watchedPrice) || 0) > 0 && (
           <FormField
             control={form.control}
@@ -403,7 +365,6 @@ export function CreateTicketTypeForm({
           />
         )}
 
-        {/* Price Preview Section - Conditionally render if price > 0 */}
         {(Number(watchedPrice) || 0) > 0 && (
           <div className="mt-4 p-4 border rounded-md bg-muted/40 space-y-2">
             <h4 className="text-sm font-medium text-muted-foreground">
@@ -428,7 +389,6 @@ export function CreateTicketTypeForm({
           </div>
         )}
 
-        {/* Submit Button with Loading State */}
         <Button type="submit" disabled={isPending}>
           {isPending ? (
             <>
