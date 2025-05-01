@@ -12,7 +12,7 @@ export interface DeleteDelegatedUserRequest {
   jwtToken?: string;
 }
 
-export async function mutateDelegatedUser(
+async function mutateDelegatedUser(
   request: PostDelegatedUserRequest
 ): Promise<any> {
   const url = '/api/delegatedUsers';
@@ -39,7 +39,7 @@ export async function mutateDelegatedUser(
     });
 }
 
-export async function deleteDelegatedUser(
+async function deleteDelegatedUser(
   request: DeleteDelegatedUserRequest
 ): Promise<any> {
   const url = `/api/delegatedUsers?id=${request.id}`;
@@ -79,7 +79,7 @@ export function useDeleteDelegatedUser() {
   });
 }
 
-export async function delegatedUserFetcher(
+async function delegatedUserFetcher(
   eventId: string,
   jwtToken: string
 ): Promise<any> {

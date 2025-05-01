@@ -1,11 +1,12 @@
 import { CustomTextArea } from '@/components/ui/input';
 import { uploadFlyerToFirebase } from '@/firebase/storage';
-import { UploadOutlined } from '@ant-design/icons';
+import { Upload as UploadIcon } from 'lucide-react';
 import type { UploadProps } from 'antd';
-import { Button, Form, Image, Upload, message } from 'antd';
+import { Form, Image, Upload, message } from 'antd';
 import { RcFile } from 'antd/es/upload';
 import { getDownloadURL } from 'firebase/storage';
 import React from 'react';
+import { Button } from '@/components/ui/button';
 
 export default function DetailsPage({ event, setEvent, updateEvent }) {
   const fileUploadUrl = '/api/fileupload';
@@ -106,7 +107,8 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
               <></>
             )}
             <Upload {...props}>
-              <Button icon={<UploadOutlined />}>
+              <Button type="button" variant="outline">
+                <UploadIcon className="w-4 h-4 mr-2" />
                 Click to upload event flyer
               </Button>
             </Upload>
@@ -152,7 +154,7 @@ export default function DetailsPage({ event, setEvent, updateEvent }) {
             onClick={() => {
               updateEvent(event);
             }}
-            type="primary"
+            type="button"
             className="px-6 py-5 shadow-md items-center bg-blue-600 hover:bg-blue-700 justify-center font-medium inline-flex"
           >
             Save Event Details

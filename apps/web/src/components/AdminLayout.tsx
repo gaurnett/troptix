@@ -1,11 +1,10 @@
-import { Menu } from 'lucide-react';
+import { Menu, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 
 import { TropTixContext } from '@/components/AuthProvider';
 import AdminSidebar from '@/components/pages/admin/navigation/AdminSidebar';
 import AdminSidebarMobile from '@/components/pages/admin/navigation/AdminSidebarMobile';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps } from 'antd';
 import { useContext } from 'react';
 import Logo from './ui/logo';
@@ -77,7 +76,7 @@ export default function AdminLayout({
               <Dropdown className="cursor-pointer" menu={{ items }}>
                 <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
                   <div style={{ fontSize: '16px' }}>{user.email}</div>
-                  <DownOutlined className="ml-1 text-xs" />
+                  <ChevronDown />
                 </a>
               </Dropdown>
             </ul>

@@ -11,12 +11,12 @@ import {
 } from '@/components/ui/form';
 
 import { TropTixContext } from '@/components/AuthProvider';
-import { Button, ButtonWithIcon } from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { InputWithLabel } from '@/components/ui/input';
 import { TypographyH3 } from '@/components/ui/typography';
 import { CheckoutTicket } from '@/types/checkout';
 import { getDateFormatter } from '@/lib/dateUtils';
-import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { Minus, Plus } from 'lucide-react';
 import { UseFormReturn } from 'react-hook-form';
 import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema';
 import { Input } from '@/components/ui/input';
@@ -210,7 +210,7 @@ export default function TicketsCheckoutForm({
                   <div className="my-auto">
                     <div className="flex h-16">
                       <div className="md:w-4/5 grow my-auto">{ticket.name}</div>
-                      <div className="md:w-1/5 flex my-auto justify-center items-center">
+                      <div className="w-auto md:w-1/5 flex flex-shrink-0 my-auto justify-center items-center">
                         <div>
                           {ticketState !== undefined ? (
                             <div className="text-center text-md font-bold">
@@ -218,32 +218,33 @@ export default function TicketsCheckoutForm({
                             </div>
                           ) : (
                             <div className="flex">
-                              <ButtonWithIcon
+                              <Button
                                 onClick={() => updateCost(ticket, true)}
-                                className="bg-blue-500 rounded h-8 w-8"
-                                size={'sm'}
+                                className="rounded !h-8 !w-8 flex-shrink-0"
                                 disabled={
                                   checkout.tickets[ticket.id] === 0 ||
                                   checkout.tickets[ticket.id] === undefined
                                 }
-                                icon={
-                                  <MinusOutlined className="text-white items-center justify-center" />
-                                }
-                              ></ButtonWithIcon>
+                              >
+                                <span>
+                                  <Minus size={14} />
+                                </span>
+                              </Button>
                               <div className="mx-4" style={{ fontSize: 20 }}>
                                 {checkout.tickets[ticket.id] ?? 0}
                               </div>
-                              <ButtonWithIcon
+                              <Button
                                 onClick={() => updateCost(ticket, false)}
-                                className="bg-blue-500 rounded h-8 w-8"
+                                className="rounded !h-8 !w-8 flex-shrink-0"
                                 disabled={
                                   checkout.tickets[ticket.id] ===
                                   maxAllowedToAdd
                                 }
-                                icon={
-                                  <PlusOutlined className="text-white items-center justify-center" />
-                                }
-                              ></ButtonWithIcon>
+                              >
+                                <span>
+                                  <Plus size={14} />
+                                </span>
+                              </Button>
                             </div>
                           )}
                         </div>

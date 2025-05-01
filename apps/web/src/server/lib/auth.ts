@@ -61,7 +61,7 @@ export async function requireAuth(
   }
 }
 
-export async function verifyJwtToken(request): Promise<any> {
+async function verifyJwtToken(request): Promise<any> {
   let token = '';
   if (request.headers.authorization) {
     const authorization = request.headers.authorization.split(' ');

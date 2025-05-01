@@ -3,7 +3,7 @@ import prisma from '@/server/prisma';
 
 const prismaClient = prisma as PrismaClient;
 
-export function addUserQuery() {}
+function addUserQuery() {}
 
 export function getPrismaUpdateSocialMediaQuery(account) {
   let socialMedia: Prisma.SocialMediaAccountsUpdateInput;

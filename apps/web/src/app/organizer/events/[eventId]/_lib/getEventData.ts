@@ -2,25 +2,25 @@ import { OrderStatus, Prisma } from '@prisma/client';
 import { notFound } from 'next/navigation';
 import prisma from '@/server/prisma';
 
-export type TicketTypeBreakdown = {
+type TicketTypeBreakdown = {
   name: string;
   sold: number;
   fill: string;
 };
 
-export type DailyPerformanceDataPoint = {
+type DailyPerformanceDataPoint = {
   date: string;
   revenue: number;
 };
 
-export type AttendeeSample = {
+type AttendeeSample = {
   id: string;
   name: string;
   ticketType: string;
   checkedIn: boolean; // Not supported yet, could use the ticket statusfield in tickets table
 };
 
-export type OrderSample = {
+type OrderSample = {
   id: string;
   customerDisplay: string;
   amount: number;
@@ -28,7 +28,7 @@ export type OrderSample = {
   status: OrderStatus;
 };
 
-export type EventOverviewData = {
+type EventOverviewData = {
   eventId: string;
   eventName: string;
   isDraft: boolean;

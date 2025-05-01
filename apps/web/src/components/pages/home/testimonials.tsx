@@ -1,8 +1,8 @@
 import { CustomInput, CustomTextArea } from '@/components/ui/input';
 import { ContactUsForm } from '@/hooks/types/Contact';
 import { PostContactRequest, useCreateContact } from '@/hooks/usePostContact';
-import { SmileOutlined } from '@ant-design/icons';
 import { Button, Result, message } from 'antd';
+import { Smile } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -146,9 +146,13 @@ export default function Testimonials() {
           </div>
 
           <div className="relative max-w-3xl md:mx-auto sm:px-6">
-            {isFormSubmitted ? (
+            {true ? (
               <Result
-                icon={<SmileOutlined />}
+                icon={
+                  <span className="inline-flex items-center justify-center">
+                    <Smile className="text-blue-500" size={48} />
+                  </span>
+                }
                 title="Submitted, thank you for your message!"
               />
             ) : (

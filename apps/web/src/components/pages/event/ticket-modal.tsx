@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { getFormattedCurrency } from '@/lib/utils';
-import { ShoppingCartOutlined } from '@ant-design/icons';
+import { ShoppingCart } from 'lucide-react';
 import { List, Steps } from 'antd';
 import Image from 'next/image';
 import { CheckoutContainer } from './CheckoutContainer';
@@ -101,7 +101,7 @@ export default function TicketModal({ event, isTicketModalOpen, onClose }) {
                     <div className="mb-4 md:mt-4 md:mb-8 my-auto w-full">
                       {Object.keys(checkout?.tickets).length === 0 ? (
                         <div className="mx-auto my-auto w-full text-center justify-center align-center">
-                          <ShoppingCartOutlined className="text-3xl mx-auto mt-2" />
+                          <ShoppingCart className="text-3xl mx-auto mt-2" />
                           <div className="text-base">Cart is empty</div>
                         </div>
                       ) : (

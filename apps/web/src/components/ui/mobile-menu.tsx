@@ -1,6 +1,5 @@
 'use client';
 
-import { DownOutlined } from '@ant-design/icons';
 import { Transition } from '@headlessui/react';
 import { Dropdown, MenuProps } from 'antd';
 import Link from 'next/link';
@@ -8,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { auth } from '../../config';
 import { TropTixContext } from '../AuthProvider';
-
+import { ChevronDown } from 'lucide-react';
 export default function MobileMenu() {
   const [mobileNavOpen, setMobileNavOpen] = useState<boolean>(false);
   const { user } = useContext(TropTixContext);
@@ -201,7 +200,7 @@ export default function MobileMenu() {
                 <Dropdown className="cursor-pointer" menu={{ items }}>
                   <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
                     <div style={{ fontSize: '16px' }}>{user.email}</div>
-                    <DownOutlined className="ml-1 text-xs my-auto" />
+                    <ChevronDown className="ml-1 text-xs my-auto" />
                   </a>
                 </Dropdown>
               </li>
