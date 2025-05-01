@@ -200,8 +200,8 @@ export default function EventForm({ initialData, eventId }: EventFormProps) {
     startTransition(async () => {
       try {
         let result;
-        if (isEditing && initialData?.id) {
-          result = await updateEvent(initialData.id, data);
+        if (isEditing && eventId) {
+          result = await updateEvent(eventId, data);
         } else {
           result = await createEvent(data);
         }

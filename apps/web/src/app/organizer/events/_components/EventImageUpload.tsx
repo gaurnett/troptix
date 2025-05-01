@@ -21,7 +21,6 @@ interface EventImageUploaderProps {
   currentImageUrl?: string | null;
   onUploadComplete: (url: string | null) => void;
 }
-}
 
 export function EventImageUploader({
   currentImageUrl,
