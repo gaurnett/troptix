@@ -121,6 +121,7 @@ async function updatePromotion(body, response) {
         id: body.id,
       },
       update: getPrismaUpdatePromotionQuery(body),
+      // @ts-ignore
       create: getPrismaUpdatePromotionQuery(body),
     });
 

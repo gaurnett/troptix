@@ -78,6 +78,7 @@ async function updateDelegatedUser(body, response) {
         id: body.id,
       },
       update: getPrismaUpdateDelegatedUserQuery(body, user.id),
+      // @ts-ignore
       create: getPrismaUpdateDelegatedUserQuery(body, user.id),
     });
 

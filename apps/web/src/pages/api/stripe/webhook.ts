@@ -125,8 +125,8 @@ async function updateOrderAfterPaymentSucceeds(
 
     const orderMap = new Map();
     order.tickets.forEach((ticket) => {
-      const ticketId = ticket.ticketType.id;
-      if (orderMap.has(ticketId)) {
+      const ticketId = ticket?.ticketType?.id;
+      if (ticketId && orderMap.has(ticketId)) {
         const existingOrder = orderMap.get(ticketId);
         orderMap.set(ticketId, {
           ...existingOrder,
@@ -136,7 +136,7 @@ async function updateOrderAfterPaymentSucceeds(
       } else {
         orderMap.set(ticketId, {
           ticketQuantity: 1,
-          ticketName: ticket.ticketType.name,
+          ticketName: ticket?.ticketType?.name || 'Unknown',
           ticketTotalPaid: ticket.total,
         });
       }
