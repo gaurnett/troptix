@@ -295,6 +295,7 @@ async function updateTicket(body, response) {
       },
       // TODO: We don't really need this helper functions
       update: getPrismaTicketTypeQuery(ticketType),
+      // @ts-ignore
       create: getPrismaTicketTypeQuery(ticketType),
     });
 

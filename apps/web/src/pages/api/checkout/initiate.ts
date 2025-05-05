@@ -93,7 +93,7 @@ export default async function handler(
 
     // --- Use Prisma Transaction ---
     const validationResult = await prisma.$transaction(
-      async (tx: PrismaClient) => {
+      async (tx) => {
         const event = await tx.events.findUnique({
           where: { id: eventId },
           include: {
