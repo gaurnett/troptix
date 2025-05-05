@@ -6,17 +6,6 @@ import { OrderStatus, TicketFeeStructure, TicketTypes } from '@prisma/client'; /
 import { calculateFees } from '@/server/lib/checkout';
 import { CheckoutConfigResponse, CheckoutTicket } from '@/types/checkout';
 
-interface TicketTypeWithStats extends TicketTypes {
-  pendingOrders: number;
-  completedOrders: number;
-  _count: {
-    tickets: number;
-  };
-  tickets: {
-    id: string;
-  }[];
-}
-
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<CheckoutConfigResponse | { message: string }>
@@ -42,34 +31,33 @@ export default async function handler(
   }
 
   try {
-    const ticketTypesData: TicketTypeWithStats[] =
-      await prisma.ticketTypes.findMany({
-        where: {
-          eventId: eventId,
-        },
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          price: true,
-          quantity: true, // Total capacity
-          maxPurchasePerUser: true,
-          saleStartDate: true,
-          saleEndDate: true,
-          ticketingFees: true,
-          ticketType: true,
-          discountCode: true,
-          _count: {
-            select: {
-              tickets: { where: { order: { status: OrderStatus.COMPLETED } } },
-            },
-          },
-          tickets: {
-            where: { order: { status: OrderStatus.PENDING } },
-            select: { id: true },
+    const ticketTypesData = await prisma.ticketTypes.findMany({
+      where: {
+        eventId: eventId,
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        price: true,
+        quantity: true, // Total capacity
+        maxPurchasePerUser: true,
+        saleStartDate: true,
+        saleEndDate: true,
+        ticketingFees: true,
+        ticketType: true,
+        discountCode: true,
+        _count: {
+          select: {
+            tickets: { where: { order: { status: OrderStatus.COMPLETED } } },
           },
         },
-      });
+        tickets: {
+          where: { order: { status: OrderStatus.PENDING } },
+          select: { id: true },
+        },
+      },
+    });
 
     if (ticketTypesData.length === 0) {
       const eventExists = await prisma.events.count({ where: { id: eventId } });
