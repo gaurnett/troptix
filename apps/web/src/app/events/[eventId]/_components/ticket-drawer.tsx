@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { getFormattedCurrency } from '@/lib/utils';
 import { useState } from 'react';
@@ -12,7 +14,7 @@ import {
 } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { ShoppingCart } from 'lucide-react';
-import CheckoutSteps from '@/components/checkout/checkout-steps';
+import CheckoutSteps from './checkout-steps';
 
 interface TicketDrawerProps {
   event: any;

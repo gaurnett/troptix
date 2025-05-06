@@ -1,15 +1,14 @@
-import TicketDrawer from '@/components/pages/event/ticket-drawer';
-import TicketModal from '@/components/pages/event/ticket-modal';
+'use client';
+
+import TicketDrawer from './ticket-drawer';
+import TicketModal from './ticket-modal';
 import { ButtonWithIcon } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import {
   DividerWithText,
   TypographyH1,
   TypographyH4,
   TypographyP,
 } from '@/components/ui/typography';
-import { MetaHead } from '@/components/utils/MetaHead';
-import { useEvent } from '@/hooks/useEvents';
 import { useScreenSize } from '@/hooks/useScreenSize';
 
 import { getDateRangeFormatter, getTimeRangeFormatter } from '@/lib/dateUtils';
@@ -18,80 +17,14 @@ import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 
 import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/router';
 import { useState } from 'react';
-import prisma from '@/server/prisma';
 import { Button } from '@/components/ui/button';
+import { EventById } from '../page';
 
-export async function getStaticPaths() {
-  try {
-    const events = await prisma.events.findMany({
-      select: {
-        id: true,
-      },
-      where: {
-        isDraft: false,
-        startDate: {
-          gte: new Date(),
-        },
-      },
-    });
-    // Get the paths we want to pre-render based on posts
-    const paths = events.map((event) => ({
-      params: { id: event.id?.toString() ?? '' },
-    }));
-
-    // We'll pre-render only these paths at build time.
-    // { fallback: blocking } means other routes not return will wait for the html to be generated
-    return { paths, fallback: 'blocking' };
-  } catch (error) {
-    console.error('Error fetching events:', error);
-    return { paths: [], fallback: 'blocking' };
-  }
-}
-
-// This also gets called at build time
-export async function getStaticProps({ params }) {
-  try {
-    const { id } = params;
-    const event = await prisma.events.findUnique({
-      where: { id },
-      include: { ticketTypes: true },
-    });
-
-    if (!event) {
-      return { notFound: true };
-    }
-
-    // Prepare SEO tags with fallbacks
-    const seoTags = {
-      id: event.id,
-      title: event.name,
-      description: event.summary || `${event.name} - ${event.organizer}`,
-      image: event.imageUrl,
-      url: `https://usetroptix.com/event/${event.id}`,
-    };
-
-    return {
-      props: {
-        event: JSON.parse(JSON.stringify(event)),
-        seoTags,
-      },
-      revalidate: 60,
-    };
-  } catch (error) {
-    console.error('Error in getStaticProps:', error);
-    return { notFound: true };
-  }
-}
-
-export default function EventDetailPage(props) {
+export default function EventDetail({ event }: { event: EventById }) {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-  const router = useRouter();
-  const eventId = router.query.id as string;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const { isMobile } = useScreenSize();
-  const { isPending, data: event } = useEvent(eventId, props.event);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   function closeModal() {
@@ -101,40 +34,20 @@ export default function EventDetailPage(props) {
   function openModal() {
     setIsTicketModalOpen(true);
   }
+  const displayImageUrl =
+    event.imageUrl ?? 'https://placehold.co/400x400?text=Add+Event+Flyer';
 
-  if (isPending || !event) {
-    return (
-      <div className="mt-32">
-        <Spinner text={'Fetching Event'} />
-      </div>
-    );
-  }
-
-  let lowest = Number.MAX_VALUE;
-  let priceString = '';
-  if (!event.ticketTypes || event.ticketTypes.length === 0) {
-    priceString = 'No tickets available';
-  } else {
-    event.ticketTypes.forEach((ticket) => {
-      const price = ticket.price;
-      if (price < lowest) {
-        lowest = price;
-      }
-    });
-
-    priceString = 'From ' + getFormattedCurrency(lowest) + ' USD';
-  }
+  const displayPrice =
+    event.ticketTypes && event.ticketTypes.length > 0
+      ? 'From ' + getFormattedCurrency(event.ticketTypes[0].price) + ' USD'
+      : 'No tickets available';
 
   return (
     <>
-      <MetaHead {...props.seoTags} />
       <div
         style={{
           // backgroundColor: '#455A64',
-          backgroundImage: `url("${
-            event?.imageUrl ??
-            'https://placehold.co/400x400?text=Add+Event+Flyer'
-          }")`,
+          backgroundImage: `url("${displayImageUrl}")`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           WebkitBackgroundSize: 'cover',
@@ -224,7 +137,7 @@ export default function EventDetailPage(props) {
                     </div>
                     <div>
                       <TypographyH4 text={'Tickets'} classes="text-white" />
-                      <TypographyP text={priceString} classes="text-white" />
+                      <TypographyP text={displayPrice} classes="text-white" />
                     </div>
                   </div>
 
@@ -264,8 +177,8 @@ export default function EventDetailPage(props) {
                     <Map
                       className="mt-4 w-full h-60"
                       defaultCenter={{
-                        lat: event.latitude,
-                        lng: event.longitude,
+                        lat: event.latitude ?? 0,
+                        lng: event.longitude ?? 0,
                       }}
                       defaultZoom={15}
                       gestureHandling={'none'}
@@ -273,8 +186,8 @@ export default function EventDetailPage(props) {
                     >
                       <Marker
                         position={{
-                          lat: event.latitude,
-                          lng: event.longitude,
+                          lat: event.latitude ?? 0,
+                          lng: event.longitude ?? 0,
                         }}
                       />
                     </Map>
