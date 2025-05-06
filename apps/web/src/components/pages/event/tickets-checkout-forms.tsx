@@ -1,4 +1,3 @@
-import { List, Typography } from 'antd';
 import { format } from 'date-fns';
 import { useContext } from 'react';
 import {
@@ -22,7 +21,6 @@ import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema';
 import { Input } from '@/components/ui/input';
 import { CheckoutConfigResponse } from '@/types/checkout';
 import { CheckoutState } from './CheckoutContainer';
-const { Paragraph } = Typography;
 
 export default function TicketsCheckoutForm({
   checkoutConfig,
@@ -73,7 +71,6 @@ export default function TicketsCheckoutForm({
     if (now > endDate) {
       return 'Sale ended';
     }
-    // If sale is active but none can be added
     if (ticket.maxAllowedToAdd <= 0) {
       return 'Sold Out';
     }
@@ -180,115 +177,79 @@ export default function TicketsCheckoutForm({
         </div>
       </div>
 
-      <List
-        itemLayout="vertical"
-        size="large"
-        dataSource={checkoutConfig.tickets}
-        split={false}
-        renderItem={(ticket: CheckoutTicket, index: number) => {
-          let ticketState = getTicketStateMessage(ticket);
+      {checkoutConfig.tickets.map((ticket: CheckoutTicket, index: number) => {
+        let ticketState = getTicketStateMessage(ticket);
+        const maxAllowedToAdd = ticket.maxAllowedToAdd;
+        const basePrice = ticket.price ?? 0;
+        const baseFees = ticket.fees ?? 0;
+        const displayPrice = getFormattedCurrency(basePrice);
+        const displayFees = getFormattedCurrency(baseFees);
 
-          const maxAllowedToAdd = ticket.maxAllowedToAdd;
-
-          const basePrice = ticket.price ?? 0;
-          const baseFees = ticket.fees ?? 0;
-
-          const displayPrice = getFormattedCurrency(basePrice);
-          const displayFees = getFormattedCurrency(baseFees);
-
-          return (
-            <List.Item className="mb-4" style={{ padding: 0 }}>
-              <div
-                className="px-4 w-full"
-                style={{
-                  borderWidth: 1,
-                  borderRadius: 10,
-                  borderColor: '#D3D3D3',
-                }}
-              >
-                <div>
-                  <div className="my-auto">
-                    <div className="flex h-16">
-                      <div className="md:w-4/5 grow my-auto">{ticket.name}</div>
-                      <div className="md:w-1/5 flex my-auto justify-center items-center">
-                        <div>
-                          {ticketState !== undefined ? (
-                            <div className="text-center text-md font-bold">
-                              {ticketState}
-                            </div>
-                          ) : (
-                            <div className="flex">
-                              <ButtonWithIcon
-                                onClick={() => updateCost(ticket, true)}
-                                className="bg-blue-500 rounded h-8 w-8"
-                                size={'sm'}
-                                disabled={
-                                  checkout.tickets[ticket.id] === 0 ||
-                                  checkout.tickets[ticket.id] === undefined
-                                }
-                                icon={
-                                  <MinusOutlined className="text-white items-center justify-center" />
-                                }
-                              ></ButtonWithIcon>
-                              <div className="mx-4" style={{ fontSize: 20 }}>
-                                {checkout.tickets[ticket.id] ?? 0}
-                              </div>
-                              <ButtonWithIcon
-                                onClick={() => updateCost(ticket, false)}
-                                className="bg-blue-500 rounded h-8 w-8"
-                                disabled={
-                                  checkout.tickets[ticket.id] ===
-                                  maxAllowedToAdd
-                                }
-                                icon={
-                                  <PlusOutlined className="text-white items-center justify-center" />
-                                }
-                              ></ButtonWithIcon>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+        return (
+          <div
+            key={ticket.id}
+            className="mb-2 px-4 py-2 w-full border border-gray-300 rounded-lg"
+          >
+            <div>
+              <div className="my-auto">
+                <div className="flex h-14">
+                  <div className="md:w-4/5 grow my-auto font-medium">
+                    {ticket.name}
                   </div>
-                </div>
-                <div
-                  key={index}
-                  style={{ width: '100%', borderColor: '#D3D3D3' }}
-                >
-                  <div
-                    style={{ flex: 1, height: 1, backgroundColor: '#D3D3D3' }}
-                  />
-                  <div className="my-4">
-                    <div className="flex">
-                      <div className="text-base font-bold">{displayPrice}</div>
-                      <div className="my-auto text-gray-500">
-                        &nbsp;+ {displayFees} fees
-                      </div>
-                    </div>
-                    <div className="text-sm">
-                      Sale ends:{' '}
-                      {getDateFormatter(new Date(ticket.saleEndDate))}
-                    </div>
+                  <div className="md:w-1/5 flex my-auto justify-center items-center">
                     <div>
-                      <Paragraph
-                        className="text-justify text-sm"
-                        ellipsis={{
-                          rows: 2,
-                          expandable: true,
-                          symbol: 'see more details',
-                        }}
-                      >
-                        {ticket.description}
-                      </Paragraph>
+                      {ticketState !== undefined ? (
+                        <div className="text-center text-md font-bold">
+                          {ticketState}
+                        </div>
+                      ) : (
+                        <div className="flex items-center">
+                          <ButtonWithIcon
+                            onClick={() => updateCost(ticket, true)}
+                            className="bg-primary rounded h-8 w-8"
+                            size={'sm'}
+                            disabled={
+                              !checkout.tickets[ticket.id] ||
+                              checkout.tickets[ticket.id] === 0
+                            }
+                            icon={<MinusOutlined className="text-white" />}
+                          ></ButtonWithIcon>
+                          <div className="mx-4 text-xl">
+                            {checkout.tickets[ticket.id] ?? 0}
+                          </div>
+                          <ButtonWithIcon
+                            onClick={() => updateCost(ticket, false)}
+                            className="bg-primary rounded h-8 w-8"
+                            disabled={
+                              checkout.tickets[ticket.id] === maxAllowedToAdd
+                            }
+                            icon={<PlusOutlined className="text-white" />}
+                          ></ButtonWithIcon>
+                        </div>
+                      )}
                     </div>
-                    <div></div>
                   </div>
                 </div>
               </div>
-            </List.Item>
-          );
-        }}
-      />
+            </div>
+            <div className="border-t border-gray-300 my-2"></div>
+            <div className="my-2">
+              <div className="flex items-baseline">
+                <div className="text-base font-bold">{displayPrice}</div>
+                <div className="my-auto text-gray-500 text-sm ml-1">
+                  + {displayFees} fees
+                </div>
+              </div>
+              <div className="text-sm text-gray-600 mt-1">
+                Sale ends: {getDateFormatter(new Date(ticket.saleEndDate))}
+              </div>
+              <p className="text-justify text-sm text-gray-700 mt-2 line-clamp-2">
+                {ticket.description}
+              </p>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

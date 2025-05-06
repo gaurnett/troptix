@@ -1,16 +1,31 @@
 import { Button } from '@/components/ui/button';
 import { getFormattedCurrency } from '@/lib/utils';
-import { ShoppingCartOutlined } from '@ant-design/icons';
-import { Drawer, List, Steps } from 'antd';
 import { useState } from 'react';
 import { CheckoutContainer } from './CheckoutContainer';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter,
+  SheetClose,
+} from '@/components/ui/sheet';
+import { Separator } from '@/components/ui/separator';
+import { ShoppingCart } from 'lucide-react';
+import CheckoutSteps from '@/components/checkout/checkout-steps';
 
-export default function TicketDrawer({ event, isTicketModalOpen, onClose }) {
+interface TicketDrawerProps {
+  event: any;
+  isTicketModalOpen: boolean;
+  onClose: () => void;
+}
+
+export default function TicketDrawer({
+  event,
+  isTicketModalOpen,
+  onClose,
+}: TicketDrawerProps) {
   const [summaryDrawerOpen, setSummaryDrawerOpen] = useState(false);
-
-  const closeSummary = () => {
-    setSummaryDrawerOpen(false);
-  };
 
   return (
     <CheckoutContainer
@@ -31,188 +46,135 @@ export default function TicketDrawer({ event, isTicketModalOpen, onClose }) {
         cartFees,
       }) => (
         <>
-          <Drawer
-            title="Ticket Checkout"
-            closable={true}
-            open={isTicketModalOpen}
-            onClose={onClose}
-            width={900}
-            styles={{ body: { padding: '0' } }}
-          >
-            <div className="w-full h-full flex flex-col">
-              <div className="w-full sticky top-0 bg-white mx-auto mb-8 px-6 pt-6">
-                <Steps
-                  responsive={false}
-                  current={current}
-                  items={[
-                    {
-                      title: 'Tickets',
-                    },
-                    {
-                      title: 'Checkout',
-                    },
-                  ]}
-                />
-              </div>
-              <div className="flex-1 overflow-y-auto px-4">
+          <Sheet open={isTicketModalOpen} onOpenChange={onClose}>
+            <SheetContent className="sm:max-w-[900px] p-0 flex flex-col h-full">
+              <SheetHeader className="px-6 pt-6 pb-4 sticky top-0 bg-white z-10 border-b">
+                <SheetTitle>Ticket Checkout</SheetTitle>
+                <div className="w-full my-4 flex justify-center">
+                  <CheckoutSteps
+                    current={current}
+                    steps={['Tickets', 'Checkout']}
+                  />
+                </div>
+              </SheetHeader>
+              <div className="flex-1 overflow-y-auto px-6 py-4">
                 {renderCheckoutStep()}
               </div>
-              <footer className="border-t border-gray-200 px-6 pb-6">
-                <div className="flex mt-4">
-                  <div>
-                    <div className="text-xl mr-2">
-                      {getFormattedCurrency(cartSubtotal + cartFees)}
-                    </div>
-                    <Button
-                      onClick={() => setSummaryDrawerOpen(true)}
-                      variant={'ghost'}
-                      className="text-blue-500"
-                    >
-                      Order Summary
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex flex-end content-end items-end self-end mt-4">
-                  {current === 0 && (
-                    <Button
-                      onClick={formMethods.handleSubmit(handleNext)}
-                      className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
-                    >
-                      {cartSubtotal === 0 ? 'RSVP' : 'Continue'}
-                    </Button>
-                  )}
-                  {current === 1 && (
-                    <div className="flex w-full">
+              <SheetFooter className="border-t border-gray-200 px-6 py-4 mt-auto sticky bottom-0 bg-white">
+                <div className="w-full flex flex-col">
+                  <div className="flex justify-between items-center mb-4">
+                    <div>
                       <Button
-                        onClick={handleCompleteStripePayment}
-                        disabled={!clientSecret}
-                        className="ml-2 w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
+                        onClick={() => setSummaryDrawerOpen(true)}
+                        variant={'link'}
+                        className="text-blue-600 p-0 h-auto"
                       >
-                        Complete Purchase
+                        View Order Summary
                       </Button>
                     </div>
-                  )}
-                </div>
-              </footer>
-            </div>
-          </Drawer>
-
-          <Drawer
-            title="Order Summary"
-            closable={true}
-            open={summaryDrawerOpen}
-            onClose={closeSummary}
-            width={900}
-          >
-            <div className="w-full h-full flex flex-col">
-              <div className="flex-1 overflow-y-auto">
-                <div>
-                  {checkout.tickets.size === 0 ? (
-                    <div className="mx-auto my-auto w-full text-center justify-center items-center">
-                      <ShoppingCartOutlined className="text-4xl my-auto mx-auto mt-2" />
-                      <div className="text-xl font-bold">Cart is empty</div>
+                    <div className="text-xl font-semibold">
+                      Total: {getFormattedCurrency(cartSubtotal + cartFees)}
                     </div>
-                  ) : (
-                    <div>
-                      <h2
-                        className="text-xl font-bold leading-tighter tracking-tighter mb-4"
-                        data-aos="zoom-y-out"
+                  </div>
+                  <div className="flex w-full space-x-2">
+                    {current === 0 && (
+                      <Button
+                        onClick={formMethods.handleSubmit(handleNext)}
+                        className="w-full py-3 shadow-md font-medium" // Adjusted padding/size
+                        size="lg"
                       >
-                        Order Summary
-                      </h2>
-                      <List
-                        itemLayout="vertical"
-                        size="large"
-                        dataSource={Object.keys(checkout?.tickets)}
-                        split={false}
-                        renderItem={(id: any, index: number) => {
-                          const quantity = checkout?.tickets[id];
-                          const ticket = checkoutConfig?.tickets.find(
-                            (ticket) => ticket.id === id
-                          );
-                          return (
-                            <List.Item className="mb-4" style={{ padding: 0 }}>
-                              <div className="w-full flex my-4">
-                                <div className="grow">
-                                  <div className="text-base">
-                                    {quantity} x {ticket?.name}
-                                  </div>
-                                </div>
-                                <div className="ml-4">
-                                  <div className="ml-4">
-                                    <div className="text-base text-end">
-                                      {getFormattedCurrency(
-                                        (ticket?.price || 0) * quantity
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </List.Item>
-                          );
-                        }}
-                      />
+                        {cartSubtotal === 0 ? 'RSVP' : 'Continue to Checkout'}
+                      </Button>
+                    )}
+                    {current === 1 && (
+                      <Button
+                        onClick={handleCompleteStripePayment}
+                        disabled={!clientSecret || cartSubtotal === 0}
+                        className="w-full py-3 shadow-md font-medium"
+                        size="lg"
+                      >
+                        {cartSubtotal === 0
+                          ? 'Confirm RSVP'
+                          : 'Complete Purchase'}
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
 
-                      <div
-                        style={{
-                          flex: 1,
-                          height: 1,
-                          backgroundColor: '#D3D3D3',
-                        }}
-                      />
+          <Sheet open={summaryDrawerOpen} onOpenChange={setSummaryDrawerOpen}>
+            <SheetContent className="sm:max-w-[450px] flex flex-col h-full">
+              <SheetHeader className="px-6 pt-6 pb-4 border-b">
+                <SheetTitle>Order Summary</SheetTitle>
+              </SheetHeader>
+              <div className="flex-1 overflow-y-auto px-6 py-4">
+                {Object.keys(checkout?.tickets ?? {}).length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-center text-gray-500">
+                    <ShoppingCart className="h-12 w-12 mb-4" />
+                    <p className="text-lg font-medium">Your cart is empty</p>
+                  </div>
+                ) : (
+                  <div>
+                    {Object.entries(checkout?.tickets ?? {}).map(
+                      ([id, quantity]) => {
+                        const numQuantity =
+                          typeof quantity === 'number' ? quantity : 0;
+                        const ticket = checkoutConfig?.tickets.find(
+                          (t) => t.id === id
+                        );
+                        if (!ticket || numQuantity <= 0) return null;
 
-                      <div className="w-full flex my-4">
-                        <div className="grow">
-                          <div className="text-base">Subtotal:</div>
-                          <div className="text-base">Taxes & Fees:</div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="ml-4">
-                            <div className="text-base text-end">
-                              {getFormattedCurrency(cartSubtotal)}
+                        return (
+                          <div
+                            key={id}
+                            className="flex justify-between items-center py-3"
+                          >
+                            <div className="text-sm">
+                              {numQuantity} x {ticket.name}
                             </div>
-                            <div className="text-base text-end">
-                              {getFormattedCurrency(cartFees)}
+                            <div className="text-sm font-medium">
+                              {getFormattedCurrency(ticket.price * numQuantity)}
                             </div>
                           </div>
-                        </div>
+                        );
+                      }
+                    )}
+
+                    <Separator className="my-4" />
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span>Subtotal:</span>
+                        <span>{getFormattedCurrency(cartSubtotal)}</span>
                       </div>
-
-                      <div
-                        style={{
-                          flex: 1,
-                          height: 1,
-                          backgroundColor: '#D3D3D3',
-                        }}
-                      />
-                      <div className="w-full flex my-4">
-                        <div className="grow">
-                          <div className="text-2xl font-bold">Total:</div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="ml-4">
-                            <div className="text-2xl font-bold">
-                              {getFormattedCurrency(cartSubtotal + cartFees)}
-                            </div>
-                          </div>
-                        </div>
+                      <div className="flex justify-between text-sm">
+                        <span>Taxes & Fees:</span>
+                        <span>{getFormattedCurrency(cartFees)}</span>
                       </div>
                     </div>
-                  )}
-                </div>
+
+                    <Separator className="my-4" />
+
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold">Total:</span>
+                      <span className="text-lg font-semibold">
+                        {getFormattedCurrency(cartSubtotal + cartFees)}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
-              <footer className="border-t border-gray-200">
-                <div className="flex flex-end content-end items-end self-end mt-4">
-                  <Button
-                    onClick={closeSummary}
-                    className="w-full px-6 py-6 shadow-md items-center justify-center font-medium inline-flex"
-                  >
+              <SheetFooter className="border-t border-gray-200 px-6 py-4 mt-auto">
+                <SheetClose asChild>
+                  <Button variant="outline" className="w-full py-3" size="lg">
                     Close
                   </Button>
-                </div>
-              </footer>
-            </div>
-          </Drawer>
+                </SheetClose>
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
         </>
       )}
     </CheckoutContainer>

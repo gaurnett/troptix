@@ -5,8 +5,9 @@ import { Metadata } from 'next';
 
 import Providers from './providers';
 import '../styles/globals.css';
-import { Toaster } from 'sonner';
+import Toaster from '@/components/toaster';
 import Footer from '@/components/ui/footer';
+import ToastTester from './_components/toast-tester';
 // Replace MetaHead with the App Router's Metadata API
 export const metadata: Metadata = {
   title: 'Troptix',
@@ -22,6 +23,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const shouldInjectToolbar = process.env.NODE_ENV === 'development';
+  // const shouldInjectToasttest = process.env.NODE_ENV === 'development';
 
   return (
     <html lang="en">
@@ -31,6 +33,7 @@ export default async function RootLayout({
           <Toaster />
           <Analytics />
           {shouldInjectToolbar && <VercelToolbar />}
+          {/* {shouldInjectToasttest && <ToastTester />} */}
           <Footer />
         </Providers>
       </body>

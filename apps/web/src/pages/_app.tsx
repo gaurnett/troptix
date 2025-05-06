@@ -14,7 +14,7 @@ import AdminLayout from '../components/AdminLayout';
 import Header from '@/components/ui/header';
 import { usePathname } from 'next/navigation';
 import { Analytics } from '@vercel/analytics/react';
-
+import Toaster from '@/components/toaster';
 function GlobalLayout({ children }: { children: React.ReactNode }) {
   return (
     <div>
@@ -60,6 +60,7 @@ function App({ Component, pageProps, router }: AppProps) {
             <AuthProvider>
               <Layout>
                 <Analytics />
+                <Toaster />
                 <Component {...pageProps} />
               </Layout>
             </AuthProvider>

@@ -1,4 +1,3 @@
-import { TropTixContext } from '@/components/AuthProvider';
 import TicketDrawer from '@/components/pages/event/ticket-drawer';
 import TicketModal from '@/components/pages/event/ticket-modal';
 import { ButtonWithIcon } from '@/components/ui/button';
@@ -13,7 +12,6 @@ import { MetaHead } from '@/components/utils/MetaHead';
 import { useEvent } from '@/hooks/useEvents';
 import { useScreenSize } from '@/hooks/useScreenSize';
 
-import { Button, Typography } from 'antd';
 import { getDateRangeFormatter, getTimeRangeFormatter } from '@/lib/dateUtils';
 import { getFormattedCurrency } from '@/lib/utils';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
@@ -21,18 +19,9 @@ import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import prisma from '@/server/prisma';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-
-const { Paragraph } = Typography;
+import { Button } from '@/components/ui/button';
 
 export async function getStaticPaths() {
   try {
@@ -103,6 +92,7 @@ export default function EventDetailPage(props) {
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const { isMobile } = useScreenSize();
   const { isPending, data: event } = useEvent(eventId, props.event);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   function closeModal() {
     setIsTicketModalOpen(false);
@@ -245,17 +235,25 @@ export default function EventDetailPage(props) {
 
                 <div>
                   <DividerWithText text={'About'} classes="text-white" />
-                  <Paragraph
+                  <p
                     style={{ whiteSpace: 'pre-line' }}
-                    className="mt-2 text-justify text-base text-white"
-                    ellipsis={{
-                      rows: 4,
-                      expandable: true,
-                      symbol: 'see more details',
-                    }}
+                    className={`mt-2 text-justify text-base text-white ${
+                      !isDescriptionExpanded ? 'line-clamp-4' : ''
+                    }`}
                   >
                     {event.description}
-                  </Paragraph>
+                  </p>
+                  {event.description && (
+                    <Button
+                      variant="link"
+                      className="text-blue-500 p-0 h-auto mt-1"
+                      onClick={() =>
+                        setIsDescriptionExpanded(!isDescriptionExpanded)
+                      }
+                    >
+                      {isDescriptionExpanded ? 'Show less' : 'See more details'}
+                    </Button>
+                  )}
                 </div>
 
                 <div>
