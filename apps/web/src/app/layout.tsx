@@ -6,7 +6,7 @@ import { Metadata } from 'next';
 import Providers from './providers';
 import '../styles/globals.css';
 import { Toaster } from 'sonner';
-
+import Footer from '@/components/ui/footer';
 // Replace MetaHead with the App Router's Metadata API
 export const metadata: Metadata = {
   title: 'Troptix',
@@ -26,12 +26,12 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body>
-        {/* Providers component wraps client-side context providers */}
         <Providers>
           {children}
           <Toaster />
           <Analytics />
           {shouldInjectToolbar && <VercelToolbar />}
+          <Footer />
         </Providers>
       </body>
     </html>

@@ -9,8 +9,18 @@ import { ConfigProvider } from 'antd';
 
 import AuthProvider from '@/components/AuthProvider';
 import { ErrorFallback } from '@/components/utils/ErrorFallback';
+import Header from '@/components/ui/header';
 
 const queryClient = new QueryClient();
+
+function GlobalLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div>
+      <Header />
+      <div className="flex-grow border-x">{children}</div>
+    </div>
+  );
+}
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -23,20 +33,16 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         },
       }}
     >
-      {/* You might place the ErrorBoundary here or within RootLayout */}
-      {/* Using router.push('/') might not be ideal here if the error happens */}
-      {/* during initial load before router is ready. Consider alternatives. */}
       <ErrorBoundary
         FallbackComponent={ErrorFallback}
         onReset={() => {
-          // Reset application state and attempt recovery
-          // Maybe reload or navigate home. Push requires client component.
           router.push('/');
         }}
-        // key prop might not be needed here as it was tied to page router navigation
       >
         <QueryClientProvider client={queryClient}>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <GlobalLayout>{children}</GlobalLayout>
+          </AuthProvider>
         </QueryClientProvider>
       </ErrorBoundary>
     </ConfigProvider>
