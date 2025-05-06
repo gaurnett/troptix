@@ -188,12 +188,12 @@ export default function TicketsCheckoutForm({
         return (
           <div
             key={ticket.id}
-            className="mb-2 px-4 py-2 w-full border border-gray-300 rounded-lg"
+            className="mb-2 px-4 w-full border border-gray-300 rounded-lg"
           >
             <div>
               <div className="my-auto">
                 <div className="flex h-14">
-                  <div className="md:w-4/5 grow my-auto font-medium">
+                  <div className="md:w-4/5 grow my-auto text-sm">
                     {ticket.name}
                   </div>
                   <div className="md:w-1/5 flex my-auto justify-center items-center">
@@ -232,18 +232,18 @@ export default function TicketsCheckoutForm({
                 </div>
               </div>
             </div>
-            <div className="border-t border-gray-300 my-2"></div>
-            <div className="my-2">
+            <div className="border-t border-gray-300 "></div>
+            <div className="my-2 flex flex-col">
               <div className="flex items-baseline">
                 <div className="text-base font-bold">{displayPrice}</div>
-                <div className="my-auto text-gray-500 text-sm ml-1">
+                <div className=" text-gray-500 text-sm ml-1">
                   + {displayFees} fees
                 </div>
               </div>
-              <div className="text-sm text-gray-600 mt-1">
+              <div className="text-sm text-gray-600 ">
                 Sale ends: {getDateFormatter(new Date(ticket.saleEndDate))}
               </div>
-              <p className="text-justify text-sm text-gray-700 mt-2 line-clamp-2">
+              <p className="text-justify text-sm text-gray-700 line-clamp-2">
                 {ticket.description}
               </p>
             </div>
