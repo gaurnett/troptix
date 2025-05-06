@@ -49,9 +49,10 @@ export default function TicketDrawer({
       }) => (
         <>
           <Sheet open={isTicketModalOpen} onOpenChange={onClose}>
-            <SheetContent className="sm:max-w-[900px] p-0 flex flex-col h-full">
-              <SheetHeader className="px-6 pt-6 pb-4 sticky top-0 bg-white z-10 border-b">
+            <SheetContent className="sm:max-w-[900px] p-0 flex flex-col h-full gap-0">
+              <SheetHeader className="px-6 pt-6 pb-4  border-b">
                 <SheetTitle>Ticket Checkout</SheetTitle>
+
                 <div className="w-full my-4 flex justify-center">
                   <CheckoutSteps
                     current={current}
