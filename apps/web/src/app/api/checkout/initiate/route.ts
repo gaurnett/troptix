@@ -462,7 +462,7 @@ function calculateCartTotal(
   };
 }
 
-export enum DbOrderType {
+enum DbOrderType {
   Paid = 'PAID',
   Free = 'FREE',
   Complementary = 'COMPLEMENTARY',
@@ -472,7 +472,7 @@ export enum DbOrderType {
  * Creates an order record in the database.
  * MUST be called within a Prisma transaction.
  */
-export async function createOrderInDatabase(
+async function createOrderInDatabase(
   prismaTx: Omit<Prisma.TransactionClient, '$commit' | '$rollback'>,
   orderData: CreateOrderDataInternal,
   orderType: DbOrderType
@@ -500,7 +500,7 @@ export async function createOrderInDatabase(
  * Generates the Prisma payload for creating an order.
  * orderData contains numeric values for currency, Prisma handles conversion to Decimal.
  */
-export function getPrismaCreateOrderPayload(
+function getPrismaCreateOrderPayload(
   orderData: CreateOrderDataInternal,
   status: OrderStatus,
   isFree: boolean
