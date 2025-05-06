@@ -1,12 +1,12 @@
 import { TropTixContext } from '@/components/AuthProvider';
 import { Spinner } from '@/components/ui/spinner';
-import { message } from 'antd';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import CheckoutForm from './checkout';
 import TicketsCheckoutForm from './tickets-checkout-forms';
 import { useRouter } from 'next/router';
 import { UseFormReturn, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
 import {
   userDetailsSchema,
   UserDetailsFormData,
@@ -83,7 +83,6 @@ export function CheckoutContainer({
   const router = useRouter();
   const initiateCheckoutMutation = useInitiateCheckout();
 
-  const [messageApi, contextHolder] = message.useMessage();
   const [completePurchaseClicked, setCompletePurchaseClicked] =
     useState<boolean>(false);
   const [current, setCurrent] = useState<number>(0);
@@ -115,7 +114,8 @@ export function CheckoutContainer({
 
   async function handleNext(userDetails: UserDetailsFormData) {
     if (Object.keys(checkout.tickets).length === 0) {
-      messageApi.warning('Please select a ticket quantity');
+      // messageApi.warning('Please select a ticket quantity');
+      toast.warning('Please select a ticket quantity');
       return;
     }
 
@@ -126,19 +126,21 @@ export function CheckoutContainer({
       promotionCode: promotion?.code,
     };
 
-    messageApi.open({
-      key: 'initiating-checkout',
-      type: 'loading',
-      content: 'Confirming Availability...',
-      duration: 0,
+    // messageApi.open({
+    //   key: 'initiating-checkout',
+    //   type: 'loading',
+    //   content: 'Confirming Availability...',
+    //   duration: 0,
+    // });
+    toast.loading('Confirming Availability...', {
+      id: 'initiating-checkout',
     });
-
     initiateCheckoutMutation.mutate(variables, {
       onSuccess: (validationResponse) => {
-        messageApi.destroy('initiating-checkout');
+        toast.dismiss('initiating-checkout');
 
         if (!validationResponse.isValid) {
-          messageApi.error(
+          toast.error(
             validationResponse.message || 'Could not confirm availability.'
           );
           // Clear the tickets from the checkout state
@@ -147,7 +149,7 @@ export function CheckoutContainer({
         }
 
         if (!validationResponse.orderId) {
-          messageApi.error('An error occurred. Please try again later.');
+          toast.error('An error occurred. Please try again later.');
           return;
         }
 
@@ -172,7 +174,7 @@ export function CheckoutContainer({
         }
       },
       onError: (error) => {
-        messageApi.destroy('initiating-checkout');
+        toast.dismiss('initiating-checkout');
         console.error('Checkout Initiation Mutation Failed:', error);
       },
     });
@@ -185,13 +187,13 @@ export function CheckoutContainer({
    */
   function proceedToNextStep(response: ValidationResponse) {
     if (response.isFree) {
-      messageApi.success('RSVP Confirmed!');
+      toast.success('RSVP Confirmed!');
       router.push(`/orders/order-confirmation?orderId=${response.orderId}`); // Adjust query param name if needed
     } else if (!response.isFree && response.clientSecret) {
       setCurrent((prev) => prev + 1);
     } else {
       // Should not happen but just in case
-      messageApi.error(
+      toast.error(
         'Could not prepare payment. Please check details or try again later.'
       );
     }
@@ -229,7 +231,6 @@ export function CheckoutContainer({
 
   return (
     <>
-      {contextHolder}
       {children({
         current,
         checkout,

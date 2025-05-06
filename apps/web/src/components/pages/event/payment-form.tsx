@@ -3,44 +3,32 @@ import {
   useElements,
   useStripe,
 } from '@stripe/react-stripe-js';
-import { message, notification } from 'antd';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { Dispatch, SetStateAction, useEffect } from 'react';
+import { toast } from 'sonner';
+
+interface PaymentFormProps {
+  orderId: string;
+  completePurchaseClicked: boolean;
+  setCompletePurchaseClicked: Dispatch<SetStateAction<boolean>>;
+}
 
 export default function PaymentForm({
   orderId,
   completePurchaseClicked,
   setCompletePurchaseClicked,
-}) {
+}: PaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
-  const [messageApi, contextHolder] = message.useMessage();
-  const router = useRouter();
-
-  function openNotification(message: string | undefined) {
-    notification.error({
-      message: `Payment Failed`,
-      description: message
-        ? message
-        : 'Your card could not be authorized. Please try again, or contact your card issuer for further details.',
-      placement: 'bottom',
-      duration: 0,
-    });
-  }
 
   useEffect(() => {
     async function completeStripePurchase() {
       if (!stripe || !elements) {
-        // Stripe.js hasn't yet loaded.
-        // Make sure to disable form submission until Stripe.js has loaded.
         return;
       }
 
-      messageApi.open({
-        key: 'process-payment-loading',
-        type: 'loading',
-        content: 'Processing Payment..',
-        duration: 0,
+      const toastId = toast.loading('Processing Payment...', {
+        description: 'Please wait while we confirm your payment.',
+        id: 'process-payment-loading',
       });
 
       const url = window.location.origin;
@@ -52,14 +40,20 @@ export default function PaymentForm({
         },
       });
 
-      messageApi.destroy('process-payment-loading');
+      toast.dismiss(toastId);
+
       if (error) {
-        openNotification(error.message);
+        toast.error('Payment Failed', {
+          description: error.message
+            ? error.message
+            : 'Your card could not be authorized. Please try again, or contact your card issuer.',
+          id: 'process-payment-error',
+          duration: 3,
+        });
       } else {
-        messageApi.open({
-          type: 'success',
-          content: 'Ticket purchase successful.',
-          duration: 1.5,
+        toast.success('Payment Successful', {
+          description: 'Redirecting to confirmation page...',
+          id: 'process-payment-success',
         });
       }
 
@@ -72,16 +66,13 @@ export default function PaymentForm({
   }, [
     completePurchaseClicked,
     elements,
-    messageApi,
     orderId,
-    router,
     setCompletePurchaseClicked,
     stripe,
   ]);
 
   return (
     <div className="h-full w-full md:max-w-2xl mx-auto mb-6">
-      {contextHolder}
       <PaymentElement className="grow h-full overflow-hidden p-2" />
     </div>
   );
