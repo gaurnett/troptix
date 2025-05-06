@@ -6,12 +6,23 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { getFormattedCurrency } from '@/lib/utils';
-import { ShoppingCartOutlined } from '@ant-design/icons';
-import { List, Steps } from 'antd';
 import Image from 'next/image';
 import { CheckoutContainer } from './CheckoutContainer';
+import CheckoutSteps from '@/components/checkout/checkout-steps';
+import { Separator } from '@/components/ui/separator';
+import { ShoppingCart } from 'lucide-react';
 
-export default function TicketModal({ event, isTicketModalOpen, onClose }) {
+interface TicketModalProps {
+  event: any;
+  isTicketModalOpen: boolean;
+  onClose: () => void;
+}
+
+export default function TicketModal({
+  event,
+  isTicketModalOpen,
+  onClose,
+}: TicketModalProps) {
   return (
     <CheckoutContainer
       event={event}
@@ -40,16 +51,9 @@ export default function TicketModal({ event, isTicketModalOpen, onClose }) {
                 <div className="w-4/6 grow">
                   <div className="flex flex-col h-full px-4">
                     <div className="w-3/4 md:mx-auto mb-6">
-                      <Steps
+                      <CheckoutSteps
                         current={current}
-                        items={[
-                          {
-                            title: 'Tickets',
-                          },
-                          {
-                            title: 'Checkout',
-                          },
-                        ]}
+                        steps={['Tickets', 'Checkout']}
                       />
                     </div>
 
@@ -86,23 +90,25 @@ export default function TicketModal({ event, isTicketModalOpen, onClose }) {
                         height={200}
                         width={200}
                         src={event?.imageUrl}
-                        alt={event.name}
+                        alt={event?.name || 'Event Image'}
                         style={{
                           maxHeight: 200,
                           maxWidth: 200,
-                          objectFit: 'fill',
+                          objectFit: 'cover',
                         }}
-                        className="mb-8 max-h-full flex-shrink-0 self-center object-fill overflow-hidden rounded-lg mx-auto"
+                        className="mb-8 max-h-full flex-shrink-0 self-center object-cover overflow-hidden rounded-lg mx-auto"
                       />
                     </div>
                   </div>
 
                   <div>
                     <div className="mb-4 md:mt-4 md:mb-8 my-auto w-full">
-                      {Object.keys(checkout?.tickets).length === 0 ? (
-                        <div className="mx-auto my-auto w-full text-center justify-center align-center">
-                          <ShoppingCartOutlined className="text-3xl mx-auto mt-2" />
-                          <div className="text-base">Cart is empty</div>
+                      {Object.keys(checkout?.tickets ?? {}).length === 0 ? (
+                        <div className="mx-auto my-auto w-full text-center justify-center items-center">
+                          <ShoppingCart className="h-10 w-10 mb-3 mx-auto text-muted-foreground" />
+                          <div className="text-base text-muted-foreground">
+                            Cart is empty
+                          </div>
                         </div>
                       ) : (
                         <div>
@@ -112,46 +118,36 @@ export default function TicketModal({ event, isTicketModalOpen, onClose }) {
                           >
                             Order Summary
                           </h2>
-                          <List
-                            itemLayout="vertical"
-                            size="large"
-                            dataSource={Object.keys(checkout?.tickets)}
-                            split={false}
-                            renderItem={(id: string) => {
-                              const quantity = checkout?.tickets[id];
-                              const ticket = checkoutConfig?.tickets.find(
-                                (ticket) => ticket.id === id
-                              );
-                              return (
-                                <List.Item style={{ padding: 0 }}>
-                                  <div className="w-full flex my-4">
-                                    <div className="grow">
-                                      <div className="text-sm">
-                                        {quantity} x {ticket?.name}
-                                      </div>
-                                    </div>
-                                    <div className="ml-4">
-                                      <div className="ml-4">
-                                        <div className="text-sm text-end">
-                                          {getFormattedCurrency(
-                                            (ticket?.price || 0) * quantity
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </List.Item>
-                              );
-                            }}
-                          />
+                          <div className="space-y-3">
+                            {Object.entries(checkout?.tickets ?? {}).map(
+                              ([id, quantity]) => {
+                                const numQuantity =
+                                  typeof quantity === 'number' ? quantity : 0;
+                                const ticket = checkoutConfig?.tickets.find(
+                                  (t) => t.id === id
+                                );
+                                if (!ticket || numQuantity <= 0) return null;
 
-                          <div
-                            style={{
-                              flex: 1,
-                              height: 1,
-                              backgroundColor: '#D3D3D3',
-                            }}
-                          />
+                                return (
+                                  <div
+                                    key={id}
+                                    className="flex justify-between items-center text-sm"
+                                  >
+                                    <span>
+                                      {numQuantity} x {ticket.name}
+                                    </span>
+                                    <span className="font-medium">
+                                      {getFormattedCurrency(
+                                        ticket.price * numQuantity
+                                      )}
+                                    </span>
+                                  </div>
+                                );
+                              }
+                            )}
+                          </div>
+
+                          <Separator className="my-4" />
 
                           <div className="w-full flex my-4">
                             <div className="grow">
@@ -170,13 +166,8 @@ export default function TicketModal({ event, isTicketModalOpen, onClose }) {
                             </div>
                           </div>
 
-                          <div
-                            style={{
-                              flex: 1,
-                              height: 1,
-                              backgroundColor: '#D3D3D3',
-                            }}
-                          />
+                          <Separator className="my-4" />
+
                           <div className="w-full flex my-4">
                             <div className="grow">
                               <div className="text-xl font-bold">Total:</div>
@@ -191,14 +182,6 @@ export default function TicketModal({ event, isTicketModalOpen, onClose }) {
                               </div>
                             </div>
                           </div>
-
-                          <div
-                            style={{
-                              flex: 1,
-                              height: 1,
-                              backgroundColor: '#D3D3D3',
-                            }}
-                          />
                         </div>
                       )}
                     </div>

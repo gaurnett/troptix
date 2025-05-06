@@ -1,4 +1,3 @@
-// Create a new file, e.g., components/checkout/AdjustmentConfirmationModal.tsx
 import {
   Dialog,
   DialogContent,
@@ -9,7 +8,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ValidationResponse } from '@/types/checkout';
-import { getFormattedCurrency } from '@/lib/utils'; // Adjust path
+import { getFormattedCurrency } from '@/lib/utils';
 
 interface AdjustmentConfirmationModalProps {
   isOpen: boolean;
@@ -24,7 +23,7 @@ export function AdjustmentConfirmationModal({
   onConfirm,
   response,
 }: AdjustmentConfirmationModalProps) {
-  if (!response) return null; // Don't render if no data
+  if (!response) return null;
 
   const handleConfirm = () => {
     onConfirm();
