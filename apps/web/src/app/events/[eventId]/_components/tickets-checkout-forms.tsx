@@ -1,3 +1,5 @@
+'use client';
+
 import { format } from 'date-fns';
 import { useContext } from 'react';
 import {
@@ -177,7 +179,7 @@ export default function TicketsCheckoutForm({
         </div>
       </div>
 
-      {checkoutConfig.tickets.map((ticket: CheckoutTicket, index: number) => {
+      {checkoutConfig.tickets.map((ticket: CheckoutTicket) => {
         let ticketState = getTicketStateMessage(ticket);
         const maxAllowedToAdd = ticket.maxAllowedToAdd;
         const basePrice = ticket.price ?? 0;

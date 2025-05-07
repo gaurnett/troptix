@@ -1,33 +1,25 @@
-// pages/api/checkout/config.ts
+// app/api/checkout/config/route.ts
 
-import type { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '@/server/prisma'; // Adjust path to your Prisma client
-import { OrderStatus, TicketFeeStructure, TicketTypes } from '@prisma/client'; // Import necessary Prisma Enums
+import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/server/prisma';
+import { OrderStatus, Prisma, TicketFeeStructure } from '@prisma/client';
 import { calculateFees } from '@/server/lib/checkout';
 import { CheckoutConfigResponse, CheckoutTicket } from '@/types/checkout';
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<CheckoutConfigResponse | { message: string }>
-) {
-  // 1. Check HTTP Method
-  if (req.method !== 'GET') {
-    res.setHeader('Allow', ['GET']);
-    return res.status(405).json({
-      message: `Method ${req.method} Not Allowed`,
-    });
-  }
-
+export async function GET(
+  req: NextRequest
+): Promise<NextResponse<CheckoutConfigResponse | { message: string }>> {
   // TODO: Add authentication so only users or anonymous users can hit this endpoint
-  //let userId: string | null = null;
+  // let userId: string | null = null;
 
-  // Extract and Validate Query Parameters
-  const { eventId } = req.query;
+  const { searchParams } = new URL(req.url);
+  const eventId = searchParams.get('eventId');
 
   if (!eventId || typeof eventId !== 'string') {
-    return res
-      .status(400)
-      .json({ message: 'Missing or invalid "eventId" query parameter.' });
+    return NextResponse.json(
+      { message: 'Missing or invalid "eventId" query parameter.' },
+      { status: 400 }
+    );
   }
 
   try {
@@ -40,13 +32,12 @@ export default async function handler(
         name: true,
         description: true,
         price: true,
-        quantity: true, // Total capacity
+        quantity: true,
         maxPurchasePerUser: true,
         saleStartDate: true,
         saleEndDate: true,
         ticketingFees: true,
         ticketType: true,
-        discountCode: true,
         _count: {
           select: {
             tickets: { where: { order: { status: OrderStatus.COMPLETED } } },
@@ -54,18 +45,23 @@ export default async function handler(
         },
         tickets: {
           where: { order: { status: OrderStatus.PENDING } },
-          select: { id: true },
+          select: { id: true }, // Only need ID for counting purposes
         },
+      },
+      orderBy: {
+        price: Prisma.SortOrder.asc,
       },
     });
 
     if (ticketTypesData.length === 0) {
       const eventExists = await prisma.events.count({ where: { id: eventId } });
       if (eventExists === 0) {
-        return res
-          .status(404)
-          .json({ message: `Event with ID ${eventId} not found.` });
+        return NextResponse.json(
+          { message: `Event with ID ${eventId} not found.` },
+          { status: 404 }
+        );
       }
+      return NextResponse.json({ tickets: [] }, { status: 200 });
     }
 
     const now = new Date();
@@ -81,7 +77,7 @@ export default async function handler(
       const maxAllowedToAdd = saleIsActive
         ? Math.max(0, Math.min(stock, tt.maxPurchasePerUser))
         : 0;
-      const ticketQuanityLow = stock < 10;
+      const ticketQuanityLow = stock > 0 && stock < 10;
       const fees =
         tt.ticketingFees === TicketFeeStructure.PASS_TICKET_FEES
           ? calculateFees(tt.price)
@@ -91,29 +87,34 @@ export default async function handler(
         id: tt.id,
         name: tt.name,
         description: tt.description,
-        price: tt.price,
+        price: Number(tt.price),
         saleStartDate: tt.saleStartDate.toISOString(),
         saleEndDate: tt.saleEndDate.toISOString(),
         maxAllowedToAdd: maxAllowedToAdd,
-        fees: fees,
+        fees: Number(fees),
         feeStructure: tt.ticketingFees,
         ticketType: tt.ticketType,
         ticketQuanityLow: ticketQuanityLow,
-      } as CheckoutTicket;
+      } as CheckoutTicket; // Ensure all properties align with CheckoutTicket type
     });
 
     const responseData: CheckoutConfigResponse = {
       tickets: tickets,
     };
 
-    return res.status(200).json(responseData);
+    return NextResponse.json(responseData, { status: 200 });
   } catch (error) {
     console.error(
       `Error fetching checkout config for event ${eventId}:`,
       error
     );
-    return res.status(500).json({
-      message: 'Internal Server Error fetching checkout configuration.',
-    });
+    let errorMessage = 'Internal Server Error fetching checkout configuration.';
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      console.error(error);
+    } else if (error instanceof Error) {
+      console.error(error);
+    }
+
+    return NextResponse.json({ message: errorMessage }, { status: 500 });
   }
 }

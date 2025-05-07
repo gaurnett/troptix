@@ -1,3 +1,5 @@
+'use client';
+
 import { Spinner } from '@/components/ui/spinner';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';

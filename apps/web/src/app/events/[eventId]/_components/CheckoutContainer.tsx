@@ -1,9 +1,11 @@
+'use client';
+
 import { TropTixContext } from '@/components/AuthProvider';
 import { Spinner } from '@/components/ui/spinner';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import CheckoutForm from './checkout';
 import TicketsCheckoutForm from './tickets-checkout-forms';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { UseFormReturn, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
