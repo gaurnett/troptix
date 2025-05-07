@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -8,7 +10,7 @@ import {
 import { getFormattedCurrency } from '@/lib/utils';
 import Image from 'next/image';
 import { CheckoutContainer } from './CheckoutContainer';
-import CheckoutSteps from '@/components/checkout/checkout-steps';
+import CheckoutSteps from './checkout-steps';
 import { Separator } from '@/components/ui/separator';
 import { ShoppingCart } from 'lucide-react';
 

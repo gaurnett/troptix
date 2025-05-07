@@ -39,7 +39,7 @@ export default function EventCard({ event }: { event: Event }) {
     altText: altText,
   };
 
-  const eventUrl = `/event/${event.id}`;
+  const eventUrl = `/events/${event.id}`;
 
   return (
     <Link
