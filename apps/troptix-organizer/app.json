@@ -13,10 +13,17 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.usetroptix.organizerapp",
       "googleServicesFile": "./GoogleService-Info.plist",
-      "runtimeVersion": "1.0.0"
+      "runtimeVersion": "1.0.0",
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "entitlements": {
+        "aps-environment": "production"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -37,7 +44,7 @@
         "projectId": "5831737d-5d6e-4d8a-84fb-a3e926c92b23"
       }
     },
-    "owner": "gaurnett",
+    "owner": "troptix",
     "updates": {
       "url": "https://u.expo.dev/5831737d-5d6e-4d8a-84fb-a3e926c92b23"
     }
