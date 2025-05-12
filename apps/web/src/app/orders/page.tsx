@@ -112,7 +112,7 @@ export default async function OrdersPage() {
         <div className="text-center text-muted-foreground mt-16 py-10 border rounded-lg">
           <ListOrdered className="w-16 h-16 mx-auto mb-4 text-gray-400" />
           <p className="text-xl font-semibold">
-            Looks like you haven't purchased any tickets yet.
+            Looks like you haven&apos;t purchased any tickets yet.
           </p>
           <p className="text-sm mt-1 mb-6">
             When you purchase tickets, they will appear here.

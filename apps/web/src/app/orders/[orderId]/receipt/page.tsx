@@ -134,7 +134,7 @@ export default async function OrderReceiptPage({
             Order Not Found
           </AlertTitle>
           <AlertDescription className="mt-2">
-            We couldn't find an order with the ID{' '}
+            We couldn&apos;t find an order with the ID{' '}
             <strong className="font-medium">#{orderId}</strong>. Please check
             the ID or contact support if you believe this is an error.
           </AlertDescription>

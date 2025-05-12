@@ -434,8 +434,8 @@ function CheckoutStatusContent({ params }: { params: { orderId: string } }) {
               Sit Tight!
             </AlertTitle>
             <AlertDescription className="text-blue-600 dark:text-blue-500">
-              We're confirming everything on our end. You can safely navigate
-              away; we'll email you an update.
+              We&apos;re confirming everything on our end. You can safely
+              navigate away; we&apos;ll email you an update.
             </AlertDescription>
           </Alert>
         )}
