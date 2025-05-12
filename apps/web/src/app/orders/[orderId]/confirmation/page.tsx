@@ -349,9 +349,9 @@ function CheckoutStatusContent({ params }: { params: { orderId: string } }) {
 
     if (isFreeOrder) {
       theme = 'free';
-      icon = <PackageCheck size={40} className="text-white" />;
-      title = 'Order Placed!';
-      primaryMessage = `Your free order has been placed successfully.`;
+      icon = <PartyPopper size={40} className="text-white" />;
+      title = 'RSVP Placed!';
+      primaryMessage = `Your RSVP has been confirmed successfully.`;
     } else if (isProcessing) {
       theme = 'processing';
       icon = <CreditCard size={40} className="text-white" />; // Or Hourglass, Clock
