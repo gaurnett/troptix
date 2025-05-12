@@ -23,8 +23,8 @@ export default function NotFound() {
             Oops! Page Not Found
           </CardTitle>
           <CardDescription className="mt-2 text-lg text-muted-foreground">
-            The page you're looking for seems to have vanished or maybe it never
-            existed.
+            The page you&apos;re looking for seems to have vanished or maybe it
+            never existed.
           </CardDescription>
         </CardHeader>
         <CardContent>
