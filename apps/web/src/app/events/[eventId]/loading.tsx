@@ -1,11 +1,6 @@
 // app/events/[eventId]/loading.tsx
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Calendar,
-  DollarSign,
-  MapPin,
-  Ticket as TicketIcon,
-} from 'lucide-react'; // Keep TicketIcon if used in ButtonWithIcon skeleton
+import { Calendar, DollarSign, MapPin } from 'lucide-react'; // Keep TicketIcon if used in ButtonWithIcon skeleton
 import * as React from 'react';
 
 export default function EventDetailPageLoading() {

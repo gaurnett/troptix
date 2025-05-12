@@ -22,7 +22,7 @@ const SkeletonEventCardPlaceholder = () => (
 );
 
 export default function EventsPageLoading() {
-  const numberOfSkeletonCards = 8; // Adjust as needed to fill typical viewport
+  const numberOfSkeletonCards = 8;
 
   return (
     <div className="flex min-h-screen flex-col">

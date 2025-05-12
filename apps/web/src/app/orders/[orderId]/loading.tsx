@@ -3,28 +3,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
   CardFooter,
 } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import {
-  CalendarDays,
-  MapPin,
-  FileText,
-  CheckCircle,
-  ArrowRight,
-  PartyPopper,
-} from 'lucide-react';
+
+import { CalendarDays, MapPin, CheckCircle, PartyPopper } from 'lucide-react';
 
 export default function OrderDetailsLoading() {
   return (
