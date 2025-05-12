@@ -1,23 +1,15 @@
-import React from 'react';
-import { EventSidebarNav } from './_components/EventSidebarNav'; // Client component for Nav
-import { getSingleEventOverviewData } from './_lib/getEventData'; // Assume data fetching logic is here
-import { getUserFromIdTokenCookie } from '@/server/authUser';
-import { redirect } from 'next/navigation';
+import React, { Suspense } from 'react';
+import { EventSidebarNav } from './_components/EventSidebarNav';
+import { Skeleton } from '@/components/ui/skeleton';
+import { EventNameDisplay } from './_components/EventName';
 
-export default async function EventManagementLayout({
+export default function EventManagementLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: { eventId: string };
 }) {
-  // TODO: Fetch minimal event data needed for layout context (e.g., name)
-  const user = await getUserFromIdTokenCookie();
-  if (!user) {
-    redirect('/auth/signin');
-  }
-  const event = await getSingleEventOverviewData(params.eventId, user.uid);
-
   const eventNavItems = [
     { name: 'Overview', href: `/organizer/events/${params.eventId}` },
     { name: 'Tickets', href: `/organizer/events/${params.eventId}/tickets` },
@@ -34,12 +26,9 @@ export default async function EventManagementLayout({
       {' '}
       <aside className="hidden md:block w-56 flex-col border-r bg-background p-6">
         <div className="mb-8">
-          <h2
-            className="text-xl font-semibold tracking-tight truncate"
-            title={event.eventName}
-          >
-            {event.eventName || 'Manage Event'}
-          </h2>
+          <Suspense fallback={<Skeleton className="h-8 w-48" />}>
+            <EventNameDisplay eventId={params.eventId} />
+          </Suspense>
           <p className="text-sm text-muted-foreground">Event Menu</p>
         </div>
         <EventSidebarNav navItems={eventNavItems} />

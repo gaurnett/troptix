@@ -4,9 +4,8 @@ import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { StripeError, loadStripe } from '@stripe/stripe-js';
-import { toast } from 'sonner'; // For notifications
+import { toast } from 'sonner';
 import {
-  CheckCircle2,
   AlertTriangle,
   Home,
   FileText,
@@ -16,7 +15,6 @@ import {
   TicketIcon,
   Mail, // Added for contact support
   RotateCw, // Added for refresh hint
-  PackageCheck, // Icon for free order success
   CreditCard, // Icon for payment processing
 } from 'lucide-react';
 
@@ -183,8 +181,7 @@ function CheckoutStatusContent({ params }: { params: { orderId: string } }) {
         });
         toast.warning(`Payment was ${redirectStatus}.`);
       } else {
-        // No client secret and no redirect status - this is an ambiguous state.
-        // Could be direct navigation or an issue.
+        // No client secret and no redirect status
         console.warn(
           'Missing payment_intent_client_secret and redirect_status.'
         );
