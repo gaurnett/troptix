@@ -190,7 +190,7 @@ export function CheckoutContainer({
   function proceedToNextStep(response: ValidationResponse) {
     if (response.isFree) {
       toast.success('RSVP Confirmed!');
-      router.push(`/orders/order-confirmation?orderId=${response.orderId}`); // Adjust query param name if needed
+      router.push(`/orders/${response.orderId}/confirmation?isFree=true`);
     } else if (!response.isFree && response.clientSecret) {
       setCurrent((prev) => prev + 1);
     } else {

@@ -1,7 +1,8 @@
 import { formatInTimeZone } from 'date-fns-tz';
 
-export function getDateFormatter(date: Date) {
-  return `${formatInTimeZone(date, 'America/New_York', 'MMM dd, yyyy, h:mm a')}`;
+export function getDateFormatter(date: Date, formatString?: string) {
+  const defaultFormat = 'MMM dd, yyyy, h:mm a';
+  return `${formatInTimeZone(date, 'America/New_York', formatString || defaultFormat)}`;
 }
 
 export function getDateRangeFormatter(start: Date, end: Date) {

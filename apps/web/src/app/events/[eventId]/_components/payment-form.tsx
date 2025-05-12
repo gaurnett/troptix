@@ -38,7 +38,7 @@ export default function PaymentForm({
       const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: url + `/orders/order-confirmation?orderId=${orderId}`,
+          return_url: url + `/orders/${orderId}/confirmation?isFree=false`,
         },
       });
 
