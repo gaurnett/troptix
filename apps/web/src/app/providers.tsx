@@ -17,7 +17,7 @@ function GlobalLayout({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <Header />
-      <div className="flex-grow border-x">{children}</div>
+      <div className="flex-grow border-x mt-20 md:mt-28">{children}</div>
     </div>
   );
 }
