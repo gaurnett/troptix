@@ -6,19 +6,13 @@ import * as React from 'react';
 export default function EventDetailPageLoading() {
   return (
     <>
-      {/* We won't replicate the dynamic background image or backdrop-blur in the skeleton,
-          focusing on the content structure. The parent page defines min-h-screen. */}
       <div className="w-full md:min-h-screen flex">
         {' '}
-        {/* Removed backdrop-blur for skeleton */}
         <div className={`max-w-5xl mx-auto p-4 sm:p-8 w-full`}>
           {' '}
-          {/* Ensure w-full for content spread */}
           <div className="md:flex mt-32">
-            {/* Aside (Left Sidebar) Skeleton */}
             <aside className="md:sticky md:top-0 mb-8 md:mb-0 md:w-[350px] flex-shrink-0">
               {' '}
-              {/* Explicit width for skeleton consistency */}
               <Skeleton className="h-[350px] w-[350px] max-h-[350px] max-w-[350px] rounded-lg mx-auto mb-8 bg-slate-200 dark:bg-slate-700" />
               <Skeleton className="h-[56px] w-full rounded-md bg-slate-200 dark:bg-slate-700" />{' '}
               {/* Buy Tickets Button Placeholder */}
@@ -27,7 +21,6 @@ export default function EventDetailPageLoading() {
             {/* Main Content Area (Right) Skeleton */}
             <div className="w-full md:mx-8 md:p-6 p-4 bg-slate-700 bg-opacity-80 rounded-lg ">
               {' '}
-              {/* Using a slightly darker placeholder for the themed background */}
               {/* Event Name */}
               <Skeleton className="h-10 w-3/4 sm:w-2/3 mb-6 bg-slate-300 dark:bg-slate-600" />
               {/* Info Blocks Skeleton */}
