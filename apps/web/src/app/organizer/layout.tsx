@@ -18,7 +18,7 @@ export default async function OrganizerLayout({
     <div className="container mx-auto flex min-h-screen flex-col">
       {' '}
       {/* Basic flex column layout */}
-      <OrganizerNavbar />
+      {/* <OrganizerNavbar /> */}
       <main className="flex-1 py-3">{children}</main>
       {/* Optional: Add a shared footer for the organizer section here if needed */}
       {/* <footer> Organizer Footer Content </footer> */}

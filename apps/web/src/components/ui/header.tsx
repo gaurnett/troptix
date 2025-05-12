@@ -33,6 +33,43 @@ export default function Header() {
 
   let items: MenuProps['items'];
 
+  const navItems = [
+    {
+      key: '1',
+      label: (
+        <Link
+          href="/events"
+          className={`${
+            pathname === '/events' || pathname === '/event'
+              ? 'md:text-blue-700'
+              : ''
+          } block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
+        >
+          Explore Events
+        </Link>
+      ),
+    },
+  ];
+
+  const organizerItems = [
+    {
+      key: '1',
+      label: (
+        <Link rel="noopener noreferrer" href="/organizer/events">
+          Your Events
+        </Link>
+      ),
+    },
+    {
+      key: '2',
+      label: (
+        <Link rel="noopener noreferrer" href="/organizer">
+          Account Dashboard
+        </Link>
+      ),
+    },
+  ];
+
   const userItems = [
     {
       key: '3',
@@ -110,18 +147,13 @@ export default function Header() {
               id="navbar-sticky"
             >
               <ul className="flex flex-col mt-4 font-medium border rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-                <li>
-                  <Link
-                    href="/events"
-                    className={`${
-                      pathname === '/events' || pathname === '/event'
-                        ? 'md:text-blue-700'
-                        : ''
-                    } block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
-                  >
-                    Explore Events
-                  </Link>
-                </li>
+                {pathname?.includes('/organizer')
+                  ? organizerItems.map((item) => (
+                      <li key={item.key}>{item.label}</li>
+                    ))
+                  : navItems.map((item) => (
+                      <li key={item.key}>{item.label}</li>
+                    ))}
               </ul>
             </div>
           </div>
