@@ -7,7 +7,7 @@ export function middleware(req: NextRequest) {
   const isProtected =
     req.nextUrl.pathname.startsWith('/admin') ||
     req.nextUrl.pathname.startsWith('/account') ||
-    req.nextUrl.pathname.startsWith('/orders');
+    req.nextUrl.pathname === '/orders';
 
   if (!isProtected) {
     return NextResponse.next();
