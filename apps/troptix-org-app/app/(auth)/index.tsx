@@ -1,7 +1,7 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Image,
   Platform,
@@ -12,7 +12,6 @@ import {
   View,
 } from 'react-native';
 import { auth } from '../../firebaseConfig';
-import { useAuth } from '../_layout';
 
 const styles = StyleSheet.create({
   container: {
@@ -64,18 +63,12 @@ const styles = StyleSheet.create({
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { user } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (user) {
-      router.replace('/(tabs)');
-    }
-  }, [user]);
 
   function signInWithEmail() {
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {})
+      .then(() => {
+        router.replace('/(tabs)');
+      })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;

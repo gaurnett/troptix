@@ -146,10 +146,8 @@ async function getAllEvents(userId?: string) {
         },
       },
     });
-    console.log('Hello World: ' + events);
     return events;
   } catch (e: any) {
-    console.log('Hello World: ' + e);
     throw new Error(e);
   }
 }

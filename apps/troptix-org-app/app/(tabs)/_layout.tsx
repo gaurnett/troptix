@@ -3,7 +3,7 @@ import { Tabs } from 'expo-router';
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ headerShown: false }}>
+    <Tabs screenOptions={{ headerTitle: 'Hello' }}>
       <Tabs.Screen
         name="index"
         options={{
@@ -14,19 +14,6 @@ export default function TabsLayout() {
           tabBarShowLabel: false,
           tabBarIcon: ({ color }) => (
             <MaterialIcons size={24} name="event-note" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="scanner"
-        options={{
-          title: 'Scan Tickets',
-          headerShown: true,
-          headerTitle: 'Scan Tickets',
-          headerShadowVisible: false,
-          tabBarShowLabel: false,
-          tabBarIcon: ({ color }) => (
-            <MaterialIcons size={24} name="qr-code-scanner" color={color} />
           ),
         }}
       />

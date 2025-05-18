@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { getAuth } from 'firebase/auth';
 import { Button, Text, View } from 'react-native';
 
@@ -14,8 +15,9 @@ export default function Settings() {
       <Text>Settings</Text>
       <Button
         title="Sign Out"
-        onPress={() => {
-          getAuth().signOut();
+        onPress={async () => {
+          await getAuth().signOut();
+          router.replace('/(auth)');
         }}
       />
     </View>

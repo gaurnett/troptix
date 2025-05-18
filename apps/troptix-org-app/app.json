@@ -34,7 +34,13 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow TropTix to access your camera to scan event tickets. This will allow you to validate tickets purchased on our platform for your events."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
