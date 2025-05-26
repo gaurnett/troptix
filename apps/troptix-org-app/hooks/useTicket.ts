@@ -1,5 +1,4 @@
-import { useAuth } from '@/app/_layout';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { prodUrl } from './constants';
 import { Ticket } from './types/Ticket';
 
@@ -70,14 +69,4 @@ export async function fetchUserTickets(userId: string): Promise<any> {
     console.error('An error occurred while fetching the tickets.', error);
     throw error;
   }
-}
-
-export function useFetchUserTickets() {
-  const { user } = useAuth();
-  const userId = user?.uid;
-  return useQuery({
-    queryKey: ['tickets'],
-    queryFn: () => fetchUserTickets(userId),
-    enabled: !!userId,
-  });
 }

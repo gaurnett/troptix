@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { TextField } from 'react-native-ui-lib';
 import { auth } from '../../firebaseConfig';
 
 const styles = StyleSheet.create({
@@ -103,12 +104,15 @@ export default function Login() {
         onChangeText={setEmail}
       />
       <Text style={styles.label}>Password</Text>
-      <TextInput
-        style={styles.input}
-        secureTextEntry
+
+      <TextField
         placeholder="***********"
-        placeholderTextColor="#999"
+        secureTextEntry
+        value={password}
         onChangeText={setPassword}
+        placeholderTextColor="#999"
+        containerStyle={styles.input}
+        showClearButton={true}
       />
 
       <TouchableOpacity

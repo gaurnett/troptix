@@ -1,1 +1,1 @@
-export const prodUrl = 'http://192.168.1.155:3000';
+export const prodUrl = 'http://10.0.0.158:3000';

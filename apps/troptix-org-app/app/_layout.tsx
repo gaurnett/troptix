@@ -6,21 +6,39 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 
 const AuthContext = createContext<{
-  user: User | null;
+  user: User | undefined;
+  jwtToken?: string | undefined;
 }>({
-  user: null,
+  user: undefined,
+  jwtToken: undefined,
 });
 export const useAuth = () => useContext(AuthContext);
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [jwtToken, setJwtToken] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+    const unsubscribe = auth.onAuthStateChanged(async (authUser) => {
+      if (!authUser) {
+        setLoading(false);
+        return;
+      }
+
+      const token = await authUser
+        .getIdToken(/* forceRefresh */ true)
+        .then(function (idToken) {
+          return idToken;
+        })
+        .catch(function (error) {
+          return undefined;
+        });
+
       setUser(authUser);
+      setJwtToken(token);
       setLoading(false);
     });
     return () => unsubscribe();
@@ -43,11 +61,11 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthContext.Provider value={{ user }}>
+      <AuthContext.Provider value={{ user, jwtToken }}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen
-            name="event/details"
+            name="event/[id]"
             options={{
               headerTitle: 'Event Details',
               headerShown: true,

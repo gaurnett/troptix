@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { prodUrl } from './constants';
 
 export enum RequestType {
@@ -41,10 +42,22 @@ export async function eventFetcher({
     });
 }
 
+export const useFetchEventById = (id: string) => {
+  return useQuery({
+    queryKey: ['event', id],
+    queryFn: async () => {
+      const response = await axios.get(prodUrl + `/api/events/${id}`);
+      if (response.status !== 200) throw new Error(response.statusText);
+      return response.data;
+    },
+  });
+};
+
 export function useFetchEventsById({ requestType, id }: GetEventsRequestType) {
   const { isLoading, isError, data, error } = useQuery({
     queryKey: [requestType, id],
     queryFn: () => eventFetcher({ requestType, id }),
+    staleTime: 5 * 60 * 1000, // 5 minutes (adjust as needed)
   });
 
   return { isLoading, isError, data, error };
