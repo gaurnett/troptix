@@ -1,6 +1,6 @@
+import { getAuth } from '@react-native-firebase/auth';
 import { router } from 'expo-router';
-import { getAuth } from 'firebase/auth';
-import { Button, Text, View } from 'react-native';
+import { Button, View } from 'react-native';
 
 export default function Settings() {
   return (
@@ -12,7 +12,6 @@ export default function Settings() {
         backgroundColor: 'white',
       }}
     >
-      <Text>Settings</Text>
       <Button
         title="Sign Out"
         onPress={async () => {

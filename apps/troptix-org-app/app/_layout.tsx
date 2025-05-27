@@ -1,4 +1,4 @@
-import { auth } from '@/firebaseConfig';
+import { getAuth } from '@react-native-firebase/auth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter } from 'expo-router';
 import { User } from 'firebase/auth';
@@ -22,7 +22,7 @@ export default function RootLayout() {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (authUser) => {
+    const unsubscribe = getAuth().onAuthStateChanged(async (authUser) => {
       if (!authUser) {
         setLoading(false);
         return;

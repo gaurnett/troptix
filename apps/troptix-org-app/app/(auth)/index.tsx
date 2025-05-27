@@ -1,6 +1,17 @@
 import AntDesign from '@expo/vector-icons/AntDesign';
+import {
+  AppleButton,
+  appleAuth,
+} from '@invertase/react-native-apple-authentication';
+import {
+  AppleAuthProvider,
+  GoogleAuthProvider,
+  getAuth,
+  signInWithCredential,
+  signInWithEmailAndPassword,
+} from '@react-native-firebase/auth';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { router } from 'expo-router';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import {
   Image,
@@ -12,7 +23,6 @@ import {
   View,
 } from 'react-native';
 import { TextField } from 'react-native-ui-lib';
-import { auth } from '../../firebaseConfig';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,7 +51,6 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#007bff',
-    padding: 15,
     borderRadius: 5,
     borderColor: '#ccc',
     borderWidth: 1,
@@ -50,14 +59,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 12,
+    height: 50,
   },
   buttonText: {
     color: '#fff',
     fontSize: 18,
-    fontWeight: 'bold',
   },
   iconContainer: {
-    marginRight: 12,
+    marginRight: 6,
   },
 });
 
@@ -65,15 +74,55 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  GoogleSignin.configure({
+    webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
+  });
+
   function signInWithEmail() {
-    signInWithEmailAndPassword(auth, email, password)
+    signInWithEmailAndPassword(getAuth(), email, password)
       .then(() => {
         router.replace('/(tabs)');
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log('Error signing in:', errorCode, errorMessage);
+        console.log('Error signing in:', error);
+      });
+  }
+
+  async function handleGoogleSignIn() {
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    const account = await GoogleSignin.signIn();
+    const idToken = account.data?.idToken;
+
+    const googleCredential = GoogleAuthProvider.credential(idToken as string);
+
+    return signInWithCredential(getAuth(), googleCredential)
+      .then((user) => {
+        router.replace('/(tabs)');
+      })
+      .catch((error) => {
+        console.log('Error signing in with Google:', error);
+      });
+  }
+
+  async function onAppleButtonPress() {
+    const appleAuthRequestResponse = await appleAuth.performRequest({
+      requestedOperation: appleAuth.Operation.LOGIN,
+      requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+    });
+
+    if (!appleAuthRequestResponse.identityToken) {
+      throw new Error('Apple Sign-In failed - no identify token returned');
+    }
+
+    const { identityToken, nonce } = appleAuthRequestResponse;
+    const appleCredential = AppleAuthProvider.credential(identityToken, nonce);
+
+    return signInWithCredential(getAuth(), appleCredential)
+      .then(() => {
+        router.replace('/(tabs)');
+      })
+      .catch((error) => {
+        console.log('Error signing in:', error);
       });
   }
 
@@ -125,16 +174,16 @@ export default function Login() {
         activeOpacity={0.8}
       >
         <View style={styles.iconContainer}>
-          <AntDesign name="mail" size={20} color="white" />
+          <AntDesign name="mail" size={16} color="white" />
         </View>
         <Text
           style={{
             color: 'white',
             fontSize: 18,
-            fontWeight: 'bold',
+            fontWeight: '500',
           }}
         >
-          Sign in with email
+          Sign in with Email
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -142,44 +191,40 @@ export default function Login() {
           ...styles.button,
           backgroundColor: '#4285F4',
         }}
-        onPress={() => {}}
+        onPress={handleGoogleSignIn}
         activeOpacity={0.8}
       >
         <View style={styles.iconContainer}>
-          <AntDesign name="google" size={20} color="white" />
+          <AntDesign name="google" size={16} color="white" />
         </View>
         <Text
           style={{
             color: 'white',
             fontSize: 18,
-            fontWeight: 'bold',
+            fontWeight: '500',
           }}
         >
           Sign in with Google
         </Text>
       </TouchableOpacity>
       {Platform.OS === 'ios' && (
-        <TouchableOpacity
-          style={{
-            ...styles.button,
-            backgroundColor: 'black',
+        <AppleButton
+          buttonStyle={AppleButton.Style.BLACK}
+          buttonType={AppleButton.Type.SIGN_IN}
+          textStyle={{
+            fontSize: 22,
+            color: '#000',
           }}
-          onPress={() => {}}
-          activeOpacity={0.8}
-        >
-          <View style={styles.iconContainer}>
-            <AntDesign name="apple1" size={20} color="white" />
-          </View>
-          <Text
-            style={{
-              color: 'white',
-              fontSize: 18,
-              fontWeight: 'bold',
-            }}
-          >
-            Sign in with Apple
-          </Text>
-        </TouchableOpacity>
+          style={{
+            width: '100%',
+            borderRadius: 5,
+            borderColor: '#000',
+            borderWidth: 0.5,
+            height: 50,
+            marginTop: 12,
+          }}
+          onPress={onAppleButtonPress}
+        />
       )}
     </View>
   );
