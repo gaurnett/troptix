@@ -1,8 +1,6 @@
-'use client'; // Data table components often require client-side interactivity
-
+'use client';
 import React from 'react';
 import { FetchedTicketData } from '../page';
-import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/ui/data-table';
 import { ColumnDef } from '@tanstack/react-table';
 import { Button } from '@/components/ui/button';

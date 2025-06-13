@@ -66,7 +66,6 @@ export default function TicketDisplayManager({
   tickets: TicketInfo[];
   ticketId: string | undefined;
 }) {
-  console.log('ticketId', ticketId);
   const [activeTicketId, setActiveTicketId] = useState<string | null>(
     ticketId || null
   );
@@ -166,7 +165,6 @@ export default function TicketDisplayManager({
         }}
       >
         <DialogContent className="max-w-md p-0 max-h-[90vh] bg-transparent border-none shadow-none dark:bg-transparent focus:outline-none rounded-xl overflow-y-auto">
-          {/* Navigation Buttons - positioned over the ticket card area */}
           {tickets.length > 1 && (
             <>
               <Button
