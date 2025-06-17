@@ -328,13 +328,10 @@ export default async function EventOverviewPage({
           <CardContent className="flex flex-col items-center justify-center pt-6">
             <div className="text-center">
               <div className="text-2xl font-bold">
-                0 / {eventData.ticketsSold.toLocaleString()}
+                {Math.round((eventData.attendeeCheckinRate / 100) * eventData.ticketsSold)} / {eventData.ticketsSold.toLocaleString()}
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                Tickets Scanned
-              </p>
-              <p className="text-sm text-destructive mt-4">
-                (Check-in data/component unavailable)
+                Tickets Scanned ({eventData.attendeeCheckinRate.toFixed(1)}%)
               </p>
             </div>
           </CardContent>
