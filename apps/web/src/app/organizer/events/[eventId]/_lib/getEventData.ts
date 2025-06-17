@@ -117,7 +117,7 @@ export const getSingleEventOverviewData = async (
       take: 5,
     });
 
-    // Fetch Recent Attendees maybe remove this
+    // Fetch Recent Attendees with check-in status
     const recentTicketsRaw = await tx.tickets.findMany({
       where: {
         eventId: eventId,
@@ -125,6 +125,7 @@ export const getSingleEventOverviewData = async (
       },
       select: {
         id: true,
+        status: true,
         user: { select: { name: true, email: true } },
         ticketType: { select: { name: true } },
       },
@@ -132,10 +133,27 @@ export const getSingleEventOverviewData = async (
       take: 5,
     });
 
-    return { event, dailyRevenueGrouped, recentOrdersRaw, recentTicketsRaw };
+    // Fetch check-in statistics
+    const [totalTicketsCount, checkedInTicketsCount] = await Promise.all([
+      tx.tickets.count({
+        where: {
+          eventId: eventId,
+          order: { status: OrderStatus.COMPLETED },
+        },
+      }),
+      tx.tickets.count({
+        where: {
+          eventId: eventId,
+          order: { status: OrderStatus.COMPLETED },
+          status: 'NOT_AVAILABLE', // Checked in tickets
+        },
+      }),
+    ]);
+
+    return { event, dailyRevenueGrouped, recentOrdersRaw, recentTicketsRaw, totalTicketsCount, checkedInTicketsCount };
   });
 
-  const { event, dailyRevenueGrouped, recentOrdersRaw, recentTicketsRaw } =
+  const { event, dailyRevenueGrouped, recentOrdersRaw, recentTicketsRaw, totalTicketsCount, checkedInTicketsCount } =
     result;
 
   const totalRevenue = event.orders.reduce(
@@ -205,11 +223,11 @@ export const getSingleEventOverviewData = async (
     id: ticket.id,
     name: ticket.user?.name || ticket.user?.email || 'Unknown Attendee',
     ticketType: ticket.ticketType?.name || 'N/A',
-    checkedIn: false, // *** PLACEHOLDER - No checkedIn field in schema ***
+    checkedIn: ticket.status === 'NOT_AVAILABLE', // Checked in when status is NOT_AVAILABLE
   }));
 
-  // Placeholder Check-in Rate
-  const attendeeCheckinRate = 0;
+  // Calculate actual check-in rate
+  const attendeeCheckinRate = totalTicketsCount > 0 ? (checkedInTicketsCount / totalTicketsCount) * 100 : 0;
 
   return {
     eventId: event.id,
