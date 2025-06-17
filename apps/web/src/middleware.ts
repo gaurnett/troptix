@@ -7,22 +7,34 @@ export function middleware(req: NextRequest) {
   const isProtected =
     req.nextUrl.pathname.startsWith('/admin') ||
     req.nextUrl.pathname.startsWith('/account') ||
+    req.nextUrl.pathname.startsWith('/organizer') ||
     req.nextUrl.pathname === '/orders';
 
-  if (!isProtected) {
-    return NextResponse.next();
+  const isAuthPage = req.nextUrl.pathname.startsWith('/auth');
+
+  // Check if user has valid token
+  let isAuthenticated = false;
+  try {
+    const decoded = jwt.decode(token || '') as any;
+    isAuthenticated = !!decoded?.user_id;
+  } catch (error) {
+    isAuthenticated = false;
   }
 
-  try {
-    // Verify that the token is present and logged in but NOT if valid
-    const decoded = jwt.decode(token || '') as any;
-    if (!decoded?.user_id) throw new Error('Missing user_id');
-    return NextResponse.next();
-  } catch (error) {
+  // Redirect authenticated users away from auth pages
+  if (isAuthPage && isAuthenticated) {
+    const url = new URL('/', req.url);
+    return NextResponse.redirect(url);
+  }
+
+  // Handle protected routes (redirect unauthenticated users to sign in)
+  if (isProtected && !isAuthenticated) {
     const url = new URL('/auth/signin', req.url);
     // url.searchParams.set('redirectedFrom', req.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
