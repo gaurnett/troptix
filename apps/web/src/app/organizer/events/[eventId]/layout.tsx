@@ -33,7 +33,7 @@ export default function EventManagementLayout({
         </div>
         <EventSidebarNav navItems={eventNavItems} />
       </aside>
-      <main className="flex-1 p-6 lg:p-8 overflow-auto stable-scrollbar">
+      <main className="flex-1 p-1 lg:p-8 overflow-auto stable-scrollbar">
         {children}
       </main>
     </div>

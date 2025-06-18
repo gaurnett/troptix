@@ -4,7 +4,14 @@ import { getUserFromIdTokenCookie } from '@/server/authUser';
 import { redirect } from 'next/navigation';
 import AttendeeTable from './_components/AttendeeTable';
 import { TicketStatus, TicketTypes, Orders } from '@prisma/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { MobileStatsCard, MobileStatsContainer } from '@/components/ui/mobile-stats-card';
 import { Users, UserCheck, UserX, Ticket } from 'lucide-react';
 
 // Define the structure of the data we expect to fetch
@@ -107,20 +114,23 @@ export default async function EventAttendeesPage({
     (ticket) => ticket.status === 'NOT_AVAILABLE'
   ).length;
   const notCheckedInAttendees = totalAttendees - checkedInAttendees;
-  const checkInRate = totalAttendees > 0 ? (checkedInAttendees / totalAttendees) * 100 : 0;
+  const checkInRate =
+    totalAttendees > 0 ? (checkedInAttendees / totalAttendees) * 100 : 0;
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="mx-auto py-8 md:px-8 space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Manage Attendees</h1>
         <p className="text-muted-foreground">{eventName}</p>
       </div>
 
-      {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Desktop Statistics Cards */}
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Attendees</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Attendees
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -135,18 +145,24 @@ export default async function EventAttendeesPage({
             <UserCheck className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{checkedInAttendees}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {checkedInAttendees}
+            </div>
             <p className="text-xs text-muted-foreground">Currently present</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Not Checked In</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Not Checked In
+            </CardTitle>
             <UserX className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{notCheckedInAttendees}</div>
+            <div className="text-2xl font-bold text-orange-600">
+              {notCheckedInAttendees}
+            </div>
             <p className="text-xs text-muted-foreground">Awaiting check-in</p>
           </CardContent>
         </Card>
@@ -163,12 +179,41 @@ export default async function EventAttendeesPage({
         </Card>
       </div>
 
+      {/* Mobile Statistics Cards - Horizontal Scroll */}
+      <MobileStatsContainer>
+        <MobileStatsCard
+          icon={Users}
+          value={totalAttendees}
+          label="Total Attendees"
+        />
+        <MobileStatsCard
+          icon={UserCheck}
+          iconColor="text-green-600"
+          value={checkedInAttendees}
+          valueColor="text-xl font-bold text-green-600"
+          label="Checked In"
+        />
+        <MobileStatsCard
+          icon={UserX}
+          iconColor="text-orange-600"
+          value={notCheckedInAttendees}
+          valueColor="text-xl font-bold text-orange-600"
+          label="Not Checked In"
+        />
+        <MobileStatsCard
+          icon={Ticket}
+          value={`${checkInRate.toFixed(1)}%`}
+          label="Check-in Rate"
+        />
+      </MobileStatsContainer>
+
       {/* Attendee Table */}
       <Card>
         <CardHeader>
           <CardTitle>Attendee List</CardTitle>
           <CardDescription>
-            Manage check-in status for all attendees. Click the action buttons to check attendees in or out.
+            Manage check-in status for all attendees. Click the action buttons
+            to check attendees in or out.
           </CardDescription>
         </CardHeader>
         <CardContent>
