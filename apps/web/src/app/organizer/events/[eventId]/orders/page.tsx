@@ -11,7 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { MobileStatsCard, MobileStatsContainer } from '@/components/ui/mobile-stats-card';
+import {
+  MobileStatsCard,
+  MobileStatsContainer,
+} from '@/components/ui/mobile-stats-card';
 import { ShoppingCart, DollarSign, Users, TrendingUp } from 'lucide-react';
 
 interface FetchedTicket {

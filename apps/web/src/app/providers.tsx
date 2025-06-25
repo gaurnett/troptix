@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { ConfigProvider } from 'antd';
 import posthog from 'posthog-js';
 import { PostHogProvider as PHProvider } from 'posthog-js/react';
@@ -15,10 +15,17 @@ import Header from '@/components/ui/header';
 const queryClient = new QueryClient();
 
 function GlobalLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isOrganizer = pathname?.startsWith('/organizer');
+
   return (
     <div>
-      <Header />
-      <div className="flex-grow border-x mt-20 md:mt-28">{children}</div>
+      {isOrganizer ? null : <Header />}
+      <div
+        className={`flex-grow border-x ${isOrganizer ? 'mt-0' : 'mt-20 md:mt-28'}`}
+      >
+        {children}
+      </div>
     </div>
   );
 }

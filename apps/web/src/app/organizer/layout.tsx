@@ -1,9 +1,7 @@
-// app/organizer/layout.tsx
-
 import React from 'react';
-import { OrganizerNavbar } from '@/components/organizer-navbar';
 import { redirect } from 'next/navigation';
 import { getUserFromIdTokenCookie } from '@/server/authUser';
+import { OrganizerHeader } from '@/components/ui/organizer-header';
 
 export default async function OrganizerLayout({
   children,
@@ -14,14 +12,12 @@ export default async function OrganizerLayout({
   if (!user) {
     redirect('/auth/signin');
   }
+
   return (
-    <div className="container mx-auto flex min-h-screen flex-col">
-      {' '}
-      {/* Basic flex column layout */}
-      {/* <OrganizerNavbar /> */}
-      <main className="flex-1 py-3">{children}</main>
-      {/* Optional: Add a shared footer for the organizer section here if needed */}
-      {/* <footer> Organizer Footer Content </footer> */}
+    <div className="flex flex-col min-h-screen bg-background">
+      <OrganizerHeader />
+      <main className="flex-1 md:container px-4 py-8">{children}</main>
+      <div className="md:hidden h-16"></div> {/* Spacer for bottom nav */}
     </div>
   );
 }

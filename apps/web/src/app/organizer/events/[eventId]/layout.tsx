@@ -1,41 +1,32 @@
-import React, { Suspense } from 'react';
-import { EventSidebarNav } from './_components/EventSidebarNav';
-import { Skeleton } from '@/components/ui/skeleton';
-import { EventNameDisplay } from './_components/EventName';
+import React from 'react';
+import { EventManagementNav } from '@/components/ui/event-management-nav';
+import prisma from '@/server/prisma';
+import { notFound } from 'next/navigation';
 
-export default function EventManagementLayout({
+async function getEvent(eventId: string) {
+  const event = await prisma.events.findUnique({
+    where: { id: eventId },
+    select: { name: true },
+  });
+  if (!event) {
+    notFound();
+  }
+  return event;
+}
+
+export default async function EventManagementLayout({
   children,
   params,
 }: {
   children: React.ReactNode;
   params: { eventId: string };
 }) {
-  const eventNavItems = [
-    { name: 'Overview', href: `/organizer/events/${params.eventId}` },
-    { name: 'Tickets', href: `/organizer/events/${params.eventId}/tickets` },
-    {
-      name: 'Attendees',
-      href: `/organizer/events/${params.eventId}/attendees`,
-    },
-    { name: 'Orders', href: `/organizer/events/${params.eventId}/orders` },
-    { name: 'Settings', href: `/organizer/events/${params.eventId}/settings` },
-  ];
+  const event = await getEvent(params.eventId);
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)]">
-      {' '}
-      <aside className="hidden md:block w-56 flex-col border-r bg-background p-6">
-        <div className="mb-8">
-          <Suspense fallback={<Skeleton className="h-8 w-48" />}>
-            <EventNameDisplay eventId={params.eventId} />
-          </Suspense>
-          <p className="text-sm text-muted-foreground">Event Menu</p>
-        </div>
-        <EventSidebarNav navItems={eventNavItems} />
-      </aside>
-      <main className="flex-1 p-1 lg:p-8 overflow-auto stable-scrollbar">
-        {children}
-      </main>
+    <div>
+      <EventManagementNav eventId={params.eventId} eventName={event.name} />
+      <div>{children}</div>
     </div>
   );
 }
