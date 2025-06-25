@@ -4,6 +4,15 @@ import OrderTable from './_components/OrderTable';
 import { TicketTypes } from '@prisma/client';
 import { getUserFromIdTokenCookie } from '@/server/authUser';
 import { redirect } from 'next/navigation';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { MobileStatsCard, MobileStatsContainer } from '@/components/ui/mobile-stats-card';
+import { ShoppingCart, DollarSign, Users, TrendingUp } from 'lucide-react';
 
 interface FetchedTicket {
   id: string;
@@ -77,6 +86,44 @@ async function fetchOrders(
   }
 }
 
+async function fetchEventName(
+  eventId: string,
+  organizerUserId: string
+): Promise<string> {
+  try {
+    const event = await prisma.events.findFirst({
+      where: {
+        id: eventId,
+        organizerUserId: organizerUserId,
+      },
+      select: {
+        name: true,
+      },
+    });
+    return event?.name || 'Unknown Event';
+  } catch (error) {
+    console.error('Failed to fetch event name:', error);
+    return 'Unknown Event';
+  }
+}
+
+function calculateOrderStats(orders: FetchedOrder[]) {
+  const totalOrders = orders.length;
+  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+  const totalTickets = orders.reduce(
+    (sum, order) => sum + order.tickets.length,
+    0
+  );
+  const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+  return {
+    totalOrders,
+    totalRevenue,
+    totalTickets,
+    averageOrderValue,
+  };
+}
+
 interface EventOrdersPageProps {
   params: {
     eventId: string;
@@ -93,11 +140,121 @@ export default async function EventOrdersPage({
     redirect('/auth/signin');
   }
   const initialOrders = await fetchOrders(eventId, user.uid);
+  const eventName = await fetchEventName(eventId, user.uid);
+  const stats = calculateOrderStats(initialOrders);
 
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-semibold mb-6">Manage Orders</h1>
-      <OrderTable initialOrders={initialOrders} />
+    <div className="mx-auto py-8 md:px-8 space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Manage Orders</h1>
+        <p className="text-muted-foreground">{eventName}</p>
+      </div>
+
+      {/* Desktop Statistics Cards */}
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalOrders}</div>
+            <p className="text-xs text-muted-foreground">Completed orders</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+              }).format(stats.totalRevenue)}
+            </div>
+            <p className="text-xs text-muted-foreground">From all orders</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Tickets Sold</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalTickets}</div>
+            <p className="text-xs text-muted-foreground">Individual tickets</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Avg Order Value
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+              }).format(stats.averageOrderValue)}
+            </div>
+            <p className="text-xs text-muted-foreground">Revenue per order</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Mobile Statistics Cards - Horizontal Scroll */}
+      <MobileStatsContainer>
+        <MobileStatsCard
+          icon={ShoppingCart}
+          value={stats.totalOrders}
+          label="Total Orders"
+        />
+        <MobileStatsCard
+          icon={DollarSign}
+          iconColor="text-green-600"
+          value={new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            notation: 'compact',
+          }).format(stats.totalRevenue)}
+          valueColor="text-lg font-bold text-green-600"
+          label="Total Revenue"
+        />
+        <MobileStatsCard
+          icon={Users}
+          value={stats.totalTickets}
+          label="Tickets Sold"
+        />
+        <MobileStatsCard
+          icon={TrendingUp}
+          value={new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            notation: 'compact',
+          }).format(stats.averageOrderValue)}
+          valueColor="text-lg font-bold"
+          label="Avg Order Value"
+        />
+      </MobileStatsContainer>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Order List</CardTitle>
+          <CardDescription>
+            View and manage all completed orders for this event
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <OrderTable initialOrders={initialOrders} />
+        </CardContent>
+      </Card>
     </div>
   );
 }
