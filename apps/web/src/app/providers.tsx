@@ -11,6 +11,7 @@ import { PostHogProvider as PHProvider } from 'posthog-js/react';
 import AuthProvider from '@/components/AuthProvider';
 import { ErrorFallback } from '@/components/utils/ErrorFallback';
 import Header from '@/components/ui/header';
+import Footer from '@/components/ui/footer';
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ function GlobalLayout({ children }: { children: React.ReactNode }) {
       >
         {children}
       </div>
+      {isOrganizer ? null : <Footer />}
     </div>
   );
 }
@@ -47,6 +49,7 @@ function PostHogProvider({ children }: { children: React.ReactNode }) {
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
 
   return (
     <ConfigProvider
