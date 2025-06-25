@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function FormDivider({ text = "Or" }: { text?: string }) {
+export function FormDivider({ text = 'Or' }: { text?: string }) {
   return (
     <div className="flex items-center my-6">
       <div className="border-t border-gray-300 grow mr-3" aria-hidden="true" />
