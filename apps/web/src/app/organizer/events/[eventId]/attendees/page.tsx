@@ -121,7 +121,7 @@ export default async function EventAttendeesPage({
     totalAttendees > 0 ? (checkedInAttendees / totalAttendees) * 100 : 0;
 
   return (
-    <div className=" mx-auto py-8 space-y-6">
+    <div className="space-y-4">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Manage Attendees</h1>
         <p className="text-muted-foreground">{eventName}</p>

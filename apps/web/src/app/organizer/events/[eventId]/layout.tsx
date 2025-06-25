@@ -26,7 +26,7 @@ export default async function EventManagementLayout({
   return (
     <div>
       <EventManagementNav eventId={params.eventId} eventName={event.name} />
-      <div>{children}</div>
+      <div className="mt-4 mx-auto">{children}</div>
     </div>
   );
 }

@@ -82,7 +82,7 @@ export default async function EventOverviewPage({
   const eventUrl = `${process.env.NEXT_PUBLIC_BASE_URL || ''}/events/${eventId}`; // Construct event URL (ensure NEXT_PUBLIC_BASE_URL is set in .env)
 
   return (
-    <div className="flex flex-col mt-4 gap-6 md:gap-8">
+    <div className="flex flex-col space-y-4">
       <section className="flex flex-col gap-3 md:gap-4">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div className="flex flex-col gap-1">
