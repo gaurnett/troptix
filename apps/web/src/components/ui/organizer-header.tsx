@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Calendar, BarChart2, User, Menu, X } from 'lucide-react';
+import { Home, Calendar, User, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Sheet,
@@ -36,8 +36,6 @@ export function OrganizerHeader() {
         <Link href="/organizer" className="text-2xl font-bold text-primary">
           TropTix
         </Link>
-
-        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1">
           {links.map((link) => (
             <Link
