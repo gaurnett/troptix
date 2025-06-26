@@ -11,7 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { MobileStatsCard, MobileStatsContainer } from '@/components/ui/mobile-stats-card';
+import {
+  MobileStatsCard,
+  MobileStatsContainer,
+} from '@/components/ui/mobile-stats-card';
 import { ShoppingCart, DollarSign, Users, TrendingUp } from 'lucide-react';
 
 interface FetchedTicket {
@@ -144,7 +147,7 @@ export default async function EventOrdersPage({
   const stats = calculateOrderStats(initialOrders);
 
   return (
-    <div className="mx-auto py-8 md:px-8 space-y-6">
+    <div className="space-y-4">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Manage Orders</h1>
         <p className="text-muted-foreground">{eventName}</p>

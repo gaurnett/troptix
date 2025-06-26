@@ -92,7 +92,7 @@ const MobileAttendeeView = ({
   eventId: string;
 }) => {
   return (
-    <div className="md:px-0">
+    <div>
       {attendees.length === 0 ? (
         <div className="text-center py-8">
           <p className="text-muted-foreground">
@@ -110,7 +110,7 @@ const MobileAttendeeView = ({
 
             return (
               <Card key={attendee.id} className="w-full overflow-hidden">
-                <CardContent className="p-6">
+                <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 space-y-3 min-w-0">
                       <MobileCardInfoRowLarge icon={User} content={name} />

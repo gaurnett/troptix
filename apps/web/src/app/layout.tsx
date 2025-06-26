@@ -7,14 +7,10 @@ import Providers from './providers';
 import '../styles/globals.css';
 import Toaster from '@/components/toaster';
 import Footer from '@/components/ui/footer';
-import ToastTester from './_components/toast-tester';
-// Replace MetaHead with the App Router's Metadata API
+
 export const metadata: Metadata = {
   title: 'Troptix',
   description: 'Troptix is a better way to get tickets',
-  // Add other global metadata tags here if needed
-  // Viewport meta tag is handled by Next.js by default, but you can customize it:
-  // viewport: 'initial-scale=1.0, width=device-width',
 };
 
 export default async function RootLayout({
@@ -23,7 +19,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const shouldInjectToolbar = process.env.NODE_ENV === 'development';
-  // const shouldInjectToasttest = process.env.NODE_ENV === 'development';
 
   return (
     <html lang="en">
@@ -33,8 +28,6 @@ export default async function RootLayout({
           <Toaster />
           <Analytics />
           {shouldInjectToolbar && <VercelToolbar />}
-          {/* {shouldInjectToasttest && <ToastTester />} */}
-          <Footer />
         </Providers>
       </body>
     </html>
