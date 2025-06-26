@@ -45,8 +45,8 @@ const defaultFormValues: TicketTypeFormValues = {
   price: 0,
   quantity: 100,
   maxPurchasePerUser: 10,
-  saleStartDateTime: today,
-  saleEndDateTime: tomorrow,
+  saleStartDate: today,
+  saleEndDate: tomorrow,
   ticketingFees: 'PASS_TICKET_FEES',
 };
 
@@ -68,12 +68,12 @@ export function CreateTicketTypeForm({
     defaultValues: {
       ...defaultFormValues,
       ...initialData,
-      saleStartDateTime: initialData?.saleStartDateTime
-        ? new Date(initialData.saleStartDateTime)
-        : defaultFormValues.saleStartDateTime,
-      saleEndDateTime: initialData?.saleEndDateTime
-        ? new Date(initialData.saleEndDateTime)
-        : defaultFormValues.saleEndDateTime,
+      saleStartDate: initialData?.saleStartDate
+        ? new Date(initialData.saleStartDate)
+        : defaultFormValues.saleStartDate,
+      saleEndDate: initialData?.saleEndDate
+        ? new Date(initialData.saleEndDate)
+        : defaultFormValues.saleEndDate,
     },
     mode: 'onChange',
   });
@@ -242,7 +242,7 @@ export function CreateTicketTypeForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
-            name="saleStartDateTime"
+            name="saleStartDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Sale Starts</FormLabel>
@@ -266,7 +266,7 @@ export function CreateTicketTypeForm({
                         const time = e.target.value;
                         const currentDate = field.value;
                         const combined = combineDateTime(currentDate, time);
-                        form.setValue('saleStartDateTime', combined as Date, {
+                        form.setValue('saleStartDate', combined as Date, {
                           shouldValidate: true,
                         });
                       }}
@@ -284,7 +284,7 @@ export function CreateTicketTypeForm({
 
           <FormField
             control={form.control}
-            name="saleEndDateTime"
+            name="saleEndDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel>Sale Ends</FormLabel>
@@ -308,7 +308,7 @@ export function CreateTicketTypeForm({
                         const time = e.target.value;
                         const currentDate = field.value;
                         const combined = combineDateTime(currentDate, time);
-                        form.setValue('saleEndDateTime', combined as Date, {
+                        form.setValue('saleEndDate', combined as Date, {
                           shouldValidate: true,
                         });
                       }}
