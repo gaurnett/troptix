@@ -21,7 +21,6 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EventById } from '../page';
 import { Banner } from '@/components/ui/banner';
-import { useRouter } from 'next/navigation';
 
 export default function EventDetail({ event }: { event: EventById }) {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
