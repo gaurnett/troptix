@@ -46,8 +46,8 @@ export default async function EditEventTicketPage({
 
   const initialFormData = {
     ...ticketData,
-    saleStartDateTime: ticketData.saleStartDate,
-    saleEndDateTime: ticketData.saleEndDate,
+    saleStartDate: ticketData.saleStartDate,
+    saleEndDate: ticketData.saleEndDate,
     description: ticketData.description ?? undefined,
   };
 
