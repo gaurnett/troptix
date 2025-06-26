@@ -13,6 +13,20 @@ async function getEvent(eventId: string) {
   try {
     const event = await prisma.events.findUnique({
       where: { id: eventId },
+      include: {
+        ticketTypes: {
+          select: {
+            name: true,
+            price: true,
+            quantity: true,
+            description: true,
+            maxPurchasePerUser: true,
+            saleStartDate: true,
+            saleEndDate: true,
+            ticketingFees: true,
+          },
+        },
+      },
     });
     return event;
   } catch (error) {
@@ -54,7 +68,12 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
       <p className="text-muted-foreground mb-6">
         Update the details for the &apos;{event?.name}&apos; event.
       </p>
-      <EventForm initialData={initialData} eventId={eventId} />
+      <EventForm
+        initialData={initialData}
+        eventId={eventId}
+        ticketTypes={event?.ticketTypes ?? []}
+        isDraft={event.isDraft}
+      />
     </div>
   );
 }

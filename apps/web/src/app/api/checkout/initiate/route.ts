@@ -132,7 +132,7 @@ export async function POST(
           where: { id: eventId },
         });
 
-        if (!event) {
+        if (!event || event.isDraft) {
           const error = new Error('Event not found');
           (error as any).statusCode = 404;
           throw error;

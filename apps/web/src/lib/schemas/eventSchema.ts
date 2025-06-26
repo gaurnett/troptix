@@ -25,7 +25,7 @@ export const eventFormSchema = z
     latitude: z.number().nullable().optional(),
     longitude: z.number().nullable().optional(),
     tickets: z.array(ticketTypeSchema).optional(),
-    imageUrl: z.string().url().nullable().optional(),
+    imageUrl: z.string().url().or(z.literal('')).nullable().optional(),
   })
   .refine(
     (data) => {

@@ -38,6 +38,11 @@ export async function GET(
         saleEndDate: true,
         ticketingFees: true,
         ticketType: true,
+        event: {
+          select: {
+            isDraft: true,
+          },
+        },
         _count: {
           select: {
             tickets: { where: { order: { status: OrderStatus.COMPLETED } } },
@@ -73,10 +78,14 @@ export async function GET(
         tt.quantity - completedOrdersCount - pendingOrdersCount
       );
       const saleIsActive = now >= tt.saleStartDate && now <= tt.saleEndDate;
-
-      const maxAllowedToAdd = saleIsActive
-        ? Math.max(0, Math.min(stock, tt.maxPurchasePerUser))
-        : 0;
+      const isDraft = tt.event.isDraft;
+      const maxAllowedToAdd =
+        // If the event is draft, we don't allow any tickets to be added
+        // If the sale is not active, we don't allow any tickets to be added
+        // If the sale is active, we allow the max purchase per user
+        saleIsActive && !isDraft
+          ? Math.max(0, Math.min(stock, tt.maxPurchasePerUser))
+          : 0;
       const ticketQuanityLow = stock > 0 && stock < 10;
       const fees =
         tt.ticketingFees === TicketFeeStructure.PASS_TICKET_FEES

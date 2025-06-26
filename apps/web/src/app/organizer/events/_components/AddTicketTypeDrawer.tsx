@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import React from 'react';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
@@ -73,10 +73,9 @@ export function AddTicketTypeDrawer({
     quantity: 100,
     maxPurchasePerUser: 10,
     ticketingFees: 'PASS_TICKET_FEES' as const,
-    saleStartDateTime: today,
-    saleEndDateTime: eventStartDate || tomorrow,
+    saleStartDate: today,
+    saleEndDate: eventStartDate || tomorrow,
   };
-  console.log('initialData', initialData);
   const form = useForm<TicketTypeFormValues>({
     resolver: zodResolver(ticketTypeSchema),
     defaultValues: initialData || defaultValues,
@@ -203,7 +202,7 @@ export function AddTicketTypeDrawer({
                 <div>
                   <FormField
                     control={form.control}
-                    name="saleStartDateTime"
+                    name="saleStartDate"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
                         <FormLabel>Sale Starts *</FormLabel>
@@ -251,7 +250,7 @@ export function AddTicketTypeDrawer({
                 </div>
                 <FormField
                   control={form.control}
-                  name="saleEndDateTime"
+                  name="saleEndDate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel>Sale Ends *</FormLabel>
