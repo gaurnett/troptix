@@ -1,5 +1,5 @@
 import { User } from '@/hooks/types/User';
-import { SignUpFields } from '@/pages/auth/signup';
+import { SignUpFields } from '@/types/auth';
 import {
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
