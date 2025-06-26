@@ -20,13 +20,14 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { EventById } from '../page';
+import { Banner } from '@/components/ui/banner';
 
 export default function EventDetail({ event }: { event: EventById }) {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const { isMobile } = useScreenSize();
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-
+  const isDraft = event.isDraft;
   function closeModal() {
     setIsTicketModalOpen(false);
   }
@@ -44,6 +45,13 @@ export default function EventDetail({ event }: { event: EventById }) {
 
   return (
     <>
+      {isDraft && (
+        <Banner
+          title="Draft Mode: Event Not Published"
+          message="This event is currently a draft. Only you, as the organizer, can view it. Make any changes you need, then publish when you're ready to go live."
+          type="warning"
+        />
+      )}
       <div
         style={{
           // backgroundColor: '#455A64',
@@ -147,7 +155,10 @@ export default function EventDetail({ event }: { event: EventById }) {
                 </div>
 
                 <div>
-                  <DividerWithText text={'About'} classes="text-white" />
+                  <DividerWithText
+                    text={'Event Details'}
+                    classes="text-white"
+                  />
                   <p
                     style={{ whiteSpace: 'pre-line' }}
                     className={`mt-2 text-justify text-base text-white ${
@@ -164,7 +175,9 @@ export default function EventDetail({ event }: { event: EventById }) {
                         setIsDescriptionExpanded(!isDescriptionExpanded)
                       }
                     >
-                      {isDescriptionExpanded ? 'Show less' : 'See more details'}
+                      {isDescriptionExpanded
+                        ? 'Show less details'
+                        : 'Read full description'}
                     </Button>
                   )}
                 </div>

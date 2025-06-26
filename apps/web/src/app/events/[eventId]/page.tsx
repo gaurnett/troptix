@@ -2,12 +2,15 @@ import prisma from '@/server/prisma';
 import EventDetail from './_components/EventDetails';
 import { Prisma } from '@prisma/client';
 import { notFound } from 'next/navigation';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
 
-const EventByIdSelect = {
+const EventByIdSelect: Prisma.EventsSelect = {
   id: true,
   name: true,
   description: true,
   imageUrl: true,
+  isDraft: true,
+  organizerUserId: true,
   startDate: true,
   endDate: true,
   venue: true,
@@ -51,6 +54,7 @@ export async function generateMetadata({
   const event = await getEventById(params.eventId);
   return {
     title: event?.name,
+    isDraft: event?.isDraft,
     description: event?.description,
     openGraph: {
       title: event?.name,
@@ -60,11 +64,16 @@ export async function generateMetadata({
   };
 }
 
-export default async function EventDetailPage({ params }) {
-  const eventId = params.eventId;
+export default async function EventDetailPage({
+  params,
+}: {
+  params: Promise<{ eventId: string }>;
+}) {
+  const user = await getUserFromIdTokenCookie();
+  const { eventId } = await params;
   const event = await getEventById(eventId);
 
-  if (!event) {
+  if (!event || (event.isDraft && user?.uid !== event.organizerUserId)) {
     notFound();
   }
 

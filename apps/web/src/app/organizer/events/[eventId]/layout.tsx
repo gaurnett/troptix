@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation';
 async function getEvent(eventId: string) {
   const event = await prisma.events.findUnique({
     where: { id: eventId },
-    select: { name: true },
+    select: { name: true, isDraft: true },
   });
   if (!event) {
     notFound();
@@ -25,7 +25,7 @@ export default async function EventManagementLayout({
 
   return (
     <div>
-      <EventManagementNav eventId={params.eventId} eventName={event.name} />
+      <EventManagementNav eventId={params.eventId} eventName={event.name} isDraft={event.isDraft} />
       <div className="mt-4 mx-auto">{children}</div>
     </div>
   );

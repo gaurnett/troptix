@@ -1,14 +1,13 @@
-// app/organizer/events/new/page.tsx
-
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Edit, Loader2, PlusCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { eventFormSchema, EventFormValues } from '@/lib/schemas/eventSchema';
+
 import {
   ticketTypeSchema,
   TicketTypeFormValues,
@@ -48,15 +47,24 @@ import {
 
 import { usePlacesWidget } from 'react-google-autocomplete';
 import { EventImageUploader } from '../_components/EventImageUpload';
+import { PublishRequirements } from '@/components/PublishRequirements';
 import { createEvent, updateEvent } from '../_actions/eventActions'; // Import server actions
 
 // Adjusted props to explicitly include eventId for updates
 interface EventFormProps {
   initialData?: EventFormValues | null; // Keep initialData for form population
   eventId?: string; // Add optional eventId for edit mode identification
+  ticketTypes?: TicketTypeFormValues[];
+  isDraft?: boolean;
 }
 
-export default function EventForm({ initialData, eventId }: EventFormProps) {
+export default function EventForm({
+  initialData,
+  eventId,
+  // Pass the ticketTypes and draft status from the server for publish validation
+  ticketTypes,
+  isDraft,
+}: EventFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition(); // Loading state hook
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -212,7 +220,7 @@ export default function EventForm({ initialData, eventId }: EventFormProps) {
               ? 'Event updated successfully!'
               : 'Event created successfully!'
           );
-          router.push(`/organizer/events`);
+          router.push(`/organizer/events/${result.eventId}`);
           router.refresh();
         } else {
           toast.error(result.error || 'An unknown error occurred.');
@@ -224,14 +232,17 @@ export default function EventForm({ initialData, eventId }: EventFormProps) {
     });
   };
 
-  // Updated onError handler to use toast
   const onError = (errors: FieldErrors<EventFormValues>) => {
     console.error('Form validation errors:', errors);
-    // Extract the first error message for a concise toast
-    const firstErrorKey = Object.keys(errors)[0] as keyof EventFormValues;
-    const errorMessage =
-      errors[firstErrorKey]?.message ||
-      'Form validation failed. Please check the fields.';
+    const errorFields = Object.keys(errors).map((key) => {
+      return {
+        field: key,
+        error: errors[key as keyof EventFormValues]?.message,
+      };
+    });
+
+    // Display the first error message for a concise toast
+    const errorMessage = `Form validation failed. Please check the fields: ${errorFields.map((field) => field.field).join(', ')}`;
     toast.error(errorMessage);
   };
 
@@ -257,6 +268,31 @@ export default function EventForm({ initialData, eventId }: EventFormProps) {
               />
             </CardContent>
           </Card>
+
+          {isEditing && isDraft ? (
+            <PublishRequirements
+              eventData={{
+                id: eventId || '',
+                name: form.watch('eventName'),
+                description: form.watch('description'),
+                organizer: form.watch('organizer'),
+                startDate: form.watch('startDate'),
+                endDate: form.watch('endDate'),
+                venue: form.watch('venue'),
+                address: form.watch('address'),
+                imageUrl: form.watch('imageUrl'),
+                ticketTypes:
+                  ticketTypes?.map((ticket) => ({
+                    name: ticket.name,
+                    price: ticket.price,
+                    quantity: ticket.quantity,
+                    maxPurchasePerUser: ticket.maxPurchasePerUser,
+                    saleStartDate: ticket.saleStartDate,
+                    saleEndDate: ticket.saleEndDate,
+                  })) || [],
+              }}
+            />
+          ) : null}
         </div>
 
         {/* Right Column: Event Form */}
@@ -348,7 +384,7 @@ export default function EventForm({ initialData, eventId }: EventFormProps) {
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
                             <FormLabel>Sale Starts</FormLabel>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 w-full">
                               <FormControl>
                                 {/* DatePicker handles the date part */}
                                 <DatePicker
@@ -593,7 +629,10 @@ export default function EventForm({ initialData, eventId }: EventFormProps) {
               )}
 
               <div className="flex justify-end gap-2">
-                <Button type="submit" disabled={isPending}>
+                <Button
+                  type="submit"
+                  disabled={isPending || !form.formState.isValid}
+                >
                   {isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />{' '}
