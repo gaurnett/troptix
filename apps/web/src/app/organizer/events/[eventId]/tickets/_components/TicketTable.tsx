@@ -200,7 +200,7 @@ function MobileCardView({
   }
 
   return (
-    <div className="px-4 md:px-0">
+    <div>
       <div className="flex flex-col gap-4 mb-6">
         <Input
           placeholder="Search ticket types..."
@@ -229,7 +229,7 @@ function MobileCardView({
 
           return (
             <Card key={ticket.id} className="w-full overflow-hidden">
-              <CardContent className="p-6">
+              <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 space-y-3 min-w-0">
                     <MobileCardInfoRowLarge

@@ -10,7 +10,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { MobileStatsCard, MobileStatsContainer } from '@/components/ui/mobile-stats-card';
+import {
+  MobileStatsCard,
+  MobileStatsContainer,
+} from '@/components/ui/mobile-stats-card';
 import { Ticket, DollarSign, Users, TrendingUp } from 'lucide-react';
 
 interface FetchedTicketType {
@@ -124,7 +127,7 @@ export default async function EventTicketsPage({
   const stats = calculateTicketStats(initialTicketTypes);
 
   return (
-    <div className=" mx-auto py-8 md:px-8 space-y-6">
+    <div className="space-y-4">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Manage Tickets</h1>
         <p className="text-muted-foreground">{eventName}</p>
@@ -220,9 +223,11 @@ export default async function EventTicketsPage({
         />
         <MobileStatsCard
           icon={TrendingUp}
-          value={`${stats.totalCapacity > 0
-            ? Math.round((stats.totalSold / stats.totalCapacity) * 100)
-            : 0}%`}
+          value={`${
+            stats.totalCapacity > 0
+              ? Math.round((stats.totalSold / stats.totalCapacity) * 100)
+              : 0
+          }%`}
           label="Capacity Used"
           secondaryInfo={`${stats.totalCapacity - stats.totalSold} left`}
         />
