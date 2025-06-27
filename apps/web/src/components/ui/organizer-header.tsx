@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button';
 const links = [
   { name: 'Dashboard', href: '/organizer', icon: Home },
   { name: 'Events', href: '/organizer/events', icon: Calendar },
-  { name: 'Account', href: '/organizer/account', icon: User },
 ];
 
 // Returns true if the link should be active for the current pathname

@@ -49,7 +49,6 @@ function PostHogProvider({ children }: { children: React.ReactNode }) {
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const pathname = usePathname();
 
   return (
     <ConfigProvider
