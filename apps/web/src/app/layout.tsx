@@ -6,7 +6,6 @@ import { Metadata } from 'next';
 import Providers from './providers';
 import '../styles/globals.css';
 import Toaster from '@/components/toaster';
-import Footer from '@/components/ui/footer';
 
 export const metadata: Metadata = {
   title: 'Troptix',

@@ -6,7 +6,7 @@ import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import React from 'react';
 import { auth } from '../../config';
 import { TropTixContext } from '../AuthProvider';
@@ -60,27 +60,11 @@ export default function Header() {
         </Link>
       ),
     },
-    {
-      key: '2',
-      label: (
-        <Link rel="noopener noreferrer" href="/organizer">
-          Account Dashboard
-        </Link>
-      ),
-    },
   ];
 
   const userItems = [
     {
-      key: '3',
-      label: (
-        <Link rel="noopener noreferrer" href="/account">
-          Account Settings
-        </Link>
-      ),
-    },
-    {
-      key: '4',
+      key: '2',
       label: (
         <Link rel="noopener noreferrer" href="/orders">
           Tickets
@@ -88,7 +72,7 @@ export default function Header() {
       ),
     },
     {
-      key: '5',
+      key: '3',
       label: (
         <a onClick={signOut} rel="noopener noreferrer">
           Sign Out
@@ -103,16 +87,8 @@ export default function Header() {
       {
         key: '1',
         label: (
-          <Link rel="noopener noreferrer" href="/admin">
-            Manage Events
-          </Link>
-        ),
-      },
-      {
-        key: '2',
-        label: (
-          <Link rel="noopener noreferrer" href="/admin/add-event">
-            Create Event
+          <Link rel="noopener noreferrer" href="/organizer">
+            Dashboard
           </Link>
         ),
       },
