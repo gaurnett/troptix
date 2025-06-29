@@ -1,4 +1,4 @@
-import { RequestType, useFetchEventsById } from '@/hooks/useFetchEvents';
+import { useFetchScannableEvents } from '@/hooks/useFetchEvents';
 import { format } from 'date-fns';
 import { Image } from 'expo-image';
 import { Link, useRouter } from 'expo-router';
@@ -11,8 +11,7 @@ export default function Home() {
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
-  const { isLoading, isError, data, error } = useFetchEventsById({
-    requestType: RequestType.GET_EVENTS_SCANNABLE_BY_ORGANIZER,
+  const { isLoading, isError, data, error } = useFetchScannableEvents({
     id: user?.uid,
   });
 
@@ -52,7 +51,14 @@ export default function Home() {
 
   if (isLoading || !data) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View
+        style={{
+          backgroundColor: 'white',
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <Text>Loading...</Text>
       </View>
     );

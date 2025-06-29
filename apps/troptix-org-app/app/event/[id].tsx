@@ -1,45 +1,11 @@
 import { useFetchEventById } from '@/hooks/useFetchEvents';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { useNavigation } from '@react-navigation/native';
 import { useLocalSearchParams } from 'expo-router';
 import { Text, View } from 'react-native';
 import CheckInPage from './checkin';
 import Scanner from './scanner';
 
-function HomeScreen() {
-  const navigation = useNavigation();
-
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Home Screen</Text>
-      {/* <Button onPress={() => navigation.navigate('Profile')}>
-        Go to Profile
-      </Button> */}
-    </View>
-  );
-}
-
-function ProfileScreen() {
-  const navigation = useNavigation();
-
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Profile Screen</Text>
-      {/* <Button onPress={() => navigation.navigate('Home')}>Go to Home</Button> */}
-    </View>
-  );
-}
-
-const Tab = createMaterialTopTabNavigator({
-  screens: {
-    Home: HomeScreen,
-    Profile: ProfileScreen,
-  },
-});
-
-interface ScannerProps {
-  initialData: any; // Replace 'any' with your object's type
-}
+const Tab = createMaterialTopTabNavigator();
 
 export default function EventDetails() {
   const { id } = useLocalSearchParams();

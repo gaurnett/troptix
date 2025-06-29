@@ -15,11 +15,14 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import {
   Image,
+  Keyboard,
+  KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { TextField } from 'react-native-ui-lib';
@@ -127,105 +130,111 @@ export default function Login() {
   }
 
   return (
-    <View style={styles.container}>
-      <View
-        style={{
-          alignItems: 'center',
-          marginBottom: 48,
-        }}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={-250}
+        style={styles.container}
       >
-        <Image
-          resizeMode="cover"
+        <View
           style={{
-            width: 150,
-            height: 150,
-            justifyContent: 'center',
-            alignContent: 'center',
-          }}
-          source={require('../../assets/logo/logo_v1.png')}
-        />
-      </View>
-      <Text style={styles.label}>Email Address</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Enter your email"
-        placeholderTextColor="#999"
-        onChangeText={setEmail}
-      />
-      <Text style={styles.label}>Password</Text>
-
-      <TextField
-        placeholder="***********"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        placeholderTextColor="#999"
-        containerStyle={styles.input}
-        showClearButton={true}
-      />
-
-      <TouchableOpacity
-        style={{
-          ...styles.button,
-          backgroundColor: '#DB4437',
-          marginTop: 24,
-        }}
-        onPress={signInWithEmail}
-        activeOpacity={0.8}
-      >
-        <View style={styles.iconContainer}>
-          <AntDesign name="mail" size={16} color="white" />
-        </View>
-        <Text
-          style={{
-            color: 'white',
-            fontSize: 18,
-            fontWeight: '500',
+            alignItems: 'center',
+            marginBottom: 48,
           }}
         >
-          Sign in with Email
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{
-          ...styles.button,
-          backgroundColor: '#4285F4',
-        }}
-        onPress={handleGoogleSignIn}
-        activeOpacity={0.8}
-      >
-        <View style={styles.iconContainer}>
-          <AntDesign name="google" size={16} color="white" />
+          <Image
+            resizeMode="cover"
+            style={{
+              width: 150,
+              height: 150,
+              justifyContent: 'center',
+              alignContent: 'center',
+            }}
+            source={require('@/assets/logo/logo_v1.png')}
+          />
         </View>
-        <Text
-          style={{
-            color: 'white',
-            fontSize: 18,
-            fontWeight: '500',
-          }}
-        >
-          Sign in with Google
-        </Text>
-      </TouchableOpacity>
-      {Platform.OS === 'ios' && (
-        <AppleButton
-          buttonStyle={AppleButton.Style.BLACK}
-          buttonType={AppleButton.Type.SIGN_IN}
-          textStyle={{
-            fontSize: 22,
-            color: '#000',
-          }}
-          style={{
-            width: '100%',
-            borderRadius: 5,
-            borderColor: '#000',
-            borderWidth: 0.5,
-            height: 50,
-            marginTop: 12,
-          }}
-          onPress={onAppleButtonPress}
+        <Text style={styles.label}>Email Address</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter your email"
+          placeholderTextColor="#999"
+          onChangeText={setEmail}
         />
-      )}
-    </View>
+        <Text style={styles.label}>Password</Text>
+
+        <TextField
+          placeholder="**************"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+          placeholderTextColor="#999"
+          containerStyle={styles.input}
+          showClearButton={true}
+        />
+
+        <TouchableOpacity
+          style={{
+            ...styles.button,
+            backgroundColor: '#DB4437',
+            marginTop: 24,
+          }}
+          onPress={signInWithEmail}
+          activeOpacity={0.8}
+        >
+          <View style={styles.iconContainer}>
+            <AntDesign name="mail" size={16} color="white" />
+          </View>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 18,
+              fontWeight: '500',
+            }}
+          >
+            Sign in with Email
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            ...styles.button,
+            backgroundColor: '#4285F4',
+          }}
+          onPress={handleGoogleSignIn}
+          activeOpacity={0.8}
+        >
+          <View style={styles.iconContainer}>
+            <AntDesign name="google" size={16} color="white" />
+          </View>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 18,
+              fontWeight: '500',
+            }}
+          >
+            Sign in with Google
+          </Text>
+        </TouchableOpacity>
+        {Platform.OS === 'ios' && (
+          <AppleButton
+            buttonStyle={AppleButton.Style.BLACK}
+            buttonType={AppleButton.Type.SIGN_IN}
+            textStyle={{
+              fontSize: 22,
+              color: '#000',
+            }}
+            style={{
+              width: '100%',
+              borderRadius: 5,
+              borderColor: '#000',
+              borderWidth: 0.5,
+              height: 50,
+              marginTop: 12,
+            }}
+            onPress={onAppleButtonPress}
+          />
+        )}
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }

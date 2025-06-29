@@ -190,6 +190,7 @@ export default function Scanner({ event }) {
         <Text
           style={{
             marginTop: 32,
+            textAlign: 'center',
           }}
         >
           Scan barcodes using the camera below to validate tickets.

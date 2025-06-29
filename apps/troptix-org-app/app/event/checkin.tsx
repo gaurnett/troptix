@@ -6,16 +6,16 @@ import {
   useCreateTicket,
 } from '@/hooks/useTicket';
 import { useEffect, useState } from 'react';
-import { Alert, Button, ScrollView, Text, View } from 'react-native';
+import {
+  Alert,
+  Button,
+  FlatList,
+  SafeAreaView,
+  Text,
+  View,
+} from 'react-native';
 import { Incubator, TextField, ToastPresets } from 'react-native-ui-lib';
 import { useAuth } from '../_layout';
-
-type GuestListRow = {
-  orderId: string;
-  ticketId: string;
-  name: string;
-  email: string;
-};
 
 type ToastSettings = {
   toastMessage?: string;
@@ -146,7 +146,7 @@ export default function CheckInPage({ event }) {
   }
 
   return (
-    <View style={{ height: '100%', backgroundColor: 'white' }}>
+    <SafeAreaView style={{ height: '100%', backgroundColor: 'white' }}>
       <Incubator.Toast
         visible={toastSettings.showToast}
         message={toastSettings.toastMessage}
@@ -157,7 +157,7 @@ export default function CheckInPage({ event }) {
         autoDismiss={2000}
         onDismiss={updateToastVisibility}
       />
-      <View bg-$backgroundDefault marginV-8 marginH-16 marginB-90>
+      <View style={{ flex: 1 }}>
         <View>
           <TextField
             placeholder={'Search order number, email, or name'}
@@ -177,95 +177,94 @@ export default function CheckInPage({ event }) {
             showClearButton={true}
           />
         </View>
-        <ScrollView keyboardDismissMode="on-drag">
-          {guests
-            .filter((guest) => {
-              if (searchValue === '') {
-                return true;
-              } else {
-                return (
-                  doesStringInclude(guest.id as string, searchValue) ||
-                  doesStringInclude(guest?.firstName as string, searchValue) ||
-                  doesStringInclude(guest?.lastName as string, searchValue)
-                );
-              }
-            })
-            .map((guest, index: any) => {
-              let buttonText = 'Check In';
-
-              if (guest.status === TicketStatus.NOT_AVAILABLE) {
-                buttonText = 'Activate Ticket';
-              }
-
+        <FlatList
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          data={guests.filter((guest) => {
+            if (searchValue === '') {
+              return true;
+            } else {
               return (
-                <View key={index}>
-                  <View
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginTop: 16,
-                      marginInline: 16,
-                    }}
-                  >
-                    <View>
-                      <View>
-                        <Text>
-                          Order ID: {String(guest.orderId).toUpperCase()}
-                        </Text>
-                        <Text>Ticket ID: {String(guest.id).toUpperCase()}</Text>
-                        <Text
-                          style={{
-                            textDecorationLine:
-                              guest.status === TicketStatus.NOT_AVAILABLE
-                                ? 'line-through'
-                                : 'none',
-                          }}
-                        >
-                          {guest.firstName} {guest.lastName}
-                        </Text>
-                        <Text
-                          style={{
-                            textDecorationLine:
-                              guest.status === TicketStatus.NOT_AVAILABLE
-                                ? 'line-through'
-                                : 'none',
-                          }}
-                        >
-                          {guest.email}
-                        </Text>
-                      </View>
-                    </View>
+                doesStringInclude(guest.id as string, searchValue) ||
+                doesStringInclude(guest?.firstName as string, searchValue) ||
+                doesStringInclude(guest?.lastName as string, searchValue)
+              );
+            }
+          })}
+          keyExtractor={(item) => item.id as string}
+          renderItem={({ item, index }) => {
+            let buttonText = 'Check In';
 
-                    <View
-                      style={{ justifyContent: 'center', alignItems: 'center' }}
-                      marginL-8
-                    >
-                      <Button
-                        // onPress={renderToast}
-                        onPress={() => checkIn(guest, index)}
-                        title={buttonText}
-                        // labelStyle={{ fontSize: 14 }}
-                        // outline
-                        // borderRadius={10}
-                      />
+            if (item.status === TicketStatus.NOT_AVAILABLE) {
+              buttonText = 'Activate Ticket';
+            }
+
+            return (
+              <View key={index}>
+                <View
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginTop: 16,
+                    marginInline: 16,
+                  }}
+                >
+                  <View>
+                    <View>
+                      <Text>
+                        Order ID: {String(item.orderId).toUpperCase()}
+                      </Text>
+                      <Text>Ticket ID: {String(item.id).toUpperCase()}</Text>
+                      <Text
+                        style={{
+                          textDecorationLine:
+                            item.status === TicketStatus.NOT_AVAILABLE
+                              ? 'line-through'
+                              : 'none',
+                        }}
+                      >
+                        {item.firstName} {item.lastName}
+                      </Text>
+                      <Text
+                        style={{
+                          textDecorationLine:
+                            item.status === TicketStatus.NOT_AVAILABLE
+                              ? 'line-through'
+                              : 'none',
+                        }}
+                      >
+                        {item.email}
+                      </Text>
                     </View>
                   </View>
+
                   <View
-                    marginT-16
-                    style={{
-                      height: 1,
-                      backgroundColor: '#D3D3D3',
-                      marginTop: 12,
-                      marginInline: 16,
-                    }}
-                  />
+                    style={{ justifyContent: 'center', alignItems: 'center' }}
+                    marginL-8
+                  >
+                    <Button
+                      onPress={() => checkIn(item, index)}
+                      title={buttonText}
+                    />
+                  </View>
                 </View>
-              );
-            })}
-        </ScrollView>
+                <View
+                  marginT-16
+                  style={{
+                    height: 1,
+                    backgroundColor: '#D3D3D3',
+                    marginTop: 12,
+                    marginInline: 16,
+                  }}
+                />
+              </View>
+            );
+          }}
+        />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
