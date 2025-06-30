@@ -14,6 +14,7 @@ import {
   ValidationResponseMessage,
 } from '@/types/checkout'; // Adjust path if needed
 import { calculateFees } from '@/server/lib/checkout'; // Adjust path if needed
+import { sendEmailToUser } from '@/server/lib/emailHelper';
 import { Prisma } from '@prisma/client';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   // @ts-ignore
@@ -107,6 +108,21 @@ export async function POST(
     );
 
     userId = null;
+  }
+
+  // --- Validate user exists if userId is provided ---
+  let validUserId: string | undefined = undefined;
+  if (userId) {
+    const userExists = await prisma.users.findUnique({
+      where: { id: userId },
+    });
+    if (userExists) {
+      validUserId = userId;
+    } else {
+      console.warn(
+        `User ${userId} not found in database, creating order without user connection`
+      );
+    }
   }
 
   // TODO: Further authentication/authorization checks if needed beyond Firebase token.
@@ -239,7 +255,7 @@ export async function POST(
             tx,
             {
               eventId,
-              userId: userId ?? undefined,
+              userId: validUserId,
               userDetails,
               validatedItems: response.validatedItems,
               subtotal: response.subtotal,
@@ -255,18 +271,20 @@ export async function POST(
           if (!response.isFree) {
             let stripeCustomerId: string | undefined;
             // Manage Stripe Customer
-            if (userId) {
-              const user = await tx.users.findUnique({ where: { id: userId } });
+            if (validUserId) {
+              const user = await tx.users.findUnique({
+                where: { id: validUserId },
+              });
               if (user?.stripeId) {
                 stripeCustomerId = user.stripeId;
               } else {
                 const newStripeCustomer = await stripe.customers.create({
                   name: `${userDetails.firstName} ${userDetails.lastName}`,
                   email: userDetails.email,
-                  metadata: { internalUserId: userId },
+                  metadata: { internalUserId: validUserId },
                 });
                 await tx.users.update({
-                  where: { id: userId },
+                  where: { id: validUserId },
                   data: { stripeId: newStripeCustomer.id },
                 });
                 stripeCustomerId = newStripeCustomer.id;
@@ -290,8 +308,9 @@ export async function POST(
               metadata: {
                 orderId: order.id,
                 eventId: eventId,
+                organizerId: event.organizerUserId,
                 eventName: event.name ?? 'Unknown Event',
-                userId: userId ?? 'Guest',
+                userId: validUserId ?? 'Guest',
               },
             });
             response.clientSecret = paymentIntent.client_secret;
@@ -304,6 +323,7 @@ export async function POST(
               },
             });
           } else {
+            // Update quantity sold for free tickets
             for (const item of response.validatedItems) {
               if (item.validatedQuantity > 0) {
                 await tx.ticketTypes.update({
@@ -312,6 +332,35 @@ export async function POST(
                     quantitySold: { increment: item.validatedQuantity },
                   },
                 });
+              }
+            }
+
+            // Send confirmation email for free orders
+            const fullOrder = await tx.orders.findUnique({
+              where: { id: order.id },
+              include: {
+                tickets: {
+                  include: {
+                    ticketType: true,
+                  },
+                },
+                event: true,
+              },
+            });
+
+            if (fullOrder) {
+              // Create orderMap structure similar to webhook in the strip endpoint
+              const orderMap = buildOrderMapFromTickets(fullOrder.tickets);
+
+              // Send email confirmation
+              try {
+                await sendEmailToUser(fullOrder, orderMap);
+              } catch (emailError) {
+                console.error(
+                  'Error sending confirmation email for free order:',
+                  emailError
+                );
+                // Don't fail the entire transaction for email errors
               }
             }
           }
@@ -542,4 +591,43 @@ function getPrismaCreateOrderPayload(
   }
 
   return orderInput;
+}
+
+/**
+ * Builds a map of ticketTypeId to aggregated ticket info from an array of tickets.
+ */
+type FullOrder = Prisma.OrdersGetPayload<{
+  include: {
+    tickets: {
+      include: {
+        ticketType: true;
+      };
+    };
+  };
+}>;
+function buildOrderMapFromTickets(
+  tickets: FullOrder['tickets']
+): Map<
+  string,
+  { ticketQuantity: number; ticketName: string; ticketTotalPaid: number }
+> {
+  const orderMap = new Map();
+  tickets.forEach((ticket) => {
+    const ticketId = ticket?.ticketType?.id;
+    if (ticketId && orderMap.has(ticketId)) {
+      const existingOrder = orderMap.get(ticketId);
+      orderMap.set(ticketId, {
+        ...existingOrder,
+        ticketQuantity: existingOrder.ticketQuantity + 1,
+        ticketTotalPaid: existingOrder.ticketTotalPaid + ticket.total,
+      });
+    } else if (ticketId) {
+      orderMap.set(ticketId, {
+        ticketQuantity: 1,
+        ticketName: ticket?.ticketType?.name || 'Unknown',
+        ticketTotalPaid: ticket.total,
+      });
+    }
+  });
+  return orderMap;
 }
