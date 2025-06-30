@@ -52,6 +52,7 @@ export async function getAllPlatformEvents(
       isDraft: true,
       createdAt: true,
       organizerUserId: true,
+
       orders: {
         where: { status: 'COMPLETED' },
         select: {
@@ -74,12 +75,15 @@ export async function getAllPlatformEvents(
     where: { id: { in: organizerIds } },
     select: {
       id: true,
-      name: true,
+      firstName: true,
+      lastName: true,
       email: true,
     },
   });
 
   // Create organizer lookup map
+  // TODO: This is a hack to get the organizer name. We should store the organizer name in the event table.
+  // I just don't want to change the schema right now.
   const organizerMap = new Map(organizers.map((org) => [org.id, org]));
 
   // Process events with status calculation and stats
@@ -112,9 +116,15 @@ export async function getAllPlatformEvents(
     // Get organizer info
     const organizer = organizerMap.get(event.organizerUserId) || {
       id: event.organizerUserId,
-      name: 'Unknown User',
       email: null,
+      firstName: null,
+      lastName: null,
     };
+
+    const organizerName =
+      organizer.firstName && organizer.lastName
+        ? organizer.firstName + ' ' + organizer.lastName
+        : 'Name not set';
 
     return {
       id: event.id,
@@ -130,7 +140,7 @@ export async function getAllPlatformEvents(
       createdAt: event.createdAt,
       organizer: {
         id: organizer.id,
-        name: organizer.name,
+        name: organizerName,
         email: organizer.email,
       },
       stats: {

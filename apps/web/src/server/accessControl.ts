@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation';
  * Check if an email belongs to a platform owner
  */
 export function isPlatformOwner(email: string | undefined): boolean {
-  console.log('isPlatformOwner', email);
   if (!email) return false;
   return email.endsWith('@usetroptix.com');
 }
@@ -48,9 +47,7 @@ export async function verifyEventAccess(
   userEmail: string | undefined,
   eventId: string
 ): Promise<void> {
-  console.log('verifyEventAccess', userId, userEmail, eventId);
   const hasAccess = await canAccessEvent(userId, userEmail, eventId);
-  console.log('hasAccess', hasAccess);
   if (!hasAccess) {
     notFound();
   }
