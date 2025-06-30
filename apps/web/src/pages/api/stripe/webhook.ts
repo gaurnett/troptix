@@ -151,7 +151,7 @@ async function updateOrderAfterPaymentSucceeds(
         data: updateTicketTypeQuantitySold(value.ticketQuantity),
       });
     }
-
+    console.log('Sending email to user', orderMap);
     await sendEmailToUser(order, orderMap);
   } catch (error) {
     console.error('[Order] Error updating order:', error);
