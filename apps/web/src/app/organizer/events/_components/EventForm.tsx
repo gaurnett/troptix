@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useTransition } from 'react';
+import React, { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray, FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -76,7 +76,9 @@ export default function EventForm({
   >(undefined);
 
   const isEditing = !!initialData; // Determine mode based on eventId presence
-
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventFormSchema),
     defaultValues: initialData ?? {
@@ -84,8 +86,8 @@ export default function EventForm({
       eventName: '',
       description: '',
       organizer: '',
-      startDate: undefined,
-      endDate: undefined,
+      startDate: today,
+      endDate: tomorrow,
       venue: '',
       address: '',
       country: '',
@@ -306,10 +308,6 @@ export default function EventForm({
               <Card>
                 <CardHeader>
                   <CardTitle>Event Details</CardTitle>
-
-                  <CardDescription>
-                    Enter the core information for your event.
-                  </CardDescription>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
@@ -369,8 +367,8 @@ export default function EventForm({
                         </FormControl>
                         <FormMessage />
                         <FormDescription>
-                          This is the name of who is organizing the event and
-                          will be displayed to attendees.
+                          Name of the person or organization organizing the
+                          event.
                         </FormDescription>
                       </FormItem>
                     )}
@@ -383,7 +381,7 @@ export default function EventForm({
                         name="startDate"
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
-                            <FormLabel>Sale Starts</FormLabel>
+                            <FormLabel>Start Date</FormLabel>
                             <div className="flex items-center gap-2 w-full">
                               <FormControl>
                                 {/* DatePicker handles the date part */}
@@ -425,9 +423,7 @@ export default function EventForm({
                                 />
                               </FormControl>
                             </div>
-                            <FormDescription className="pt-1">
-                              When tickets become available.
-                            </FormDescription>
+
                             <FormMessage />
                           </FormItem>
                         )}
@@ -440,7 +436,7 @@ export default function EventForm({
                         name="endDate"
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
-                            <FormLabel>Sale Ends</FormLabel>
+                            <FormLabel>End Date</FormLabel>
                             <div className="flex items-center gap-2">
                               <FormControl>
                                 <DatePicker
@@ -475,9 +471,6 @@ export default function EventForm({
                                 />
                               </FormControl>
                             </div>
-                            <FormDescription className="pt-1">
-                              When ticket sales stop.
-                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -503,9 +496,7 @@ export default function EventForm({
                             }}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Google Maps will suggest addresses as you type.
-                        </FormDescription>
+
                         <FormMessage />
                       </FormItem>
                     )}
@@ -536,23 +527,25 @@ export default function EventForm({
 
               {!isEditing && (
                 <Card>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    className="float-right mt-4 mr-4"
+                    onClick={handleOpenDrawerForNew}
+                    disabled={isPending} // Disable add button while submitting main form
+                  >
+                    <PlusCircle className="h-4 w-4" />
+                  </Button>
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle>Ticket Types</CardTitle>
+                        <CardTitle>Tickets</CardTitle>
                         <CardDescription>
-                          Manage tickets for your event.
+                          Add tickets for your event. This is optional, you can
+                          add them later.
                         </CardDescription>
                       </div>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={handleOpenDrawerForNew}
-                        disabled={isPending} // Disable add button while submitting main form
-                      >
-                        <PlusCircle className="h-4 w-4 mr-2" /> Add Ticket Type
-                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent>
