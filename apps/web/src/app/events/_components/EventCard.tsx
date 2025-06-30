@@ -60,24 +60,29 @@ function MobileEventCard(props: EventDisplayProps) {
   const imageSize = 125;
 
   return (
-    <div className="flex p-2 border-b border-gray-200 group-hover:bg-gray-50 transition-colors duration-150">
-      <div className="flex-shrink-0 w-[125px] h-[125px]">
+    <div className="flex p-4 bg-gradient-to-br from-card to-background border border-primary/10 rounded-xl group-hover:border-primary/30 group-hover:shadow-lg group-hover:bg-gradient-to-br group-hover:from-primary/5 group-hover:to-chart-1/10 transition-all duration-300 backdrop-blur-sm">
+      <div className="flex-shrink-0 w-[125px] h-[125px] relative">
         <Image
           width={imageSize}
           height={imageSize}
-          className="rounded object-cover w-full h-full"
+          className="rounded-lg object-cover w-full h-full shadow-md group-hover:shadow-lg transition-shadow duration-300"
           src={props.imageUrl}
           alt={props.altText}
         />
+        <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-primary/10 to-chart-1/10 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
       </div>
-      <div className="ml-4 my-auto overflow-hidden">
-        <div className="font-bold text-xl truncate">{props.name}</div>
-        <div className="text-blue-500 text-base mt-1">{props.displayDate}</div>
-        <div className="text-green-700 text-base mt-1">
+      <div className="ml-4 my-auto overflow-hidden flex-1">
+        <h3 className="font-bold text-lg sm:text-xl truncate text-foreground group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-chart-1 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300">
+          {props.name}
+        </h3>
+        <div className="bg-gradient-to-r from-chart-2 to-chart-3 bg-clip-text text-transparent text-sm sm:text-base mt-1 font-medium">
+          {props.displayDate}
+        </div>
+        <div className="bg-gradient-to-r from-chart-4 to-chart-5 bg-clip-text text-transparent text-sm sm:text-base mt-1 font-semibold">
           {props.displayPrice}
         </div>
         {props.venue && (
-          <div className="text-base text-gray-600 mt-1 truncate">
+          <div className="text-sm sm:text-base text-muted-foreground mt-1 truncate">
             {props.venue}
           </div>
         )}
@@ -88,23 +93,44 @@ function MobileEventCard(props: EventDisplayProps) {
 
 function DesktopEventCard(props: EventDisplayProps) {
   return (
-    <div
-      className="relative rounded-md overflow-hidden h-[300px] group-hover:shadow-xl transition-shadow duration-150"
-      style={{
-        backgroundImage: `url("${props.imageUrl}")`,
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="py-2 px-4 bg-white bg-opacity-90 absolute inset-x-0 bottom-0">
-        <div className="font-bold text-base">{props.name}</div>
-        <p className="text-blue-500 text-sm">{props.displayDate}</p>
-        <p className="text-green-700 text-sm">{props.displayPrice}</p>
-        {props.venue && (
-          <p className="text-gray-700 text-sm truncate">{props.venue}</p>
-        )}
+    <div className="relative rounded-xl overflow-hidden h-[320px] bg-gradient-to-br from-card to-background border border-primary/10 group-hover:border-primary/30 group-hover:shadow-2xl group-hover:scale-105 transition-all duration-300 backdrop-blur-sm">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-110"
+        style={{
+          backgroundImage: `url("${props.imageUrl}")`,
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent"></div>
       </div>
+      
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-chart-2/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      
+      {/* Content */}
+      <div className="relative h-full flex flex-col justify-end">
+        <div className="p-4 bg-gradient-to-t from-background/95 via-background/80 to-transparent backdrop-blur-sm border-t border-primary/20">
+          <h3 className="font-bold text-lg mb-2 text-foreground group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-chart-1 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300 line-clamp-2">
+            {props.name}
+          </h3>
+          <div className="space-y-1">
+            <p className="bg-gradient-to-r from-chart-2 to-chart-3 bg-clip-text text-transparent text-sm font-medium">
+              {props.displayDate}
+            </p>
+            <p className="bg-gradient-to-r from-chart-4 to-chart-5 bg-clip-text text-transparent text-sm font-semibold">
+              {props.displayPrice}
+            </p>
+            {props.venue && (
+              <p className="text-muted-foreground text-sm truncate">
+                {props.venue}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      {/* Decorative corner element */}
+      <div className="absolute top-3 right-3 w-6 h-6 bg-gradient-to-br from-primary to-chart-1 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 shadow-lg"></div>
     </div>
   );
 }

@@ -1,293 +1,206 @@
+'use client';
+import { useState, useEffect } from 'react';
+
 export default function Features() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const section = document.getElementById('features-section');
+    if (section) observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
   const features = [
     {
       title: 'Create Events',
-      description:
-        'Effortlessly plan and manage your own events, from small gatherings to large-scale occasions, offering customization options, ticketing, and promotional tools for a seamless event planning and organization experience for you and your patrons.',
-      icon: FeatureIcons.crossArrows,
+      description: 'Build beautiful event pages in minutes. Set dates, add photos, and customize everything to match your style.',
+      icon: 'calendar',
+      color: 'from-primary to-chart-1',
+      bgColor: 'from-primary/5 to-chart-1/10',
+      borderColor: 'border-primary/20',
     },
     {
-      title: ' Sell Tickets Online',
-      description:
-        'List and sell tickets for their events through a user-friendly platform. It provides a streamlined process for setting prices, managing sales, and reaching a broader audience, simplifying the entire ticket-selling experience.',
-      icon: FeatureIcons.radar,
+      title: 'Sell Tickets',
+      description: 'Secure payment processing with instant confirmations. Your attendees get their tickets immediately.',
+      icon: 'ticket',
+      color: 'from-chart-2 to-chart-3',
+      bgColor: 'from-chart-2/5 to-chart-3/10',
+      borderColor: 'border-chart-2/20',
     },
     {
-      title: 'Ticket Customization',
-      description:
-        "Tailor and personalize event tickets, allowing for unique branding, specific event details, and varied designs. This feature ensures a professional and distinctive touch to tickets, enhancing the event's overall appeal and memorability.",
-      icon: FeatureIcons.zipper,
+      title: 'Track Everything',
+      description: 'Real-time analytics and attendee insights. Know exactly how your event is performing.',
+      icon: 'analytics',
+      color: 'from-chart-3 to-chart-4',
+      bgColor: 'from-chart-3/5 to-chart-4/10',
+      borderColor: 'border-chart-3/20',
     },
     {
-      title: 'Track Registration',
-      description:
-        'Monitor and manage attendee sign-ups and information. It provides a streamlined system to categorize, organize, and track participant details, ensuring a smooth registration process for different segments or sessions within an event.',
-      icon: FeatureIcons.smallStars,
+      title: 'Easy Check-ins',
+      description: 'Streamlined entry with QR codes and mobile scanning. No more long lines or paper tickets.',
+      icon: 'check',
+      color: 'from-chart-4 to-chart-5',
+      bgColor: 'from-chart-4/5 to-chart-5/10',
+      borderColor: 'border-chart-4/20',
     },
     {
-      title: 'Manage Attendees',
-      description:
-        'Oversee attendee information, ticket status, and engagement. It enables easy access to attendee data, simplifies check-ins, and facilitates personalized communication, ensuring a seamless and enhanced experience for any user.',
-      icon: FeatureIcons.antennaDish,
+      title: 'Get Paid Fast',
+      description: 'Automatic payouts and transparent fee structure. Focus on your event, not the money stuff.',
+      icon: 'payment',
+      color: 'from-chart-5 to-primary',
+      bgColor: 'from-chart-5/5 to-primary/10',
+      borderColor: 'border-chart-5/20',
     },
     {
-      title: 'Payouts and Analytics',
-      description:
-        'See comprehensive insights into ticket sale performance. Easily track your event earnings, facilitate efficient payouts, and see valuable analytics to understand event success, attendee demographics, and revenue trends.',
-      icon: FeatureIcons.crossArrows,
+      title: 'Happy Attendees',
+      description: 'Smooth experience from ticket purchase to event day. Your guests will love the simplicity.',
+      icon: 'users',
+      color: 'from-primary to-chart-2',
+      bgColor: 'from-primary/5 to-chart-2/10',
+      borderColor: 'border-primary/20',
     },
   ];
+
   return (
-    <section className="relative">
-      {/* Section background (needs .relative class on parent and next sibling elements) */}
-      {/* <div
-        className="absolute inset-0 top-1/2 md:mt-24 lg:mt-0 bg-gray-900 pointer-events-none"
-        aria-hidden="true"
-      ></div>
-      <div className="absolute left-0 right-0 bottom-0 m-auto w-px p-px h-20 bg-gray-200 transform translate-y-1/2"></div> */}
+    <section id="features-section" className="relative py-12 sm:py-16 md:py-20 bg-gradient-to-br from-background via-accent/10 to-background px-4">
+      {/* Background decoration - mobile optimized with CSS variables */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-12 -right-12 w-48 h-48 sm:w-64 sm:h-64 md:w-96 md:h-96 md:-top-24 md:-right-24 rounded-full bg-gradient-to-br from-primary/20 to-chart-2/20 blur-3xl"></div>
+        <div className="absolute -bottom-12 -left-12 w-48 h-48 sm:w-64 sm:h-64 md:w-96 md:h-96 md:-bottom-24 md:-left-24 rounded-full bg-gradient-to-br from-chart-3/20 to-chart-4/20 blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 sm:w-48 sm:h-48 md:w-64 md:h-64 rounded-full bg-gradient-to-br from-accent/15 to-primary/15 blur-2xl"></div>
+      </div>
 
-      <div
-        className="absolute inset-0 bg-gray-100 pointer-events-none"
-        aria-hidden="true"
-      ></div>
-      <div
-        className="absolute inset-0 top-1/2 md:mt-24 lg:mt-0 bg-gray-900 pointer-events-none"
-        aria-hidden="true"
-      ></div>
+      <div className="relative w-full max-w-6xl mx-auto">
+        {/* Section header - mobile first with enhanced colors */}
+        <div className={`text-center mb-8 sm:mb-12 md:mb-16 transform transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 md:mb-6 bg-gradient-to-r from-foreground via-primary to-chart-2 bg-clip-text text-transparent">
+            Everything you need to succeed
+          </h2>
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-xs sm:max-w-lg md:max-w-3xl mx-auto leading-relaxed">
+            From creation to celebration, we've got every step covered.
+            <span className="block mt-1 sm:mt-2 bg-gradient-to-r from-muted-foreground to-primary/80 bg-clip-text text-transparent">No complexity, just results.</span>
+          </p>
+        </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="py-12 md:py-20">
-          {/* Section header */}
-          <div className="max-w-3xl mx-auto text-center pb-12 md:pb-20">
-            <h2 className="h2 mb-4">Explore our solutions</h2>
-            <p className="text-xl text-gray-600">
-              Discover a range of tailored product solutions crafted your event
-              organization needs. Want a custom feature? Reach out to our team
-              to see what we can do.
-            </p>
-          </div>
-
-          {/* Items */}
-          <div className="max-w-sm mx-auto grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-start md:max-w-2xl lg:max-w-none">
-            {features.map((feature) => (
-              <FeatureTile
-                key={feature.title}
-                title={feature.title}
-                description={feature.description}
-                icon={feature.icon}
-              />
-            ))}
-          </div>
+        {/* Features grid - mobile first */}
+        <div className="grid gap-4 sm:gap-6 md:gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
+          {features.map((feature, index) => (
+            <FeatureCard
+              key={feature.title}
+              feature={feature}
+              index={index}
+              isVisible={isVisible}
+            />
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-function FeatureTile({ title, description, icon }) {
+function FeatureCard({ feature, index, isVisible }) {
   return (
-    <div className="relative flex flex-col items-center p-6 bg-white rounded shadow-xl">
-      {icon}
-      <h4 className="text-xl font-bold leading-snug tracking-tight mb-1">
-        {title}
-      </h4>
-      <p className="text-gray-600 text-center">{description}</p>
+    <div
+      className={`group relative p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl bg-gradient-to-br from-card to-background border ${feature.borderColor} shadow-lg hover:shadow-2xl transform transition-all duration-700 hover:scale-105 ${
+        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+      }`}
+      style={{ transitionDelay: `${index * 100}ms` }}
+    >
+      {/* Background gradient on hover */}
+      <div className={`absolute inset-0 rounded-xl sm:rounded-2xl bg-gradient-to-br ${feature.bgColor} opacity-60 group-hover:opacity-100 transition-opacity duration-300`}></div>
+      
+      {/* Content */}
+      <div className="relative">
+        {/* Icon */}
+        <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 mb-3 sm:mb-4 group-hover:animate-bounce-subtle">
+          <FeatureIcon type={feature.icon} color={feature.color} />
+        </div>
+        
+        {/* Title */}
+        <h3 className={`text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-foreground group-hover:bg-gradient-to-r group-hover:bg-clip-text group-hover:text-transparent group-hover:${feature.color} transition-all duration-300`}>
+          {feature.title}
+        </h3>
+        
+        {/* Description */}
+        <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+          {feature.description}
+        </p>
+      </div>
+
+      {/* Decorative corner */}
+      <div className={`absolute top-0 right-0 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-gradient-to-br ${feature.color} rounded-xl sm:rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 transform rotate-45 translate-x-6 sm:translate-x-8 md:translate-x-10 -translate-y-6 sm:-translate-y-8 md:-translate-y-10`}></div>
     </div>
   );
 }
 
-const FeatureIcons = {
-  star: (
-    <svg
-      className="w-16 h-16 p-1 -mt-1 mb-2"
-      viewBox="0 0 64 64"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g fill="none" fillRule="evenodd">
-        <rect
-          className="fill-current text-blue-600"
-          width="64"
-          height="64"
-          rx="32"
-        />
-        <g strokeWidth="2" strokeLinecap="square">
-          <path
-            className="stroke-current text-white"
-            d="M29.714 40.358l-4.777 2.51 1.349-7.865-5.715-5.57 7.898-1.147L32 21.13l3.531 7.155 7.898 1.147L40 32.775"
-          />
-          <path
-            className="stroke-current text-blue-300"
-            d="M44.571 43.429H34.286M44.571 37.714H34.286"
-          />
-        </g>
-      </g>
-    </svg>
-  ),
-  crossArrows: (
-    <svg
-      className="w-16 h-16 p-1 -mt-1 mb-2"
-      viewBox="0 0 64 64"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g fill="none" fillRule="evenodd">
-        <rect
-          className="fill-current text-blue-600"
-          width="64"
-          height="64"
-          rx="32"
-        />
-        <g strokeWidth="2">
-          <path
-            className="stroke-current text-blue-300"
-            d="M34.514 35.429l2.057 2.285h8M20.571 26.286h5.715l2.057 2.285"
-          />
-          <path
-            className="stroke-current text-white"
-            d="M20.571 37.714h5.715L36.57 26.286h8"
-          />
-          <path
-            className="stroke-current text-blue-300"
-            strokeLinecap="square"
-            d="M41.143 34.286l3.428 3.428-3.428 3.429"
-          />
-          <path
-            className="stroke-current text-white"
-            strokeLinecap="square"
-            d="M41.143 29.714l3.428-3.428-3.428-3.429"
-          />
-        </g>
-      </g>
-    </svg>
-  ),
-  radar: (
-    <svg
-      className="w-16 h-16 p-1 -mt-1 mb-2"
-      viewBox="0 0 64 64"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g fill="none" fillRule="evenodd">
-        <rect
-          className="fill-current text-blue-600"
-          width="64"
-          height="64"
-          rx="32"
-        />
-        <g strokeWidth="2" transform="translate(19.429 20.571)">
-          <circle
-            className="stroke-current text-white"
-            strokeLinecap="square"
-            cx="12.571"
-            cy="12.571"
-            r="1.143"
-          />
-          <path
-            className="stroke-current text-white"
-            d="M19.153 23.267c3.59-2.213 5.99-6.169 5.99-10.696C25.143 5.63 19.514 0 12.57 0 5.63 0 0 5.629 0 12.571c0 4.527 2.4 8.483 5.99 10.696"
-          />
-          <path
-            className="stroke-current text-blue-300"
-            d="M16.161 18.406a6.848 6.848 0 003.268-5.835 6.857 6.857 0 00-6.858-6.857 6.857 6.857 0 00-6.857 6.857 6.848 6.848 0 003.268 5.835"
-          />
-        </g>
-      </g>
-    </svg>
-  ),
-  zipper: (
-    <svg
-      className="w-16 h-16 p-1 -mt-1 mb-2"
-      viewBox="0 0 64 64"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g fill="none" fillRule="evenodd">
-        <rect
-          className="fill-current text-blue-600"
-          width="64"
-          height="64"
-          rx="32"
-        />
-        <g strokeWidth="2">
-          <path
-            className="stroke-current text-blue-300"
-            d="M34.743 29.714L36.57 32 27.43 43.429H24M24 20.571h3.429l1.828 2.286"
-          />
-          <path
-            className="stroke-current text-white"
-            strokeLinecap="square"
-            d="M34.743 41.143l1.828 2.286H40M40 20.571h-3.429L27.43 32l1.828 2.286"
-          />
-          <path className="stroke-current text-blue-300" d="M36.571 32H40" />
-          <path
-            className="stroke-current text-white"
-            d="M24 32h3.429"
-            strokeLinecap="square"
-          />
-        </g>
-      </g>
-    </svg>
-  ),
-  smallStars: (
-    <svg
-      className="w-16 h-16 p-1 -mt-1 mb-2"
-      viewBox="0 0 64 64"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g fill="none" fillRule="evenodd">
-        <rect
-          className="fill-current text-blue-600"
-          width="64"
-          height="64"
-          rx="32"
-        />
-        <g strokeWidth="2">
-          <path
-            className="stroke-current text-white"
-            d="M32 37.714A5.714 5.714 0 0037.714 32a5.714 5.714 0 005.715 5.714"
-          />
-          <path
-            className="stroke-current text-white"
-            d="M32 37.714a5.714 5.714 0 015.714 5.715 5.714 5.714 0 015.715-5.715M20.571 26.286a5.714 5.714 0 005.715-5.715A5.714 5.714 0 0032 26.286"
-          />
-          <path
-            className="stroke-current text-white"
-            d="M20.571 26.286A5.714 5.714 0 0126.286 32 5.714 5.714 0 0132 26.286"
-          />
-          <path
-            className="stroke-current text-blue-300"
-            d="M21.714 40h4.572M24 37.714v4.572M37.714 24h4.572M40 21.714v4.572"
-            strokeLinecap="square"
-          />
-        </g>
-      </g>
-    </svg>
-  ),
-  antennaDish: (
-    <svg
-      className="w-16 h-16 p-1 -mt-1 mb-2"
-      viewBox="0 0 64 64"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <g fill="none" fillRule="evenodd">
-        <rect
-          className="fill-current text-blue-600"
-          width="64"
-          height="64"
-          rx="32"
-        />
-        <g strokeWidth="2">
-          <path
-            className="stroke-current text-white"
-            d="M19.429 32a12.571 12.571 0 0021.46 8.89L23.111 23.11A12.528 12.528 0 0019.429 32z"
-          />
-          <path
-            className="stroke-current text-blue-300"
-            d="M32 19.429c6.943 0 12.571 5.628 12.571 12.571M32 24a8 8 0 018 8"
-          />
-          <path
-            className="stroke-current text-white"
-            d="M34.286 29.714L32 32"
-          />
-        </g>
-      </g>
-    </svg>
-  ),
-};
+function FeatureIcon({ type, color }) {
+  const iconClass = `w-full h-full bg-gradient-to-br ${color} rounded-lg p-1.5 sm:p-2`;
+  
+  switch (type) {
+    case 'calendar':
+      return (
+        <div className={iconClass}>
+          <svg className="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+          </svg>
+        </div>
+      );
+    case 'ticket':
+      return (
+        <div className={iconClass}>
+          <svg className="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M22 10V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v4c1.1 0 2 .9 2 2s-.9 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2z"/>
+          </svg>
+        </div>
+      );
+    case 'analytics':
+      return (
+        <div className={iconClass}>
+          <svg className="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+          </svg>
+        </div>
+      );
+    case 'check':
+      return (
+        <div className={iconClass}>
+          <svg className="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+        </div>
+      );
+    case 'payment':
+      return (
+        <div className={iconClass}>
+          <svg className="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+          </svg>
+        </div>
+      );
+    case 'users':
+      return (
+        <div className={iconClass}>
+          <svg className="w-full h-full text-white" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63c-.34-1.02-1.3-1.73-2.36-1.73-.8 0-1.54.43-1.95 1.12l-1.65 2.75 1.43.85 1.37-2.3L17.5 14H20v8h4zm-7.5-10.5c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5S11 9.17 11 10s.67 1.5 1.5 1.5zM5.5 6c1.11 0 2-.89 2-2s-.89-2-2-2-2 .89-2 2 .89 2 2 2zm1.5 16v-7H9.5l-1.09-3.27c-.2-.6-.78-1.03-1.41-1.03-.83 0-1.5.67-1.5 1.5 0 .16.03.31.08.45L6.5 15.5H5V22H7z"/>
+          </svg>
+        </div>
+      );
+    default:
+      return (
+        <div className={iconClass}>
+          <div className="w-full h-full bg-white rounded opacity-50"></div>
+        </div>
+      );
+  }
+}
+
