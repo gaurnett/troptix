@@ -150,11 +150,24 @@ export const getSingleEventOverviewData = async (
       }),
     ]);
 
-    return { event, dailyRevenueGrouped, recentOrdersRaw, recentTicketsRaw, totalTicketsCount, checkedInTicketsCount };
+    return {
+      event,
+      dailyRevenueGrouped,
+      recentOrdersRaw,
+      recentTicketsRaw,
+      totalTicketsCount,
+      checkedInTicketsCount,
+    };
   });
 
-  const { event, dailyRevenueGrouped, recentOrdersRaw, recentTicketsRaw, totalTicketsCount, checkedInTicketsCount } =
-    result;
+  const {
+    event,
+    dailyRevenueGrouped,
+    recentOrdersRaw,
+    recentTicketsRaw,
+    totalTicketsCount,
+    checkedInTicketsCount,
+  } = result;
 
   const totalRevenue = event.orders.reduce(
     (sum, order) => sum + order.total,
@@ -227,7 +240,10 @@ export const getSingleEventOverviewData = async (
   }));
 
   // Calculate actual check-in rate
-  const attendeeCheckinRate = totalTicketsCount > 0 ? (checkedInTicketsCount / totalTicketsCount) * 100 : 0;
+  const attendeeCheckinRate =
+    totalTicketsCount > 0
+      ? (checkedInTicketsCount / totalTicketsCount) * 100
+      : 0;
 
   return {
     eventId: event.id,
