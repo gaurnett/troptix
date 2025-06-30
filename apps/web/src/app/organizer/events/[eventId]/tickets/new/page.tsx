@@ -1,6 +1,9 @@
 import React from 'react';
 import { CreateTicketTypeForm } from './_components/CreateTicketTypeForm';
 import { BackButton } from '@/components/ui/back-button';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
+import { redirect } from 'next/navigation';
+import { verifyEventAccess } from '@/server/accessControl';
 
 interface CreateEventTicketPageProps {
   params: {
@@ -8,10 +11,19 @@ interface CreateEventTicketPageProps {
   };
 }
 
-export default function CreateEventTicketPage({
+export default async function CreateEventTicketPage({
   params,
 }: CreateEventTicketPageProps) {
   const { eventId } = params;
+
+  // Get user and verify authentication
+  const user = await getUserFromIdTokenCookie();
+  if (!user) {
+    redirect('/auth/signin');
+  }
+
+  // Verify access to this event
+  await verifyEventAccess(user.uid, user.email, eventId);
 
   return (
     <div className="container mx-auto py-8">

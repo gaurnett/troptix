@@ -2,10 +2,16 @@ import React from 'react';
 import { EventManagementNav } from '@/components/ui/event-management-nav';
 import prisma from '@/server/prisma';
 import { notFound } from 'next/navigation';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
+import { redirect } from 'next/navigation';
+import { verifyEventAccess, getEventWhereClause } from '@/server/accessControl';
 
-async function getEvent(eventId: string) {
+async function getEvent(eventId: string, userId: string, userEmail?: string) {
+  // Verify access first
+  await verifyEventAccess(userId, userEmail, eventId);
+  
   const event = await prisma.events.findUnique({
-    where: { id: eventId },
+    where: getEventWhereClause(userId, userEmail, eventId),
     select: { name: true, isDraft: true },
   });
   if (!event) {
@@ -21,7 +27,13 @@ export default async function EventManagementLayout({
   children: React.ReactNode;
   params: { eventId: string };
 }) {
-  const event = await getEvent(params.eventId);
+  // Get user and verify authentication
+  const user = await getUserFromIdTokenCookie();
+  if (!user) {
+    redirect('/auth/signin');
+  }
+  
+  const event = await getEvent(params.eventId, user.uid, user.email);
 
   return (
     <div>

@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import prisma from '@/server/prisma';
 import { getUserFromIdTokenCookie } from '@/server/authUser';
 import { TicketStatus } from '@prisma/client';
+import { getEventWhereClause, verifyEventAccess } from '@/server/accessControl';
 
 export async function toggleTicketStatus(ticketId: string, eventId: string) {
   try {
@@ -12,15 +13,16 @@ export async function toggleTicketStatus(ticketId: string, eventId: string) {
     if (!user) {
       throw new Error('User not authenticated');
     }
+    const userId = user.uid;
+    const userEmail = user.email;
+    await verifyEventAccess(userId, userEmail, eventId);
 
     // First, get the current ticket to check ownership and current status
     const ticket = await prisma.tickets.findFirst({
       where: {
         id: ticketId,
         eventId: eventId,
-        event: {
-          organizerUserId: user.uid,
-        },
+        event: getEventWhereClause(userId, userEmail, eventId),
       },
       select: {
         id: true,
