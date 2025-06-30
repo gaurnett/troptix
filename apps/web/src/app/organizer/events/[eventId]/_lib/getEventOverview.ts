@@ -1,6 +1,7 @@
 import { OrderStatus } from '@prisma/client';
 import { notFound } from 'next/navigation';
 import prisma from '@/server/prisma';
+import { verifyEventAccess, getEventWhereClause } from '@/server/accessControl';
 
 // Core Event Information
 export interface EventInfo {
@@ -105,11 +106,15 @@ function getDaysUntilEvent(startDate: Date, endDate: Date | null): EventTiming['
 
 export async function getEventOverview(
   eventId: string,
-  organizerUserId: string
+  userId: string,
+  userEmail?: string
 ): Promise<EventOverview> {
-  // First, get the event creation date to determine appropriate date range
+  // Verify user has access to this event (throws notFound if unauthorized)
+  await verifyEventAccess(userId, userEmail, eventId);
+
+  // Get the event creation date to determine appropriate date range
   const eventCreationData = await prisma.events.findUnique({
-    where: { id: eventId, organizerUserId: organizerUserId },
+    where: { id: eventId },
     select: { createdAt: true },
   });
 
@@ -135,10 +140,7 @@ export async function getEventOverview(
 
   // Single comprehensive query with proper joins
   const eventData = await prisma.events.findUnique({
-    where: { 
-      id: eventId, 
-      organizerUserId: organizerUserId 
-    },
+    where: getEventWhereClause(userId, userEmail, eventId),
     include: {
       ticketTypes: {
         select: {

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Calendar, User, Menu, X } from 'lucide-react';
+import { Home, Calendar, User, Menu, X, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Sheet,
@@ -12,22 +12,43 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 
-const links = [
-  { name: 'Dashboard', href: '/organizer', icon: Home },
-  { name: 'Events', href: '/organizer/events', icon: Calendar },
-];
+// Check if email is platform owner
+const isPlatformOwner = (email?: string): boolean => {
+  if (!email) return false;
+  return email.endsWith('@usetroptix.com');
+};
+
+const getLinks = (userEmail?: string) => {
+  const baseLinks = [
+    { name: 'Dashboard', href: '/organizer', icon: Home },
+    { name: 'Events', href: '/organizer/events', icon: Calendar },
+  ];
+
+  if (isPlatformOwner(userEmail)) {
+    return [
+      ...baseLinks,
+      { name: 'Platform Events', href: '/organizer/platform/events', icon: Shield },
+    ];
+  }
+
+  return baseLinks;
+};
 
 // Returns true if the link should be active for the current pathname
 const isActiveLink = (linkHref: string, pathname: string): boolean => {
   if (linkHref === '/organizer') {
     return pathname === '/organizer';
   }
+  if (linkHref === '/organizer/platform/events') {
+    return pathname?.startsWith('/organizer/platform');
+  }
   return pathname?.startsWith(linkHref);
 };
 
-export function OrganizerHeader() {
+export function OrganizerHeader({ userEmail }: { userEmail?: string }) {
   const pathname = usePathname();
   const currentPath = pathname || '';
+  const links = getLinks(userEmail);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-sm">

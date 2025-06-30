@@ -4,6 +4,7 @@ import OrderTable from './_components/OrderTable';
 import { TicketTypes } from '@prisma/client';
 import { getUserFromIdTokenCookie } from '@/server/authUser';
 import { redirect } from 'next/navigation';
+import { verifyEventAccess, getEventWhereClause } from '@/server/accessControl';
 import {
   Card,
   CardContent,
@@ -41,16 +42,18 @@ export interface FetchedOrder {
 
 async function fetchOrders(
   eventId: string,
-  organizerUserId: string
+  userId: string,
+  userEmail?: string
 ): Promise<FetchedOrder[]> {
   try {
+    // Verify access first
+    await verifyEventAccess(userId, userEmail, eventId);
+    
     const orders = await prisma.orders.findMany({
       where: {
         eventId: eventId,
         status: 'COMPLETED',
-        event: {
-          organizerUserId: organizerUserId,
-        },
+        event: getEventWhereClause(userId, userEmail, eventId),
       },
       select: {
         id: true,
@@ -91,14 +94,12 @@ async function fetchOrders(
 
 async function fetchEventName(
   eventId: string,
-  organizerUserId: string
+  userId: string,
+  userEmail?: string
 ): Promise<string> {
   try {
     const event = await prisma.events.findFirst({
-      where: {
-        id: eventId,
-        organizerUserId: organizerUserId,
-      },
+      where: getEventWhereClause(userId, userEmail, eventId),
       select: {
         name: true,
       },
@@ -142,8 +143,8 @@ export default async function EventOrdersPage({
   if (!user) {
     redirect('/auth/signin');
   }
-  const initialOrders = await fetchOrders(eventId, user.uid);
-  const eventName = await fetchEventName(eventId, user.uid);
+  const initialOrders = await fetchOrders(eventId, user.uid, user.email);
+  const eventName = await fetchEventName(eventId, user.uid, user.email);
   const stats = calculateOrderStats(initialOrders);
 
   return (

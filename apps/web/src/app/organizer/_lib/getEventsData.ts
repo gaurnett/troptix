@@ -43,6 +43,7 @@ export const getAllOrganizerEvents = async (
     //   startDate: 'desc',
     // },
   });
+  console.log('eventsRaw', eventsRaw);
 
   // Process raw data to derive status
   const today = new Date();
