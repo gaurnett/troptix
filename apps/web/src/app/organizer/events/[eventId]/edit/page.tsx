@@ -2,6 +2,9 @@ import { BackButton } from '@/components/ui/back-button';
 import prisma from '@/server/prisma';
 import EventForm from '../../_components/EventForm';
 import { notFound } from 'next/navigation';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
+import { redirect } from 'next/navigation';
+import { verifyEventAccess, getEventWhereClause } from '@/server/accessControl';
 
 interface EditEventPageProps {
   params: {
@@ -9,10 +12,13 @@ interface EditEventPageProps {
   };
 }
 
-async function getEvent(eventId: string) {
+async function getEvent(eventId: string, userId: string, userEmail?: string) {
   try {
+    // Verify access first
+    await verifyEventAccess(userId, userEmail, eventId);
+
     const event = await prisma.events.findUnique({
-      where: { id: eventId },
+      where: getEventWhereClause(userId, userEmail, eventId),
       include: {
         ticketTypes: {
           select: {
@@ -37,7 +43,17 @@ async function getEvent(eventId: string) {
 
 export default async function EditEventPage({ params }: EditEventPageProps) {
   const { eventId } = params;
-  const event = await getEvent(eventId);
+
+  // Get user and verify authentication
+  const user = await getUserFromIdTokenCookie();
+  if (!user) {
+    redirect('/auth/signin');
+  }
+  const userId = user.uid;
+  const userEmail = user.email;
+  await verifyEventAccess(userId, userEmail, eventId);
+
+  const event = await getEvent(eventId, userId, userEmail);
 
   if (!event) {
     notFound();

@@ -46,6 +46,7 @@ import {
 } from '@/components/ui/mobile-stats-card';
 import { CopyButton } from '@/components/ui/copy-button';
 import { Progress } from '@/components/ui/progress';
+import { hasPlatformAccess } from '@/server/accessControl';
 
 function getEventStatusDisplay(eventData: EventOverview) {
   const { event, timing } = eventData;
@@ -91,7 +92,7 @@ export default async function EventOverviewPage({
   }
 
   try {
-    eventData = await getEventOverview(eventId, user.uid);
+    eventData = await getEventOverview(eventId, user.uid, user.email);
   } catch (error) {
     console.error('Failed to fetch event data:', error);
     return <p>Error loading event data.</p>;
@@ -99,6 +100,7 @@ export default async function EventOverviewPage({
 
   const eventUrl = `${process.env.NEXT_PUBLIC_APP_URL || ''}/events/${eventId}`;
   const statusDisplay = getEventStatusDisplay(eventData);
+  const isPlatformOwner = hasPlatformAccess(user.email);
 
   return (
     <div className="flex flex-col space-y-4">
@@ -108,6 +110,11 @@ export default async function EventOverviewPage({
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <Badge variant={statusDisplay.variant}>{statusDisplay.label}</Badge>
+                {isPlatformOwner && (
+                  <Badge variant="secondary" className="text-xs">
+                    Platform Access
+                  </Badge>
+                )}
                 <span className="text-xs text-muted-foreground">
                   Created: {format(eventData.event.createdAt, 'PP')}
                 </span>

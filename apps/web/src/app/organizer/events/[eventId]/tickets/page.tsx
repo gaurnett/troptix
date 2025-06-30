@@ -3,6 +3,7 @@ import prisma from '@/server/prisma';
 import TicketTable from './_components/TicketTable'; // Update the import path to the colocated component
 import { getUserFromIdTokenCookie } from '@/server/authUser';
 import { redirect } from 'next/navigation';
+import { verifyEventAccess, getEventWhereClause } from '@/server/accessControl';
 import {
   Card,
   CardContent,
@@ -28,16 +29,18 @@ interface FetchedTicketType {
 
 async function fetchTicketTypes(
   eventId: string,
-  organizerUserId: string
+  userId: string,
+  userEmail?: string
 ): Promise<FetchedTicketType[]> {
   console.log(`Fetching ticket types for event: ${eventId}`);
   try {
+    // Verify access first
+    await verifyEventAccess(userId, userEmail, eventId);
+    
     const ticketTypes = await prisma.ticketTypes.findMany({
       where: {
         eventId: eventId,
-        event: {
-          organizerUserId: organizerUserId,
-        },
+        event: getEventWhereClause(userId, userEmail, eventId),
       },
       select: {
         id: true,
@@ -61,14 +64,12 @@ async function fetchTicketTypes(
 
 async function fetchEventName(
   eventId: string,
-  organizerUserId: string
+  userId: string,
+  userEmail?: string
 ): Promise<string> {
   try {
     const event = await prisma.events.findFirst({
-      where: {
-        id: eventId,
-        organizerUserId: organizerUserId,
-      },
+      where: getEventWhereClause(userId, userEmail, eventId),
       select: {
         name: true,
       },
@@ -122,8 +123,8 @@ export default async function EventTicketsPage({
   if (!user) {
     redirect('/auth/signin');
   }
-  const initialTicketTypes = await fetchTicketTypes(eventId, user.uid);
-  const eventName = await fetchEventName(eventId, user.uid);
+  const initialTicketTypes = await fetchTicketTypes(eventId, user.uid, user.email);
+  const eventName = await fetchEventName(eventId, user.uid, user.email);
   const stats = calculateTicketStats(initialTicketTypes);
 
   return (

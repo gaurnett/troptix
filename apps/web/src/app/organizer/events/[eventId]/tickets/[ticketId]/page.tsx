@@ -3,6 +3,9 @@ import { notFound } from 'next/navigation';
 import prisma from '@/server/prisma'; // Use correct prisma import
 import { CreateTicketTypeForm } from '../new/_components/CreateTicketTypeForm';
 import { BackButton } from '@/components/ui/back-button'; // Import the new button
+import { getUserFromIdTokenCookie } from '@/server/authUser';
+import { redirect } from 'next/navigation';
+import { verifyEventAccess, getEventWhereClause } from '@/server/accessControl';
 
 interface EditEventTicketPageProps {
   params: {
@@ -11,11 +14,16 @@ interface EditEventTicketPageProps {
   };
 }
 
-async function getTicketTypeData(ticketId: string) {
+async function getTicketTypeData(ticketId: string, eventId: string, userId: string, userEmail?: string) {
   try {
+    // Verify access to the event first
+    await verifyEventAccess(userId, userEmail, eventId);
+    
     const ticketType = await prisma.ticketTypes.findUniqueOrThrow({
       where: {
         id: ticketId,
+        eventId: eventId, // Ensure ticket belongs to this event
+        event: getEventWhereClause(userId, userEmail, eventId),
       },
       select: {
         id: true,
@@ -42,7 +50,13 @@ export default async function EditEventTicketPage({
 }: EditEventTicketPageProps) {
   const { eventId, ticketId } = params;
 
-  const ticketData = await getTicketTypeData(ticketId);
+  // Get user and verify authentication
+  const user = await getUserFromIdTokenCookie();
+  if (!user) {
+    redirect('/auth/signin');
+  }
+
+  const ticketData = await getTicketTypeData(ticketId, eventId, user.uid, user.email);
 
   const initialFormData = {
     ...ticketData,
