@@ -9,7 +9,7 @@ import { BackButton } from '@/components/ui/back-button';
 
 export default function CreateEventPage() {
   return (
-    <div className="container mx-auto py-8">
+    <div className="py-8">
       <div className="mb-6 flex items-center gap-2">
         <BackButton />
         <h1 className="text-2xl font-semibold">Create Event</h1>
