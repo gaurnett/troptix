@@ -69,11 +69,6 @@ export function OrganizerHeader() {
                 >
                   TropTix
                 </Link>
-                <SheetClose asChild>
-                  <Button variant="ghost" size="icon">
-                    <X className="h-6 w-6" />
-                  </Button>
-                </SheetClose>
               </div>
               <nav className="grid gap-4">
                 {links.map((link) => (
