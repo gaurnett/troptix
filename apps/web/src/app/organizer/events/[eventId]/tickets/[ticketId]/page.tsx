@@ -14,11 +14,16 @@ interface EditEventTicketPageProps {
   };
 }
 
-async function getTicketTypeData(ticketId: string, eventId: string, userId: string, userEmail?: string) {
+async function getTicketTypeData(
+  ticketId: string,
+  eventId: string,
+  userId: string,
+  userEmail?: string
+) {
   try {
     // Verify access to the event first
     await verifyEventAccess(userId, userEmail, eventId);
-    
+
     const ticketType = await prisma.ticketTypes.findUniqueOrThrow({
       where: {
         id: ticketId,
@@ -28,6 +33,7 @@ async function getTicketTypeData(ticketId: string, eventId: string, userId: stri
       select: {
         id: true,
         name: true,
+        discountCode: true,
         description: true,
         price: true,
         quantity: true,
@@ -56,13 +62,19 @@ export default async function EditEventTicketPage({
     redirect('/auth/signin');
   }
 
-  const ticketData = await getTicketTypeData(ticketId, eventId, user.uid, user.email);
+  const ticketData = await getTicketTypeData(
+    ticketId,
+    eventId,
+    user.uid,
+    user.email
+  );
 
   const initialFormData = {
     ...ticketData,
     saleStartDate: ticketData.saleStartDate,
     saleEndDate: ticketData.saleEndDate,
     description: ticketData.description ?? undefined,
+    discountCode: ticketData.discountCode ?? undefined,
   };
 
   const backUrl = `/organizer/events/${eventId}/tickets`;

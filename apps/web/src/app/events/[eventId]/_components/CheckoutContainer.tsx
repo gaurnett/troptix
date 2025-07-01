@@ -1,5 +1,4 @@
 'use client';
-
 import { TropTixContext } from '@/components/AuthProvider';
 import { Spinner } from '@/components/ui/spinner';
 import { ReactNode, useContext, useEffect, useState } from 'react';
@@ -15,11 +14,16 @@ import {
 } from '@/lib/schemas/checkoutSchema';
 import {
   InitiateCheckoutVariables,
+  useApplyCode,
   useFetchCheckoutConfig,
   useInitiateCheckout,
 } from '@/hooks/useCheckout';
 
-import { CheckoutConfigResponse, ValidationResponse } from '@/types/checkout';
+import {
+  CheckoutConfigResponse,
+  CheckoutTicket,
+  ValidationResponse,
+} from '@/types/checkout';
 import { AdjustmentConfirmationModal } from './confirmation-modal';
 
 interface CheckoutContainerProps {
@@ -55,7 +59,8 @@ export interface CheckoutState {
  * @param checkoutConfig - The checkout config
  * @returns The cart total, subtotal, and fees
  */
-
+// TODO: This CheckoutContainer has become quite complex and needs to be refactored. Using a state manager like zustand or event just context would be better.
+// BEfore adding more promo code functionality, we should refactor this to use a state manager.
 export function CheckoutContainer({
   event,
   isOpen,
@@ -90,6 +95,7 @@ export function CheckoutContainer({
   const [current, setCurrent] = useState<number>(0);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [unlockedTickets, setUnlockedTickets] = useState<CheckoutTicket[]>([]);
   const [promotion, setPromotion] = useState<any>();
   const [isConfirmationOpen, setIsConfirmationOpen] = useState<boolean>(false);
   const [confirmationData, setConfirmationData] =
@@ -106,13 +112,55 @@ export function CheckoutContainer({
       setConfirmationData(null);
       setClientSecret(null);
       setOrderId(null);
+      setUnlockedTickets([]);
     }
   }, [isOpen]);
 
   const { isPending: isFetchingCheckoutConfig, data: checkoutConfig } =
     useFetchCheckoutConfig(eventId);
+  const applyCodeMutation = useApplyCode();
+  const displayedTickets = [
+    ...unlockedTickets,
+    ...(checkoutConfig?.tickets || []),
+  ];
 
-  const { cartSubtotal, cartFees } = calculateCart(checkout, checkoutConfig);
+  const { cartSubtotal, cartFees } = calculateCart(checkout, displayedTickets);
+
+  function handleApplyCode(code: string) {
+    if (!code) {
+      toast.warning('Please enter a code.');
+      return;
+    }
+    toast.loading('Applying code...', { id: 'apply-code' });
+
+    applyCodeMutation.mutate(
+      { eventId, code },
+      {
+        onSuccess: (response) => {
+          toast.dismiss('apply-code');
+
+          if (response.isValid && response.unlockedTicket) {
+            toast.success(response.message);
+            // Add the unlocked ticket to our displayed list, avoiding duplicates
+            setUnlockedTickets((prevTickets) => {
+              if (
+                prevTickets.some((t) => t.id === response.unlockedTicket?.id)
+              ) {
+                return prevTickets; // Already unlocked, do nothing
+              }
+              return [...prevTickets, response.unlockedTicket!];
+            });
+          } else {
+            // Handle cases like "valid but sold out" or "invalid"
+            toast.error(response.message);
+          }
+        },
+        onError: () => {
+          toast.dismiss('apply-code');
+        },
+      }
+    );
+  }
 
   async function handleNext(userDetails: UserDetailsFormData) {
     if (Object.keys(checkout.tickets).length === 0) {
@@ -125,7 +173,6 @@ export function CheckoutContainer({
       eventId: eventId,
       selectedTickets: checkout.tickets,
       userDetails: userDetails,
-      promotionCode: promotion?.code,
     };
 
     // messageApi.open({
@@ -216,7 +263,9 @@ export function CheckoutContainer({
 
     return current === 0 ? (
       <TicketsCheckoutForm
-        checkoutConfig={checkoutConfig}
+        displayedTickets={displayedTickets}
+        handleApplyCode={handleApplyCode}
+        isApplyingCode={applyCodeMutation.isPending}
         checkout={checkout}
         setCheckout={setCheckout}
         formMethods={formMethods}
@@ -277,21 +326,24 @@ export function CheckoutContainer({
   );
 }
 
-function calculateCart(
-  checkout: CheckoutState,
-  checkoutConfig: CheckoutConfigResponse | undefined
-) {
+/**
+ * Calculate the cart total, subtotal, and fees on the client only used for display purposes
+ * @param checkout - The checkout state - the current tickets in the cart
+ * @param tickets - The tickets details used to calculate the cart
+ * @returns The cart total, subtotal, and fees
+ */
+function calculateCart(checkout: CheckoutState, tickets: CheckoutTicket[]) {
   let subtotal = 0;
   let fees = 0;
-  if (!checkoutConfig) {
+  if (!tickets) {
     return { cartSubtotal: subtotal, cartFees: fees };
   }
   Object.keys(checkout.tickets).forEach((ticketId) => {
-    const ticket = checkoutConfig?.tickets.find(
-      (ticket) => ticket.id === ticketId
-    );
-    subtotal += (ticket?.price || 0) * checkout.tickets[ticketId];
-    fees += (ticket?.fees || 0) * checkout.tickets[ticketId];
+    const ticket = tickets.find((ticket) => ticket.id === ticketId);
+    if (ticket && checkout.tickets[ticketId] > 0) {
+      subtotal += ticket.price * checkout.tickets[ticketId];
+      fees += ticket.fees * checkout.tickets[ticketId];
+    }
   });
   return { cartSubtotal: subtotal, cartFees: fees };
 }

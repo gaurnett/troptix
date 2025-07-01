@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Switch } from '@/components/ui/switch';
 import { DatePicker } from '@/components/DatePicker';
 import { Loader2 } from 'lucide-react';
 
@@ -48,6 +49,7 @@ const defaultFormValues: TicketTypeFormValues = {
   saleStartDate: today,
   saleEndDate: tomorrow,
   ticketingFees: 'PASS_TICKET_FEES',
+  discountCode: undefined,
 };
 
 interface CreateTicketTypeFormProps {
@@ -62,6 +64,11 @@ export function CreateTicketTypeForm({
   const router = useRouter();
   const isEditMode = !!initialData;
   const [isPending, startTransition] = useTransition();
+
+  // UI-only state for showing/hiding password field
+  const [showPasswordField, setShowPasswordField] = useState(
+    !!initialData?.discountCode
+  );
 
   const form = useForm<TicketTypeFormValues>({
     resolver: zodResolver(ticketTypeSchema),
@@ -101,6 +108,9 @@ export function CreateTicketTypeForm({
   }
 
   const onSubmit: SubmitHandler<TicketTypeFormValues> = (values) => {
+    if (!showPasswordField) {
+      values.discountCode = undefined;
+    }
     startTransition(async () => {
       try {
         let result;
@@ -323,6 +333,44 @@ export function CreateTicketTypeForm({
               </FormItem>
             )}
           />
+        </div>
+
+        <div className="flex flex-col rounded-lg border p-4 gap-4">
+          <div className="flex flex-row items-center justify-between">
+            <div className="space-y-0.5">
+              <FormLabel className="text-base">Password Protected</FormLabel>
+              <FormDescription>
+                Require a password for customers to access this ticket type.
+              </FormDescription>
+            </div>
+            <Switch
+              checked={showPasswordField}
+              onCheckedChange={(checked) => {
+                setShowPasswordField(checked);
+              }}
+            />
+          </div>
+
+          {showPasswordField && (
+            <FormField
+              control={form.control}
+              name="discountCode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      type="text"
+                      placeholder="Enter password for this ticket"
+                      {...field}
+                      value={field.value ?? ''}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </div>
 
         {(Number(watchedPrice) || 0) > 0 && (

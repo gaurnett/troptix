@@ -57,6 +57,7 @@ export interface CheckoutTicket {
   feeStructure: TicketFeeStructure;
   ticketType: PrismaTicketTypeEnum | null;
   ticketQuanityLow: boolean;
+  isPasswordProtected?: boolean;
 }
 
 export interface CheckoutConfigResponse {
@@ -65,4 +66,11 @@ export interface CheckoutConfigResponse {
   // Might want to include other relevant information like currency,
   // currency
   // Custom form fields set by the event owner
+}
+
+export interface ApplyCodeResponse {
+  message: string;
+  type: 'password' | 'invalid';
+  isValid: boolean;
+  unlockedTicket?: CheckoutTicket;
 }
