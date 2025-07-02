@@ -10,10 +10,10 @@ export const metadata: Metadata = {
   title: 'Troptix',
   description: 'Troptix is a better way to get tickets',
   icons: {
-    icon: '/logos/TropTixLetter.png',
+    icon: '/logos/TroptixLetter.png',
   },
   openGraph: {
-    images: '/logos/TropTixWord.png',
+    images: '/logos/TroptixWord.png',
     type: 'website',
     siteName: 'TropTix',
     title: 'TropTix',
