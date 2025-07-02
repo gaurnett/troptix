@@ -1,10 +1,12 @@
 'use client';
 import { Alert } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useFeatureFlagEnabled } from 'posthog-js/react';
 
 export default function LandingHero() {
   return (
-    <section className="relative">
+    <section className="relative bg-background">
       <div
         className="absolute left-1/2 transform -translate-x-1/2 bottom-0 pointer-events-none -z-1"
         aria-hidden="true"
@@ -23,9 +25,9 @@ export default function LandingHero() {
               y2="100%"
               id="illustration-01"
             >
-              <stop stopColor="#FFF" offset="0%" />
-              <stop stopColor="#EAEAEA" offset="77.402%" />
-              <stop stopColor="#DFDFDF" offset="100%" />
+              <stop stopColor="hsl(var(--muted))" offset="0%" />
+              <stop stopColor="hsl(var(--muted) / 0.8)" offset="77.402%" />
+              <stop stopColor="hsl(var(--muted) / 0.6)" offset="100%" />
             </linearGradient>
           </defs>
           <g fill="url(#illustration-01)" fillRule="evenodd">
@@ -41,48 +43,65 @@ export default function LandingHero() {
           {/* Section header */}
           <div className="text-center pb-12 md:pb-16">
             <div className="mx-auto w-fit mb-8">
-              <Alert variant="info" className="p-3">
+              <Alert
+                variant="default"
+                className="p-3 border-primary/20 bg-primary/5 text-primary"
+              >
                 TropTix is now in Beta Testing!
               </Alert>
             </div>
             <h1
-              className="text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
+              className="text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4 text-foreground"
               data-aos="zoom-y-out"
             >
-              TropTix is a better way to{' '}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400 pr-4">
-                get tickets
-              </span>
+              Unforgettable{' '}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-chart-2 inline-block pr-1">
+                experiences
+              </span>{' '}
+              start here.
             </h1>
             <div className="max-w-3xl mx-auto">
               <p
-                className="text-xl text-gray-600 mb-8"
+                className="text-xl text-muted-foreground mb-8"
                 data-aos="zoom-y-out"
                 data-aos-delay="150"
               >
-                View event details and purchase tickets to your favorite events
-                within minutes. From concerts to conventions, find your ticket
-                to unforgettable moments!
+                Discover events, buy tickets instantly, or create your own. Make
+                every moment memorable with TropTix.
               </p>
 
-              <div
-                className="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center"
-                data-aos="zoom-y-out"
-                data-aos-delay="300"
-              >
-                <div>
-                  <Link
-                    className="btn text-white bg-blue-600 hover:bg-blue-700 w-full mb-4 sm:w-auto sm:mb-0"
-                    href="/events"
-                  >
-                    Explore Events
-                  </Link>
-                </div>
-              </div>
+              <CTAButtons />
             </div>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function CTAButtons() {
+  const showCreateEvent = useFeatureFlagEnabled('show-create-event-button');
+
+  return (
+    <div
+      className="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center sm:gap-4"
+      data-aos="zoom-y-out"
+      data-aos-delay="300"
+    >
+      <Button size="lg" asChild className="w-full sm:w-auto">
+        <Link href="/events">Explore Events</Link>
+      </Button>
+
+      {showCreateEvent && (
+        <Button
+          size="lg"
+          variant="outline"
+          asChild
+          className="w-full sm:w-auto mt-3 sm:mt-0"
+        >
+          <Link href="/organizer/events/new">Create Your First Event</Link>
+        </Button>
+      )}
+    </div>
   );
 }

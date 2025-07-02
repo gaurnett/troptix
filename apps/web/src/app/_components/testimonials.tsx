@@ -5,7 +5,7 @@ export default function Testimonials() {
   const logoSize = 120;
 
   return (
-    <section className="relative">
+    <section className="relative bg-background">
       <div
         className="absolute left-1/2 transform -translate-x-1/2 bottom-0 pointer-events-none -mb-32"
         aria-hidden="true"
@@ -24,9 +24,9 @@ export default function Testimonials() {
               y2="100%"
               id="illustration-02"
             >
-              <stop stopColor="#FFF" offset="0%" />
-              <stop stopColor="#EAEAEA" offset="77.402%" />
-              <stop stopColor="#DFDFDF" offset="100%" />
+              <stop stopColor="hsl(var(--muted))" offset="0%" />
+              <stop stopColor="hsl(var(--muted) / 0.8)" offset="77.402%" />
+              <stop stopColor="hsl(var(--muted) / 0.6)" offset="100%" />
             </linearGradient>
           </defs>
           <g
@@ -43,7 +43,7 @@ export default function Testimonials() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 mb-16">
         <div className="pt-12 md:pt-20">
           <div className="max-w-3xl mx-auto text-center mb-8">
-            <h2 className="h2 mb-4">
+            <h2 className="h2 mb-4 text-foreground">
               TropTix is powered by industry leaders over the world
             </h2>
           </div>
@@ -54,7 +54,7 @@ export default function Testimonials() {
               <Image
                 width={logoSize}
                 height={logoSize}
-                className="w-auto"
+                className="w-auto opacity-60 hover:opacity-100 transition-opacity"
                 style={{ objectFit: 'contain' }}
                 src={'/logos/google.png'}
                 alt={'google logo'}
@@ -65,7 +65,7 @@ export default function Testimonials() {
               <Image
                 width={logoSize}
                 height={logoSize}
-                className="w-auto"
+                className="w-auto opacity-60 hover:opacity-100 transition-opacity"
                 style={{ objectFit: 'contain' }}
                 src={'/logos/stripe.png'}
                 alt={'stripe logo'}
@@ -76,7 +76,7 @@ export default function Testimonials() {
               <Image
                 width={logoSize}
                 height={logoSize}
-                className="w-auto"
+                className="w-auto opacity-60 hover:opacity-100 transition-opacity"
                 style={{ objectFit: 'contain' }}
                 src={'/logos/microsoft.png'}
                 alt={'microsoft logo'}
@@ -85,7 +85,7 @@ export default function Testimonials() {
           </div>
 
           <div className="max-w-2xl mx-auto">
-            <h3 className="h3 text-center mb-8">Contact Us</h3>
+            <h3 className="h3 text-center mb-8 text-foreground">Contact Us</h3>
             <ContactForm />
           </div>
         </div>
