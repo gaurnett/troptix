@@ -6,12 +6,20 @@ import { Metadata } from 'next';
 import Providers from './providers';
 import '../styles/globals.css';
 import Toaster from '@/components/toaster';
-
 export const metadata: Metadata = {
   title: 'Troptix',
   description: 'Troptix is a better way to get tickets',
   icons: {
-    icon: '/logos/wordLogo.png',
+    icon: '/logos/TropTixLetter.png',
+  },
+  openGraph: {
+    images: '/logos/TropTixWord.png',
+    type: 'website',
+    siteName: 'TropTix',
+    title: 'TropTix',
+    description: 'TropTix is a better way to get tickets',
+    url: 'https://usetroptix.com',
+    locale: 'en_US',
   },
 };
 

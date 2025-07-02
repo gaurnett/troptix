@@ -30,7 +30,7 @@ export default function CaribbeanFlags() {
   }, []);
 
   return (
-    <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
+    <div className="flex items-center justify-center gap-2 sm:gap-3 text-sm text-muted-foreground">
       <span>Proudly serving event creators across the Caribbean</span>
       <div className="relative w-8 h-6 flex items-center justify-center">
         <AnimatePresence mode="wait">
