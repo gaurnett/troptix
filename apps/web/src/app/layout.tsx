@@ -10,6 +10,9 @@ import Toaster from '@/components/toaster';
 export const metadata: Metadata = {
   title: 'Troptix',
   description: 'Troptix is a better way to get tickets',
+  icons: {
+    icon: '/logos/wordLogo.png',
+  },
 };
 
 export default async function RootLayout({
