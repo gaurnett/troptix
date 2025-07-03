@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Calendar, User, Menu, X, Shield } from 'lucide-react';
+import { Home, Calendar, Menu, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   Sheet,
@@ -27,7 +27,11 @@ const getLinks = (userEmail?: string) => {
   if (isPlatformOwner(userEmail)) {
     return [
       ...baseLinks,
-      { name: 'Platform Events', href: '/organizer/platform/events', icon: Shield },
+      {
+        name: 'Platform Events',
+        href: '/organizer/platform/events',
+        icon: Shield,
+      },
     ];
   }
 

@@ -22,11 +22,7 @@ function GlobalLayout({ children }: { children: React.ReactNode }) {
   return (
     <div>
       {isOrganizer ? null : <Header />}
-      <div
-        className={`flex-grow border-x ${isOrganizer ? 'mt-0' : 'mt-20 md:mt-28'}`}
-      >
-        {children}
-      </div>
+      <div className={`flex-grow border-x`}>{children}</div>
       {isOrganizer ? null : <Footer />}
     </div>
   );

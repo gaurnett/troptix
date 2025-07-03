@@ -1,16 +1,53 @@
 'use client';
 
 import { useContext, useEffect, useState } from 'react';
-
-import { DownOutlined } from '@ant-design/icons';
-import { Button, Dropdown, MenuProps } from 'antd';
-import Image from 'next/image';
+import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React from 'react';
 import { auth } from '../../config';
 import { TropTixContext } from '../AuthProvider';
-import MobileMenu from './mobile-menu';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+export interface NavItem {
+  key: string;
+  label: string;
+  href: string;
+  requiresAuth?: boolean;
+}
+
+export const navItems: NavItem[] = [
+  {
+    key: 'events',
+    label: 'Explore Events',
+    href: '/events',
+  },
+  {
+    key: 'tickets',
+    label: 'Tickets',
+    href: '/orders',
+    requiresAuth: true,
+  },
+];
+
+export const authItems: NavItem[] = [
+  {
+    key: 'signin',
+    label: 'Sign in',
+    href: '/auth/signin',
+  },
+  {
+    key: 'signup',
+    label: 'Sign up',
+    href: '/auth/signup',
+  },
+];
 
 export default function Header() {
   const [top, setTop] = useState<boolean>(true);
@@ -18,7 +55,7 @@ export default function Header() {
   const pathname = usePathname();
 
   const scrollHandler = () => {
-    window.pageYOffset > 10 ? setTop(false) : setTop(true);
+    window.scrollY > 10 ? setTop(false) : setTop(true);
   };
 
   useEffect(() => {
@@ -31,144 +68,106 @@ export default function Header() {
     await auth.signOut();
   }
 
-  let items: MenuProps['items'];
+  const getVisibleNavItems = () => {
+    return navItems.filter((item) => {
+      // Don't show tickets in nav if user is logged in (it will be in action buttons)
+      if (item.key === 'tickets' && user.id) return false;
+      return !item.requiresAuth || user.id;
+    });
+  };
 
-  const navItems = [
-    {
-      key: '1',
-      label: (
-        <Link
-          href="/events"
-          className={`${
-            pathname === '/events' || pathname === '/event'
-              ? 'md:text-blue-700'
-              : ''
-          } block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 md:dark:hover:text-blue-500 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700`}
-        >
-          Explore Events
-        </Link>
-      ),
-    },
-  ];
-
-  const organizerItems = [
-    {
-      key: '1',
-      label: (
-        <Link rel="noopener noreferrer" href="/organizer/events">
-          Your Events
-        </Link>
-      ),
-    },
-  ];
-
-  const userItems = [
-    {
-      key: '2',
-      label: (
-        <Link rel="noopener noreferrer" href="/orders">
-          Tickets
-        </Link>
-      ),
-    },
-    {
-      key: '3',
-      label: (
-        <a onClick={signOut} rel="noopener noreferrer">
-          Sign Out
-        </a>
-      ),
-    },
-  ];
-  // TODO: Unfortunately I can't use the feature flag here since this is in a layout component
-  // TODO: When ready we should update this for just authenticated users
-  if (user && user?.isOrganizer) {
-    items = [
-      {
-        key: '1',
-        label: (
-          <Link rel="noopener noreferrer" href="/organizer">
-            Dashboard
-          </Link>
-        ),
-      },
-      ...userItems,
-    ];
-  } else {
-    items = [...userItems];
-  }
+  // Get user initials for avatar
+  const getUserInitials = () => {
+    if (!user.email) return 'U';
+    const email = user.email;
+    const parts = email.split('@')[0].split('.');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return email[0].toUpperCase();
+  };
 
   return (
     <header
-      className={`fixed w-full z-30 md:bg-opacity-90 transition duration-300 ease-in-out ${
-        !top ? 'bg-white backdrop-blur-sm shadow-lg' : ''
-      } ${pathname?.includes('/event') ? 'bg-white' : ''}`}
+      className={`fixed w-full z-30 transition duration-300 ease-in-out border-b bg-white/80 backdrop-blur-sm ${
+        !top ? 'shadow-lg' : ''
+      }`}
     >
       <div className="max-w-6xl mx-auto px-5 sm:px-6">
-        <div className="flex items-center justify-between h-24 md:h-28">
-          <div className="shrink-0 mr-4">
-            <Link href={'/'}>
-              <Image
-                src={'/logos/logo_v1.png'}
-                width={75}
-                height={75}
-                alt="troptix-logo"
-              />
-            </Link>
-          </div>
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="text-2xl font-bold text-primary">
+            TropTix
+          </Link>
 
-          <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
-            <div
-              className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
-              id="navbar-sticky"
-            >
-              <ul className="flex flex-col mt-4 font-medium border rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0 dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-                {pathname?.includes('/organizer')
-                  ? organizerItems.map((item) => (
-                      <li key={item.key}>{item.label}</li>
-                    ))
-                  : navItems.map((item) => (
-                      <li key={item.key}>{item.label}</li>
-                    ))}
-              </ul>
+          {/* Right side - Navigation + Buttons */}
+          <div className="flex items-center gap-6">
+            {/* Navigation Items */}
+            <nav className="flex items-center gap-4 sm:gap-6">
+              {getVisibleNavItems().map((item) => (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  className={`text-sm font-medium transition-colors hover:text-primary ${
+                    pathname === item.href
+                      ? 'text-primary'
+                      : 'text-muted-foreground'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
+            {/* Action Buttons */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {!user.id ? (
+                // Unauthenticated state
+                <>
+                  {authItems.map((item) => (
+                    <Button
+                      key={item.key}
+                      variant={item.key === 'signup' ? 'default' : 'ghost'}
+                      size="sm"
+                      asChild
+                    >
+                      <Link href={item.href}>{item.label}</Link>
+                    </Button>
+                  ))}
+                </>
+              ) : (
+                // Authenticated state with avatar dropdown
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="flex items-center gap-2 h-10 px-2"
+                    >
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="text-sm font-medium">
+                          {getUserInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    {user.isOrganizer && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/organizer">Dashboard</Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem asChild>
+                      <Link href="/orders">Tickets</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={signOut}>
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </div>
-
-          <div className="max-w-screen-xl flex flex-wrap items-center justify-end">
-            <nav className="hidden md:flex">
-              <div className="flex md:order-2">
-                {!user.id ? (
-                  <ul className="flex grow justify-end flex-wrap items-center">
-                    <li>
-                      <Link href="/auth/signin" className="">
-                        <Button className="font-semibold text-base" type="text">
-                          Log in
-                        </Button>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/auth/signup" className="">
-                        <Button className="font-semibold text-base" type="text">
-                          Sign up
-                        </Button>
-                      </Link>
-                    </li>
-                  </ul>
-                ) : (
-                  <ul className="flex justify-end">
-                    <Dropdown className="cursor-pointer" menu={{ items }}>
-                      <a className="inline-flex items-center justify-center leading-snug transition duration-150 ease-in-out">
-                        <div style={{ fontSize: '16px' }}>{user.email}</div>
-                        <DownOutlined className="ml-1 text-xs" />
-                      </a>
-                    </Dropdown>
-                  </ul>
-                )}
-              </div>
-            </nav>
-          </div>
-
-          <MobileMenu />
         </div>
       </div>
     </header>
