@@ -6,10 +6,21 @@ import { Metadata } from 'next';
 import Providers from './providers';
 import '../styles/globals.css';
 import Toaster from '@/components/toaster';
-
 export const metadata: Metadata = {
   title: 'Troptix',
   description: 'Troptix is a better way to get tickets',
+  icons: {
+    icon: '/logos/TroptixLetter.png',
+  },
+  openGraph: {
+    images: '/logos/TroptixWord.png',
+    type: 'website',
+    siteName: 'TropTix',
+    title: 'TropTix',
+    description: 'TropTix is a better way to get tickets',
+    url: 'https://usetroptix.com',
+    locale: 'en_US',
+  },
 };
 
 export default async function RootLayout({
