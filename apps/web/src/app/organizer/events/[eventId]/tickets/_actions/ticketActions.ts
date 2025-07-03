@@ -58,6 +58,7 @@ export async function createTicketType(
         saleEndDate: data.saleEndDate,
         ticketingFees: data.ticketingFees,
         ticketType: ticketTypeEnum,
+        discountCode: data.discountCode || null,
       },
     });
     console.log('Ticket type created:', data);
@@ -108,6 +109,7 @@ export async function updateTicketType(
         saleEndDate: data.saleEndDate,
         ticketingFees: data.ticketingFees,
         ticketType: ticketTypeEnum,
+        discountCode: data.discountCode || null,
       },
       select: { eventId: true },
     });

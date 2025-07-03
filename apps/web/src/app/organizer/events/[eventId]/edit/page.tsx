@@ -30,6 +30,7 @@ async function getEvent(eventId: string, userId: string, userEmail?: string) {
             saleStartDate: true,
             saleEndDate: true,
             ticketingFees: true,
+            discountCode: true,
           },
         },
       },
@@ -87,7 +88,12 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
       <EventForm
         initialData={initialData}
         eventId={eventId}
-        ticketTypes={event?.ticketTypes ?? []}
+        ticketTypes={
+          event?.ticketTypes.map((ticket) => ({
+            ...ticket,
+            discountCode: ticket.discountCode || undefined,
+          })) ?? []
+        }
         isDraft={event.isDraft}
       />
     </div>
