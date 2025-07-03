@@ -34,6 +34,7 @@ export const ticketTypeSchema = z
     }),
     saleEndDate: z.date({ required_error: 'Sale end date is required.' }),
     ticketingFees: TicketFeeStructure,
+    discountCode: z.string().optional(),
   })
   .refine((data) => data.saleEndDate > data.saleStartDate, {
     message: 'Sale end date must be after the start date.',

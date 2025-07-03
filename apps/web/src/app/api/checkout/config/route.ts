@@ -26,6 +26,7 @@ export async function GET(
     const ticketTypesData = await prisma.ticketTypes.findMany({
       where: {
         eventId: eventId,
+        discountCode: null,
       },
       select: {
         id: true,
