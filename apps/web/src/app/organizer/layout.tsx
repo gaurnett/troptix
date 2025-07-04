@@ -1,7 +1,6 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { getUserFromIdTokenCookie } from '@/server/authUser';
-import { OrganizerHeader } from '@/components/ui/organizer-header';
 
 export default async function OrganizerLayout({
   children,
@@ -15,8 +14,7 @@ export default async function OrganizerLayout({
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <OrganizerHeader userEmail={user.email} />
-      <main className="flex-1 md:container px-4 py-8">{children}</main>
+      <main className="flex-1 md:container px-4 py-8 mt-16">{children}</main>
       <div className="md:hidden h-16"></div> {/* Spacer for bottom nav */}
     </div>
   );

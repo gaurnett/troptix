@@ -10,7 +10,7 @@ import { PostHogProvider as PHProvider } from 'posthog-js/react';
 
 import AuthProvider from '@/components/AuthProvider';
 import { ErrorFallback } from '@/components/utils/ErrorFallback';
-import Header from '@/components/ui/header';
+import UnifiedHeader from '@/components/ui/unified-header';
 import Footer from '@/components/ui/footer';
 
 const queryClient = new QueryClient();
@@ -21,7 +21,7 @@ function GlobalLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div>
-      {isOrganizer ? null : <Header />}
+      <UnifiedHeader />
       <div className={`flex-grow border-x`}>{children}</div>
       {isOrganizer ? null : <Footer />}
     </div>
