@@ -1,7 +1,14 @@
 'use client';
 
 import { useContext, useEffect, useState } from 'react';
-import { Calendar, Home, LogOut, Shield, Ticket } from 'lucide-react';
+import {
+  ArrowLeft,
+  Calendar,
+  Home,
+  LogOut,
+  Shield,
+  Ticket,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { auth } from '../../config'; // Assuming this is your Firebase config
@@ -104,17 +111,27 @@ export default function UnifiedHeader() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/orders">
-            <Ticket className="mr-2 h-4 w-4" />
-            Tickets
-          </Link>
-        </DropdownMenuItem>
-        {user?.isOrganizer && (
+        {!isOrganizerRoute && (
+          <DropdownMenuItem asChild>
+            <Link href="/orders">
+              <Ticket className="mr-2 h-4 w-4" />
+              Tickets
+            </Link>
+          </DropdownMenuItem>
+        )}
+        {user?.isOrganizer && !isOrganizerRoute && (
           <DropdownMenuItem asChild>
             <Link href="/organizer">
               <Home className="mr-2 h-4 w-4" />
               Organizer Dashboard
+            </Link>
+          </DropdownMenuItem>
+        )}
+        {isOrganizerRoute && (
+          <DropdownMenuItem asChild>
+            <Link href="/">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Home
             </Link>
           </DropdownMenuItem>
         )}
@@ -139,9 +156,14 @@ export default function UnifiedHeader() {
       <div className="container flex items-center justify-between h-16">
         <Link
           href={isOrganizerRoute && user?.isOrganizer ? '/organizer' : '/'}
-          className="text-2xl font-bold text-primary"
+          className="flex flex-col items-center text-2xl font-bold text-primary leading-none"
         >
-          TropTix
+          <span className="block text-center">TropTix</span>
+          {isOrganizerRoute && (
+            <span className="text-xs text-muted-foreground leading-tight text-center">
+              Organizer
+            </span>
+          )}
         </Link>
 
         <div className="flex items-center gap-2">
