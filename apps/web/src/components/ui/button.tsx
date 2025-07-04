@@ -56,9 +56,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button';
 
 const ButtonWithIcon = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ icon, text, asChild = false, ...props }) => {
+  ({ icon, text, asChild = false, ...props }, ref) => {
     return (
-      <Button {...props}>
+      <Button ref={ref} {...props}>
         {icon} {text}
       </Button>
     );
