@@ -403,7 +403,7 @@ export default function EventForm({
                                 {/* Separate input for time */}
                                 <Input
                                   type="time"
-                                  defaultValue={formatTime(field.value)} // Initialize with current time
+                                  // defaultValue={formatTime(field.value)} // Initialize with current time
                                   onChange={(e) => {
                                     const time = e.target.value;
                                     const currentDate = field.value; // Get current date from RHF state
@@ -455,7 +455,7 @@ export default function EventForm({
                               <FormControl>
                                 <Input
                                   type="time"
-                                  defaultValue={formatTime(field.value)}
+                                  // defaultValue={formatTime(field.value)}
                                   onChange={(e) => {
                                     const time = e.target.value;
                                     const currentDate = field.value;
