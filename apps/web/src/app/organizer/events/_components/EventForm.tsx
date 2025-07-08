@@ -56,6 +56,7 @@ interface EventFormProps {
   eventId?: string; // Add optional eventId for edit mode identification
   ticketTypes?: TicketTypeFormValues[];
   isDraft?: boolean;
+  paidEventsEnabled: boolean;
 }
 
 export default function EventForm({
@@ -64,6 +65,7 @@ export default function EventForm({
   // Pass the ticketTypes and draft status from the server for publish validation
   ticketTypes,
   isDraft,
+  paidEventsEnabled,
 }: EventFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition(); // Loading state hook
@@ -633,6 +635,7 @@ export default function EventForm({
       </div>{' '}
       {!isEditing && (
         <AddTicketTypeDrawer
+          paidEventsEnabled={paidEventsEnabled}
           open={isDrawerOpen}
           setOpen={setIsDrawerOpen}
           onSubmit={handleDrawerSubmit} // Parent function to update RHF state

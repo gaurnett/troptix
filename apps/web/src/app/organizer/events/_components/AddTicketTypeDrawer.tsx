@@ -22,7 +22,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { DatePicker } from '@/components/DatePicker';
-import { ChevronsUpDown } from 'lucide-react';
+import { ChevronsUpDown, HelpCircle } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -47,6 +47,14 @@ import {
 import { combineDateTime } from '@/lib/dateUtils';
 import { formatTime } from '@/lib/dateUtils';
 import { TicketType } from '@prisma/client';
+import { Banner } from '@/components/ui/banner';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import Link from 'next/link';
 
 interface AddTicketTypeDrawerProps {
   open: boolean;
@@ -55,6 +63,7 @@ interface AddTicketTypeDrawerProps {
   initialData?: Partial<TicketTypeFormValues> & { id?: string };
   ticketSchema: z.ZodType<TicketTypeFormValues>;
   eventStartDate: Date;
+  paidEventsEnabled: boolean;
 }
 
 export function AddTicketTypeDrawer({
@@ -63,6 +72,7 @@ export function AddTicketTypeDrawer({
   onSubmit: onSubmitProp,
   initialData,
   eventStartDate,
+  paidEventsEnabled,
 }: AddTicketTypeDrawerProps) {
   const today = new Date();
   const tomorrow = new Date(today);
@@ -104,6 +114,19 @@ export function AddTicketTypeDrawer({
           <SheetDescription>
             Configure ticket details. Click save when done.
           </SheetDescription>
+          {!paidEventsEnabled && (
+            <Banner type="warning">
+              <p>
+                Paid events are only available to verified organizers. Please
+                book a call with us to get verified.
+              </p>
+              <Link href="/organizer/settings" className="mt-2">
+                <Button variant="outline" size="sm">
+                  Book a call
+                </Button>
+              </Link>
+            </Banner>
+          )}
         </SheetHeader>
 
         <Form {...form}>
@@ -131,7 +154,26 @@ export function AddTicketTypeDrawer({
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price ($) *</FormLabel>
+                    <FormLabel>
+                      <div className="flex items-center gap-2">
+                        Price ($)
+                        {!paidEventsEnabled && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-background">
+                                <p>
+                                  Paid events are only available to verified
+                                  organizers.
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -141,6 +183,7 @@ export function AddTicketTypeDrawer({
                         {...field}
                         onChange={(e) => field.onChange(e.target.value)}
                         value={field.value ?? ''}
+                        disabled={!paidEventsEnabled}
                       />
                     </FormControl>
                     <FormMessage />
@@ -152,7 +195,9 @@ export function AddTicketTypeDrawer({
                 name="quantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Quantity *</FormLabel>
+                    <FormLabel>
+                      <div className="flex items-center gap-2">Quantity *</div>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"

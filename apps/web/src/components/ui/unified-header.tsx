@@ -6,6 +6,7 @@ import {
   Calendar,
   Home,
   LogOut,
+  PlusCircle,
   Shield,
   Ticket,
 } from 'lucide-react';
@@ -119,7 +120,7 @@ export default function UnifiedHeader() {
             </Link>
           </DropdownMenuItem>
         )}
-        {user?.isOrganizer && !isOrganizerRoute && (
+        {!isOrganizerRoute && (
           <DropdownMenuItem asChild>
             <Link href="/organizer">
               <Home className="mr-2 h-4 w-4" />
@@ -127,6 +128,14 @@ export default function UnifiedHeader() {
             </Link>
           </DropdownMenuItem>
         )}
+
+        <DropdownMenuItem asChild>
+          <Link href="/organizer/events/new">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Create Event
+          </Link>
+        </DropdownMenuItem>
+
         {isOrganizerRoute && (
           <DropdownMenuItem asChild>
             <Link href="/">

@@ -62,6 +62,16 @@ export default async function EditEventTicketPage({
     redirect('/auth/signin');
   }
 
+  const userRole = await prisma.users.findUnique({
+    where: {
+      email: user.email,
+    },
+    select: {
+      role: true,
+    },
+  });
+  const isOrganizer = userRole?.role === 'ORGANIZER';
+
   const ticketData = await getTicketTypeData(
     ticketId,
     eventId,
@@ -91,7 +101,11 @@ export default async function EditEventTicketPage({
       </p>
 
       <div className="w-full lg:w-1/2 xl:w-2/3">
-        <CreateTicketTypeForm eventId={eventId} initialData={initialFormData} />
+        <CreateTicketTypeForm
+          eventId={eventId}
+          initialData={initialFormData}
+          isOrganizer={isOrganizer}
+        />
       </div>
     </div>
   );

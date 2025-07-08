@@ -9,9 +9,10 @@ type BannerType = 'info' | 'warning' | 'success' | 'error';
 interface BannerProps {
   type?: BannerType;
   title?: string;
-  message: string | React.ReactNode;
+  message?: string | React.ReactNode;
   onDismiss?: () => void;
   className?: string;
+  children?: React.ReactNode;
 }
 
 const typeStyles: Record<
@@ -45,6 +46,7 @@ export function Banner({
   message,
   onDismiss,
   className,
+  children,
 }: BannerProps) {
   return (
     <div
@@ -57,6 +59,7 @@ export function Banner({
       <div className="flex-1">
         {title && <div className="font-semibold mb-1">{title}</div>}
         <div className="text-sm">{message}</div>
+        {children}
       </div>
 
       {onDismiss && (

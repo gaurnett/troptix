@@ -55,11 +55,13 @@ const defaultFormValues: TicketTypeFormValues = {
 interface CreateTicketTypeFormProps {
   eventId: string;
   initialData?: Partial<TicketTypeFormValues> & { id?: string };
+  isOrganizer: boolean;
 }
 
 export function CreateTicketTypeForm({
   eventId,
   initialData,
+  isOrganizer,
 }: CreateTicketTypeFormProps) {
   const router = useRouter();
   const isEditMode = !!initialData;
@@ -87,6 +89,7 @@ export function CreateTicketTypeForm({
 
   const watchedPrice = form.watch('price');
   const watchedTicketingFees = form.watch('ticketingFees');
+  const paidEventsEnabled = isOrganizer;
 
   let calculatedBuyerPrice: number | null = null;
   let calculatedOrganizerPayout: number | null = null;
@@ -191,6 +194,7 @@ export function CreateTicketTypeForm({
               <FormLabel>Price ($)</FormLabel>
               <FormControl>
                 <Input
+                  disabled={!paidEventsEnabled}
                   type="number"
                   step="0.01"
                   min="0"
@@ -198,7 +202,11 @@ export function CreateTicketTypeForm({
                   {...field}
                 />
               </FormControl>
-              <FormDescription>Set to 0 for free tickets.</FormDescription>
+              <FormDescription>
+                Set to 0 for free tickets.
+                {!paidEventsEnabled &&
+                  'Account not verified for paid events. Please contact support.'}
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
