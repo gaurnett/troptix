@@ -403,6 +403,7 @@ export default function EventForm({
                                 {/* Separate input for time */}
                                 <Input
                                   type="time"
+                                  value={formatTime(field.value)}
                                   // defaultValue={formatTime(field.value)} // Initialize with current time
                                   onChange={(e) => {
                                     const time = e.target.value;
@@ -456,6 +457,7 @@ export default function EventForm({
                                 <Input
                                   type="time"
                                   // defaultValue={formatTime(field.value)}
+                                  value={formatTime(field.value)}
                                   onChange={(e) => {
                                     const time = e.target.value;
                                     const currentDate = field.value;
