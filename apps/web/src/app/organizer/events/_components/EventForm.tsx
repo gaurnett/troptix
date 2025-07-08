@@ -382,7 +382,7 @@ export default function EventForm({
                         render={({ field }) => (
                           <FormItem className="flex flex-col">
                             <FormLabel>Start Date</FormLabel>
-                            <div className="flex items-center gap-2 w-full">
+                            <div className="flex items-center gap-2">
                               <FormControl>
                                 {/* DatePicker handles the date part */}
                                 <DatePicker
