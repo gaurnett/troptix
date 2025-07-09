@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:mobile": "tsx scripts/dev-mobile.ts",
     "build": "next build",
     "typecheck": "tsc --noEmit",
     "start": "next start",
@@ -117,7 +118,11 @@
     "@testing-library/react": "^14.2.0",
     "@types/jest": "^29.5.12",
     "@types/qrcode.react": "^3.0.0",
+    "dotenv": "^17.2.0",
     "eslint-config-next": "^14.2.23",
-    "prisma": "^5.14.0"
+    "ngrok": "^5.0.0-beta.2",
+    "prisma": "^5.14.0",
+    "qrcode": "^1.5.4",
+    "ts-node": "^10.9.2"
   }
 }

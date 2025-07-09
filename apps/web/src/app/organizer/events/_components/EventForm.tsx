@@ -76,9 +76,10 @@ export default function EventForm({
   >(undefined);
 
   const isEditing = !!initialData; // Determine mode based on eventId presence
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const nextDay = new Date(tomorrow);
+  nextDay.setDate(nextDay.getDate() + 1);
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventFormSchema),
     defaultValues: initialData ?? {
@@ -86,8 +87,8 @@ export default function EventForm({
       eventName: '',
       description: '',
       organizer: '',
-      startDate: today,
-      endDate: tomorrow,
+      startDate: tomorrow,
+      endDate: nextDay,
       venue: '',
       address: '',
       country: '',
@@ -374,71 +375,61 @@ export default function EventForm({
                     )}
                   />
 
-                  <div className="grid gap-4">
-                    <div className="grid grid-cols-2 gap-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {/* Start Date */}
+                    <div className="flex flex-col gap-4">
                       <FormField
                         control={form.control}
                         name="startDate"
                         render={({ field }) => (
-                          <FormItem className="flex flex-col">
+                          <FormItem className="flex-1">
                             <FormLabel>Start Date</FormLabel>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-row gap-2 items-center">
                               <FormControl>
-                                {/* DatePicker handles the date part */}
                                 <DatePicker
                                   date={field.value}
                                   onDateChange={(newDate) => {
-                                    // Get current time from the form state (or default)
                                     const currentTime = formatTime(field.value);
                                     const combined = combineDateTime(
                                       newDate,
                                       currentTime
                                     );
-                                    field.onChange(combined); // Update RHF state with combined DateTime
+                                    field.onChange(combined);
                                   }}
                                   placeholder="Select start date"
                                 />
                               </FormControl>
                               <FormControl>
-                                {/* Separate input for time */}
                                 <Input
                                   type="time"
                                   value={formatTime(field.value)}
-                                  // defaultValue={formatTime(field.value)} // Initialize with current time
                                   onChange={(e) => {
                                     const time = e.target.value;
-                                    const currentDate = field.value; // Get current date from RHF state
                                     const combined = combineDateTime(
-                                      currentDate,
+                                      field.value,
                                       time
                                     );
-                                    form.setValue(
-                                      'startDate',
-                                      combined as Date,
-                                      {
-                                        shouldValidate: true,
-                                      }
-                                    ); // Update RHF state
+                                    field.onChange(combined);
                                   }}
-                                  className="w-[120px]"
+                                  className="w-full sm:w-[120px]"
                                 />
                               </FormControl>
                             </div>
-
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    {/* End Date */}
+                    <div className="flex flex-col gap-4">
                       <FormField
                         control={form.control}
                         name="endDate"
                         render={({ field }) => (
-                          <FormItem className="flex flex-col">
+                          <FormItem className="flex-1">
                             <FormLabel>End Date</FormLabel>
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-row gap-2 items-center">
                               <FormControl>
                                 <DatePicker
                                   date={field.value}
@@ -456,20 +447,16 @@ export default function EventForm({
                               <FormControl>
                                 <Input
                                   type="time"
-                                  // defaultValue={formatTime(field.value)}
                                   value={formatTime(field.value)}
                                   onChange={(e) => {
                                     const time = e.target.value;
-                                    const currentDate = field.value;
                                     const combined = combineDateTime(
-                                      currentDate,
+                                      field.value,
                                       time
                                     );
-                                    form.setValue('endDate', combined as Date, {
-                                      shouldValidate: true,
-                                    });
+                                    field.onChange(combined);
                                   }}
-                                  className="w-[120px]"
+                                  className="w-full sm:w-[120px]"
                                 />
                               </FormControl>
                             </div>
