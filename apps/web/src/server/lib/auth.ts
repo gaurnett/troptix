@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { GetServerSidePropsContext } from 'next';
 import { getCookie } from 'cookies-next';
-import admin from './firebaseAdmin';
+import { getFirebaseAdmin } from './firebaseAdmin';
 import prisma from '@/server/prisma';
 
 export async function verifyUser(request): Promise<any> {
@@ -18,6 +18,7 @@ export async function verifyUser(request): Promise<any> {
     return undefinedUser;
   }
 
+  const admin = getFirebaseAdmin();
   return await admin
     .auth()
     .verifyIdToken(token)
@@ -41,6 +42,7 @@ export async function requireAuth(
 
   try {
     //Gets and verifies the token
+    const admin = getFirebaseAdmin();
     const decoded = await admin.auth().verifyIdToken(token as string);
     const uid = decoded.uid;
     // TODO: We should store a mapping of firebase uid to troptix user id
