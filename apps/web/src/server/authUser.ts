@@ -1,4 +1,4 @@
-import admin from './lib/firebaseAdmin';
+import { getFirebaseAdmin } from './lib/firebaseAdmin';
 import { cookies } from 'next/headers';
 
 export async function getUserFromIdTokenCookie() {
@@ -11,6 +11,7 @@ export async function getUserFromIdTokenCookie() {
   }
 
   try {
+    const admin = getFirebaseAdmin();
     const decodedToken = await admin
       .auth()
       .verifyIdToken(idToken /*, checkRevoked = false */);

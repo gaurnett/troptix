@@ -2,7 +2,7 @@ import * as admin from 'firebase-admin';
 
 let initialized = false;
 
-function init() {
+function initFirebaseAdmin() {
   if (!initialized && admin.apps.length === 0) {
     const base64 = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_BASE_64;
     if (!base64) {
@@ -18,8 +18,9 @@ function init() {
 
     initialized = true;
   }
+  return admin;
 }
 
-init();
-
-export default admin;
+export function getFirebaseAdmin() {
+  return initFirebaseAdmin();
+}

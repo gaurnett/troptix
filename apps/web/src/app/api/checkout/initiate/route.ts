@@ -5,7 +5,7 @@ import prisma from '@/server/prisma';
 import Stripe from 'stripe';
 import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema'; // Adjust path if needed
 import { OrderStatus, TicketFeeStructure, TicketStatus } from '@prisma/client';
-import admin from '@/server/lib/firebaseAdmin'; // Adjust path if needed
+import { getFirebaseAdmin } from '@/server/lib/firebaseAdmin'; // Adjust path if needed
 import { generateId } from '@/lib/utils'; // Adjust path if needed
 import {
   ValidatedItem,
@@ -98,6 +98,7 @@ export async function POST(
     if (!tokenCookie?.value) {
       userId = null;
     } else {
+      const admin = getFirebaseAdmin();
       const decoded = await admin.auth().verifyIdToken(tokenCookie.value);
       userId = decoded.uid;
     }
