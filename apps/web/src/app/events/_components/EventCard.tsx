@@ -1,110 +1,115 @@
 'use client';
 
-import { useIsMobile } from '@/hooks/use-mobile';
 import { getFormattedCurrency } from '@/lib/utils';
+import { getDateFormatter } from '@/lib/dateUtils';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, MapPin, DollarSign, ExternalLink } from 'lucide-react';
 import { Event } from '../page';
 
-interface EventDisplayProps {
-  name: string;
-  displayDate: string;
-  displayPrice: string;
-  venue: string | null;
-  imageUrl: string;
-  altText: string;
-}
-
 export default function EventCard({ event }: { event: Event }) {
-  const isMobile = useIsMobile();
-
   const displayPrice =
     event.ticketTypes && event.ticketTypes.length > 0
-      ? 'From ' + getFormattedCurrency(event.ticketTypes[0].price) + ' USD'
-      : 'No tickets available';
+      ? 'From ' + getFormattedCurrency(event.ticketTypes[0].price)
+      : 'Free';
 
-  const displayDate = new Date(event.startDate).toDateString();
+  const eventDate = new Date(event.startDate);
+  const now = new Date();
+  const isToday = eventDate.toDateString() === now.toDateString();
 
-  const displayImageUrl =
-    event.imageUrl ?? 'https://placehold.co/400x400?text=Add+Event+Flyer';
+  const displayImageUrl = event.imageUrl ?? '/placeholder-event.jpg';
 
-  const altText = `Flyer for ${event.name}`;
+  const getEventStatus = () => {
+    if (isToday) return { label: 'Today', variant: 'destructive' as const };
 
-  const cardProps: EventDisplayProps = {
-    name: event.name,
-    displayDate: displayDate,
-    displayPrice: displayPrice,
-    venue: event.venue,
-    imageUrl: displayImageUrl,
-    altText: altText,
+    const daysUntil = Math.ceil(
+      (eventDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    if (daysUntil <= 7)
+      return { label: 'This Week', variant: 'default' as const };
+
+    return { label: 'Upcoming', variant: 'outline' as const };
   };
 
+  const getRelativeDate = () => {
+    const diffTime = eventDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (isToday) return 'Today';
+    if (diffDays === 1) return 'Tomorrow';
+    if (diffDays <= 7) return `In ${diffDays} days`;
+
+    return getDateFormatter(eventDate, 'MMM dd, yyyy');
+  };
+
+  const status = getEventStatus();
   const eventUrl = `/events/${event.id}`;
 
   return (
-    <Link
-      href={eventUrl}
-      className="block cursor-pointer group"
-      aria-label={`View details for ${event.name}`}
-    >
-      {isMobile ? (
-        <MobileEventCard {...cardProps} />
-      ) : (
-        <DesktopEventCard {...cardProps} />
-      )}
-    </Link>
-  );
-}
+    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.02] overflow-hidden">
+      <Link href={eventUrl} className="block">
+        <div className="relative aspect-[4/5] overflow-hidden">
+          <Image
+            src={displayImageUrl}
+            alt={`${event.name} event image`}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
 
-function MobileEventCard(props: EventDisplayProps) {
-  const imageSize = 125;
+          {/* Gradient overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-  return (
-    <div className="flex p-2 border-b border-gray-200 group-hover:bg-gray-50 transition-colors duration-150">
-      <div className="flex-shrink-0 w-[125px] h-[125px]">
-        <Image
-          width={imageSize}
-          height={imageSize}
-          className="rounded object-cover w-full h-full"
-          src={props.imageUrl}
-          alt={props.altText}
-        />
-      </div>
-      <div className="ml-4 my-auto overflow-hidden">
-        <div className="font-bold text-xl truncate">{props.name}</div>
-        <div className="text-blue-500 text-base mt-1">{props.displayDate}</div>
-        <div className="text-green-700 text-base mt-1">
-          {props.displayPrice}
-        </div>
-        {props.venue && (
-          <div className="text-base text-gray-600 mt-1 truncate">
-            {props.venue}
+          {/* Status badge */}
+          <div className="absolute top-3 right-3">
+            <Badge
+              variant={status.variant}
+              className="shadow-sm backdrop-blur-sm"
+            >
+              {status.label}
+            </Badge>
           </div>
-        )}
-      </div>
-    </div>
-  );
-}
 
-function DesktopEventCard(props: EventDisplayProps) {
-  return (
-    <div
-      className="relative rounded-md overflow-hidden h-[300px] group-hover:shadow-xl transition-shadow duration-150"
-      style={{
-        backgroundImage: `url("${props.imageUrl}")`,
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <div className="py-2 px-4 bg-white bg-opacity-90 absolute inset-x-0 bottom-0">
-        <div className="font-bold text-base">{props.name}</div>
-        <p className="text-blue-500 text-sm">{props.displayDate}</p>
-        <p className="text-green-700 text-sm">{props.displayPrice}</p>
-        {props.venue && (
-          <p className="text-gray-700 text-sm truncate">{props.venue}</p>
-        )}
-      </div>
-    </div>
+          {/* Content overlay */}
+          <div className="absolute inset-0 flex flex-col justify-end p-4">
+            <div className="space-y-2">
+              <h3 className="font-bold text-lg leading-tight line-clamp-2 text-white group-hover:text-primary-foreground transition-colors">
+                {event.name}
+              </h3>
+
+              <div className="space-y-1">
+                <div className="flex items-center text-sm text-white/90">
+                  <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="font-medium">{getRelativeDate()}</span>
+                </div>
+
+                {event.venue && (
+                  <div className="flex items-center text-sm text-white/90">
+                    <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+                    <span className="truncate">{event.venue}</span>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center text-sm">
+                    <DollarSign className="w-4 h-4 mr-1 flex-shrink-0 text-white/90" />
+                    <span className="font-semibold text-green-400">
+                      {displayPrice}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center text-sm text-white font-medium group-hover:text-primary-foreground">
+                    Get Tickets
+                    <ExternalLink className="w-3 h-3 ml-1" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Link>
+    </Card>
   );
 }
