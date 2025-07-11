@@ -48,7 +48,7 @@ export default async function EventsPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="grow mt-28 md:mt-32 w-full max-w-7xl mx-auto px-4 py-8">
+      <div className="grow mt-16 md:mt-20 w-full max-w-7xl mx-auto px-4 py-8">
         <div className="mb-12 text-center">
           <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
             Events

@@ -85,9 +85,9 @@ export default async function OrdersPage() {
   const orders = await fetchUserOrders();
 
   return (
-    <div className="container mt-20 w-full md:mt-28 min-h-screen px-4 py-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl mb-2">
+    <div className="container mt-16 w-full md:mt-20 min-h-screen px-4 py-8">
+      <div className="mb-12 text-center">
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
           Your Tickets
         </h1>
         <p className="text-muted-foreground text-lg">
