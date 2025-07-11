@@ -31,7 +31,8 @@ export interface EventForValidation {
 }
 
 export function validateEventForPublish(
-  event: EventForValidation
+  event: EventForValidation,
+  paidEventsEnabled?: boolean
 ): PublishValidationResult {
   const errors: PublishValidationError[] = [];
   const missingRequirements: string[] = [];
@@ -122,13 +123,13 @@ export function validateEventForPublish(
 
     // Check if event is in the past
     const now = new Date();
-    if (event.startDate <= now) {
+    if (event.endDate <= now) {
       errors.push({
-        field: 'startDate',
-        message: 'Event start date must be in the future',
+        field: 'endDate',
+        message: 'Event end date must be in the future',
         category: 'timing',
       });
-      missingRequirements.push('Future start date');
+      missingRequirements.push('Future end date');
     }
   }
 
@@ -156,6 +157,17 @@ export function validateEventForPublish(
         errors.push({
           field: `ticketTypes[${index}].price`,
           message: `Ticket "${ticket.name || 'Unnamed'}" must have a valid price (≥ $0.00)`,
+          category: 'tickets',
+        });
+        missingRequirements.push(
+          `Valid price for "${ticket.name || `ticket ${index + 1}`}"`
+        );
+      }
+
+      if (!paidEventsEnabled && ticket.price > 0) {
+        errors.push({
+          field: `ticketTypes[${index}].price`,
+          message: `Ticket "${ticket.name || 'Unnamed'}" is paid but paid events are not enabled. Please contact support to enable paid events.`,
           category: 'tickets',
         });
         missingRequirements.push(
@@ -209,34 +221,6 @@ export function validateEventForPublish(
         );
       }
     });
-
-    // Check if at least one ticket is available for sale in the future
-    // const now = new Date();
-    // const availableTickets = event.ticketTypes.filter(
-    //   (ticket) =>
-    //     ticket.saleStartDate <= now &&
-    //     ticket.saleEndDate > now &&
-    //     ticket.quantity > 0
-    // );
-
-    // if (
-    //   availableTickets.length === 0 &&
-    //   event.startDate &&
-    //   event.startDate > now
-    // ) {
-    //   const futureTickets = event.ticketTypes.filter(
-    //     (ticket) => ticket.saleStartDate > now && ticket.quantity > 0
-    //   );
-
-    //   if (futureTickets.length === 0) {
-    //     errors.push({
-    //       field: 'ticketTypes',
-    //       message: 'At least one ticket type must be available for future sale',
-    //       category: 'tickets',
-    //     });
-    //     missingRequirements.push('At least one ticket available for sale');
-    //   }
-    // }
   }
 
   return {

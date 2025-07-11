@@ -112,9 +112,7 @@ export function PublishRequirements({
         {
           label: 'Future Event Date',
           field: 'futureDate',
-          completed: !!(
-            eventData.startDate && eventData.startDate > new Date()
-          ),
+          completed: !!(eventData.endDate && eventData.endDate > new Date()),
         },
       ],
     },

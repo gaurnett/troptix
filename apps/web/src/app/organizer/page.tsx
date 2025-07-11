@@ -21,6 +21,8 @@ import { getOrganizerDashboardDataOptimized } from './_lib/getDashboardData';
 
 import { redirect } from 'next/navigation';
 import { getUserFromIdTokenCookie } from '@/server/authUser';
+import prisma from '@/server/prisma';
+import { PaidWarningBannerOrganizer } from '@/components/PaidWarningBanner';
 
 export default async function OrganizerDashboardPage() {
   // Fetch data using the optimized function
@@ -28,6 +30,18 @@ export default async function OrganizerDashboardPage() {
   if (!user) {
     redirect('/auth/signin');
   }
+
+  // Check user role for paid events capability
+  const userRole = await prisma.users.findUnique({
+    where: {
+      email: user?.email,
+    },
+    select: {
+      role: true,
+    },
+  });
+  const isOrganizer = userRole?.role === 'ORGANIZER';
+
   const dashboardData = await getOrganizerDashboardDataOptimized(user.uid);
 
   return (
@@ -35,6 +49,8 @@ export default async function OrganizerDashboardPage() {
       {' '}
       {/* Optional: Add overall vertical spacing if needed */}
       <h1 className="text-3xl font-bold tracking-tight">Dashboard Overview</h1>
+      {/* Upgrade Banner for Non-Organizers */}
+      {!isOrganizer && <PaidWarningBannerOrganizer />}
       {/* Main Grid Layout (2 columns on large screens, 1 on small) */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
         {/* Left Column (Recent Orders) */}

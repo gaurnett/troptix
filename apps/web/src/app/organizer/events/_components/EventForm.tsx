@@ -49,6 +49,7 @@ import { usePlacesWidget } from 'react-google-autocomplete';
 import { EventImageUploader } from '../_components/EventImageUpload';
 import { PublishRequirements } from '@/components/PublishRequirements';
 import { createEvent, updateEvent } from '../_actions/eventActions'; // Import server actions
+import { PaidWarningBannerForm } from '@/components/PaidWarningBanner';
 
 // Adjusted props to explicitly include eventId for updates
 interface EventFormProps {
@@ -255,15 +256,14 @@ export default function EventForm({
 
   return (
     <div className="space-y-8">
+      {!paidEventsEnabled && <PaidWarningBannerForm />}
       <div className="flex flex-col md:flex-row gap-8">
         <div className="md:w-1/3 space-y-4">
           <Card>
             <CardHeader>
               <CardTitle>Event Image</CardTitle>
 
-              <CardDescription>
-                Upload an image for your event. (Coming soon!)
-              </CardDescription>
+              <CardDescription>Upload an image for your event.</CardDescription>
             </CardHeader>
 
             <CardContent>

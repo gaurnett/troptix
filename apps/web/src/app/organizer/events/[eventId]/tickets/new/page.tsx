@@ -39,10 +39,10 @@ export default async function CreateEventTicketPage({
     <div className="container mx-auto py-8">
       <div className="mb-6 flex items-center gap-2">
         <BackButton />
-        <h1 className="text-2xl font-semibold">Create Ticket Type</h1>
+        <h1 className="text-2xl font-semibold">Create Ticket</h1>
       </div>
       <p className="text-muted-foreground mb-6">
-        Define the details for a new ticket type for your event.
+        Define the details for a new ticket for your event.
       </p>
 
       <div className="w-full lg:w-1/2 xl:w-2/3">
