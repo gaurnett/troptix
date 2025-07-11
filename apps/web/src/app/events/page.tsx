@@ -2,7 +2,10 @@ import { Prisma } from '@prisma/client';
 
 import EventCard from './_components/EventCard';
 import prisma from '@/server/prisma';
-import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Calendar, ExternalLink } from 'lucide-react';
 import * as React from 'react';
 
 const EventSelect = {
@@ -33,9 +36,7 @@ async function fetchEvents(): Promise<Event[]> {
     select: EventSelect,
     where: {
       isDraft: false,
-      startDate: {
-        gte: new Date(),
-      },
+      endDate: { gte: new Date() },
     },
   });
 
@@ -47,59 +48,41 @@ export default async function EventsPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="grow mt-28 md:mt-32 w-full md:max-w-5xl mx-auto">
-        <div className="">
-          <h1
-            className="text-center text-5xl md:text-6xl font-extrabold leading-tighter tracking-tighter mb-4"
-            data-aos="zoom-y-out"
-          >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-green-400 px-4">
-              Events
-            </span>
+      <div className="grow mt-16 md:mt-20 w-full max-w-7xl mx-auto px-4 py-8">
+        <div className="mb-12 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
+            Events
           </h1>
-          <div className="mx-auto p-4">
-            <div className="flex flex-wrap -mx-2">
-              {events.length === 0 ? (
-                <>
-                  <div
-                    className="text-center"
-                    style={{
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      height: '100%',
-                      width: '100%',
-                    }}
-                  >
-                    <Image
-                      width={75}
-                      height={75}
-                      className="w-full mx-auto justify-center content-center items-center"
-                      style={{ objectFit: 'contain', width: 75 }}
-                      src={'/icons/empty-events.png'}
-                      alt={'mobile wallet image'}
-                    />
-                    <div className="mt-4 font-bold text-xl">
-                      There are no events nearby
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {events.map((event) => {
-                    return (
-                      <div
-                        key={event.id}
-                        className="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 px-2 mb-4"
-                      >
-                        <EventCard event={event} />
-                      </div>
-                    );
-                  })}
-                </>
-              )}
-            </div>
-          </div>
         </div>
+
+        {events.length === 0 ? (
+          <Card className="max-w-md mx-auto text-center">
+            <CardContent className="pt-8 pb-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+                <Calendar className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">
+                No events available
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                There are no upcoming events at the moment. Check back soon for
+                new events!
+              </p>
+              <Button asChild size="lg" className="w-full sm:w-auto">
+                <Link href="/">
+                  Back to Home
+                  <ExternalLink className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {events.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

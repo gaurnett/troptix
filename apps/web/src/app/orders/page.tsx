@@ -3,8 +3,21 @@ import prisma from '@/server/prisma';
 import { getDateFormatter, formatTime } from '@/lib/dateUtils';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { ListOrdered, Ticket } from 'lucide-react';
+import {
+  ListOrdered,
+  Ticket,
+  Calendar,
+  MapPin,
+  ExternalLink,
+} from 'lucide-react';
 import { getUserFromIdTokenCookie } from '@/server/authUser';
 type UserOrder = {
   id: string;
@@ -72,55 +85,65 @@ export default async function OrdersPage() {
   const orders = await fetchUserOrders();
 
   return (
-    <div className="container mt-20 w-full md:mt-28  min-h-screen px-4 py-8">
+    <div className="container mt-16 w-full md:mt-20 min-h-screen px-4 py-8">
       <div className="mb-12 text-center">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
           Your Tickets
         </h1>
+        <p className="text-muted-foreground text-lg">
+          Manage and view all your event tickets in one place
+        </p>
       </div>
 
       {orders.length > 0 ? (
-        <div className="grid items-center justify-center grid-cols-1 gap-4 w-full mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {orders.map((order) => {
+            const eventDate = order.event?.startDate
+              ? new Date(order.event.startDate)
+              : null;
+            const now = new Date();
+            const isPastEvent = eventDate ? eventDate < now : false;
+            const isToday = eventDate
+              ? eventDate.toDateString() === now.toDateString()
+              : false;
+
             const cardOrderProps = {
               id: order.id,
               name: order.event?.name || 'Event Name N/A',
-              date: order.event?.startDate
-                ? getDateFormatter(
-                    new Date(order.event.startDate),
-                    'MMM dd, yyyy'
-                  )
+              date: eventDate
+                ? getDateFormatter(eventDate, 'MMM dd, yyyy')
                 : 'Date N/A',
-              time: order.event?.startDate
-                ? formatTime(new Date(order.event.startDate))
-                : 'Time N/A',
+              time: eventDate ? formatTime(eventDate) : 'Time N/A',
               venue: order.event?.venue || 'Venue N/A',
-              imageUrl: order.event?.imageUrl || '', // Provide a default empty string or placeholder URL
+              imageUrl: order.event?.imageUrl || '/placeholder-event.jpg',
               ticketCount: order._count.tickets,
               createdAt: order.createdAt,
+              eventDate: eventDate,
+              isPastEvent,
+              isToday,
             };
-            return (
-              <OrderCard
-                key={order.id}
-                order={cardOrderProps}
-                isPastEvent={false}
-              />
-            );
+            return <OrderCard key={order.id} order={cardOrderProps} />;
           })}
         </div>
       ) : (
-        <div className="text-center text-muted-foreground mt-16 py-10 border rounded-lg">
-          <ListOrdered className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-          <p className="text-xl font-semibold">
-            Looks like you haven&apos;t purchased any tickets yet.
-          </p>
-          <p className="text-sm mt-1 mb-6">
-            When you purchase tickets, they will appear here.
-          </p>
-          <Button asChild className="mt-4">
-            <Link href="/events">Browse Events</Link>
-          </Button>
-        </div>
+        <Card className="max-w-md mx-auto text-center">
+          <CardContent className="pt-8 pb-6">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+              <ListOrdered className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">No tickets yet</h3>
+            <p className="text-muted-foreground mb-6">
+              When you purchase tickets, they&apos;ll appear here for easy
+              access.
+            </p>
+            <Button asChild size="lg" className="w-full sm:w-auto">
+              <Link href="/events">
+                Discover Events
+                <ExternalLink className="w-4 h-4 ml-2" />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
@@ -136,62 +159,130 @@ type OrderCardProps = {
     imageUrl: string;
     ticketCount: number;
     createdAt: Date;
+    eventDate: Date | null;
+    isPastEvent: boolean;
+    isToday: boolean;
   };
-  isPastEvent: boolean;
 };
 
-const OrderCard = ({ order, isPastEvent = false }: OrderCardProps) => {
+const OrderCard = ({ order }: OrderCardProps) => {
   if (!order) {
     return null;
   }
 
-  const { id, name, date, time, venue, imageUrl, ticketCount, createdAt } =
-    order;
+  const {
+    id,
+    name,
+    date,
+    time,
+    venue,
+    imageUrl,
+    ticketCount,
+    createdAt,
+    isPastEvent,
+    isToday,
+    eventDate,
+  } = order;
 
-  const cardBaseClasses =
-    'max-w-lg bg-white rounded-xl shadow-lg p-4 hover:shadow-2xl transition-shadow duration-300 flex flex-row items-center space-y-0 space-x-4 mx-auto';
-  const pastEventClasses = isPastEvent ? 'past-event-card opacity-85' : '';
+  const getEventStatus = () => {
+    if (isPastEvent)
+      return { label: 'Past Event', variant: 'secondary' as const };
+    if (isToday) return { label: 'Today', variant: 'destructive' as const };
+
+    if (eventDate) {
+      const daysUntil = Math.ceil(
+        (eventDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+      );
+      if (daysUntil <= 7)
+        return { label: 'This Week', variant: 'default' as const };
+    }
+
+    return { label: 'Upcoming', variant: 'outline' as const };
+  };
+
+  const status = getEventStatus();
+
+  const getRelativeDate = () => {
+    if (!eventDate) return date;
+
+    const now = new Date();
+    const diffTime = eventDate.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (isPastEvent) return date;
+    if (isToday) return 'Today';
+    if (diffDays === 1) return 'Tomorrow';
+    if (diffDays <= 7) return `In ${diffDays} days`;
+
+    return date;
+  };
 
   return (
-    <div className={`${cardBaseClasses} ${pastEventClasses}`}>
-      <Link href={`/orders/${id}`}>
-        <div className="w-full" key={id}>
-          <div className="flex">
-            <div className="my-auto">
-              <Image
-                width={150}
-                height={150}
-                className="w-auto rounded"
-                style={{
-                  objectFit: 'cover',
-                  width: 150,
-                  height: 150,
-                  maxHeight: 150,
-                  maxWidth: 150,
-                }}
-                src={imageUrl}
-                alt={'event flyer image'}
-              />
+    <Card
+      className={`group hover:shadow-lg transition-all duration-300 cursor-pointer ${isPastEvent ? 'opacity-75' : 'hover:scale-[1.02]'}`}
+    >
+      <Link href={`/orders/${id}`} className="block">
+        <div className="relative">
+          <div className="aspect-video relative overflow-hidden rounded-t-lg">
+            <Image
+              src={imageUrl}
+              alt={`${name} event image`}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+            <div className="absolute top-3 right-3">
+              <Badge variant={status.variant} className="shadow-sm">
+                {status.label}
+              </Badge>
             </div>
-            <div className="ml-4 my-auto grow w-full ">
-              <div className="font-bold text-xl">{name}</div>
-              <div className="text-base">{venue}</div>
-              <div className="text-base ">{date}</div>
-              <div className="text-base ">{time}</div>
-              <div className="text-base text-secondard-foreground">
-                Order Placed: {createdAt.toLocaleDateString()}
+          </div>
+
+          <CardHeader className="pb-3">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                {name}
+              </h3>
+            </div>
+          </CardHeader>
+
+          <CardContent className="pt-0 space-y-3">
+            <div className="space-y-2">
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Calendar className="w-4 h-4 mr-2 flex-shrink-0" />
+                <span className="font-medium">{getRelativeDate()}</span>
+                {!isPastEvent && !isToday && (
+                  <span className="ml-2 text-xs">at {time}</span>
+                )}
               </div>
-              {/* Ticket Count with Icon */}
-              <div className="flex items-center mt-2">
-                <Ticket className="w-4 h-4 mr-1 text-gray-500" />
-                <span className="text-sm text-gray-500">
+
+              {venue && (
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <span className="truncate">{venue}</span>
+                </div>
+              )}
+
+              <div className="flex items-center text-sm text-muted-foreground">
+                <Ticket className="w-4 h-4 mr-2 flex-shrink-0" />
+                <span>
                   {ticketCount} {ticketCount === 1 ? 'ticket' : 'tickets'}
                 </span>
               </div>
             </div>
-          </div>
+          </CardContent>
+
+          <CardFooter className="pt-0 flex items-center justify-between">
+            <div className="text-xs text-muted-foreground">
+              Ordered {createdAt.toLocaleDateString()}
+            </div>
+            <div className="flex items-center text-sm text-primary font-medium group-hover:text-primary/80">
+              View Tickets
+              <ExternalLink className="w-3 h-3 ml-1" />
+            </div>
+          </CardFooter>
         </div>
       </Link>
-    </div>
+    </Card>
   );
 };
