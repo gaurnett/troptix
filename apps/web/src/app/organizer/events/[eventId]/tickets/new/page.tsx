@@ -36,7 +36,7 @@ export default async function CreateEventTicketPage({
   const isOrganizer = userRole?.role === 'ORGANIZER';
 
   return (
-    <div className="container mx-auto py-8">
+    <div className="mx-auto py-8">
       <div className="mb-6 flex items-center gap-2">
         <BackButton />
         <h1 className="text-2xl font-semibold">Create Ticket</h1>

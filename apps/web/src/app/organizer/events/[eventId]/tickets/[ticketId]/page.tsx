@@ -90,7 +90,7 @@ export default async function EditEventTicketPage({
   const backUrl = `/organizer/events/${eventId}/tickets`;
 
   return (
-    <div className="container mx-auto py-8">
+    <div className=" mx-auto py-8">
       <div className="mb-6 flex items-center gap-2">
         <BackButton href={backUrl} />
         <h1 className="text-2xl font-semibold ">Edit Ticket Type</h1>
