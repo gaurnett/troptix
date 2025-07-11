@@ -25,6 +25,16 @@ export async function PATCH(
       );
     }
 
+    const userRole = await prisma.users.findUnique({
+      where: {
+        id: user.uid,
+      },
+      select: {
+        role: true,
+      },
+    });
+    const paidEventsEnabled = userRole?.role === 'ORGANIZER';
+
     const event = await prisma.events.findUnique({
       where: { id: eventId, organizerUserId: user.uid },
       select: {
@@ -61,7 +71,10 @@ export async function PATCH(
 
     // If trying to publish (isDraft is currently true), validate requirements
     if (event.isDraft) {
-      const validationResult = validateEventForPublish(event);
+      const validationResult = validateEventForPublish(
+        event,
+        paidEventsEnabled
+      );
 
       if (!validationResult.isValid) {
         return NextResponse.json(

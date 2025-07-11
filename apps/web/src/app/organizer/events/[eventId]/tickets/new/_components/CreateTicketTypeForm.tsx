@@ -31,6 +31,7 @@ import {
   ticketTypeSchema,
 } from '@/lib/schemas/ticketSchema';
 import { formatCurrency, combineDateTime, formatTime } from '@/lib/dateUtils';
+import { PaidWarningBannerForm } from '@/components/PaidWarningBanner';
 
 const PLATFORM_FIXED_FEE = 0.3; // $0.30
 const PLATFORM_PERCENTAGE_FEE = 0.04; // 4%
@@ -55,11 +56,13 @@ const defaultFormValues: TicketTypeFormValues = {
 interface CreateTicketTypeFormProps {
   eventId: string;
   initialData?: Partial<TicketTypeFormValues> & { id?: string };
+  isOrganizer: boolean;
 }
 
 export function CreateTicketTypeForm({
   eventId,
   initialData,
+  isOrganizer,
 }: CreateTicketTypeFormProps) {
   const router = useRouter();
   const isEditMode = !!initialData;
@@ -87,6 +90,7 @@ export function CreateTicketTypeForm({
 
   const watchedPrice = form.watch('price');
   const watchedTicketingFees = form.watch('ticketingFees');
+  const paidEventsEnabled = isOrganizer;
 
   let calculatedBuyerPrice: number | null = null;
   let calculatedOrganizerPayout: number | null = null;
@@ -123,8 +127,8 @@ export function CreateTicketTypeForm({
         if (result.success) {
           toast.success(
             isEditMode
-              ? 'Ticket type updated successfully!'
-              : 'Ticket type created successfully!'
+              ? 'Ticket updated successfully!'
+              : 'Ticket created successfully!'
           );
           router.push(`/organizer/events/${eventId}/tickets`);
           router.refresh();
@@ -191,6 +195,7 @@ export function CreateTicketTypeForm({
               <FormLabel>Price ($)</FormLabel>
               <FormControl>
                 <Input
+                  disabled={!paidEventsEnabled}
                   type="number"
                   step="0.01"
                   min="0"
@@ -198,7 +203,10 @@ export function CreateTicketTypeForm({
                   {...field}
                 />
               </FormControl>
-              <FormDescription>Set to 0 for free tickets.</FormDescription>
+              <FormDescription className="flex flex-col gap-2">
+                Set to 0 for free tickets.
+                {!paidEventsEnabled && <PaidWarningBannerForm />}
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

@@ -10,11 +10,8 @@ import {
 } from 'lucide-react';
 import { ContactForm } from './contact-form';
 import Link from 'next/link';
-import { useFeatureFlagEnabled } from 'posthog-js/react';
 
 export default function CTA() {
-  const showCreateEvent = useFeatureFlagEnabled('show-create-event-button');
-
   return (
     <section className="py-24 bg-gradient-to-br from-primary/5 via-background to-primary/10">
       <div className="container mx-auto px-4">
@@ -36,15 +33,12 @@ export default function CTA() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
-              {showCreateEvent && (
-                <Link href="/organizer/events/new">
-                  <Button size="lg" className="group">
-                    <Calendar className="mr-2 h-5 w-5" />
-                    Create Event
-                    <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                </Link>
-              )}
+              <Link href="/organizer/events/new">
+                <Button size="lg" className="group">
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Create Event
+                </Button>
+              </Link>
               <Link
                 href="https://calendar.app.google/dFkiNqFHyauhMRTFA"
                 target="_blank"

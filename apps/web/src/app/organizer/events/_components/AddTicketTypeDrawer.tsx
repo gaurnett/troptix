@@ -22,7 +22,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { DatePicker } from '@/components/DatePicker';
-import { ChevronsUpDown } from 'lucide-react';
+import { ChevronsUpDown, HelpCircle } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -35,7 +35,6 @@ import {
 import {
   ticketTypeSchema,
   TicketTypeFormValues,
-  TicketFeeStructure,
 } from '@/lib/schemas/ticketSchema';
 import {
   Select,
@@ -46,7 +45,13 @@ import {
 } from '@/components/ui/select';
 import { combineDateTime } from '@/lib/dateUtils';
 import { formatTime } from '@/lib/dateUtils';
-import { TicketType } from '@prisma/client';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { PaidWarningBannerForm } from '@/components/PaidWarningBanner';
 
 interface AddTicketTypeDrawerProps {
   open: boolean;
@@ -55,14 +60,17 @@ interface AddTicketTypeDrawerProps {
   initialData?: Partial<TicketTypeFormValues> & { id?: string };
   ticketSchema: z.ZodType<TicketTypeFormValues>;
   eventStartDate: Date;
+  paidEventsEnabled: boolean;
 }
 
+// TODO: We have a CreateTicketTypeForm component that is used for the new ticket form. We should use that instead of this component or merge them.
 export function AddTicketTypeDrawer({
   open,
   setOpen,
   onSubmit: onSubmitProp,
   initialData,
   eventStartDate,
+  paidEventsEnabled,
 }: AddTicketTypeDrawerProps) {
   const today = new Date();
   const tomorrow = new Date(today);
@@ -99,11 +107,12 @@ export function AddTicketTypeDrawer({
       <SheetContent className="fit-content flex flex-col h-full">
         <SheetHeader className="text-left">
           <SheetTitle>
-            {initialData?.id ? 'Edit Ticket Type' : 'Add New Ticket Type'}
+            {initialData?.id ? 'Edit Ticket' : 'Add New Ticket'}
           </SheetTitle>
           <SheetDescription>
             Configure ticket details. Click save when done.
           </SheetDescription>
+          {!paidEventsEnabled && <PaidWarningBannerForm />}
         </SheetHeader>
 
         <Form {...form}>
@@ -131,7 +140,26 @@ export function AddTicketTypeDrawer({
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price ($) *</FormLabel>
+                    <FormLabel>
+                      <div className="flex items-center gap-2">
+                        Price ($)
+                        {!paidEventsEnabled && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-background">
+                                <p>
+                                  Paid events are only available to verified
+                                  organizers.
+                                </p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -141,6 +169,7 @@ export function AddTicketTypeDrawer({
                         {...field}
                         onChange={(e) => field.onChange(e.target.value)}
                         value={field.value ?? ''}
+                        disabled={!paidEventsEnabled}
                       />
                     </FormControl>
                     <FormMessage />
@@ -152,7 +181,9 @@ export function AddTicketTypeDrawer({
                 name="quantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Quantity *</FormLabel>
+                    <FormLabel>
+                      <div className="flex items-center gap-2">Quantity *</div>
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -324,39 +355,41 @@ export function AddTicketTypeDrawer({
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="ticketingFees"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Ticketing Fee Structure</FormLabel>
-                      <FormControl>
-                        <Select
-                          value={field.value}
-                          onValueChange={(value: string) =>
-                            field.onChange(value)
-                          }
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select fee handling" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="PASS_TICKET_FEES">
-                              Pass fees on to buyer (Recommended)
-                            </SelectItem>
-                            <SelectItem value="ABSORB_TICKET_FEES">
-                              Absorb fees into ticket price
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormDescription>
-                        Choose how ticketing platform fees are handled.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {form.watch('price') > 0 && (
+                  <FormField
+                    control={form.control}
+                    name="ticketingFees"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Ticketing Fee Structure</FormLabel>
+                        <FormControl>
+                          <Select
+                            value={field.value}
+                            onValueChange={(value: string) =>
+                              field.onChange(value)
+                            }
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select fee handling" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="PASS_TICKET_FEES">
+                                Pass fees on to buyer (Recommended)
+                              </SelectItem>
+                              <SelectItem value="ABSORB_TICKET_FEES">
+                                Absorb fees into ticket price
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                        <FormDescription>
+                          Choose how ticketing platform fees are handled.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </CollapsibleContent>
             </Collapsible>
           </form>
@@ -364,7 +397,7 @@ export function AddTicketTypeDrawer({
 
         <SheetFooter className="pt-2 border-t justify-end gap-2">
           <Button type="submit" form="drawer-ticket-form">
-            {initialData?.id ? 'Save Changes' : 'Add Ticket Type'}
+            {initialData?.id ? 'Save Changes' : 'Add Ticket'}
           </Button>
           <SheetClose asChild>
             <Button type="button" variant="outline">

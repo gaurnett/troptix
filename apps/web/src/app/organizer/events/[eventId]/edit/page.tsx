@@ -54,6 +54,17 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
   const userEmail = user.email;
   await verifyEventAccess(userId, userEmail, eventId);
 
+  // Check user role for paid events capability
+  const userRole = await prisma.users.findUnique({
+    where: {
+      email: user?.email,
+    },
+    select: {
+      role: true,
+    },
+  });
+  const paidEventsEnabled = userRole?.role === 'ORGANIZER';
+
   const event = await getEvent(eventId, userId, userEmail);
 
   if (!event) {
@@ -95,6 +106,7 @@ export default async function EditEventPage({ params }: EditEventPageProps) {
           })) ?? []
         }
         isDraft={event.isDraft}
+        paidEventsEnabled={paidEventsEnabled}
       />
     </div>
   );

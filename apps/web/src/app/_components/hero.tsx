@@ -1,7 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { useFeatureFlagEnabled } from 'posthog-js/react';
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import CaribbeanFlags from './caribbean-flags';
@@ -233,8 +232,6 @@ export default function LandingHero() {
 }
 
 function CTAButtons() {
-  const showCreateEvent = useFeatureFlagEnabled('show-create-event-button');
-
   return (
     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
       <motion.div
@@ -254,24 +251,22 @@ function CTAButtons() {
         </Button>
       </motion.div>
 
-      {showCreateEvent && (
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.8 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <Button
+          size="lg"
+          variant="outline"
+          asChild
+          className="w-full sm:w-auto px-8 py-6 text-lg font-semibold border-2 hover:bg-muted/50 transition-all duration-300"
         >
-          <Button
-            size="lg"
-            variant="outline"
-            asChild
-            className="w-full sm:w-auto px-8 py-6 text-lg font-semibold border-2 hover:bg-muted/50 transition-all duration-300"
-          >
-            <Link href="/organizer/events/new">Create Your First Event</Link>
-          </Button>
-        </motion.div>
-      )}
+          <Link href="/organizer/events/new">Create Your First Event</Link>
+        </Button>
+      </motion.div>
     </div>
   );
 }
