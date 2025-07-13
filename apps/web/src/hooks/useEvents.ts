@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { FetchEventOptions } from '@/pages/api/events/[[...slug]]';
 import { Prisma } from '@prisma/client';
 import {
@@ -69,6 +69,9 @@ export const useCreateEvent = () => {
       console.error('Create event error:', error);
       throw error;
     },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+    },
   });
 };
 
@@ -84,6 +87,9 @@ export const useUpdateEvent = () => {
       });
       if (response.status !== 200) throw new Error(response.statusText);
       return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
     },
   });
 };

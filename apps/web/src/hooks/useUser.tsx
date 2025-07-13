@@ -1,4 +1,4 @@
-import { TropTixContext } from '@/components/WebNavigator';
+import { TropTixContext } from '@/components/AuthProvider';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useContext } from 'react';
 import { SocialMediaAccount, User } from './types/User';
@@ -166,5 +166,21 @@ export function useUpdateUserSocialMedia() {
         putUsersType: PutUsersType.PUT_USERS_SOCIAL_MEDIA,
         socialMediaAccount,
       }),
+  });
+}
+
+export function useOrganizerStatus(userId: string | undefined) {
+  return useQuery<boolean, Error>({
+    queryKey: ['organizerStatus', userId],
+    queryFn: () => {
+      if (!userId)
+        throw new Error('User ID is required to fetch organizer status.');
+      return fetchUserById(userId).then((user) => user.role === 'ORGANIZER');
+    },
+
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
+    refetchOnWindowFocus: true,
   });
 }

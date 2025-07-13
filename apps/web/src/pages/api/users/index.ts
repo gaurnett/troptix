@@ -136,6 +136,7 @@ async function putUserSocialMedia(body, response) {
         id: account.id,
       },
       update: getPrismaUpdateSocialMediaQuery(account),
+      // @ts-ignore
       create: getPrismaUpdateSocialMediaQuery(account),
     });
 

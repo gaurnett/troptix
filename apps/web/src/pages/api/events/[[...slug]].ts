@@ -62,7 +62,7 @@ export default async function handler(
           const event = await getEventById(id);
           res.status(200).json(event);
           break;
-
+        // TODO: Add authorization check for PUT request
         case 'PUT':
           // Update event by id
           const parsedEvent = parseEventForUpdateRequest(req.body);
@@ -98,6 +98,36 @@ async function createEvent(event: Prisma.EventsCreateInput) {
 }
 
 async function updateEvent(eventId: string, event: Prisma.EventsUpdateInput) {
+  // Check if this a publish request
+  const isPublishRequest = event.isDraft === false;
+
+  if (isPublishRequest) {
+    // Check if the event is paid
+    const hasPaidTickets = await isPaidEvent(eventId);
+    if (hasPaidTickets) {
+      // Fetch the current event state to check the authoritative organizer
+      const currentEvent = await prisma.events.findUnique({
+        where: { id: eventId },
+        select: { organizerUserId: true }, // Only select the field we need
+      });
+
+      if (!currentEvent) {
+        throw new Error('Event being updated not found.');
+      }
+
+      // Check if the user associated with the event data is an organizer
+      const organizer = await prisma.users.findUnique({
+        where: {
+          id: currentEvent.organizerUserId,
+        },
+        select: { role: true },
+      });
+
+      if (organizer?.role !== 'ORGANIZER') {
+        throw new Error('You are not authorized to publish paid events');
+      }
+    }
+  }
   try {
     const updatedEvent = await prisma.events.update({
       where: {
@@ -110,6 +140,16 @@ async function updateEvent(eventId: string, event: Prisma.EventsUpdateInput) {
     console.log('Error updating event: ' + e);
     throw new Error(e);
   }
+}
+
+async function isPaidEvent(eventId: string) {
+  const ticketTypes = await prisma.ticketTypes.findMany({
+    where: {
+      eventId: eventId,
+    },
+  });
+  const isPaidEvent = ticketTypes.some((ticket) => ticket.price > 0);
+  return isPaidEvent;
 }
 
 async function deleteEvent(eventId: string) {
