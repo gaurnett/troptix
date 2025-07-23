@@ -120,22 +120,6 @@ export default function Settings() {
               </Text>
               <View>
                 {renderSettingsRow(
-                  SettingsType.CONTACT_US,
-                  'Contact Us',
-                  'call-outline',
-                  Colors.orange50
-                )}
-              </View>
-              <View>
-                {renderSettingsRow(
-                  SettingsType.SUGGEST_IMPROVEMENTS,
-                  'Suggest Improvements',
-                  'pencil-outline',
-                  Colors.violet50
-                )}
-              </View>
-              <View>
-                {renderSettingsRow(
                   SettingsType.TERMS_OF_SERVICE,
                   'Terms of Service',
                   'shield-checkmark-outline',
