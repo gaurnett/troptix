@@ -1,8 +1,4 @@
-import {
-  PostTicketRequest,
-  PostTicketType,
-  useCreateTicket,
-} from '@/hooks/useTicket';
+import { scanTicketApi } from '@/hooks/useTicket';
 import { Camera, CameraView } from 'expo-camera';
 import { useEffect, useState } from 'react';
 import { Alert, StyleSheet, Text, View } from 'react-native';
@@ -45,7 +41,7 @@ export default function Scanner({ event }) {
   const { jwtToken } = useAuth();
   const [hasPermission, setHasPermission] = useState(false);
   const [scanned, setScanned] = useState(false);
-  const createTicket = useCreateTicket();
+  const { mutate } = scanTicketApi();
 
   useEffect(() => {
     (async () => {
@@ -66,51 +62,51 @@ export default function Scanner({ event }) {
   }
 
   async function scanTicket(ticketId: string) {
-    const request: PostTicketRequest = {
-      type: PostTicketType.SCAN_TICKET,
-      id: ticketId,
-      eventId: event.id,
-      jwtToken: jwtToken,
-    };
+    mutate(
+      { ticketId, eventId: event.id || '', jwtToken },
+      {
+        onSuccess: (data) => {
+          const { scanSucceeded, ticketName } = data;
+          let title = '';
+          let description = '';
 
-    createTicket.mutate(request, {
-      onSuccess: (data) => {
-        const { scanSucceeded, ticketName } = data;
-        let title = '';
-        let description = '';
-
-        if (scanSucceeded) {
-          title = 'Scan Successful';
-          description = `Ticket ${ticketName} has been scanned successfully`;
-        } else {
-          if (!ticketName) {
-            title = 'Scan Failed';
-            description = `Ticket not valid for ${event.name}`;
+          if (scanSucceeded) {
+            title = 'Scan Successful';
+            description = `Ticket ${ticketName} has been scanned successfully`;
           } else {
-            title = 'Scan Failed';
-            description = `Ticket ${ticketName} has already been scanned`;
+            if (!ticketName) {
+              title = 'Scan Failed';
+              description = `Ticket not valid for ${event.name}`;
+            } else {
+              title = 'Scan Failed';
+              description = `Ticket ${ticketName} has already been scanned`;
+            }
           }
-        }
-        Alert.alert(title, description, [
-          {
-            text: 'Okay',
-            onPress: () => {
-              setScanned(false);
+          Alert.alert(title, description, [
+            {
+              text: 'Okay',
+              onPress: () => {
+                setScanned(false);
+              },
             },
-          },
-        ]);
-      },
-      onError: (error) => {
-        Alert.alert('Scan Failed', 'Failed to scan ticket, please try again.', [
-          {
-            text: 'Okay',
-            onPress: () => {
-              setScanned(false);
-            },
-          },
-        ]);
-      },
-    });
+          ]);
+        },
+        onError: (error) => {
+          Alert.alert(
+            'Scan Failed',
+            'Failed to scan ticket, please try again.',
+            [
+              {
+                text: 'Okay',
+                onPress: () => {
+                  setScanned(false);
+                },
+              },
+            ]
+          );
+        },
+      }
+    );
   }
 
   if (hasPermission === null) {

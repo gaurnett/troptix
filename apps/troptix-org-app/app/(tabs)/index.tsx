@@ -7,21 +7,19 @@ import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { useAuth } from '../_layout';
 
 export default function Home() {
-  const { user } = useAuth();
+  const { jwtToken } = useAuth();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
-  const { isLoading, isError, data, error } = useFetchScannableEvents({
-    id: user?.uid,
-  });
+  const { isLoading, isError, data, error } = useFetchScannableEvents(jwtToken);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
     setRefreshing(false);
   }, []);
 
-  function getDateFormatted(date, time) {
-    return format(date, 'MMM dd, yyyy') + ' at ' + format(time, 'hh:mm a');
+  function getDateFormatted(date) {
+    return format(date, 'MMM dd, yyyy') + ' at ' + format(date, 'hh:mm a');
   }
 
   function Card(event) {
@@ -33,11 +31,8 @@ export default function Home() {
             <View style={styles.detailsContainer}>
               <Text style={styles.title}>{event.name}</Text>
               <Text style={styles.info}>
-                {getDateFormatted(
-                  new Date(event.startDate),
-                  new Date(event.startTime)
-                )}{' '}
-                | <Text style={styles.organizer}>{event.organizer}</Text>
+                {getDateFormatted(new Date(event.startDate))} |{' '}
+                <Text style={styles.organizer}>{event.organizer}</Text>
               </Text>
               <Text style={styles.location}>
                 {event.venue}, {event.address}

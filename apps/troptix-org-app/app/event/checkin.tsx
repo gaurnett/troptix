@@ -1,10 +1,6 @@
 import { Ticket, TicketStatus } from '@/hooks/types/Ticket';
 import { useFetchEventOrders } from '@/hooks/useOrders';
-import {
-  PostTicketRequest,
-  PostTicketType,
-  useCreateTicket,
-} from '@/hooks/useTicket';
+import { checkInTicket } from '@/hooks/useTicket';
 import { useEffect, useState } from 'react';
 import {
   Alert,
@@ -26,9 +22,12 @@ type ToastSettings = {
 export default function CheckInPage({ event }) {
   const { jwtToken } = useAuth();
   const [guests, setGuests] = useState<Ticket[]>([]);
-  const { isLoading, isError, data, error } = useFetchEventOrders(event.id);
+  const { isLoading, isError, data, error } = useFetchEventOrders(
+    event.id,
+    jwtToken
+  );
   const [toastSettings, setToastSettings] = useState<ToastSettings>({});
-  const createTicket = useCreateTicket();
+  const { mutate } = checkInTicket();
   const [searchValue, setSearchValue] = useState('');
 
   useEffect(() => {
@@ -89,45 +88,42 @@ export default function CheckInPage({ event }) {
       toastPreset: ToastPresets.GENERAL,
     });
 
-    const request: PostTicketRequest = {
-      type: PostTicketType.UPDATE_STATUS,
-      ticket: updatedTicket,
-      jwtToken: jwtToken,
-    };
+    mutate(
+      { ticketId: updatedTicket.id || '', jwtToken },
+      {
+        onSuccess: (data) => {
+          let oldData = guests[index];
+          oldData = {
+            ...guests[index],
+            ...data,
+          };
 
-    createTicket.mutate(request, {
-      onSuccess: (data) => {
-        let oldData = guests[index];
-        oldData = {
-          ...guests[index],
-          ...data,
-        };
+          const updatedGuests = guests.map((guest, i) => {
+            if (guest.id === oldData.id) {
+              return oldData;
+            } else {
+              return guest;
+            }
+          });
 
-        const updatedGuests = guests.map((guest, i) => {
-          if (guest.id === oldData.id) {
-            return oldData;
-          } else {
-            return guest;
-          }
-        });
+          setGuests(updatedGuests);
 
-        setGuests(updatedGuests);
-
-        setToastSettings({
-          showToast: true,
-          toastMessage: 'Successfully updated ticket.',
-          toastPreset: ToastPresets.SUCCESS,
-        });
-      },
-      onError: (error) => {
-        setToastSettings({
-          showToast: true,
-          toastMessage: 'Failed to update ticket, please try again.',
-          toastPreset: ToastPresets.FAILURE,
-        });
-        return;
-      },
-    });
+          setToastSettings({
+            showToast: true,
+            toastMessage: 'Successfully updated ticket.',
+            toastPreset: ToastPresets.SUCCESS,
+          });
+        },
+        onError: (error) => {
+          setToastSettings({
+            showToast: true,
+            toastMessage: 'Failed to update ticket, please try again.',
+            toastPreset: ToastPresets.FAILURE,
+          });
+          return;
+        },
+      }
+    );
   }
 
   function updateToastVisibility() {

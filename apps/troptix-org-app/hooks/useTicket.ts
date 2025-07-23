@@ -1,72 +1,60 @@
 import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 import { prodUrl } from './constants';
-import { Ticket } from './types/Ticket';
 
-export enum PostTicketType {
-  UPDATE_STATUS = 'UPDATE_STATUS',
-  UPDATE_NAME = 'UPDATE_NAME',
-  SCAN_TICKET = 'SCAN_TICKET',
-}
-
-export interface PostTicketRequest {
-  type: keyof typeof PostTicketType;
-  ticket?: Ticket;
-  id?: string;
-  eventId?: string;
-  jwtToken?: string;
-}
-
-export async function mutateTicket(request: PostTicketRequest): Promise<any> {
-  let url = prodUrl + `/api/tickets`;
-
-  try {
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${request.jwtToken}`,
-      },
-      body: JSON.stringify(request),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const json = await response.json();
-
-    return json;
-  } catch (error) {
-    console.error('An error occurred while fetching the data.', error);
-    throw error;
-  }
-}
-
-export function useCreateTicket() {
+export function scanTicketApi() {
   return useMutation({
-    mutationFn: (request: PostTicketRequest) => mutateTicket(request),
+    mutationFn: async ({
+      ticketId,
+      eventId,
+      jwtToken,
+    }: {
+      ticketId: string;
+      eventId: string;
+      jwtToken?: string;
+    }) => {
+      const response = await axios.put(
+        prodUrl + `/api/organizer/tickets/scan`,
+        {
+          ticketId,
+          eventId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        }
+      );
+
+      if (response.status !== 200) throw new Error(response.statusText);
+      return response.data;
+    },
   });
 }
 
-export async function fetchUserTickets(userId: string): Promise<any> {
-  const url = prodUrl + `/api/tickets?userId=${userId}`;
+export function checkInTicket() {
+  return useMutation({
+    mutationFn: async ({
+      ticketId,
+      jwtToken,
+    }: {
+      ticketId: string;
+      jwtToken?: string;
+    }) => {
+      const response = await axios.put(
+        prodUrl + `/api/organizer/tickets/check-in`,
+        {
+          ticketId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+          },
+        }
+      );
 
-  try {
-    const response = await fetch(url, {
-      method: 'GET',
-      cache: 'no-cache',
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const json = await response.json();
-
-    return json;
-  } catch (error) {
-    console.error('An error occurred while fetching the tickets.', error);
-    throw error;
-  }
+      if (response.status !== 200) throw new Error(response.statusText);
+      return response.data;
+    },
+  });
 }

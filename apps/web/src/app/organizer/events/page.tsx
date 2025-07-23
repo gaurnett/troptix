@@ -1,18 +1,18 @@
-import Link from 'next/link';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
 import {
-  PlusCircle,
   Edit,
   Eye,
-  Settings,
   Image as ImageIcon,
+  PlusCircle,
+  Settings,
 } from 'lucide-react';
-import { getAllOrganizerEvents, EventCardData } from '../_lib/getEventsData'; // Adjust import path
-import { getUserFromIdTokenCookie } from '@/server/authUser';
+import Image from 'next/image';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { EventCardData, getAllOrganizerEvents } from '../_lib/getEventsData'; // Adjust import path
 
 const formatEventTime = (date: Date | null): string => {
   if (!date) return '';

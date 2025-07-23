@@ -2,16 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { prodUrl } from './constants';
 
-export enum RequestType {
-  GET_EVENTS_ALL = 'GET_EVENTS_ALL',
-  GET_EVENTS_BY_ID = 'GET_EVENTS_BY_ID',
-  GET_EVENTS_BY_ORGANIZER = 'GET_EVENTS_BY_ORGANIZER',
-  GET_EVENTS_SCANNABLE_BY_ORGANIZER = 'GET_EVENTS_SCANNABLE_BY_ORGANIZER',
-}
-export type GetEventsRequestType = {
-  id?: string;
-};
-
 export const useFetchEventById = (id: string) => {
   return useQuery({
     queryKey: ['event', id],
@@ -23,14 +13,17 @@ export const useFetchEventById = (id: string) => {
   });
 };
 
-export function useFetchScannableEvents({ id }: GetEventsRequestType) {
+export function useFetchScannableEvents(jwtToken?: string) {
   return useQuery({
-    queryKey: [id],
+    queryKey: [jwtToken],
     queryFn: async () => {
-      const response = await axios.get(prodUrl + '/api/events', {
-        params: {
-          userId: id,
-          byOrganizerId: true,
+      if (!jwtToken) {
+        throw new Error('JWT token is not available');
+      }
+
+      const response = await axios.get(prodUrl + '/api/organizer/events', {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
         },
       });
 
