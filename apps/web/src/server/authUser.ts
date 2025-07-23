@@ -1,9 +1,9 @@
-import { getFirebaseAdmin } from './lib/firebaseAdmin';
 import { cookies } from 'next/headers';
+import { getFirebaseAdmin } from './lib/firebaseAdmin';
 
-export async function getUserFromIdTokenCookie() {
+export async function getUserFromIdTokenCookie(token?: string) {
   const cookieStore = cookies();
-  const idToken = cookieStore.get('fb-token')?.value; // Get the ID Token from cookie
+  const idToken = token || cookieStore.get('fb-token')?.value; // Get the ID Token from cookie
 
   if (!idToken) {
     console.log('No ID token cookie found.');
