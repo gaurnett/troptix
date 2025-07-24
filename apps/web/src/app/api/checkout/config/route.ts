@@ -26,7 +26,15 @@ export async function GET(
     const ticketTypesData = await prisma.ticketTypes.findMany({
       where: {
         eventId: eventId,
-        discountCode: null,
+        // If the discount code is null or empty, we consider it public
+        OR: [
+          {
+            discountCode: { equals: null },
+          },
+          {
+            discountCode: { equals: '' },
+          },
+        ],
       },
       select: {
         id: true,
