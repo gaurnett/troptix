@@ -7,7 +7,7 @@ import {
 import prisma from '@/server/prisma';
 import { buffer } from 'micro';
 
-import { sendEmailToUser } from '@/server/lib/emailHelper';
+import { sendEmailConfirmationEmailToUser } from '@/server/lib/email';
 
 // Stripe requires the raw body to construct the event
 export const config = {
@@ -152,7 +152,7 @@ async function updateOrderAfterPaymentSucceeds(
       });
     }
     console.log('Sending email to user', orderMap);
-    await sendEmailToUser(order, orderMap);
+    await sendEmailConfirmationEmailToUser(order.id);
   } catch (error) {
     console.error('[Order] Error updating order:', error);
     throw error;
