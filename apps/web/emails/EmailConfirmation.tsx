@@ -234,7 +234,7 @@ export default function EmailConfirmationTemplate({
                       </td>
                     </tr>
 
-                    {order.total && order.total > 0 && order.cardLast4 && (
+                    {!!order.total && order.total > 0 && !!order.cardLast4 && (
                       <tr>
                         <td></td>
                         <td className="text-xs text-slate-500 text-right pt-1">
