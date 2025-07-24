@@ -14,8 +14,8 @@ import {
   ValidationResponseMessage,
 } from '@/types/checkout'; // Adjust path if needed
 import { calculateFees } from '@/server/lib/checkout'; // Adjust path if needed
-import { sendEmailToUser } from '@/server/lib/emailHelper';
 import { Prisma } from '@prisma/client';
+import { sendEmailConfirmationEmailToUser } from '@/server/lib/email';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   // @ts-ignore
   apiVersion: '2024-04-10',
@@ -86,7 +86,7 @@ type ticketTypeWithPendingAndCompletedOrders = ticketTypeWithRawData & {
   pendingOrders: number;
   completedOrders: number;
 };
-
+// TODO: This function is way too long and need to be broken down into smaller functions.
 export async function POST(
   req: NextRequest
 ): Promise<NextResponse<ValidationResponse | { message: string }>> {
@@ -335,35 +335,6 @@ export async function POST(
                 });
               }
             }
-
-            // Send confirmation email for free orders
-            const fullOrder = await tx.orders.findUnique({
-              where: { id: order.id },
-              include: {
-                tickets: {
-                  include: {
-                    ticketType: true,
-                  },
-                },
-                event: true,
-              },
-            });
-
-            if (fullOrder) {
-              // Create orderMap structure similar to webhook in the strip endpoint
-              const orderMap = buildOrderMapFromTickets(fullOrder.tickets);
-
-              // Send email confirmation
-              try {
-                await sendEmailToUser(fullOrder, orderMap);
-              } catch (emailError) {
-                console.error(
-                  'Error sending confirmation email for free order:',
-                  emailError
-                );
-                // Don't fail the entire transaction for email errors
-              }
-            }
           }
         }
         return response;
@@ -374,6 +345,9 @@ export async function POST(
         // TODO: isolation level and retry logic
       }
     );
+    if (validationResult.isFree && validationResult.orderId) {
+      await sendEmailConfirmationEmailToUser(validationResult.orderId);
+    }
 
     return NextResponse.json(validationResult, { status: 200 });
   } catch (error: any) {
