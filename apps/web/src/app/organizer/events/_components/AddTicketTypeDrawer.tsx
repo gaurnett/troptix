@@ -355,7 +355,7 @@ export function AddTicketTypeDrawer({
                     </FormItem>
                   )}
                 />
-                {form.watch('price') > 0 && (
+                {(form.watch('price') ?? 0) > 0 && (
                   <FormField
                     control={form.control}
                     name="ticketingFees"
