@@ -32,7 +32,7 @@ export default function EventDetail({ event }: { event: EventById }) {
     setIsTicketModalOpen(false);
   }
 
-  function openModal() {
+  async function openModal() {
     setIsTicketModalOpen(true);
   }
   const displayImageUrl =
