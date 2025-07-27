@@ -3,6 +3,8 @@
   "compilerOptions": {
     "jsx": "react-jsx", // ✅ Or "react-native" for React Native
     "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "paths": {
       "@/*": ["./*"],
       "tailwind.config": ["./tailwind.config.js"],

@@ -17,27 +17,10 @@ import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 
 import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
-import Cookies from 'js-cookie';
 import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import { EventById } from '../page';
-
-async function fetchScannableEvents() {
-  try {
-    const response = await fetch('http://localhost:3000/api/organizer/events', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${Cookies.get('fb-token')}`,
-      },
-    });
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching scannable events:', error);
-    return [];
-  }
-}
 
 export default function EventDetail({ event }: { event: EventById }) {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -50,9 +33,7 @@ export default function EventDetail({ event }: { event: EventById }) {
   }
 
   async function openModal() {
-    const scannableEvents = await fetchScannableEvents();
-    console.log('scannableEvents', scannableEvents);
-    // setIsTicketModalOpen(true);
+    setIsTicketModalOpen(true);
   }
   const displayImageUrl =
     event.imageUrl ?? 'https://placehold.co/400x400?text=Add+Event+Flyer';

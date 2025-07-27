@@ -1,4 +1,3 @@
-import { getUserFromIdTokenCookie } from '@/server/authUser';
 import prisma from '@/server/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -7,11 +6,6 @@ export async function GET(
   { params }: { params: { eventId: string } }
 ) {
   const { eventId } = params;
-
-  console.log('Event ID:', eventId);
-
-  const organizerId = await getUserFromIdTokenCookie();
-  console.log('Organizer ID:', organizerId);
 
   if (!eventId) {
     return NextResponse.json(

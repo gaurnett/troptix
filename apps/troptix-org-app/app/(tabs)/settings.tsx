@@ -1,4 +1,3 @@
-import { prodUrl } from '@/hooks/constants';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { getAuth } from '@react-native-firebase/auth';
 import { router } from 'expo-router';
@@ -45,7 +44,7 @@ export default function Settings() {
 
   function renderSettingsRow(
     type: SettingsType,
-    title: String,
+    title: string,
     icon: string,
     color: string
   ) {

@@ -7,7 +7,7 @@ const extraApiUrl =
 let apiUrl = extraApiUrl || 'https://www.usetroptix.com';
 
 if (environment === 'development' || __DEV__) {
-  apiUrl = 'http://www.192.168.1.207:3000';
+  apiUrl = `http://${window.location.hostname}:3000`;
 }
 
 export const prodUrl = apiUrl;
