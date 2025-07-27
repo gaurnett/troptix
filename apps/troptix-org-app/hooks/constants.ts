@@ -4,10 +4,10 @@ const environment = Constants.expoConfig?.extra?.environment;
 
 const extraApiUrl =
   Constants.expoConfig?.extra?.apiUrl || process.env.EXPO_PUBLIC_API_URL;
-let apiUrl = extraApiUrl || 'https://usetroptix.com';
+let apiUrl = extraApiUrl || 'https://www.usetroptix.com';
 
 if (environment === 'development' || __DEV__) {
-  apiUrl = 'http://192.168.1.207:3000';
+  apiUrl = 'http://www.192.168.1.207:3000';
 }
 
 export const prodUrl = apiUrl;
