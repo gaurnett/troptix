@@ -1,12 +1,11 @@
 import { Prisma } from '@prisma/client';
 
-import EventCard from './_components/EventCard';
-import prisma from '@/server/prisma';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import prisma from '@/server/prisma';
 import { Calendar, ExternalLink } from 'lucide-react';
-import * as React from 'react';
+import Link from 'next/link';
+import EventCard from './_components/EventCard';
 
 const EventSelect = {
   id: true,

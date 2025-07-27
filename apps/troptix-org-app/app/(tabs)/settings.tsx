@@ -44,7 +44,7 @@ export default function Settings() {
 
   function renderSettingsRow(
     type: SettingsType,
-    title: String,
+    title: string,
     icon: string,
     color: string
   ) {
