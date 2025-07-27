@@ -15,7 +15,6 @@ export async function getUserFromIdTokenCookie(token?: string) {
     const decodedToken = await admin
       .auth()
       .verifyIdToken(idToken /*, checkRevoked = false */);
-    console.log('Decoded ID token:', decodedToken.uid);
     return decodedToken;
   } catch (error: any) {
     if (error.code === 'auth/id-token-expired') {
