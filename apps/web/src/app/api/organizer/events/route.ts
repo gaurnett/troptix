@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
   const headersList = headers();
   const authorization = headersList.get('authorization');
 
+  console.log('Authorization header:', authorization);
   if (!authorization || !authorization.startsWith('Bearer ')) {
     return NextResponse.json(
       { error: 'Authorization header is missing or invalid' },
@@ -15,8 +16,10 @@ export async function GET(request: NextRequest) {
   }
 
   const token = authorization.split(' ')[1];
+  console.log('Token:', token);
   const organizerId = await getUserFromIdTokenCookie(token);
 
+  console.log('Organizer ID:', organizerId?.email);
   if (!organizerId) {
     return NextResponse.json(
       { error: 'Invalid token or user not found' },
