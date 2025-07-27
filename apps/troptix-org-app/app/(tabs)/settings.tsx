@@ -1,3 +1,4 @@
+import { prodUrl } from '@/hooks/constants';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { getAuth } from '@react-native-firebase/auth';
 import { router } from 'expo-router';
@@ -134,6 +135,15 @@ export default function Settings() {
                   Colors.red50
                 )}
               </View>
+            </View>
+            <View>
+              <Text marginT-16 marginB-8 $textDefault>
+                {prodUrl}
+              </Text>
+              <Text marginT-16 marginB-8 $textDefault>
+                {user?.uid}
+              </Text>
+              <Text>{__DEV__ ? 'Development Mode' : 'Production Mode'}</Text>
             </View>
           </View>
         </ScrollView>

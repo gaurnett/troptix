@@ -1,7 +1,5 @@
 'use client';
 
-import TicketDrawer from './ticket-drawer';
-import TicketModal from './ticket-modal';
 import { ButtonWithIcon } from '@/components/ui/button';
 import {
   DividerWithText,
@@ -10,17 +8,36 @@ import {
   TypographyP,
 } from '@/components/ui/typography';
 import { useScreenSize } from '@/hooks/useScreenSize';
+import TicketDrawer from './ticket-drawer';
+import TicketModal from './ticket-modal';
 
 import { getDateRangeFormatter, getTimeRangeFormatter } from '@/lib/dateUtils';
 import { getFormattedCurrency } from '@/lib/utils';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 
+import { Banner } from '@/components/ui/banner';
+import { Button } from '@/components/ui/button';
+import Cookies from 'js-cookie';
 import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { EventById } from '../page';
-import { Banner } from '@/components/ui/banner';
+
+async function fetchScannableEvents() {
+  try {
+    const response = await fetch('http://localhost:3000/api/organizer/events', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${Cookies.get('fb-token')}`,
+      },
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching scannable events:', error);
+    return [];
+  }
+}
 
 export default function EventDetail({ event }: { event: EventById }) {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -32,8 +49,10 @@ export default function EventDetail({ event }: { event: EventById }) {
     setIsTicketModalOpen(false);
   }
 
-  function openModal() {
-    setIsTicketModalOpen(true);
+  async function openModal() {
+    const scannableEvents = await fetchScannableEvents();
+    console.log('scannableEvents', scannableEvents);
+    // setIsTicketModalOpen(true);
   }
   const displayImageUrl =
     event.imageUrl ?? 'https://placehold.co/400x400?text=Add+Event+Flyer';

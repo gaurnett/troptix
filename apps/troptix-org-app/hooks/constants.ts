@@ -6,7 +6,7 @@ const extraApiUrl =
   Constants.expoConfig?.extra?.apiUrl || process.env.EXPO_PUBLIC_API_URL;
 let apiUrl = extraApiUrl || 'https://usetroptix.com';
 
-if (environment === 'development') {
+if (environment === 'development' || __DEV__) {
   apiUrl = 'http://192.168.1.207:3000';
 }
 

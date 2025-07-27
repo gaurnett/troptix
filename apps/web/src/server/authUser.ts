@@ -1,10 +1,11 @@
 import { cookies } from 'next/headers';
 import { getFirebaseAdmin } from './lib/firebaseAdmin';
 
-export async function getUserFromIdTokenCookie(token?: string) {
+export async function getUserFromIdTokenCookie(token?: string, path?: string) {
   const cookieStore = cookies();
   const idToken = token || cookieStore.get('fb-token')?.value; // Get the ID Token from cookie
 
+  console.log('Hello World: ' + idToken?.substring(0, 10) + '...' + path);
   if (!idToken) {
     console.log('No ID token cookie found.');
     return null;

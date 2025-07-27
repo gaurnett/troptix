@@ -14,7 +14,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   owner: 'troptix',
   name: process.env.EXPO_PUBLIC_APP_NAME || 'TropTix Organizer',
   slug: 'troptix-organizer',
-  version: '1.1.5',
+  version: '1.1.6',
   orientation: 'portrait',
   icon: './assets/icon.png',
   scheme: 'troptix',
@@ -23,8 +23,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: false,
     usesAppleSignIn: true,
-    googleServicesFile:
-      process.env.GOOGLE_SERVICE_INFO_PLIST ?? './GoogleService-Info.plist',
+    googleServicesFile: './GoogleService-Info-Prod.plist',
     bundleIdentifier:
       process.env.EXPO_PUBLIC_APP_BUNDLE || 'com.usetroptix.organizerapp',
     infoPlist: {
@@ -46,6 +45,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     'expo-router',
+    'expo-font',
     '@react-native-google-signin/google-signin',
     '@react-native-firebase/app',
     '@react-native-firebase/auth',
