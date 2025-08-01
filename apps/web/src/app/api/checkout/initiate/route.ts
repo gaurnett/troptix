@@ -1,6 +1,6 @@
 // app/api/checkout/initiate/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers'; // For reading cookies in App Router
+import { cookies, headers } from 'next/headers'; // For reading cookies in App Router
 import prisma from '@/server/prisma';
 import Stripe from 'stripe';
 import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema'; // Adjust path if needed
@@ -346,7 +346,11 @@ export async function POST(
       }
     );
     if (validationResult.isFree && validationResult.orderId) {
-      await sendEmailConfirmationEmailToUser(validationResult.orderId);
+      try {
+        await sendEmailConfirmationEmailToUser(validationResult.orderId);
+      } catch (error) {
+        console.error('Error sending email confirmation:', error);
+      }
     }
 
     return NextResponse.json(validationResult, { status: 200 });
