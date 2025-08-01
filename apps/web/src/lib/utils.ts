@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
 import { formatInTimeZone } from 'date-fns-tz';
-import DOMPurify from 'dompurify';
 import ShortUniqueId from 'short-unique-id';
 import { twMerge } from 'tailwind-merge';
 
@@ -65,11 +64,6 @@ export function isValidEmail(email) {
     .match(
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
-}
-
-export function isInputBad(value: string): boolean {
-  const cleanValue = DOMPurify.sanitize(value);
-  return value !== cleanValue;
 }
 
 export function calculateFees(price) {

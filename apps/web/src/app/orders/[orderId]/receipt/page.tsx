@@ -32,7 +32,6 @@ import { Badge } from '@/components/ui/badge';
 import { getDateFormatter } from '@/lib/dateUtils'; // Assuming getTimeFormatter
 import { getFormattedCurrency } from '@/lib/utils';
 import { EnrichedOrder } from '../page';
-import { Spinner } from '@/components/ui/spinner';
 
 const prisma = new PrismaClient();
 
