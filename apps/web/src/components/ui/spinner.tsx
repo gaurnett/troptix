@@ -1,6 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
-
 export function Spinner({ text }) {
   return (
     <div className="flex flex-col w-full justify-center item-center">
