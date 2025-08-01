@@ -2,12 +2,9 @@
 
 import { User, initializeUser } from '@/hooks/types/User';
 import { cn } from '@/lib/utils';
-import { LoadingOutlined } from '@ant-design/icons';
-import { Spin } from 'antd';
 import { onIdTokenChanged } from 'firebase/auth';
 
 import { Inter } from 'next/font/google';
-import { usePathname } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { auth } from '../config';
 import Cookies from 'js-cookie';
@@ -29,6 +26,7 @@ export const TropTixContext = createContext({
   loading: true,
 });
 
+// Deprecated: Use useAuth() from @/hooks/useAuth instead
 export const useTropTixContext = () => useContext(TropTixContext);
 
 export default function AuthProvider({
@@ -36,7 +34,6 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
   const [user, setUser] = useState<User>();
   const [loading, setLoading] = useState(true);
 
@@ -80,10 +77,6 @@ export default function AuthProvider({
     }
   }, [user, isOrganizer, isOrganizerLoading]);
 
-  if (loading && pathname !== '/' && pathname !== '/home') {
-    return <></>;
-  }
-
   return (
     <TropTixContext.Provider
       value={{
@@ -91,29 +84,20 @@ export default function AuthProvider({
         loading,
       }}
     >
-      {loading && (pathname === '/' || pathname === '/home') ? (
-        <>
-          <Spin
-            className="flex h-screen items-center justify-center"
-            indicator={<LoadingOutlined style={{ fontSize: 84 }} spin />}
-          />
-        </>
-      ) : (
+      <div
+        className={cn(
+          'min-h-screen font-sans antialiased mx-auto',
+          inter.variable
+        )}
+      >
         <div
-          className={cn(
-            'min-h-screen font-sans antialiased mx-auto',
-            inter.variable
-          )}
+          className={`${inter.variable} font-inter antialiased text-gray-900 tracking-tight`}
         >
-          <div
-            className={`${inter.variable} font-inter antialiased text-gray-900 tracking-tight`}
-          >
-            <div className="flex flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
-              {children}
-            </div>
+          <div className="flex flex-col overflow-hidden supports-[overflow:clip]:overflow-clip">
+            {children}
           </div>
         </div>
-      )}
+      </div>
     </TropTixContext.Provider>
   );
 }

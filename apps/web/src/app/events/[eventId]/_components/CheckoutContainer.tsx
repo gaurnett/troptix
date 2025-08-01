@@ -1,7 +1,7 @@
 'use client';
-import { TropTixContext } from '@/components/AuthProvider';
-import { Spinner } from '@/components/ui/spinner';
-import { ReactNode, useContext, useEffect, useState } from 'react';
+import { CheckoutFormSkeleton } from './checkout-skeleton';
+import { ReactNode, useEffect, useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import CheckoutForm from './checkout';
 import TicketsCheckoutForm from './tickets-checkout-forms';
 import { useRouter } from 'next/navigation';
@@ -67,7 +67,7 @@ export function CheckoutContainer({
   onClose,
   children,
 }: CheckoutContainerProps) {
-  const { user } = useContext(TropTixContext);
+  const { user } = useAuth();
   const eventId = event.id;
 
   // This is the state of the checkout form
@@ -77,14 +77,9 @@ export function CheckoutContainer({
   });
 
   // This is the form methods for the checkout form for the user details
+  console.log('user 1', user);
   const formMethods = useForm<UserDetailsFormData>({
     resolver: zodResolver(userDetailsSchema),
-    defaultValues: {
-      firstName: user?.firstName || '',
-      lastName: user?.lastName || '',
-      email: user?.email || '',
-      confirmEmail: user?.email || '',
-    },
     mode: 'onBlur',
   });
   const router = useRouter();
@@ -254,12 +249,9 @@ export function CheckoutContainer({
 
   const renderCheckoutStep = () => {
     if (isFetchingCheckoutConfig || !checkoutConfig) {
-      return (
-        <div className="mt-32">
-          <Spinner text={'Initializing Checkout'} />
-        </div>
-      );
+      return <CheckoutFormSkeleton />;
     }
+    console.log('user', user);
 
     return current === 0 ? (
       <TicketsCheckoutForm
