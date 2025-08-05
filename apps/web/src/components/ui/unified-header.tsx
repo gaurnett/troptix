@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ArrowLeft,
   Calendar,
@@ -13,7 +13,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { auth } from '../../config'; // Assuming this is your Firebase config
-import { TropTixContext } from '../AuthProvider';
+import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -54,7 +54,7 @@ const getUserInitials = (user?: {
 
 export default function UnifiedHeader() {
   const [hasScrolled, setHasScrolled] = useState<boolean>(false);
-  const { user } = useContext(TropTixContext);
+  const { user } = useAuth();
   const pathname = usePathname();
 
   // Effect to handle scroll-based styling
@@ -203,28 +203,27 @@ export default function UnifiedHeader() {
                     </span>
                   </Link>
                 </Button>
-                {user && (
-                  <Button variant="ghost" className="p-2 " asChild>
-                    <Link href="/orders">
-                      <Ticket className="h-5 w-5" />
-                      <span className="hidden md:inline ml-2">Tickets</span>
-                    </Link>
-                  </Button>
-                )}
+                <Button variant="ghost" className="p-2 " asChild>
+                  <Link href="/orders">
+                    <Ticket className="h-5 w-5" />
+                    <span className="hidden md:inline ml-2">Tickets</span>
+                  </Link>
+                </Button>
               </>
             )}
           </nav>
-
           {user?.id ? (
             <UserMenu />
           ) : (
-            <>
-              <Button variant="default" className="rounded-full" asChild>
-                <Link href="/auth/signin">
-                  <span className=" ml-0 w-full">Sign In</span>
-                </Link>
-              </Button>
-            </>
+            <Button
+              variant="default"
+              className="rounded-full h-10 px-4"
+              asChild
+            >
+              <Link href="/auth/signin">
+                <span className="ml-0 w-full">Sign In</span>
+              </Link>
+            </Button>
           )}
         </div>
       </div>

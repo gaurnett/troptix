@@ -1,7 +1,7 @@
 'use client';
 
 import { format } from 'date-fns';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import {
   Form,
   FormControl,
@@ -11,7 +11,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 
-import { TropTixContext } from '@/components/AuthProvider';
+import { useAuth } from '@/hooks/useAuth';
 import { Button, ButtonWithIcon } from '@/components/ui/button';
 import { InputWithLabel } from '@/components/ui/input';
 import { TypographyH3 } from '@/components/ui/typography';
@@ -64,7 +64,7 @@ export default function TicketsCheckoutForm({
   setCheckout: React.Dispatch<React.SetStateAction<CheckoutState>>;
   formMethods: UseFormReturn<UserDetailsFormData>;
 }) {
-  const { user } = useContext(TropTixContext);
+  const { user } = useAuth();
   const [promoCode, setPromoCode] = useState('');
 
   return (
@@ -75,6 +75,7 @@ export default function TicketsCheckoutForm({
           <FormField
             control={formMethods.control}
             name="firstName"
+            defaultValue={user?.firstName}
             rules={{ required: true }}
             render={({ field }) => (
               <FormItem className="mb-4 mr-1 md:mr-4 w-full">
@@ -89,6 +90,7 @@ export default function TicketsCheckoutForm({
           <FormField
             control={formMethods.control}
             name="lastName"
+            defaultValue={user?.lastName}
             rules={{ required: true }}
             render={({ field }) => (
               <FormItem className="mb-4 mr-1 md:mr-4 w-full">
@@ -106,6 +108,7 @@ export default function TicketsCheckoutForm({
           <FormField
             control={formMethods.control}
             name="email"
+            defaultValue={user?.email}
             rules={{ required: true }}
             render={({ field }) => (
               <FormItem className="mb-4 mr-1 md:mr-4 w-full">
@@ -124,6 +127,7 @@ export default function TicketsCheckoutForm({
           <FormField
             control={formMethods.control}
             name="confirmEmail"
+            defaultValue={user?.email}
             rules={{ required: true }}
             render={({ field }) => (
               <FormItem className="mb-4 mr-1 md:mr-4 w-full">

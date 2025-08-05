@@ -4,7 +4,6 @@ import React, { useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorBoundary } from 'react-error-boundary';
 import { usePathname, useRouter } from 'next/navigation';
-import { ConfigProvider } from 'antd';
 import posthog from 'posthog-js';
 import { PostHogProvider as PHProvider } from 'posthog-js/react';
 
@@ -47,27 +46,19 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   return (
-    <ConfigProvider
-      theme={{
-        components: {
-          /* Ant Design component tokens */
-        },
+    <ErrorBoundary
+      FallbackComponent={ErrorFallback}
+      onReset={() => {
+        router.push('/');
       }}
     >
-      <ErrorBoundary
-        FallbackComponent={ErrorFallback}
-        onReset={() => {
-          router.push('/');
-        }}
-      >
-        <PostHogProvider>
-          <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <GlobalLayout>{children}</GlobalLayout>
-            </AuthProvider>
-          </QueryClientProvider>
-        </PostHogProvider>
-      </ErrorBoundary>
-    </ConfigProvider>
+      <PostHogProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <GlobalLayout>{children}</GlobalLayout>
+          </AuthProvider>
+        </QueryClientProvider>
+      </PostHogProvider>
+    </ErrorBoundary>
   );
 }

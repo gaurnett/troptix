@@ -1,7 +1,6 @@
-import { TropTixContext } from '@/components/AuthProvider';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useContext } from 'react';
 import { SocialMediaAccount, User } from './types/User';
+import { useUserId } from './useAuth';
 
 export enum GetUsersType {
   GET_USERS_BY_ID = 'GET_USERS_BY_ID',
@@ -45,9 +44,9 @@ export function useFetchUser(): {
   isPending: boolean;
   isError: boolean;
 } {
-  const { user } = useContext(TropTixContext);
+  const userId = useUserId();
 
-  const query = useFetchUserById(user?.id);
+  const query = useFetchUserById(userId);
 
   return {
     user: query.data,
