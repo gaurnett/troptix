@@ -54,7 +54,7 @@ const getUserInitials = (user?: {
 
 export default function UnifiedHeader() {
   const [hasScrolled, setHasScrolled] = useState<boolean>(false);
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const pathname = usePathname();
 
   // Effect to handle scroll-based styling
@@ -212,10 +212,7 @@ export default function UnifiedHeader() {
               </>
             )}
           </nav>
-
-          {loading ? (
-            <div className="h-10 w-10 rounded-full bg-muted animate-pulse" />
-          ) : user?.id ? (
+          {user?.id ? (
             <UserMenu />
           ) : (
             <Button

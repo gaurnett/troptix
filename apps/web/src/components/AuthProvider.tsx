@@ -34,7 +34,7 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User>(emptyUser);
   const [loading, setLoading] = useState(true);
 
   // Fetch the organizer state from the database
