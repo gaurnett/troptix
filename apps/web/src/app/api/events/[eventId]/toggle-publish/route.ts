@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
-import prisma from '@/server/prisma';
-import { getUserFromIdTokenCookie } from '@/server/authUser';
-import { revalidatePath } from 'next/cache';
 import {
-  validateEventForPublish,
   getPublishRequirementsSummary,
+  validateEventForPublish,
 } from '@/lib/validations/publishValidation';
+import { getUserFromIdTokenCookie } from '@/server/authUser';
+import prisma from '@/server/prisma';
+import { revalidatePath } from 'next/cache';
+import { NextResponse } from 'next/server';
 
 export async function PATCH(
   req: Request,
