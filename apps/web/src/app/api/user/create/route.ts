@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     await prisma.users.create({
       data: {
         id: id,
-        email: email || '',
+        email: email,
         firstName: firstName,
         lastName: lastName,
       },

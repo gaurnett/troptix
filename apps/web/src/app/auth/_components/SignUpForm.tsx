@@ -75,7 +75,7 @@ export default function SignUpForm() {
         user,
         onSuccess: () => {
           toast.success('Account created successfully!');
-          router.push('/');
+          router.back();
         },
         onFailed: () => {
           toast.error('Failed to create account. Please try again.');

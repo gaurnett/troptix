@@ -25,38 +25,34 @@ export function GoogleSignInButton({
   disabled = false,
 }: GoogleSignInButtonProps) {
   const [isLoading, setIsLoading] = React.useState(false);
-  const route = useRouter();
+  const router = useRouter();
+
+  const handleSuccess = () => {
+    toast.success('Successfully signed in with Google!');
+    router.back();
+  };
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      signInWithPopup(auth, new GoogleAuthProvider())
-        .then(async (result) => {
-          const userResult = result.user;
-          const additionalInfo = getAdditionalUserInfo(result);
+      const result = await signInWithPopup(auth, new GoogleAuthProvider());
+      const userResult = result.user;
+      const additionalInfo = getAdditionalUserInfo(result);
 
-          if (additionalInfo?.isNewUser) {
-            const user: User = {
-              id: userResult.uid,
-              email: userResult.email || '',
-            };
+      if (additionalInfo?.isNewUser) {
+        const user: User = {
+          id: userResult.uid,
+          email: userResult.email || '',
+        };
 
-            await createUser({
-              user,
-              onSuccess: () => {
-                toast.success('Successfully signed in with Google!');
-                route.push('/');
-              },
-              onFailed: () => {},
-            });
-          } else {
-            toast.success('Successfully signed in with Google!');
-            route.push('/');
-          }
-        })
-        .catch((error) => {
-          toast.error('Failed to sign in with Google. Please try again.');
+        await createUser({
+          user,
+          onSuccess: handleSuccess,
+          onFailed: () => {},
         });
+      } else {
+        handleSuccess();
+      }
     } catch (error) {
       console.error('Google sign-in error:', error);
       toast.error('Failed to sign in with Google. Please try again.');
