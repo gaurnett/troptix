@@ -11,8 +11,7 @@
   },
   "workspaces": [
     "apps/server",
-    "apps/web",
-    "packages/*"
+    "apps/web"
   ],
   "keywords": [],
   "author": "",

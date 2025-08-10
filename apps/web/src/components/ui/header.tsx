@@ -1,19 +1,19 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { auth } from '../../config';
-import { TropTixContext } from '../AuthProvider';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ChevronDown } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useContext, useEffect, useState } from 'react';
+import { auth } from '../../config';
+import { TropTixContext } from '../AuthProvider';
 
 export interface NavItem {
   key: string;
