@@ -4,22 +4,35 @@ import { Prisma } from '@prisma/client';
 import { createElement } from 'react';
 import { render } from '@react-email/components';
 import EmailConfirmationTemplate from '@emails/EmailConfirmation';
+import { Resend } from 'resend';
 
-const apiKey = process.env.RESEND_DYNAMIC_TEMPLATE_API as string;
-sgMail.setApiKey(apiKey);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function sendEmail(to: string, subject: string, html: string) {
-  const msg = {
-    to,
-    from: {
-      name: 'TropTix',
-      email: 'info@usetroptix.com',
-    },
-    subject,
-    html,
-  };
-
-  return await sgMail.send(msg);
+export async function sendEmail(
+  to: string,
+  subject: string,
+  html: string,
+  orderId: string
+) {
+  try {
+    const { data, error } = await resend.emails.send(
+      {
+        from: 'TropTix <info@usetroptix.com>',
+        to,
+        subject,
+        html,
+      },
+      { idempotencyKey: `confirmation-${orderId}` }
+    );
+    console.log('Email sent successfully:', data);
+    if (error) {
+      console.error('Error sending email:', error);
+    }
+    return data;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return error;
+  }
 }
 
 // Only passing the orderID since this will eventually be called from a seperate email worker and we only will be passing the orderID
@@ -37,7 +50,8 @@ export async function sendEmailConfirmationEmailToUser(orderId: string) {
   await sendEmail(
     orderDetails.email,
     `Order Confirmation for ${orderDetails.event.name}`,
-    html
+    html,
+    orderId
   );
 }
 
