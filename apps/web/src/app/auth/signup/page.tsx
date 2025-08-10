@@ -1,15 +1,6 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { toast } from 'sonner';
-import { signUpWithEmail } from '@/firebase/auth';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -18,8 +9,18 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { GoogleSignInButton } from '../_components/GoogleSignInButton';
+import { Input } from '@/components/ui/input';
+import { auth } from '@/config';
+import { SignUpFields } from '@/types/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 import { FormDivider } from '../_components/FormDivider';
+import { GoogleSignInButton } from '../_components/GoogleSignInButton';
 
 const signUpSchema = z
   .object({
@@ -35,6 +36,54 @@ const signUpSchema = z
   });
 
 type SignUpFormValues = z.infer<typeof signUpSchema>;
+
+async function createUser(body, response) {
+  if (body === undefined || body.user === undefined) {
+    return response
+      .status(500)
+      .json({ error: 'No body found in User POST request' });
+  }
+
+  try {
+    const user = await prisma.users.create({
+      data: getPrismaCreateUserQuery(body.user),
+    });
+
+    return response
+      .status(200)
+      .json({ error: null, message: 'Successfully added user' });
+  } catch (e) {
+    return response.status(500).json({ error: 'Error adding user' });
+  }
+}
+
+export async function signUpWithEmail(signUpFields: SignUpFields) {
+  let result: any, error: any;
+  const displayName = signUpFields.firstName + ' ' + signUpFields.lastName;
+  try {
+    await createUserWithEmailAndPassword(
+      auth,
+      signUpFields.email,
+      signUpFields.password
+    ).then(async (result) => {
+      await updateProfile(result.user, { displayName });
+
+      const userResult = result.user;
+      const user: User = {
+        id: userResult.uid,
+        firstName: signUpFields.firstName,
+        lastName: signUpFields.lastName,
+        email: signUpFields.email,
+      };
+
+      // await createUser(user);
+    });
+  } catch (e) {
+    error = e;
+  }
+
+  return { result, error };
+}
 
 export default function SignUpPage() {
   const router = useRouter();
