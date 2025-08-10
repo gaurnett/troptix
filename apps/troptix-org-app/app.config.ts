@@ -14,7 +14,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   owner: 'troptix',
   name: process.env.EXPO_PUBLIC_APP_NAME || 'TropTix Organizer',
   slug: 'troptix-organizer',
-  version: '1.1.5',
+  version: '1.1.8',
   orientation: 'portrait',
   icon: './assets/icon.png',
   scheme: 'troptix',

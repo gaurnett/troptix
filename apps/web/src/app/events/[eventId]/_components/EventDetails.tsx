@@ -1,7 +1,5 @@
 'use client';
 
-import TicketDrawer from './ticket-drawer';
-import TicketModal from './ticket-modal';
 import { ButtonWithIcon } from '@/components/ui/button';
 import {
   DividerWithText,
@@ -10,17 +8,19 @@ import {
   TypographyP,
 } from '@/components/ui/typography';
 import { useScreenSize } from '@/hooks/useScreenSize';
+import TicketDrawer from './ticket-drawer';
+import TicketModal from './ticket-modal';
 
 import { getDateRangeFormatter, getTimeRangeFormatter } from '@/lib/dateUtils';
 import { getFormattedCurrency } from '@/lib/utils';
 import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 
+import { Banner } from '@/components/ui/banner';
+import { Button } from '@/components/ui/button';
 import { Calendar, DollarSign, MapPin, Ticket } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { EventById } from '../page';
-import { Banner } from '@/components/ui/banner';
 
 export default function EventDetail({ event }: { event: EventById }) {
   const googleMapsKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;

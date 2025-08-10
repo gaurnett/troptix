@@ -6,12 +6,12 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
 import { onIdTokenChanged } from 'firebase/auth';
 
+import { useOrganizerStatus } from '@/hooks/useUser';
+import Cookies from 'js-cookie';
 import { Inter } from 'next/font/google';
 import { usePathname } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { auth } from '../config';
-import Cookies from 'js-cookie';
-import { useOrganizerStatus } from '@/hooks/useUser';
 
 const inter = Inter({
   subsets: ['latin'],
