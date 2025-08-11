@@ -18,7 +18,7 @@ export type EventCardData = {
 };
 
 // Define the type for the grouped events
-export type GroupedEvents = {
+type GroupedEvents = {
   [key in EventCardData['status']]?: EventCardData[]; // Optional arrays for each status
 };
 

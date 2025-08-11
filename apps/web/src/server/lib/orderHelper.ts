@@ -1,17 +1,6 @@
 import { OrderStatus, Prisma, TicketStatus, TicketType } from '@prisma/client';
 import { buffer } from 'micro';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
-export async function getBuffer(request) {
-  const buf = await buffer(request);
-  return buf;
-}
-
 export function updateSuccessfulOrder(paymentMethod) {
   let orderUpdate: Prisma.OrdersUpdateInput;
 

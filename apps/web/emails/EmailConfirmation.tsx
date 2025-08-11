@@ -15,7 +15,7 @@ import {
   pixelBasedPreset,
 } from '@react-email/components';
 
-export interface EmailTicket {
+interface EmailTicket {
   id: string;
   total: number | null;
   subtotal: number | null;
@@ -29,7 +29,7 @@ export interface EmailTicket {
   } | null;
 }
 
-export interface EmailOrder {
+interface EmailOrder {
   id: string;
   firstName: string | null;
   lastName: string | null;

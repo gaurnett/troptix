@@ -15,7 +15,7 @@ export function isPlatformOwner(email: string | undefined): boolean {
  * 1. User is the event creator, OR
  * 2. User has a @usetroptix.com email (platform owner)
  */
-export async function canAccessEvent(
+async function canAccessEvent(
   userId: string,
   userEmail: string | undefined,
   eventId: string

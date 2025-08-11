@@ -1,10 +1,10 @@
-export interface PublishValidationError {
+interface PublishValidationError {
   field: string;
   message: string;
   category: 'basic' | 'tickets' | 'timing';
 }
 
-export interface PublishValidationResult {
+interface PublishValidationResult {
   isValid: boolean;
   errors: PublishValidationError[];
   missingRequirements: string[];
