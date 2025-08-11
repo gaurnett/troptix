@@ -142,8 +142,6 @@ const createColumns = (isMobile: boolean): ColumnDef<TicketType>[] => [
   },
 ];
 
-export const columns = createColumns(false); // Default columns for backward compatibility
-
 declare module '@tanstack/table-core' {
   interface TableMeta<TData extends RowData> {
     eventId?: string;

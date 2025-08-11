@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 
-export enum GetUsersType {
+enum GetUsersType {
   GET_USERS_BY_ID = 'GET_USERS_BY_ID',
 }
 
-export async function fetchUserById(userId: string) {
+async function fetchUserById(userId: string) {
   const url = `/api/users?getUsersType=${GetUsersType.GET_USERS_BY_ID}&id=${userId}`;
 
   try {

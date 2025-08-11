@@ -1,7 +1,7 @@
 import { ContactUsForm } from './types/Contact';
 import { useMutation } from '@tanstack/react-query';
 
-export enum PostContactRequestType {
+enum PostContactRequestType {
   CONTACT_US = 'CONTACT_US',
 }
 export type PostContactRequest = {
@@ -9,7 +9,7 @@ export type PostContactRequest = {
   contactUsForm?: ContactUsForm;
 };
 
-export async function mutateContact(request: PostContactRequest): Promise<any> {
+async function mutateContact(request: PostContactRequest): Promise<any> {
   let url = `/api/contact`;
 
   try {

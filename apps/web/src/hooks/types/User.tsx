@@ -26,22 +26,6 @@ enum Role {
   ORGANIZER,
 }
 
-export enum SocialMediaAccounts {
-  FACEBOOK = 'FACEBOOK',
-  INSTAGRAM = 'INSTAGRAM',
-  TIKTOK = 'TIKTOK',
-  TWITTER = 'TWITTER',
-}
-
-export type SocialMediaAccount = {
-  id: string;
-  userId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  socialMediaAccountType: keyof typeof SocialMediaAccounts;
-  link: string;
-};
-
 export async function initializeUser(
   firebaseUser: FirebaseUser
 ): Promise<User> {
@@ -69,15 +53,6 @@ export async function initializeUser(
       user.lastName = name[1];
     }
   }
-
-  return user;
-}
-
-export function initializeUserWithJwtToken(token: string): User {
-  const user: User = {
-    id: '',
-    jwtToken: token,
-  };
 
   return user;
 }

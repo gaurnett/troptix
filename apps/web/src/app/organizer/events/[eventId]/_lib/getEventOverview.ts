@@ -4,7 +4,7 @@ import prisma from '@/server/prisma';
 import { verifyEventAccess, getEventWhereClause } from '@/server/accessControl';
 
 // Core Event Information
-export interface EventInfo {
+interface EventInfo {
   id: string;
   name: string;
   status: 'draft' | 'published' | 'live' | 'ended';
@@ -19,7 +19,7 @@ export interface EventInfo {
 }
 
 // Financial Data
-export interface EventFinancials {
+interface EventFinancials {
   totalRevenue: number;
   netRevenue: number;
   averageOrderValue: number;
@@ -27,7 +27,7 @@ export interface EventFinancials {
 }
 
 // Ticket Data
-export interface EventTickets {
+interface EventTickets {
   totalSold: number;
   totalCapacity: number;
   capacityUsed: number; // percentage
@@ -45,14 +45,14 @@ export interface EventTickets {
 }
 
 // Time-based Data
-export interface EventTiming {
+interface EventTiming {
   daysUntilEvent: number | 'live' | 'ended';
   eventPhase: 'upcoming' | 'live' | 'ended';
   salesVelocity: number; // tickets per day
 }
 
 // Recent Activity
-export interface RecentActivity {
+interface RecentActivity {
   recentOrders: Array<{
     id: string;
     customerName: string;
@@ -78,27 +78,34 @@ export interface EventOverview {
 }
 
 // Helper function to determine event status
-function getEventStatus(isDraft: boolean, startDate: Date, endDate: Date | null): EventInfo['status'] {
+function getEventStatus(
+  isDraft: boolean,
+  startDate: Date,
+  endDate: Date | null
+): EventInfo['status'] {
   if (isDraft) return 'draft';
-  
+
   const now = new Date();
   const eventStart = new Date(startDate);
   const eventEnd = endDate ? new Date(endDate) : null;
-  
+
   if (now < eventStart) return 'published';
   if (eventEnd && now > eventEnd) return 'ended';
   return 'live';
 }
 
 // Helper function to calculate days until event
-function getDaysUntilEvent(startDate: Date, endDate: Date | null): EventTiming['daysUntilEvent'] {
+function getDaysUntilEvent(
+  startDate: Date,
+  endDate: Date | null
+): EventTiming['daysUntilEvent'] {
   const now = new Date();
   const eventStart = new Date(startDate);
   const eventEnd = endDate ? new Date(endDate) : null;
-  
+
   if (eventEnd && now > eventEnd) return 'ended';
   if (now >= eventStart && (!eventEnd || now <= eventEnd)) return 'live';
-  
+
   const diffTime = eventStart.getTime() - now.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return Math.max(0, diffDays);
@@ -132,10 +139,13 @@ export async function getEventOverview(
   eventCreatedDate.setHours(0, 0, 0, 0);
 
   // Use the later date (more recent) as our start date
-  const chartStartDate = eventCreatedDate > thirtyDaysAgo ? eventCreatedDate : thirtyDaysAgo;
-  
+  const chartStartDate =
+    eventCreatedDate > thirtyDaysAgo ? eventCreatedDate : thirtyDaysAgo;
+
   // Calculate how many days we're actually showing
-  const daysDifference = Math.ceil((now.getTime() - chartStartDate.getTime()) / (1000 * 60 * 60 * 24));
+  const daysDifference = Math.ceil(
+    (now.getTime() - chartStartDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
   const chartDaysShown = Math.max(1, daysDifference); // Ensure at least 1 day
 
   // Single comprehensive query with proper joins
@@ -159,8 +169,8 @@ export async function getEventOverview(
           email: true,
           createdAt: true,
           _count: {
-            select: { tickets: true }
-          }
+            select: { tickets: true },
+          },
         },
         orderBy: { createdAt: 'desc' },
       },
@@ -187,7 +197,11 @@ export async function getEventOverview(
   const eventInfo: EventInfo = {
     id: eventData.id,
     name: eventData.name,
-    status: getEventStatus(eventData.isDraft, eventData.startDate, eventData.endDate),
+    status: getEventStatus(
+      eventData.isDraft,
+      eventData.startDate,
+      eventData.endDate
+    ),
     createdAt: eventData.createdAt,
     updatedAt: eventData.updatedAt,
     startDate: eventData.startDate,
@@ -199,9 +213,12 @@ export async function getEventOverview(
   };
 
   // Process financial data
-  const totalRevenue = eventData.orders.reduce((sum, order) => sum + order.total, 0);
+  const totalRevenue = eventData.orders.reduce(
+    (sum, order) => sum + order.total,
+    0
+  );
   const totalOrders = eventData.orders.length;
-  
+
   const financials: EventFinancials = {
     totalRevenue,
     netRevenue: totalRevenue * 0.97, // Assuming 3% platform fee
@@ -210,19 +227,26 @@ export async function getEventOverview(
   };
 
   // Process ticket data
-  const totalSold = eventData.orders.reduce((sum, order) => sum + order._count.tickets, 0);
-  const totalCapacity = eventData.ticketTypes.reduce((sum, tt) => sum + (tt.quantity || 0), 0);
-  
-  const ticketTypesWithRevenue = eventData.ticketTypes.map(tt => ({
+  const totalSold = eventData.orders.reduce(
+    (sum, order) => sum + order._count.tickets,
+    0
+  );
+  const totalCapacity = eventData.ticketTypes.reduce(
+    (sum, tt) => sum + (tt.quantity || 0),
+    0
+  );
+
+  const ticketTypesWithRevenue = eventData.ticketTypes.map((tt) => ({
     name: tt.name,
     sold: tt.quantitySold || 0,
     capacity: tt.quantity || 0,
     revenue: (tt.quantitySold || 0) * tt.price,
   }));
 
-  const topSellingType = ticketTypesWithRevenue
-    .filter(tt => tt.sold > 0)
-    .sort((a, b) => b.sold - a.sold)[0] || null;
+  const topSellingType =
+    ticketTypesWithRevenue
+      .filter((tt) => tt.sold > 0)
+      .sort((a, b) => b.sold - a.sold)[0] || null;
 
   const tickets: EventTickets = {
     totalSold,
@@ -233,15 +257,24 @@ export async function getEventOverview(
   };
 
   // Process timing data
-  const daysUntilEvent = getDaysUntilEvent(eventData.startDate, eventData.endDate);
-  const eventPhase: EventTiming['eventPhase'] = 
-    daysUntilEvent === 'ended' ? 'ended' : 
-    daysUntilEvent === 'live' ? 'live' : 'upcoming';
+  const daysUntilEvent = getDaysUntilEvent(
+    eventData.startDate,
+    eventData.endDate
+  );
+  const eventPhase: EventTiming['eventPhase'] =
+    daysUntilEvent === 'ended'
+      ? 'ended'
+      : daysUntilEvent === 'live'
+        ? 'live'
+        : 'upcoming';
 
   // Calculate sales velocity (tickets sold per day since creation)
-  const daysSinceCreated = Math.max(1, Math.floor(
-    (Date.now() - eventData.createdAt.getTime()) / (1000 * 60 * 60 * 24)
-  ));
+  const daysSinceCreated = Math.max(
+    1,
+    Math.floor(
+      (Date.now() - eventData.createdAt.getTime()) / (1000 * 60 * 60 * 24)
+    )
+  );
   const salesVelocity = totalSold / daysSinceCreated;
 
   const timing: EventTiming = {
@@ -251,7 +284,7 @@ export async function getEventOverview(
   };
 
   // Process recent activity
-  const recentOrders = eventData.orders.slice(0, 5).map(order => ({
+  const recentOrders = eventData.orders.slice(0, 5).map((order) => ({
     id: `#${order.id.substring(0, 6)}`,
     customerName: order.name || order.email || 'Guest',
     amount: order.total,
@@ -268,11 +301,14 @@ export async function getEventOverview(
     revenueMap.set(dateStr, 0);
   }
 
-  dailyRevenue.forEach(group => {
+  dailyRevenue.forEach((group) => {
     if (group.createdAt) {
       const dateStr = group.createdAt.toISOString().split('T')[0];
       if (revenueMap.has(dateStr)) {
-        revenueMap.set(dateStr, (revenueMap.get(dateStr) || 0) + (group._sum.total || 0));
+        revenueMap.set(
+          dateStr,
+          (revenueMap.get(dateStr) || 0) + (group._sum.total || 0)
+        );
       }
     }
   });
@@ -282,13 +318,14 @@ export async function getEventOverview(
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   // Generate appropriate chart description
-  const chartDescription = chartDaysShown === 1 
-    ? "Showing revenue for today"
-    : chartDaysShown <= 7
-    ? `Showing revenue for the last ${chartDaysShown} days`
-    : chartDaysShown < 30
-    ? `Showing revenue since event creation (${chartDaysShown} days)`
-    : "Showing revenue for the last 30 days";
+  const chartDescription =
+    chartDaysShown === 1
+      ? 'Showing revenue for today'
+      : chartDaysShown <= 7
+        ? `Showing revenue for the last ${chartDaysShown} days`
+        : chartDaysShown < 30
+          ? `Showing revenue since event creation (${chartDaysShown} days)`
+          : 'Showing revenue for the last 30 days';
 
   const activity: RecentActivity = {
     recentOrders,
