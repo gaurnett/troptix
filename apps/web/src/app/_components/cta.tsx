@@ -9,7 +9,6 @@ import {
   Copy,
   MessageCircle,
 } from 'lucide-react';
-import { ContactForm } from './contact-form';
 import Link from 'next/link';
 import { toast } from 'sonner';
 
@@ -53,7 +52,7 @@ export default function CTA() {
               </Link>
             </div>
 
-            <div className="flex items-center gap-2 text-sm text-muted-foreground justify-center ">
+            <div className="flex items-center text-sm text-muted-foreground justify-center ">
               <EmailUsButton />
             </div>
           </motion.div>
@@ -94,7 +93,7 @@ export function EmailUsButton() {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center justify-center gap-2">
       <Button
         variant="outline"
         size="sm"
@@ -103,7 +102,7 @@ export function EmailUsButton() {
         onClick={handleEmailClick}
       >
         <MessageCircle className="h-4 w-4" />
-        <span>Or get in touch to learn more</span>
+        <span>Or send us an email</span>
       </Button>
 
       <Button
