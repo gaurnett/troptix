@@ -174,36 +174,3 @@ export async function updateEvent(
     };
   }
 }
-
-export async function publishEvent(eventId: string) {
-  const user = await getUserFromIdTokenCookie();
-  if (!user) {
-    return { success: false, error: 'Authentication required.' };
-  }
-
-  try {
-    const event = await prisma.events.findUnique({
-      where: { id: eventId, organizerUserId: user.uid },
-    });
-
-    if (!event) {
-      return { success: false, error: 'Event not found or unauthorized.' };
-    }
-
-    await prisma.events.update({
-      where: { id: eventId },
-      data: {
-        isDraft: false,
-      },
-    });
-  } catch (error) {
-    console.error(`Error publishing event ${eventId}:`, error);
-    return {
-      success: false,
-      error: 'Failed to publish event. Please try again.',
-    };
-  }
-  revalidatePath(`/organizer/events/${eventId}`);
-
-  return { success: true, eventId: eventId };
-}

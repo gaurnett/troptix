@@ -33,8 +33,8 @@ import {
 import { formatCurrency, combineDateTime, formatTime } from '@/lib/dateUtils';
 import { PaidWarningBannerForm } from '@/components/PaidWarningBanner';
 
-const PLATFORM_FIXED_FEE = 0.3; // $0.30
-const PLATFORM_PERCENTAGE_FEE = 0.04; // 4%
+const PLATFORM_FIXED_FEE = 0.5; // $0.50
+const PLATFORM_PERCENTAGE_FEE = 0.08; // 8%
 
 const today = new Date();
 today.setHours(0, 0, 0, 0);

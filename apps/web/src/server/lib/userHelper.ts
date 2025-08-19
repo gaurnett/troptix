@@ -1,9 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
-import prisma from '@/server/prisma';
-
-const prismaClient = prisma as PrismaClient;
-
-export function addUserQuery() {}
+import { Prisma } from '@prisma/client';
 
 export function getPrismaUpdateSocialMediaQuery(account) {
   let socialMedia: Prisma.SocialMediaAccountsUpdateInput;

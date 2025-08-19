@@ -1,4 +1,3 @@
-import sgMail from '@sendgrid/mail';
 import prisma from '@/server/prisma';
 import { Prisma } from '@prisma/client';
 import { createElement } from 'react';
@@ -8,7 +7,7 @@ import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function sendEmail(
+async function sendEmail(
   to: string,
   subject: string,
   html: string,

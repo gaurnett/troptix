@@ -1,9 +1,17 @@
 'use client';
 
-import React from 'react';
 import { Button } from '@/components/ui/button';
+import { auth } from '@/config';
+import { createUser } from '@/firebase/auth';
+import { User } from '@/hooks/types/User';
+import {
+  GoogleAuthProvider,
+  getAdditionalUserInfo,
+  signInWithPopup,
+} from 'firebase/auth';
 import { Loader2 } from 'lucide-react';
-import { signInWithGoogle } from '@/firebase/auth';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 import { toast } from 'sonner';
 
 interface GoogleSignInButtonProps {
@@ -14,21 +22,36 @@ interface GoogleSignInButtonProps {
 
 export function GoogleSignInButton({
   text = 'Continue with Google',
-  onSuccess,
   disabled = false,
 }: GoogleSignInButtonProps) {
   const [isLoading, setIsLoading] = React.useState(false);
+  const router = useRouter();
+
+  const handleSuccess = () => {
+    toast.success('Successfully signed in with Google!');
+    router.back();
+  };
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
-      const { result, error } = await signInWithGoogle();
+      const result = await signInWithPopup(auth, new GoogleAuthProvider());
+      const userResult = result.user;
+      const additionalInfo = getAdditionalUserInfo(result);
 
-      if (error) {
-        toast.error('Failed to sign in with Google. Please try again.');
+      if (additionalInfo?.isNewUser) {
+        const user: User = {
+          id: userResult.uid,
+          email: userResult.email || '',
+        };
+
+        await createUser({
+          user,
+          onSuccess: handleSuccess,
+          onFailed: () => {},
+        });
       } else {
-        toast.success('Successfully signed in with Google!');
-        onSuccess?.();
+        handleSuccess();
       }
     } catch (error) {
       console.error('Google sign-in error:', error);

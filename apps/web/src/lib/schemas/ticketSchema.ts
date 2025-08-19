@@ -1,15 +1,7 @@
 import { z } from 'zod';
 
 // Define the enum based on your Prisma schema for TicketFeeStructure
-export const TicketFeeStructure = z.enum([
-  'ABSORB_TICKET_FEES',
-  'PASS_TICKET_FEES',
-]);
-
-const today = new Date();
-today.setHours(0, 0, 0, 0);
-const tomorrow = new Date(today);
-tomorrow.setDate(today.getDate() + 1);
+const TicketFeeStructure = z.enum(['ABSORB_TICKET_FEES', 'PASS_TICKET_FEES']);
 
 export const ticketTypeSchema = z
   .object({
