@@ -278,7 +278,7 @@ export default function TicketDisplayManager({
                   <p className="text-xs text-muted-foreground dark:text-slate-500 font-mono">
                     {currentTicketData.id}
                   </p>
-                  <Button
+                  {/* <Button
                     variant="outline"
                     size="icon"
                     aria-label="Download ticket"
@@ -287,7 +287,7 @@ export default function TicketDisplayManager({
                     }}
                   >
                     <DownloadIcon className="h-4 w-4" />
-                  </Button>
+                  </Button> */}
                   {/* <Button
                     variant="outline"
                     size="icon"

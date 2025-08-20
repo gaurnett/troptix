@@ -49,7 +49,7 @@ const getUserInitials = (user?: {
   if (user?.email) {
     return user.email.charAt(0).toUpperCase();
   }
-  return 'U';
+  return 'A';
 };
 
 export default function UnifiedHeader() {
