@@ -61,16 +61,15 @@ export default async function OrganizerDashboardPage() {
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <div>
                 <CardTitle>Recent Orders</CardTitle>
-                <CardDescription>Last 5 completed orders.</CardDescription>
+                {/* <CardDescription>Last 5 completed orders.</CardDescription> */}
               </div>
-              <Link href={`/organizer/orders`} passHref>
+              {/* <Link href={`/organizer/orders`} passHref>
                 {' '}
-                {/* Link to full orders page */}
                 <Button variant="outline" size="sm" className="ml-auto gap-1">
                   View All
                   <ArrowUpRight className="h-4 w-4" />
                 </Button>
-              </Link>
+              </Link> */}
             </CardHeader>
             <CardContent>
               <Table>

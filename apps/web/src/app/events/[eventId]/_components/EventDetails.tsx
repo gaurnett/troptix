@@ -76,7 +76,7 @@ export default function EventDetail({ event }: { event: EventById }) {
         )}
         <div className="w-full md:min-h-screen flex backdrop-blur-3xl">
           <div className={`max-w-5xl mx-auto p-4 sm:p-8`}>
-            <div className="md:flex mt-32">
+            <div className="md:flex">
               <aside className="md:sticky md:top-0 mb-8 ">
                 <Image
                   height={500}
