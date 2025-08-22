@@ -1,7 +1,5 @@
 'use client';
 
-import { format } from 'date-fns';
-import { useContext, useState } from 'react';
 import {
   Form,
   FormControl,
@@ -10,19 +8,20 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { format } from 'date-fns';
+import { useContext, useState } from 'react';
 
 import { TropTixContext } from '@/components/AuthProvider';
+import { Badge } from '@/components/ui/badge';
 import { Button, ButtonWithIcon } from '@/components/ui/button';
-import { InputWithLabel } from '@/components/ui/input';
+import { Input, InputWithLabel } from '@/components/ui/input';
 import { TypographyH3 } from '@/components/ui/typography';
-import { CheckoutTicket } from '@/types/checkout';
 import { getDateFormatter } from '@/lib/dateUtils';
+import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema';
+import { CheckoutTicket } from '@/types/checkout';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
 import { UseFormReturn } from 'react-hook-form';
-import { UserDetailsFormData } from '@/lib/schemas/checkoutSchema';
-import { Input } from '@/components/ui/input';
 import { CheckoutState } from './CheckoutContainer';
-import { Badge } from '@/components/ui/badge';
 
 function getFormattedCurrency(price) {
   const formatter = new Intl.NumberFormat('en-US', {
@@ -80,7 +79,7 @@ export default function TicketsCheckoutForm({
               <FormItem className="mb-4 mr-1 md:mr-4 w-full">
                 <FormLabel>First Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder={'John'} disabled={!!user.id} />
+                  <Input {...field} placeholder={'First Name'} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -94,7 +93,7 @@ export default function TicketsCheckoutForm({
               <FormItem className="mb-4 mr-1 md:mr-4 w-full">
                 <FormLabel>Last Name</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder={'Doe'} disabled={!!user.id} />
+                  <Input {...field} placeholder={'Last Name'} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

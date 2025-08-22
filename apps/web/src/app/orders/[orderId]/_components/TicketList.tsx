@@ -161,7 +161,7 @@ export default function TicketListInteractive({
               </div>
             </div>
             <DialogFooter className="p-6 pt-4 border-t bg-slate-50 dark:bg-slate-800/50 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-              <Button
+              {/* <Button
                 variant="outline"
                 size="sm"
                 onClick={handleSaveTicket}
@@ -176,7 +176,7 @@ export default function TicketListInteractive({
                 className="w-full"
               >
                 <Smartphone className="mr-1.5 h-4 w-4" /> Wallet
-              </Button>
+              </Button> */}
               <Button
                 variant="default"
                 size="sm"
