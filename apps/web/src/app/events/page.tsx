@@ -19,6 +19,16 @@ const EventSelect = {
     select: {
       price: true,
     },
+    where: {
+      OR: [
+        {
+          discountCode: { equals: null },
+        },
+        {
+          discountCode: { equals: '' },
+        },
+      ],
+    },
     orderBy: {
       price: Prisma.SortOrder.asc,
     },
