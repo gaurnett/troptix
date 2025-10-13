@@ -37,7 +37,7 @@ function getTicketStateMessage(ticket: CheckoutTicket) {
   const endDate = new Date(ticket.saleEndDate);
 
   if (now < startDate) {
-    return 'Sale starts ' + format(startDate, 'MMM dd, yyyy, hh:mm a');
+    return 'Starts ' + format(startDate, 'MMM d, h:mm a');
   }
   if (now > endDate) {
     return 'Sale ended';
@@ -236,9 +236,7 @@ function TicketItem({
             <div className="md:w-1/5 flex my-auto justify-center items-center">
               <div>
                 {ticketState !== undefined ? (
-                  <div className="text-center text-md font-bold">
-                    {ticketState}
-                  </div>
+                  <div className="text-center text-sm">{ticketState}</div>
                 ) : (
                   <div className="flex items-center">
                     <ButtonWithIcon
