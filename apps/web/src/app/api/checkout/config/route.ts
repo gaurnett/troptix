@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/server/prisma';
 import { OrderStatus, Prisma, TicketFeeStructure } from '@prisma/client';
-import { calculateFees } from '@/server/lib/checkout';
+import { calculateFees } from '@/lib/fees';
 import { CheckoutConfigResponse, CheckoutTicket } from '@/types/checkout';
 
 export async function GET(

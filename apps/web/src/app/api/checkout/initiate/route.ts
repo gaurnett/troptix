@@ -13,7 +13,7 @@ import {
   ValidationResponse,
   ValidationResponseMessage,
 } from '@/types/checkout'; // Adjust path if needed
-import { calculateFees } from '@/server/lib/checkout'; // Adjust path if needed
+import { calculateFees } from '@/lib/fees'; // Adjust path if needed
 import { Prisma } from '@prisma/client';
 import { sendEmailConfirmationEmailToUser } from '@/server/lib/email';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {

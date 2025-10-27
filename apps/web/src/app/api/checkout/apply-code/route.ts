@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/server/prisma';
 import { OrderStatus, Prisma, TicketFeeStructure } from '@prisma/client';
-import { calculateFees } from '@/server/lib/checkout'; // Make sure this utility is available
+import { calculateFees } from '@/lib/fees'; // Make sure this utility is available
 import { CheckoutTicket } from '@/types/checkout'; // Import your types (CheckoutConfigResponse isn't directly returned here)
 
 export async function POST(req: NextRequest): Promise<
