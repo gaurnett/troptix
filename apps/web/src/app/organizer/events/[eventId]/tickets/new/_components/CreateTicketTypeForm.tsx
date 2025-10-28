@@ -32,10 +32,7 @@ import {
 } from '@/lib/schemas/ticketSchema';
 import { formatCurrency, combineDateTime, formatTime } from '@/lib/dateUtils';
 import { PaidWarningBannerForm } from '@/components/PaidWarningBanner';
-
-const PLATFORM_FIXED_FEE = 0.5; // $0.50
-const PLATFORM_PERCENTAGE_FEE = 0.08; // 8%
-
+import { FeeConfig, getFeeBreakdown } from '@/lib/fees';
 const today = new Date();
 today.setHours(0, 0, 0, 0);
 const tomorrow = new Date(today);
@@ -98,16 +95,15 @@ export function CreateTicketTypeForm({
   const currentPrice = Number(watchedPrice) || 0;
 
   if (currentPrice > 0) {
-    const fixedFee = PLATFORM_FIXED_FEE;
-    const percentageFee = currentPrice * PLATFORM_PERCENTAGE_FEE;
-    const totalFee = fixedFee + percentageFee;
+    // TODO: Should we use the total fee (including tax) or the base fee (excluding tax)?
+    const { baseFee } = getFeeBreakdown(currentPrice);
 
     if (watchedTicketingFees === 'PASS_TICKET_FEES') {
-      calculatedBuyerPrice = currentPrice + totalFee;
+      calculatedBuyerPrice = currentPrice + baseFee;
       calculatedOrganizerPayout = currentPrice;
     } else {
       calculatedBuyerPrice = currentPrice;
-      calculatedOrganizerPayout = currentPrice - totalFee;
+      calculatedOrganizerPayout = currentPrice - baseFee;
     }
   }
 
@@ -439,8 +435,8 @@ export function CreateTicketTypeForm({
               </span>
             </div>
             <p className="text-xs text-muted-foreground pt-1">
-              *Based on an estimated {PLATFORM_PERCENTAGE_FEE * 100}% +{' '}
-              {formatCurrency(PLATFORM_FIXED_FEE)} fee.
+              *Based on an estimated {FeeConfig.PERCENTAGE * 100}% +{' '}
+              {formatCurrency(FeeConfig.FIXED)} fee.
             </p>
           </div>
         )}
